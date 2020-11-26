@@ -1,8 +1,7 @@
 #pragma once
 
-// !!! This file is for applications only. They can do #include <Eagle.g> and have everything needed !!!
+// This file is for applications only. They can do #include <Eagle.g> and have everything needed
 
 #include "Eagle/Application.h"
-
-// Entry point
-#include "Eagle/EntryPoint.h"
+#include "Eagle/Log.h"
+#include "Eagle/EntryPoint.h" // Entry point

@@ -1,0 +1,6 @@
+﻿  Sandbox.cpp
+C:\Dev\Eagle\Eagle\src\Eagle\Log.h(12,56): warning C4251: 'Egl::Log::s_EngineLogger': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'Egl::Log'
+C:\Dev\Eagle\Eagle\vendor\spdlog\include\spdlog\details\registry.h(34): message : see declaration of 'std::shared_ptr<spdlog::logger>'
+C:\Dev\Eagle\Eagle\src\Eagle\Log.h(13,56): warning C4251: 'Egl::Log::s_ClientLogger': class 'std::shared_ptr<spdlog::logger>' needs to have dll-interface to be used by clients of class 'Egl::Log'
+C:\Dev\Eagle\Eagle\vendor\spdlog\include\spdlog\details\registry.h(34): message : see declaration of 'std::shared_ptr<spdlog::logger>'
+  Sandbox.vcxproj -> C:\Dev\Eagle\bin-int\Debug-windows-x86_64\Sandbox\Sandbox.exe

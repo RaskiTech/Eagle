@@ -10,7 +10,10 @@ namespace Egl {
 
 	}
 
+	/// <summary>
+	/// You cannot create a function with this name because it's Eagle engines default function
+	/// </summary>
 	void Application::Run() {
-		while (true);
+		
 	}
 }
