@@ -1,19 +1,52 @@
+#include "EaglePCH.h"
 #include "Application.h"
 
 namespace Egl {
 
+#define BIND_EVENT_FUNC(x) std::bind(&Application::x, this, std::placeholders::_1)
 	Application::Application() {
-
+		mWindow = std::unique_ptr<Window>(Window::Create());
+		mWindow->SetEventCallback(BIND_EVENT_FUNC(OnEvent));
 	}
 
 	Application::~Application() {
 
 	}
 
-	/// <summary>
-	/// You cannot create a function with this name because it's Eagle engines default function
-	/// </summary>
+	void Application::OnEvent(Event& e) {
+		EventDispatcher dispacher(e);
+		dispacher.Dispatch<WindowCloseEvent>(BIND_EVENT_FUNC(OnWindowClose));
+
+		for (auto layer = mLayerStack.end(); layer != mLayerStack.begin();) {
+			layer--;
+			if ((*layer)->IsActive()) {
+				(*layer)->OnEvent(e);
+				if (e.IsHandled())
+					break;
+			}
+		}
+	}
+
+	void Application::AddLayer(Layer* layer) {
+		mLayerStack.AddLayer(layer);
+	}
+	void Application::AddOverlay(Layer* layer) {
+		mLayerStack.AddOverlay(layer);
+	}
+
 	void Application::Run() {
-		
+		// The main loop
+		while (mRunning) {
+			for (Layer* layer : mLayerStack)
+				if (layer->IsActive())
+					layer->OnUpdate();
+
+			mWindow->OnUpdate();
+		}
+	}
+	
+	bool Application::OnWindowClose(WindowCloseEvent& e) {
+		mRunning = false;
+		return true;
 	}
 }

@@ -5,10 +5,10 @@
 extern Egl::Application* Egl::CreateApplication();
 
 int main(int agrc, char** argv) {
+	Egl::Log::Init(); // THIS NEEDS TO BE BEFORE CREATEAPP
+	LOG_ENG_INFO("ENGINE STARTING...");
 	auto app = Egl::CreateApplication();
-	Egl::Log::Init();
-	LOG_ENG_WARN("Warning");
-	LOG_INFO("client {0}", 3);
+	LOG_INFO("Client initialized.");
 	app->Run();
 	delete app;
 }
