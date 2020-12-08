@@ -43,4 +43,17 @@ namespace Egl {
 			return str.str();
 		}
 	};
+	class EAGLE_API KeyTypedEvent : public KeyEvent {
+	public:
+		KeyTypedEvent(int keykode)
+			: KeyEvent(keykode) {}
+
+		EVENT_CLASS_TYPE(KeyTyped);
+
+		std::string ToString() const override {
+			std::stringstream str;
+			str << "KeyTyped: " << m_KeyCode;
+			return str.str();
+		}
+	};
 }

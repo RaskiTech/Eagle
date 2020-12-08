@@ -17,6 +17,7 @@ class Sandbox : public Egl::Application {
 public:
 	Sandbox() {
 		AddLayer(new BaseLayer());
+		AddOverlay(new Egl::ImGuiLayer());
 	}
 
 	~Sandbox() {

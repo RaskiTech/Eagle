@@ -4,6 +4,7 @@
 #include "Eagle/Events/ApplicationEvent.h"
 #include "Eagle/Events/KeyEvent.h"
 #include "Eagle/Events/MouseEvent.h"
+#include <glad/glad.h>
 
 namespace Egl {
 	static bool isGLFWInit = false;
@@ -38,6 +39,8 @@ namespace Egl {
 
 		mWindow = glfwCreateWindow((int)props.width, (int)props.height, mData.Title.c_str(), nullptr, nullptr);
 		glfwMakeContextCurrent(mWindow);
+		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
+		EAGLE_ASSERT(status, "Failed to initialize glad");
 		glfwSetWindowUserPointer(mWindow, &mData);
 		SetVSync(true);
 
@@ -47,7 +50,7 @@ namespace Egl {
 			data.width = width;
 			data.height = height;
 
-			WindowRezizeEvent event(width, height);
+			WindowResizeEvent event(width, height);
 			data.EventCallback(event);
 		});
 		glfwSetWindowCloseCallback(mWindow, [](GLFWwindow* window) {
@@ -74,6 +77,11 @@ namespace Egl {
 					break;
 				}
 			}
+		});
+		glfwSetCharCallback(mWindow, [](GLFWwindow* window, unsigned int character) {
+			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			KeyTypedEvent event(character);
+			data.EventCallback(event);
 		});
 		glfwSetMouseButtonCallback(mWindow, [](GLFWwindow* window, int button, int action, int mods) {
 			WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);

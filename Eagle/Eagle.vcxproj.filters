@@ -7,11 +7,17 @@
     <Filter Include="Eagle\Events">
       <UniqueIdentifier>{A7568AD8-93B9-197D-3C3F-52332881E5FF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Eagle\ImGui">
+      <UniqueIdentifier>{8D5301C1-F908-7AB6-82FD-738DEEB170BA}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Eagle\Layers">
       <UniqueIdentifier>{82416DE7-6EA4-FC8B-172A-3542036CC80E}</UniqueIdentifier>
     </Filter>
     <Filter Include="Platforms">
       <UniqueIdentifier>{DDACA145-4917-56BC-9255-0762FEFE3311}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platforms\OpenGL">
+      <UniqueIdentifier>{719BB998-5D94-D8EA-86C6-BD6F721EB8F6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Platforms\Windows">
       <UniqueIdentifier>{17E40808-83FA-069E-CC71-92BF38C7D725}</UniqueIdentifier>
@@ -40,6 +46,9 @@
     <ClInclude Include="src\Eagle\Events\MouseEvent.h">
       <Filter>Eagle\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eagle\ImGui\ImGuiLayer.h">
+      <Filter>Eagle\ImGui</Filter>
+    </ClInclude>
     <ClInclude Include="src\Eagle\Layers\Layer.h">
       <Filter>Eagle\Layers</Filter>
     </ClInclude>
@@ -53,6 +62,9 @@
       <Filter>Eagle</Filter>
     </ClInclude>
     <ClInclude Include="src\EaglePCH.h" />
+    <ClInclude Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.h">
+      <Filter>Platforms\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platforms\Windows\WindowsWindow.h">
       <Filter>Platforms\Windows</Filter>
     </ClInclude>
@@ -60,6 +72,9 @@
   <ItemGroup>
     <ClCompile Include="src\Eagle\Application.cpp">
       <Filter>Eagle</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\ImGui\ImGuiLayer.cpp">
+      <Filter>Eagle\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\Layers\Layer.cpp">
       <Filter>Eagle\Layers</Filter>
@@ -71,6 +86,9 @@
       <Filter>Eagle</Filter>
     </ClCompile>
     <ClCompile Include="src\EaglePCH.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.cpp">
+      <Filter>Platforms\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platforms\Windows\WindowsWindow.cpp">
       <Filter>Platforms\Windows</Filter>
     </ClCompile>

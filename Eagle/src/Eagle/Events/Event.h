@@ -8,7 +8,7 @@ namespace Egl {
 	enum class EventType {
 		None = 0,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
-		KeyPressed, KeyReleased,
+		KeyPressed, KeyReleased, KeyTyped,
 		WindowClose, WindowRezise, WindowFocus, WindowLostFocus, WindowMoved,
 		AppTick, AppUpdate, AppRender
 	};

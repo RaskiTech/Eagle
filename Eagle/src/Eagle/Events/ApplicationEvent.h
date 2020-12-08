@@ -3,9 +3,9 @@
 // WindowFocus, WindowLostFocus, WindowMoved,
 
 namespace Egl {
-	class EAGLE_API WindowRezizeEvent : public Event {
+	class EAGLE_API WindowResizeEvent : public Event {
 	public:
-		WindowRezizeEvent(unsigned int width, unsigned int height)
+		WindowResizeEvent(unsigned int width, unsigned int height)
 			: mWidth(width), mHeight(height) {}
 
 		inline unsigned int GetWidth() const { return mWidth; }

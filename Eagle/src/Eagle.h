@@ -5,4 +5,6 @@
 #include "Eagle/Application.h"
 #include "Eagle/Log.h"
 #include "Eagle/Layers/Layer.h"
+#include "Eagle/ImGui/ImGuiLayer.h"
+
 #include "Eagle/EntryPoint.h" // Entry point
