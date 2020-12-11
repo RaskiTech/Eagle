@@ -35,7 +35,8 @@ project "Eagle"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{prj.name}/vendor/GLFW/include",
 		"%{prj.name}/vendor/Glad/include",
-		"%{prj.name}/vendor/ImGui"
+		"%{prj.name}/vendor/ImGui",
+		"%{prj.name}/vendor/glm"
 	}
 
 	links {
@@ -88,6 +89,7 @@ project "Sandbox"
 
 	includedirs {
 		"Eagle/vendor/spdlog/include",
+		"Eagle/vendor/glm",
 		"Eagle/src"
 	}
 

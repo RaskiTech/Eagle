@@ -30,7 +30,7 @@ namespace Egl {
 #define LOG_ENG_WARN(...)  ::Egl::Log::GetEngineLogger()->warn(__VA_ARGS__)
 #define LOG_ENG_INFO(...)  ::Egl::Log::GetEngineLogger()->info(__VA_ARGS__)
 #define LOG_ENG_FATAL(...) ::Egl::Log::GetEngineLogger()->fatal(__VA_ARGS__)
-#define LOG_ENG(...)  LOG_ENG_INFO(__VA_ARGS__)
+#define LOG_ENG(...)  LOG_ENG_TRACE(__VA_ARGS__)
 
 // Client log macros
 #define LOG_TRACE(...) ::Egl::Log::GetClientLogger()->trace(__VA_ARGS__)
@@ -38,4 +38,4 @@ namespace Egl {
 #define LOG_WARN(...)  ::Egl::Log::GetClientLogger()->warn(__VA_ARGS__)
 #define LOG_INFO(...)  ::Egl::Log::GetClientLogger()->info(__VA_ARGS__)
 #define LOG_FATAL(...) ::Egl::Log::GetClientLogger()->fatal(__VA_ARGS__)
-#define LOG(...)  LOG_INFO(__VA_ARGS__)
+#define LOG(...)  LOG_TRACE(__VA_ARGS__)

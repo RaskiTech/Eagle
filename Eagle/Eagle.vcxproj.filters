@@ -49,6 +49,12 @@
     <ClInclude Include="src\Eagle\ImGui\ImGuiLayer.h">
       <Filter>Eagle\ImGui</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eagle\Input.h">
+      <Filter>Eagle</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\Keycodes.h">
+      <Filter>Eagle</Filter>
+    </ClInclude>
     <ClInclude Include="src\Eagle\Layers\Layer.h">
       <Filter>Eagle\Layers</Filter>
     </ClInclude>
@@ -64,6 +70,9 @@
     <ClInclude Include="src\EaglePCH.h" />
     <ClInclude Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.h">
       <Filter>Platforms\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platforms\Windows\WindowsInput.h">
+      <Filter>Platforms\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\Platforms\Windows\WindowsWindow.h">
       <Filter>Platforms\Windows</Filter>
@@ -88,6 +97,9 @@
     <ClCompile Include="src\EaglePCH.cpp" />
     <ClCompile Include="src\Platforms\OpenGL\ImGuiOpenGLRenderer.cpp">
       <Filter>Platforms\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platforms\Windows\WindowsInput.cpp">
+      <Filter>Platforms\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Platforms\Windows\WindowsWindow.cpp">
       <Filter>Platforms\Windows</Filter>

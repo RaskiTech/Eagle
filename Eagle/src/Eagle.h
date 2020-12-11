@@ -7,4 +7,7 @@
 #include "Eagle/Layers/Layer.h"
 #include "Eagle/ImGui/ImGuiLayer.h"
 
+#include "Eagle/Keycodes.h"
+#include "Eagle/Input.h"
+
 #include "Eagle/EntryPoint.h" // Entry point

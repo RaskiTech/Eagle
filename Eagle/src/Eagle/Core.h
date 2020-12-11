@@ -1,4 +1,5 @@
 #pragma once
+//  ||  \\
 
 #ifdef EAGLE_PLATFORM_WINDOWS
 	#ifdef EAGLE_BUILD_DLL

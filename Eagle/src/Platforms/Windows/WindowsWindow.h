@@ -17,6 +17,8 @@ namespace Egl {
 		inline void SetEventCallback(const EventCallbackFn& callback) override { mData.EventCallback = callback; }
 		bool IsVSync() const override;
 		void SetVSync(bool enabled) override;
+
+		inline virtual void* NativeWindow() const override { return mWindow; }
 	private:
 		GLFWwindow* mWindow;
 		virtual void Init(const WindowProps& props);
