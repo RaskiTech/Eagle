@@ -4,10 +4,10 @@
 #include "Events/Event.h"
 #include "Events/ApplicationEvent.h"
 #include "Layers/LayerStack.h"
-
+#include "Eagle/ImGui/ImGuiLayer.h"
 namespace Egl {
 
-	class EAGLE_API Application
+	class Application
 	{
 	public:
 		Application();
@@ -23,6 +23,7 @@ namespace Egl {
 
 		LayerStack mLayerStack;
 		std::unique_ptr<Window> mWindow;
+		ImGuiLayer* mImGuiLayer;
 		bool mRunning = true;
 		static Application* mInstance;
 	};

@@ -2,7 +2,7 @@
 #include "Event.h"
 
 namespace Egl {
-	class EAGLE_API MouseButtonEvent : public Event {
+	class MouseButtonEvent : public Event {
 	public:
 		inline int GetButton() const { return mButton; }
 		EVENT_CLASS_GATEGORY(EventGategoryMouse | EventGategoryInput);
@@ -11,7 +11,7 @@ namespace Egl {
 		int mButton;
 	};
 
-	class EAGLE_API MousePressedEvent : public MouseButtonEvent {
+	class MousePressedEvent : public MouseButtonEvent {
 	public:
 		MousePressedEvent(int button)
 			: MouseButtonEvent(button) {}
@@ -25,7 +25,7 @@ namespace Egl {
 		EVENT_CLASS_TYPE(MouseButtonPressed);
 	};
 
-	class EAGLE_API MouseReleasedEvent : public MouseButtonEvent {
+	class MouseReleasedEvent : public MouseButtonEvent {
 	public:
 		MouseReleasedEvent(int button)
 			: MouseButtonEvent(button) {}
@@ -39,7 +39,7 @@ namespace Egl {
 		EVENT_CLASS_TYPE(MouseButtonReleased);
 	};
 
-	class EAGLE_API MouseMovedEvent : public Event {
+	class MouseMovedEvent : public Event {
 	public:
 		MouseMovedEvent(int posX, int posY)
 			: mPosX(posX), mPosY(posY) {}
@@ -59,7 +59,7 @@ namespace Egl {
 		int mPosX, mPosY;
 	};
 
-	class EAGLE_API MouseScrolledEvent : public Event {
+	class MouseScrolledEvent : public Event {
 	public:
 		MouseScrolledEvent(int scrollX, int scrollY)
 			: mScrollX(scrollX), mScrollY(scrollY) {}

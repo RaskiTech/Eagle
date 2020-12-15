@@ -22,7 +22,7 @@ namespace Egl {
 		EventGategoryMouseButton = BIT(4)
 	};
 
-	class EAGLE_API Event {
+	class Event {
 		friend class EventDispatcher;
 	public:
 		virtual EventType GetEventType() const = 0;
@@ -38,7 +38,7 @@ namespace Egl {
 		bool mHandled = false;
 	};
 
-	class EAGLE_API EventDispatcher {
+	class EventDispatcher {
 		template <typename T>
 		using EventFn = std::function<bool(T&)>;
 	public:

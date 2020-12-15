@@ -1,7 +1,7 @@
 #pragma once
 #include "Eagle/Core.h"
 namespace Egl {
-	class EAGLE_API Input {
+	class Input {
 	public:
 		inline static bool IsKeyPressed(int keycode) { return mInstance->IsKeyPressedImp(keycode); }
 		inline static bool IsMousePressed(int mouseButton) { return mInstance->IsMousePressedImp(mouseButton); }

@@ -16,7 +16,7 @@ namespace Egl {
 			: Title(title), width(width), height(height) {}
 	};
 
-	class EAGLE_API Window {
+	class Window {
 	public:
 		using EventCallbackFn = std::function<void(Event&)>;
 		virtual ~Window() {}

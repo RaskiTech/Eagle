@@ -15,15 +15,20 @@ workspace "Eagle"
 
 project "Eagle"
 	location "Eagle"
-	kind "SharedLib"
+	kind "StaticLib"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputDir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputDir .. "/%{prj.name}")
 
 	pchheader "EaglePCH.h"
 	pchsource "Eagle/src/EaglePCH.cpp"
+
+	defines {
+		"_CRT_SECURE_NO_WARNINGS"
+	}
 
 	files {
 		"%{prj.name}/src/**.h",
@@ -47,7 +52,6 @@ project "Eagle"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 		defines {
 			"EAGLE_PLATFORM_WINDOWS",
@@ -55,30 +59,27 @@ project "Eagle"
 			"GLFW_INCLUDE_NONE"
 		}
 
-		postbuildcommands {
-			("{COPY} %{cfg.buildtarget.relpath} \"../bin/" .. outputDir .. "/Sandbox/\"")
-		}
-
 	filter "configurations:Debug"
 		defines "EAGLE_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "EAGLE_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "EAGLE_DIST"
 		buildoptions "/MD"
-		optimize "On"
+		optimize "on"
 
 project "Sandbox"
 	location "Sandbox"
 	kind "ConsoleApp"
 	language "C++"
-	staticruntime "off"
+	cppdialect "C++17"
+	staticruntime "on"
 
 	targetdir ("bin/" .. outputDir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputDir .. "/%{prj.name}")
@@ -90,7 +91,8 @@ project "Sandbox"
 	includedirs {
 		"Eagle/vendor/spdlog/include",
 		"Eagle/vendor/glm",
-		"Eagle/src"
+		"Eagle/src",
+		"Eagle/vendor"
 	}
 
 	links {
@@ -98,7 +100,6 @@ project "Sandbox"
 	}
 
 	filter "system:windows"
-		cppdialect "C++17"
 		systemversion "latest"
 		defines {
 			"EAGLE_PLATFORM_WINDOWS"
@@ -107,14 +108,14 @@ project "Sandbox"
 	filter "configurations:Debug"
 		defines "EAGLE_DEBUG"
 		runtime "Debug"
-		symbols "On"
+		symbols "on"
 
 	filter "configurations:Release"
 		defines "EAGLE_RELEASE"
 		runtime "Release"
-		optimize "On"
+		optimize "on"
 
 	filter "configurations:Dist"
 		defines "EAGLE_DIST"
 		buildoptions "/MD"
-		optimize "On"
+		optimize "on"

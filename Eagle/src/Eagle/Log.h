@@ -1,12 +1,23 @@
 #pragma once
 #include "Core.h"
+
+// Disable warninigs that are coused by spdlog 
+#pragma warning( push )
+#pragma warning( disable : 26451 )
+#pragma warning( disable : 26495 )
+#pragma warning( disable : 26812 )
+#pragma warning( disable : 6385 )
+#pragma warning( disable : 26495 )
+
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/fmt/ostr.h"
 
+#pragma warning( pop )
+
 namespace Egl {
 
-	class EAGLE_API Log
+	class Log
 	{
 	private:
 		static std::shared_ptr<spdlog::logger> s_EngineLogger;

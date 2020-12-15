@@ -6,24 +6,18 @@
 #include "Eagle/Events/ApplicationEvent.h"
 
 namespace Egl {
-	class EAGLE_API ImGuiLayer : public Layer {
+	class ImGuiLayer : public Layer {
 	public:
 		ImGuiLayer();
 		~ImGuiLayer();
 
-		void OnAttach();
-		void OnDetach();
-		void OnUpdate();
-		void OnEvent(Event& event);
+		virtual void OnAttach() override;
+		virtual void OnDetach() override;
+		virtual void OnImGuiRender() override;
+
+		void Begin();
+		void End();
 	private:
-		bool OnMouseMovedEvent(MouseMovedEvent& e);
-		bool OnMousePressedEvent(MousePressedEvent& e);
-		bool OnMouseReleasedEvent(MouseReleasedEvent& e);
-		bool OnMouseScrolledEvent(MouseScrolledEvent& e);
-		bool OnKeyPressedEventEvent(KeyPressedEvent& e);
-		bool OnKeyReleasedEvent(KeyReleasedEvent& e);
-		bool OnKeyTypedEvent(KeyTypedEvent& e);
-		bool OnWindowResizeEvent(WindowResizeEvent& e);
 		float mTime = 0.0f;
 	};
 }

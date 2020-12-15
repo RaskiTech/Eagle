@@ -4,7 +4,7 @@
 #include "Eagle/Events/Event.h"
 
 namespace Egl {
-	class EAGLE_API Layer {
+	class Layer {
 	public:
 		Layer(const std::string& layerName = "Layer", bool isActive = true);
 		virtual ~Layer();
@@ -12,6 +12,7 @@ namespace Egl {
 		virtual void OnAttach() {}
 		virtual void OnDetach() {}
 		virtual void OnUpdate() {}
+		virtual void OnImGuiRender() {}
 		virtual void OnEvent(Event& event) {}
 
 		inline bool IsActive() const { return mActive; }

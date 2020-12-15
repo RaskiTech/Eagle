@@ -27,7 +27,7 @@ namespace Egl {
 		struct WindowData {
 			std::string Title;
 			unsigned int width, height;
-			bool VSync;
+			bool VSync = true;
 			EventCallbackFn EventCallback;
 			inline std::string ToString() { return Title; }
 		};

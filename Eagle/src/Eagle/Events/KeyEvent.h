@@ -2,7 +2,7 @@
 #include "Event.h"
 
 namespace Egl {
-	class EAGLE_API KeyEvent : public Event {
+	class KeyEvent : public Event {
 	public:
 		inline int GetKeyCode() const { return m_KeyCode; }
 
@@ -14,7 +14,7 @@ namespace Egl {
 		int m_KeyCode;
 	};
 
-	class EAGLE_API KeyPressedEvent : public KeyEvent {
+	class KeyPressedEvent : public KeyEvent {
 	public:
 		KeyPressedEvent(int keykode, int repeatCount)
 			: KeyEvent(keykode), repeatCount(repeatCount) {}
@@ -30,7 +30,7 @@ namespace Egl {
 		bool repeatCount;
 	};
 
-	class EAGLE_API KeyReleasedEvent : public KeyEvent {
+	class KeyReleasedEvent : public KeyEvent {
 	public:
 		KeyReleasedEvent(int keykode)
 			: KeyEvent(keykode) {}
@@ -43,7 +43,7 @@ namespace Egl {
 			return str.str();
 		}
 	};
-	class EAGLE_API KeyTypedEvent : public KeyEvent {
+	class KeyTypedEvent : public KeyEvent {
 	public:
 		KeyTypedEvent(int keykode)
 			: KeyEvent(keykode) {}

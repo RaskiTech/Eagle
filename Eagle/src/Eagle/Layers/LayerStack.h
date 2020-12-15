@@ -3,7 +3,7 @@
 #include "Layer.h"
 
 namespace Egl {
-	class EAGLE_API LayerStack {
+	class LayerStack {
 	public:
 		LayerStack();
 		~LayerStack();
@@ -17,6 +17,6 @@ namespace Egl {
 		std::vector<Layer*>::iterator end() { return mLayers.end(); }
 	private:
 		std::vector<Layer*> mLayers;
-		std::vector<Layer*>::iterator mLayerInsert;
+		unsigned int mLayerInsertIndex = 0;
 	};
 }

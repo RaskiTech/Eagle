@@ -14,6 +14,9 @@ namespace Egl {
 		
 		mWindow = std::unique_ptr<Window>(Window::Create());
 		mWindow->SetEventCallback(BIND_EVENT_FUNC(OnEvent));
+
+		mImGuiLayer = new ImGuiLayer();
+		AddOverlay(mImGuiLayer);
 	}
 
 	Application::~Application() {
@@ -52,7 +55,13 @@ namespace Egl {
 			for (Layer* layer : mLayerStack)
 				if (layer->IsActive())
 					layer->OnUpdate();
-			
+
+			mImGuiLayer->Begin();
+			for (Layer* layer : mLayerStack)
+				if (layer->IsActive())
+					layer->OnImGuiRender();
+			mImGuiLayer->End();
+
 			mWindow->OnUpdate();
 		}
 	}

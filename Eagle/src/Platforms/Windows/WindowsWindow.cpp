@@ -101,12 +101,12 @@ namespace Egl {
 		});
 		glfwSetScrollCallback(mWindow, [](GLFWwindow* window, double scrollX, double scrollY) {
 			WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
-			MouseScrolledEvent event((float)scrollX, (float)scrollY);
+			MouseScrolledEvent event((int)scrollX, (int)scrollY);
 			data.EventCallback(event);
 		});
 		glfwSetCursorPosCallback(mWindow, [](GLFWwindow* window, double posX, double posY) {
 			WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
-			MouseMovedEvent event((float)posX, (float)posY);
+			MouseMovedEvent event((int)posX, (int)posY);
 			data.EventCallback(event);
 		});
 	}

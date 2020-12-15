@@ -22,6 +22,6 @@ namespace Egl {
 		auto window = Application::Get().GetWindow().NativeWindow();
 		double xPos, yPos;
 		glfwGetCursorPos((GLFWwindow*)window, &xPos, &yPos);
-		return std::pair<float, float>(xPos, yPos);
+		return std::pair<float, float>((float)xPos, (float)yPos);
 	}
 }

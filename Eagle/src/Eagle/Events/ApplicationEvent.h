@@ -3,7 +3,7 @@
 // WindowFocus, WindowLostFocus, WindowMoved,
 
 namespace Egl {
-	class EAGLE_API WindowResizeEvent : public Event {
+	class WindowResizeEvent : public Event {
 	public:
 		WindowResizeEvent(unsigned int width, unsigned int height)
 			: mWidth(width), mHeight(height) {}
@@ -23,7 +23,7 @@ namespace Egl {
 		unsigned int mWidth, mHeight;
 	};
 
-	class EAGLE_API WindowMovedEvent : public Event {
+	class WindowMovedEvent : public Event {
 	public:
 		WindowMovedEvent(unsigned int posX, unsigned int posY)
 			: mPosX(posX), mPosY(posY) {}
@@ -43,7 +43,7 @@ namespace Egl {
 		unsigned int mPosX, mPosY;
 	};
 
-	class EAGLE_API WindowFocusEvent : public Event {
+	class WindowFocusEvent : public Event {
 	public:
 		WindowFocusEvent() {}
 
@@ -51,7 +51,7 @@ namespace Egl {
 		EVENT_CLASS_TYPE(WindowFocus);
 	};
 
-	class EAGLE_API WindowLostFocusEvent : public Event {
+	class WindowLostFocusEvent : public Event {
 	public:
 		WindowLostFocusEvent() {}
 
@@ -59,7 +59,7 @@ namespace Egl {
 		EVENT_CLASS_TYPE(WindowLostFocus);
 	};
 
-	class EAGLE_API WindowCloseEvent : public Event {
+	class WindowCloseEvent : public Event {
 	public:
 		WindowCloseEvent() {}
 
@@ -67,7 +67,7 @@ namespace Egl {
 		EVENT_CLASS_TYPE(WindowClose);
 	};
 
-	class EAGLE_API AppTickEvent : public Event {
+	class AppTickEvent : public Event {
 	public:
 		AppTickEvent() {}
 
@@ -75,7 +75,7 @@ namespace Egl {
 		EVENT_CLASS_TYPE(AppTick);
 	};
 
-	class EAGLE_API AppRenderEvent : public Event {
+	class AppRenderEvent : public Event {
 	public:
 		AppRenderEvent() {}
 
@@ -83,7 +83,7 @@ namespace Egl {
 		EVENT_CLASS_TYPE(AppRender);
 	};
 
-	class EAGLE_API AppUpdateEvent : public Event {
+	class AppUpdateEvent : public Event {
 	public:
 		AppUpdateEvent() {}
 
