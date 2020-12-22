@@ -31,7 +31,7 @@ namespace Egl {
 		virtual std::string ToString() const { return GetName();  }
 
 		inline bool IsInGategory(EventGategory category) {
-			return GetGategoryFlags() & category;
+			return GetGategoryFlags() & (int)category;
 		}
 		inline bool IsHandled() const { return mHandled; }
 	protected:

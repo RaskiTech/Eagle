@@ -2,6 +2,7 @@
 
 #include "Eagle/Window.h"
 #include <GLFW/glfw3.h>
+#include "Eagle/Rendering/RenderingContext.h"
 
 namespace Egl {
 	class WindowsWindow : public Window {
@@ -31,6 +32,8 @@ namespace Egl {
 			EventCallbackFn EventCallback;
 			inline std::string ToString() { return Title; }
 		};
+
 		WindowData mData;
+		RenderingContext* mContext;
 	};
 }

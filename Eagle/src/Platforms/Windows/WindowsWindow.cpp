@@ -4,7 +4,7 @@
 #include "Eagle/Events/ApplicationEvent.h"
 #include "Eagle/Events/KeyEvent.h"
 #include "Eagle/Events/MouseEvent.h"
-#include <glad/glad.h>
+#include "Platforms/OpenGL/OpenGLContext.h"
 
 namespace Egl {
 	static bool isGLFWInit = false;
@@ -27,7 +27,6 @@ namespace Egl {
 		mData.width = props.width;
 		mData.height = props.height;
 
-		//LOG_ENG_INFO("THIS works right");// props.Title, props.width, props.height);
 		LOG_ENG_INFO("Creating window: {0} ({1}, {2})", props.Title, props.width, props.height);
 
 		if (!isGLFWInit) {
@@ -37,10 +36,11 @@ namespace Egl {
 			isGLFWInit = true;
 		}
 
+
 		mWindow = glfwCreateWindow((int)props.width, (int)props.height, mData.Title.c_str(), nullptr, nullptr);
-		glfwMakeContextCurrent(mWindow);
-		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
-		EAGLE_ASSERT(status, "Failed to initialize glad");
+		mContext = new OpenGLContext(mWindow);
+		mContext->Init();
+
 		glfwSetWindowUserPointer(mWindow, &mData);
 		SetVSync(true);
 
@@ -117,7 +117,7 @@ namespace Egl {
 
 	void WindowsWindow::OnUpdate() {
 		glfwPollEvents();
-		glfwSwapBuffers(mWindow);
+		mContext->SwapBuffers();
 	}
 
 	bool WindowsWindow::IsVSync() const {

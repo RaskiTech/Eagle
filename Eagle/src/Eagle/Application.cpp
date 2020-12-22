@@ -17,6 +17,30 @@ namespace Egl {
 
 		mImGuiLayer = new ImGuiLayer();
 		AddOverlay(mImGuiLayer);
+
+		// Temp code to render a triangle
+		glGenVertexArrays(1, &mVertexArray);
+		glBindVertexArray(mVertexArray);
+
+		glGenBuffers(1, &mVertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
+
+		float vertices[3 * 3] = {
+			-0.5f, -0.5f,
+			0.5f, -0.5,
+			0, 0.5f
+		};
+
+		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, nullptr);
+		glGenBuffers(1, &mIndexBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
+
+		unsigned int indices[3] = {
+			0, 1, 2
+		};
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 	}
 
 	Application::~Application() {
@@ -49,8 +73,11 @@ namespace Egl {
 	void Application::Run() {
 		// The main loop
 		while (mRunning) {
-			glClearColor(0.1f, 0.1f, 0.3f, 1);
+			glClearColor(0.1f, 0.1f, 0.2f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
+
+			glBindVertexArray(mVertexArray);
+			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
 
 			for (Layer* layer : mLayerStack)
 				if (layer->IsActive())

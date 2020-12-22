@@ -155,8 +155,10 @@
     <ClInclude Include="src\Eagle\Layers\Layer.h" />
     <ClInclude Include="src\Eagle\Layers\LayerStack.h" />
     <ClInclude Include="src\Eagle\Log.h" />
+    <ClInclude Include="src\Eagle\Rendering\RenderingContext.h" />
     <ClInclude Include="src\Eagle\Window.h" />
     <ClInclude Include="src\EaglePCH.h" />
+    <ClInclude Include="src\Platforms\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platforms\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platforms\Windows\WindowsWindow.h" />
   </ItemGroup>
@@ -170,6 +172,7 @@
     <ClCompile Include="src\EaglePCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Platforms\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platforms\Windows\WindowsWindow.cpp" />
   </ItemGroup>

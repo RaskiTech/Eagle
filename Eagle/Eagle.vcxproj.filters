@@ -71,6 +71,8 @@
     <ClInclude Include="src\Platforms\Windows\WindowsWindow.h">
       <Filter>Platforms\Windows</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eagle\Rendering\RenderingContext.h" />
+    <ClInclude Include="src\Platforms\OpenGL\OpenGLContext.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Application.cpp">
@@ -98,5 +100,6 @@
     <ClCompile Include="src\Platforms\Windows\WindowsWindow.cpp">
       <Filter>Platforms\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLContext.cpp" />
   </ItemGroup>
 </Project>

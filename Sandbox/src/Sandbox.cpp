@@ -18,11 +18,11 @@ public:
 		//LOG_INFO("Event occured: {0}", event);
 	}
 
-	virtual void OnImGuiRender() override {
+	/*virtual void OnImGuiRender() override {
 		ImGui::Begin("Test");
 		ImGui::Text("Test");
 		ImGui::End();
-	}
+	}*/
 };
 
 class Sandbox : public Egl::Application {

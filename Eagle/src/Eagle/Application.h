@@ -26,6 +26,8 @@ namespace Egl {
 		ImGuiLayer* mImGuiLayer;
 		bool mRunning = true;
 		static Application* mInstance;
+
+		unsigned int mVertexArray, mVertexBuffer, mIndexBuffer;
 	};
 
 	// Client will define
