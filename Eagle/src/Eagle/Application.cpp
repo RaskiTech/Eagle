@@ -9,6 +9,25 @@ namespace Egl {
 
 	Application* Application::mInstance = nullptr;
 
+	static GLenum ShaderDataTypeToOpenGL(ShaderDataType type) {
+		switch (type)
+		{
+			case Egl::ShaderDataType::Float:   return GL_FLOAT;
+			case Egl::ShaderDataType::Float2:  return GL_FLOAT;
+			case Egl::ShaderDataType::Float3:  return GL_FLOAT;
+			case Egl::ShaderDataType::Float4:  return GL_FLOAT;
+			case Egl::ShaderDataType::Matrix3: return GL_FLOAT;
+			case Egl::ShaderDataType::Matrix4: return GL_FLOAT;
+			case Egl::ShaderDataType::Int:     return GL_INT;
+			case Egl::ShaderDataType::Int2:    return GL_INT;
+			case Egl::ShaderDataType::Int3:    return GL_INT;
+			case Egl::ShaderDataType::Int4:    return GL_INT;
+			case Egl::ShaderDataType::Bool:    return GL_BOOL;
+		}
+		EAGLE_CORE_ASSERT(false, "The shaderDataType was None or unknown");
+		return 0;
+	}
+
 	Application::Application() {
 		mInstance = this;
 		
@@ -18,29 +37,68 @@ namespace Egl {
 		mImGuiLayer = new ImGuiLayer();
 		AddOverlay(mImGuiLayer);
 
-		// Temp code to render a triangle
+		// Little less temp code to render a triangle
+		// Rendering
 		glGenVertexArrays(1, &mVertexArray);
 		glBindVertexArray(mVertexArray);
 
-		glGenBuffers(1, &mVertexBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
-
-		float vertices[3 * 3] = {
-			-0.5f, -0.5f,
-			0.5f, -0.5,
-			0, 0.5f
+		float vertices[] = {
+			-0.8, -0.8, 1, 0, 1, 1,
+			 0.8, -0.8, 0, 1, 1, 1,
+			 0,    0.8, 1, 1, 0, 1
 		};
 
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, nullptr);
-		glGenBuffers(1, &mIndexBuffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mIndexBuffer);
+		mVertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
 
-		unsigned int indices[3] = {
+		{
+			BufferLayout layout = {
+				{ShaderDataType::Float2, "position"},
+				{ShaderDataType::Float4, "color"}
+			};
+
+			mVertexBuffer->SetLayout(layout);
+		}
+
+		const auto& layout = mVertexBuffer->GetLayout();
+		for (int i = 0; i < layout.GetLayout().size(); i++) {
+			const auto& element = layout.GetLayout()[i];
+			glEnableVertexAttribArray(i);
+			glVertexAttribPointer(i, element.GetComponentCount(), ShaderDataTypeToOpenGL(element.type), element.normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)element.offset);
+		}
+
+		uint32_t indices[3] = {
 			0, 1, 2
 		};
+		mIndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
+
+		
+
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+		std::string vertexSource = R"(
+			#version 330 core
+			layout(location = 0) in vec2 position;
+			layout(location = 1) in vec4 color;
+
+			out vec4 vColor;
+
+			void main() {
+				gl_Position = vec4(position, 0.0, 1.0);
+				vColor = color;
+			}
+		)";
+
+		std::string fragmentSource = R"(
+			#version 330 core
+			layout(location = 0) out vec4 color;
+			in vec4 vColor;
+
+			void main() { 
+				color = vColor;
+			}
+		)";
+
+		mShader.reset(new Shader(vertexSource, fragmentSource));
 	}
 
 	Application::~Application() {
@@ -76,8 +134,9 @@ namespace Egl {
 			glClearColor(0.1f, 0.1f, 0.2f, 1);
 			glClear(GL_COLOR_BUFFER_BIT);
 
+			mShader->Bind();
 			glBindVertexArray(mVertexArray);
-			glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, nullptr);
+			glDrawElements(GL_TRIANGLES, mIndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
 
 			for (Layer* layer : mLayerStack)
 				if (layer->IsActive())

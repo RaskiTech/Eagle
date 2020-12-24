@@ -13,8 +13,14 @@
     <Filter Include="Eagle\Layers">
       <UniqueIdentifier>{82416DE7-6EA4-FC8B-172A-3542036CC80E}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Eagle\Rendering">
+      <UniqueIdentifier>{30212B8A-9CAC-984E-A5BD-1B4311C8F44E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Platforms">
       <UniqueIdentifier>{DDACA145-4917-56BC-9255-0762FEFE3311}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platforms\OpenGL">
+      <UniqueIdentifier>{719BB998-5D94-D8EA-86C6-BD6F721EB8F6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Platforms\Windows">
       <UniqueIdentifier>{17E40808-83FA-069E-CC71-92BF38C7D725}</UniqueIdentifier>
@@ -61,18 +67,33 @@
     <ClInclude Include="src\Eagle\Log.h">
       <Filter>Eagle</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eagle\Rendering\Buffer.h">
+      <Filter>Eagle\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\Rendering\RenderingContext.h">
+      <Filter>Eagle\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\Rendering\Shader.h">
+      <Filter>Eagle\Rendering</Filter>
+    </ClInclude>
     <ClInclude Include="src\Eagle\Window.h">
       <Filter>Eagle</Filter>
     </ClInclude>
     <ClInclude Include="src\EaglePCH.h" />
+    <ClInclude Include="src\Platforms\OpenGL\OpenGLBuffer.h">
+      <Filter>Platforms\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Platforms\OpenGL\OpenGLContext.h">
+      <Filter>Platforms\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platforms\Windows\WindowsInput.h">
       <Filter>Platforms\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\Platforms\Windows\WindowsWindow.h">
       <Filter>Platforms\Windows</Filter>
     </ClInclude>
-    <ClInclude Include="src\Eagle\Rendering\RenderingContext.h" />
-    <ClInclude Include="src\Platforms\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\Eagle\Rendering\Renderer.h" />
+    <ClInclude Include="src\Platforms\OpenGL\OpenGLShader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Application.cpp">
@@ -94,12 +115,15 @@
       <Filter>Eagle</Filter>
     </ClCompile>
     <ClCompile Include="src\EaglePCH.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLContext.cpp">
+      <Filter>Platforms\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platforms\Windows\WindowsInput.cpp">
       <Filter>Platforms\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Platforms\Windows\WindowsWindow.cpp">
       <Filter>Platforms\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platforms\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\Renderer.cpp" />
   </ItemGroup>
 </Project>

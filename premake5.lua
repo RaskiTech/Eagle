@@ -55,6 +55,7 @@ project "Eagle"
 		systemversion "latest"
 		defines {
 			"EAGLE_PLATFORM_WINDOWS",
+			"EAGLE_RENDERER_OPENGL",
 			"EAGLE_BUILD_DLL",
 			"GLFW_INCLUDE_NONE"
 		}

@@ -5,6 +5,10 @@
 #include "Events/ApplicationEvent.h"
 #include "Layers/LayerStack.h"
 #include "Eagle/ImGui/ImGuiLayer.h"
+
+#include "Rendering/Shader.h"
+#include "Rendering/Buffer.h"
+
 namespace Egl {
 
 	class Application
@@ -27,7 +31,10 @@ namespace Egl {
 		bool mRunning = true;
 		static Application* mInstance;
 
-		unsigned int mVertexArray, mVertexBuffer, mIndexBuffer;
+		unsigned int mVertexArray;
+		std::unique_ptr<Shader> mShader;
+		std::unique_ptr<VertexBuffer> mVertexBuffer;
+		std::unique_ptr<IndexBuffer> mIndexBuffer;
 	};
 
 	// Client will define
