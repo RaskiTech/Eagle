@@ -156,14 +156,20 @@
     <ClInclude Include="src\Eagle\Layers\LayerStack.h" />
     <ClInclude Include="src\Eagle\Log.h" />
     <ClInclude Include="src\Eagle\Rendering\Buffer.h" />
+    <ClInclude Include="src\Eagle\Rendering\Camera.h" />
+    <ClInclude Include="src\Eagle\Rendering\RenderAPI.h" />
+    <ClInclude Include="src\Eagle\Rendering\RenderCommand.h" />
     <ClInclude Include="src\Eagle\Rendering\Renderer.h" />
     <ClInclude Include="src\Eagle\Rendering\RenderingContext.h" />
     <ClInclude Include="src\Eagle\Rendering\Shader.h" />
+    <ClInclude Include="src\Eagle\Rendering\VertexArray.h" />
     <ClInclude Include="src\Eagle\Window.h" />
     <ClInclude Include="src\EaglePCH.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\Platforms\OpenGL\OpenGLRenderAPI.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLShader.h" />
+    <ClInclude Include="src\Platforms\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platforms\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platforms\Windows\WindowsWindow.h" />
   </ItemGroup>
@@ -174,6 +180,8 @@
     <ClCompile Include="src\Eagle\Layers\Layer.cpp" />
     <ClCompile Include="src\Eagle\Layers\LayerStack.cpp" />
     <ClCompile Include="src\Eagle\Log.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\Camera.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\RenderCommand.cpp" />
     <ClCompile Include="src\Eagle\Rendering\Renderer.cpp" />
     <ClCompile Include="src\EaglePCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

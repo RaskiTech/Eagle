@@ -1,7 +1,10 @@
 #include "EaglePCH.h"
 #include "Application.h"
-#include <glad/glad.h>
 #include "Input.h"
+#include "Rendering/Renderer.h"
+#include "Rendering/RenderCommand.h"
+
+#include "Keycodes.h"
 
 namespace Egl {
 
@@ -9,28 +12,11 @@ namespace Egl {
 
 	Application* Application::mInstance = nullptr;
 
-	static GLenum ShaderDataTypeToOpenGL(ShaderDataType type) {
-		switch (type)
-		{
-			case Egl::ShaderDataType::Float:   return GL_FLOAT;
-			case Egl::ShaderDataType::Float2:  return GL_FLOAT;
-			case Egl::ShaderDataType::Float3:  return GL_FLOAT;
-			case Egl::ShaderDataType::Float4:  return GL_FLOAT;
-			case Egl::ShaderDataType::Matrix3: return GL_FLOAT;
-			case Egl::ShaderDataType::Matrix4: return GL_FLOAT;
-			case Egl::ShaderDataType::Int:     return GL_INT;
-			case Egl::ShaderDataType::Int2:    return GL_INT;
-			case Egl::ShaderDataType::Int3:    return GL_INT;
-			case Egl::ShaderDataType::Int4:    return GL_INT;
-			case Egl::ShaderDataType::Bool:    return GL_BOOL;
-		}
-		EAGLE_CORE_ASSERT(false, "The shaderDataType was None or unknown");
-		return 0;
-	}
-
-	Application::Application() {
+	Application::Application()
+		: mCamera(-1.6, 1.6, -0.9, 0.9)
+	{
 		mInstance = this;
-		
+
 		mWindow = std::unique_ptr<Window>(Window::Create());
 		mWindow->SetEventCallback(BIND_EVENT_FUNC(OnEvent));
 
@@ -39,52 +25,42 @@ namespace Egl {
 
 		// Little less temp code to render a triangle
 		// Rendering
-		glGenVertexArrays(1, &mVertexArray);
-		glBindVertexArray(mVertexArray);
+
+		mVertexArray.reset(new VertexArray());
 
 		float vertices[] = {
 			-0.8, -0.8, 1, 0, 1, 1,
 			 0.8, -0.8, 0, 1, 1, 1,
-			 0,    0.8, 1, 1, 0, 1
+			 0,    0.6, 1, 1, 0, 1
 		};
 
-		mVertexBuffer.reset(VertexBuffer::Create(vertices, sizeof(vertices)));
-
-		{
-			BufferLayout layout = {
-				{ShaderDataType::Float2, "position"},
-				{ShaderDataType::Float4, "color"}
-			};
-
-			mVertexBuffer->SetLayout(layout);
-		}
-
-		const auto& layout = mVertexBuffer->GetLayout();
-		for (int i = 0; i < layout.GetLayout().size(); i++) {
-			const auto& element = layout.GetLayout()[i];
-			glEnableVertexAttribArray(i);
-			glVertexAttribPointer(i, element.GetComponentCount(), ShaderDataTypeToOpenGL(element.type), element.normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)element.offset);
-		}
+		std::shared_ptr<VertexBuffer> mVertexBuffer;
+		mVertexBuffer.reset(new VertexBuffer(vertices, sizeof(vertices)));
+		mVertexBuffer->SetLayout({
+			{ShaderDataType::Float2, "position"},
+			{ShaderDataType::Float4, "color"}
+		});
+		mVertexArray->AddVertexBuffer(mVertexBuffer);
 
 		uint32_t indices[3] = {
 			0, 1, 2
 		};
-		mIndexBuffer.reset(IndexBuffer::Create(indices, sizeof(indices) / sizeof(uint32_t)));
 
-		
-
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+		std::shared_ptr<IndexBuffer> mIndexBuffer;
+		mIndexBuffer.reset(new IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));
+		mVertexArray->SetIndexBuffer(mIndexBuffer);
 
 		std::string vertexSource = R"(
 			#version 330 core
 			layout(location = 0) in vec2 position;
 			layout(location = 1) in vec4 color;
 
+			uniform mat4 uViewProjection;
 			out vec4 vColor;
 
 			void main() {
-				gl_Position = vec4(position, 0.0, 1.0);
 				vColor = color;
+				gl_Position = uViewProjection * vec4(position, 0.0, 1.0);
 			}
 		)";
 
@@ -131,23 +107,38 @@ namespace Egl {
 	void Application::Run() {
 		// The main loop
 		while (mRunning) {
-			glClearColor(0.1f, 0.1f, 0.2f, 1);
-			glClear(GL_COLOR_BUFFER_BIT);
+			Egl::RenderCommand::SetColor({ 0.1f, 0.1f, 0.2f, 1 });
+			Egl::RenderCommand::Clear();
 
-			mShader->Bind();
-			glBindVertexArray(mVertexArray);
-			glDrawElements(GL_TRIANGLES, mIndexBuffer->GetCount(), GL_UNSIGNED_INT, nullptr);
+			//mCamera.SetPosition({ 0.5f, 0.5f, 0.5f });
+			//mCamera.SetRotation(45);
 
+			
+			if (Egl::Input::IsKeyPressed(EGL_KEY_A)) mCamera.SetPosition(mCamera.GetPosition() + glm::vec3(-0.01, 0, 0));
+			if (Egl::Input::IsKeyPressed(EGL_KEY_D))	mCamera.SetPosition(mCamera.GetPosition() + glm::vec3(0.01, 0, 0));
+			if (Egl::Input::IsKeyPressed(EGL_KEY_W))	mCamera.SetPosition(mCamera.GetPosition() + glm::vec3(0, 0.01, 0));
+			if (Egl::Input::IsKeyPressed(EGL_KEY_S))	mCamera.SetPosition(mCamera.GetPosition() + glm::vec3(0, -0.01, 0));
+
+			if (Egl::Input::IsKeyPressed(EGL_KEY_Q))	mCamera.SetRotation(mCamera.GetRotation() + 1);
+			if (Egl::Input::IsKeyPressed(EGL_KEY_E))	mCamera.SetRotation(mCamera.GetRotation() - 1);
+			
+			Egl::Renderer::BeginScene(mCamera);
+			Egl::Renderer::Submit(mVertexArray, mShader);
+			Egl::Renderer::EndScene();
+
+			// Update the layers
 			for (Layer* layer : mLayerStack)
 				if (layer->IsActive())
 					layer->OnUpdate();
 
+			// ImGui update
 			mImGuiLayer->Begin();
 			for (Layer* layer : mLayerStack)
 				if (layer->IsActive())
 					layer->OnImGuiRender();
 			mImGuiLayer->End();
 
+			// Update the window
 			mWindow->OnUpdate();
 		}
 	}

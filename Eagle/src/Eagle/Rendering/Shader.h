@@ -1,5 +1,6 @@
 #pragma once
 #include <string>
+#include <glm/glm.hpp>
 
 namespace Egl {
 	class Shader {
@@ -9,11 +10,11 @@ namespace Egl {
 
 		void Bind() const;
 		void Unbind() const;
-	private:
 
-		// Private implementation variables for each renderer
+		void UploadUniformMat4(const glm::mat4& matrix, const std::string& name);
 
 #ifdef EAGLE_RENDERER_OPENGL
+	private:
 		uint32_t mRendererID;
 #endif
 	};

@@ -10,4 +10,13 @@
 #include "Eagle/Keycodes.h"
 #include "Eagle/Input.h"
 
-#include "Eagle/EntryPoint.h" // Entry point
+//Rendering
+#include "Eagle/Rendering/Renderer.h"
+#include "Eagle/Rendering/RenderCommand.h"
+#include "Eagle/Rendering/Camera.h"
+#include "Eagle/Rendering/VertexArray.h"
+#include "Eagle/Rendering/Buffer.h"
+#include "Eagle/Rendering/Shader.h"
+
+// Entry point
+#include "Eagle/EntryPoint.h"

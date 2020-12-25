@@ -94,6 +94,12 @@
     </ClInclude>
     <ClInclude Include="src\Eagle\Rendering\Renderer.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLShader.h" />
+    <ClInclude Include="src\Eagle\Rendering\VertexArray.h" />
+    <ClInclude Include="src\Platforms\OpenGL\OpenGLVertexArray.h" />
+    <ClInclude Include="src\Eagle\Rendering\RenderAPI.h" />
+    <ClInclude Include="src\Eagle\Rendering\RenderCommand.h" />
+    <ClInclude Include="src\Platforms\OpenGL\OpenGLRenderAPI.h" />
+    <ClInclude Include="src\Eagle\Rendering\Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Application.cpp">
@@ -125,5 +131,7 @@
       <Filter>Platforms\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\Rendering\Renderer.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\RenderCommand.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\Camera.cpp" />
   </ItemGroup>
 </Project>

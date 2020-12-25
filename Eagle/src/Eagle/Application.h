@@ -8,6 +8,8 @@
 
 #include "Rendering/Shader.h"
 #include "Rendering/Buffer.h"
+#include "Rendering/VertexArray.h"
+#include "Rendering/Camera.h"
 
 namespace Egl {
 
@@ -31,10 +33,10 @@ namespace Egl {
 		bool mRunning = true;
 		static Application* mInstance;
 
-		unsigned int mVertexArray;
-		std::unique_ptr<Shader> mShader;
-		std::unique_ptr<VertexBuffer> mVertexBuffer;
-		std::unique_ptr<IndexBuffer> mIndexBuffer;
+		std::shared_ptr<Shader> mShader;
+		std::shared_ptr<VertexArray> mVertexArray;
+
+		Camera mCamera;
 	};
 
 	// Client will define

@@ -12,7 +12,7 @@ namespace Egl {
 		unsigned int height;
 
 		WindowProps(const std::string& title = "Eagle Engine",
-			unsigned int width = 1250, unsigned int height = 750)
+			unsigned int width = 1600*0.8f, unsigned int height = 900*0.8f)
 			: Title(title), width(width), height(height) {}
 	};
 

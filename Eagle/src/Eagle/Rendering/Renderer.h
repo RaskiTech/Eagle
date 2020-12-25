@@ -1,11 +1,20 @@
 #pragma once
 
-// How rendering works:
-// The Renderer.cpp will look what renderer it will use at compile time. It will compile only the scripts that are for that renderer.
-// To add a new renderer, create new function declarions in a platform specific file and include it as an option in the Renderer.cpp file.
+#include "VertexArray.h"
+#include "Shader.h"
+#include "Camera.h"
 
 namespace Egl {
 	class Renderer {
+	public:
+		static void BeginScene(Camera& camera);
+		static void EndScene();
+		static void Submit(const std::shared_ptr<VertexArray>& vArray, const std::shared_ptr<Shader>& shader);
 
+	private:
+		struct SceneData {
+			glm::mat4 ViewProjectionMatrix;
+		};
+		static SceneData* mSceneData;
 	};
 }

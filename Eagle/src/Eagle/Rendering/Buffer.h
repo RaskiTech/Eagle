@@ -33,7 +33,7 @@ namespace Egl {
 		uint32_t size;
 		bool normalized;
 
-		BufferElement() {}
+		BufferElement() : name("Element"), type(ShaderDataType::None), offset(0), size(0), normalized(false) {}
 		BufferElement(ShaderDataType type, const std::string& name, bool normalized = false)
 			: name(name), type(type), size(ShaderDataTypeSize(type)), offset(0), normalized(normalized) {}
 
@@ -64,7 +64,7 @@ class BufferLayout {
 		BufferLayout(const std::initializer_list<BufferElement>& elements)
 			: mElements(elements) { CalculateOffsetsAndStride(); }
 
-		inline const std::vector<BufferElement>& GetLayout() const { return mElements; }
+		inline const std::vector<BufferElement>& GetElements() const { return mElements; }
 		inline uint32_t GetStride() const { return mStride; }
 		std::vector<BufferElement>::iterator begin() { return mElements.begin(); }
 		std::vector<BufferElement>::iterator end() { return mElements.end(); }
@@ -102,9 +102,9 @@ class BufferLayout {
 	private:
 		BufferLayout mLayout;
 
-		// Private implementation variables for each renderer
 
 #ifdef EAGLE_RENDERER_OPENGL
+	private:
 		uint32_t mRendererID;
 #endif
 
@@ -125,9 +125,9 @@ class BufferLayout {
 	private:
 		uint32_t mCount;
 
-		// Private implementation variables for each renderer
 
 #ifdef EAGLE_RENDERER_OPENGL
+	private:
 		uint32_t mRendererID;
 #endif
 
