@@ -6,6 +6,9 @@
 #include "Layers/LayerStack.h"
 #include "Eagle/ImGui/ImGuiLayer.h"
 
+#include "Eagle/Core/Time.h"
+
+// Keep as long as this is rendering
 #include "Rendering/Shader.h"
 #include "Rendering/Buffer.h"
 #include "Rendering/VertexArray.h"
@@ -33,6 +36,10 @@ namespace Egl {
 		bool mRunning = true;
 		static Application* mInstance;
 
+		float mLastFrameTime = 0;
+
+	// FOR RENDERING. REMOVE WHEN REMOVING THE RENDERING TEMP CODE
+	public:
 		std::shared_ptr<Shader> mShader;
 		std::shared_ptr<VertexArray> mVertexArray;
 

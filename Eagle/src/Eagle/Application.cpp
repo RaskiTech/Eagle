@@ -6,6 +6,8 @@
 
 #include "Keycodes.h"
 
+#include "GLFW/glfw3.h"
+
 namespace Egl {
 
 #define BIND_EVENT_FUNC(x) std::bind(&Application::x, this, std::placeholders::_1)
@@ -13,7 +15,7 @@ namespace Egl {
 	Application* Application::mInstance = nullptr;
 
 	Application::Application()
-		: mCamera(-1.6, 1.6, -0.9, 0.9)
+		: mCamera(-1.6f, 1.6f, -0.9f, 0.9f)
 	{
 		mInstance = this;
 
@@ -29,9 +31,9 @@ namespace Egl {
 		mVertexArray.reset(new VertexArray());
 
 		float vertices[] = {
-			-0.8, -0.8, 1, 0, 1, 1,
-			 0.8, -0.8, 0, 1, 1, 1,
-			 0,    0.6, 1, 1, 0, 1
+			-0.8f, -0.8f, 1, 0, 1, 1,
+			 0.8f, -0.8f, 0, 1, 1, 1,
+			 0.0f,  0.6f, 1, 1, 0, 1
 		};
 
 		std::shared_ptr<VertexBuffer> mVertexBuffer;
@@ -105,26 +107,10 @@ namespace Egl {
 	}
 
 	void Application::Run() {
-		// The main loop
 		while (mRunning) {
-			Egl::RenderCommand::SetColor({ 0.1f, 0.1f, 0.2f, 1 });
-			Egl::RenderCommand::Clear();
-
-			//mCamera.SetPosition({ 0.5f, 0.5f, 0.5f });
-			//mCamera.SetRotation(45);
-
-			
-			if (Egl::Input::IsKeyPressed(EGL_KEY_A)) mCamera.SetPosition(mCamera.GetPosition() + glm::vec3(-0.01, 0, 0));
-			if (Egl::Input::IsKeyPressed(EGL_KEY_D))	mCamera.SetPosition(mCamera.GetPosition() + glm::vec3(0.01, 0, 0));
-			if (Egl::Input::IsKeyPressed(EGL_KEY_W))	mCamera.SetPosition(mCamera.GetPosition() + glm::vec3(0, 0.01, 0));
-			if (Egl::Input::IsKeyPressed(EGL_KEY_S))	mCamera.SetPosition(mCamera.GetPosition() + glm::vec3(0, -0.01, 0));
-
-			if (Egl::Input::IsKeyPressed(EGL_KEY_Q))	mCamera.SetRotation(mCamera.GetRotation() + 1);
-			if (Egl::Input::IsKeyPressed(EGL_KEY_E))	mCamera.SetRotation(mCamera.GetRotation() - 1);
-			
-			Egl::Renderer::BeginScene(mCamera);
-			Egl::Renderer::Submit(mVertexArray, mShader);
-			Egl::Renderer::EndScene();
+			float time = (float)glfwGetTime();
+			Time::SetTime(time, time - mLastFrameTime);
+			mLastFrameTime = time;
 
 			// Update the layers
 			for (Layer* layer : mLayerStack)

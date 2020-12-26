@@ -27,14 +27,31 @@
 
 namespace Egl {
 
+	//struct RendererStorage {
+
+	//};
+
 	Renderer::SceneData* Renderer::mSceneData = new Renderer::SceneData;
+	/*
+	void Renderer::Init() {
+
+	}
+	void Renderer::Shutdown() {
+
+	}*/
 
 	void Renderer::BeginScene(Camera& camera) {
 		mSceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
+
 	}
 	void Renderer::EndScene() {
 
 	}
+
+	//void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4 color) {
+
+	//}
+
 	void Renderer::Submit(const std::shared_ptr<VertexArray>& vArray, const std::shared_ptr<Shader>& shader) {
 		shader->Bind();
 		shader->UploadUniformMat4(mSceneData->ViewProjectionMatrix, "uViewProjection");

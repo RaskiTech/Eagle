@@ -144,6 +144,7 @@
     <ClInclude Include="src\Eagle.h" />
     <ClInclude Include="src\Eagle\Application.h" />
     <ClInclude Include="src\Eagle\Core.h" />
+    <ClInclude Include="src\Eagle\Core\Time.h" />
     <ClInclude Include="src\Eagle\EntryPoint.h" />
     <ClInclude Include="src\Eagle\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Eagle\Events\Event.h" />
