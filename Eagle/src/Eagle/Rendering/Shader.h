@@ -11,9 +11,11 @@ namespace Egl {
 		void Bind() const;
 		void Unbind() const;
 
-		void UploadUniformMat4(const glm::mat4& matrix, const std::string& name);
 
 #ifdef EAGLE_RENDERER_OPENGL
+	public:
+		void UploadUniformMat4(const std::string& name, const glm::mat4& matrix);
+		void UploadUniformInt(const std::string& name, int value);
 	private:
 		uint32_t mRendererID;
 #endif

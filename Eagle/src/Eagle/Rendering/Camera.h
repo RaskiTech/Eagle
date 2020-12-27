@@ -6,6 +6,7 @@ namespace Egl {
 	class Camera {
 	public:
 		Camera(float left, float right, float bottom, float top);
+		void SetProjection(float left, float right, float bottom, float top);
 
 		inline void SetPosition(const glm::vec3& position) { mPosition = position; RecalculateViewMatrix(); }
 		inline void SetRotation(float rotation) { mRotation = rotation; RecalculateViewMatrix(); }

@@ -1,18 +1,19 @@
 #pragma once
 #include "Core.h"
 #include "Window.h"
-#include "Events/Event.h"
-#include "Events/ApplicationEvent.h"
+#include "Eagle/Events/Event.h"
+#include "Eagle/Events/ApplicationEvent.h"
 #include "Layers/LayerStack.h"
 #include "Eagle/ImGui/ImGuiLayer.h"
 
 #include "Eagle/Core/Time.h"
 
 // Keep as long as this is rendering
-#include "Rendering/Shader.h"
-#include "Rendering/Buffer.h"
-#include "Rendering/VertexArray.h"
-#include "Rendering/Camera.h"
+#include "Eagle/Rendering/Shader.h"
+#include "Eagle/Rendering/Buffer.h"
+#include "Eagle/Rendering/VertexArray.h"
+#include "Eagle/Components/CameraController.h"
+#include "Eagle/Rendering/Texture.h"
 
 namespace Egl {
 
@@ -29,21 +30,27 @@ namespace Egl {
 		inline Window& GetWindow() const { return *mWindow; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
+		bool OnWindowResize(WindowResizeEvent& e);
 
 		LayerStack mLayerStack;
-		std::unique_ptr<Window> mWindow;
+		Scope<Window> mWindow;
 		ImGuiLayer* mImGuiLayer;
 		bool mRunning = true;
+		bool mMinimized = false;
 		static Application* mInstance;
 
 		float mLastFrameTime = 0;
 
 	// FOR RENDERING. REMOVE WHEN REMOVING THE RENDERING TEMP CODE
 	public:
-		std::shared_ptr<Shader> mShader;
-		std::shared_ptr<VertexArray> mVertexArray;
+		Ref<Shader> mShader;
+		Ref<VertexArray> mVertexArray;
 
-		Camera mCamera;
+		Ref<Shader> mTextureShader;
+		Ref<VertexArray> mTextureVertexArray;
+		Ref<Texture> mTexture;
+
+		CameraController mCameraController;
 	};
 
 	// Client will define

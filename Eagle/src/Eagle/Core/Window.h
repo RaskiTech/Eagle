@@ -1,8 +1,6 @@
 #pragma once
 
-#include "EaglePCH.h"
-
-#include "Eagle/Core.h"
+#include <EaglePCH.h>
 #include "Eagle/Events/Event.h"
 
 namespace Egl {
@@ -12,7 +10,7 @@ namespace Egl {
 		unsigned int height;
 
 		WindowProps(const std::string& title = "Eagle Engine",
-			unsigned int width = 1600*0.8f, unsigned int height = 900*0.8f)
+			unsigned int width = 1280, unsigned int height = 720)
 			: Title(title), width(width), height(height) {}
 	};
 

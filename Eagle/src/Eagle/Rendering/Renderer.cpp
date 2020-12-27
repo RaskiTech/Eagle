@@ -6,6 +6,7 @@
 #include "Buffer.h"
 #include "Shader.h"
 #include "RenderAPI.h"
+#include "Texture.h"
 
 // Decide what renderer the application will use. Currenly supported renderers: OpenGL
 #pragma region DecideRenderer
@@ -19,6 +20,7 @@
 	#include "Platforms/OpenGL/OpenGLBuffer.h"
 	#include "Platforms/OpenGL/OpenGLVertexArray.h"
 	#include "Platforms/OpenGL/OpenGLRenderAPI.h"
+	#include "Platforms/OpenGL/OpenGLTexture.h"
 #else
 	#error Eagle currently only supports OpenGL
 #endif
@@ -27,18 +29,21 @@
 
 namespace Egl {
 
-	//struct RendererStorage {
+	struct RendererStorage {
 
-	//};
+	};
 
 	Renderer::SceneData* Renderer::mSceneData = new Renderer::SceneData;
-	/*
-	void Renderer::Init() {
 
+	void Renderer::Init() {
+		RenderCommand::Init();
 	}
 	void Renderer::Shutdown() {
 
-	}*/
+	}
+	void Renderer::OnWindowResize(uint32_t width, uint32_t height) {
+		RenderCommand::SetViewport(0, 0, width, height);
+	}
 
 	void Renderer::BeginScene(Camera& camera) {
 		mSceneData->ViewProjectionMatrix = camera.GetViewProjectionMatrix();
@@ -48,13 +53,13 @@ namespace Egl {
 
 	}
 
-	//void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4 color) {
+	void Renderer::DrawQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4 color) {
 
-	//}
+	}
 
-	void Renderer::Submit(const std::shared_ptr<VertexArray>& vArray, const std::shared_ptr<Shader>& shader) {
+	void Renderer::Submit(const Ref<VertexArray>& vArray, const Ref<Shader>& shader) {
 		shader->Bind();
-		shader->UploadUniformMat4(mSceneData->ViewProjectionMatrix, "uViewProjection");
+		shader->UploadUniformMat4("uViewProjection", mSceneData->ViewProjectionMatrix);
 
 		vArray->Bind();
 		RenderCommand::DrawIndexed(vArray);

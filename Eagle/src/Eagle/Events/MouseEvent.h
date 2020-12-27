@@ -64,8 +64,8 @@ namespace Egl {
 		MouseScrolledEvent(int scrollX, int scrollY)
 			: mScrollX(scrollX), mScrollY(scrollY) {}
 
-		inline int GetScrollX() const { return mScrollX; }
-		inline int GetScrollY() const { return mScrollY; }
+		inline int GetScrollXOffset() const { return mScrollX; }
+		inline int GetScrollYOffset() const { return mScrollY; }
 
 		std::string ToString() const override {
 			std::stringstream str;
@@ -73,7 +73,7 @@ namespace Egl {
 			return str.str();
 		}
 
-		EVENT_CLASS_TYPE(MouseMoved);
+		EVENT_CLASS_TYPE(MouseScrolled);
 		EVENT_CLASS_GATEGORY(EventGategoryMouse | EventGategoryInput);
 	protected:
 		int mScrollX, mScrollY;

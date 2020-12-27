@@ -1,9 +1,6 @@
 #pragma once
 
-#include "Eagle/Layers/Layer.h"
-#include "Eagle/Events/KeyEvent.h"
-#include "Eagle/Events/MouseEvent.h"
-#include "Eagle/Events/ApplicationEvent.h"
+#include "Eagle/Core/Layers/Layer.h"
 
 namespace Egl {
 	class ImGuiLayer : public Layer {

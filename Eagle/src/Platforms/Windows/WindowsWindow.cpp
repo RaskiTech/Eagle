@@ -1,6 +1,6 @@
 #include <EaglePCH.h>
 #include "WindowsWindow.h"
-#include "Eagle/Log.h"
+#include "Eagle/Core/Log.h"
 #include "Eagle/Events/ApplicationEvent.h"
 #include "Eagle/Events/KeyEvent.h"
 #include "Eagle/Events/MouseEvent.h"
@@ -31,7 +31,7 @@ namespace Egl {
 
 		if (!isGLFWInit) {
 			int success = glfwInit();
-			EAGLE_CORE_ASSERT(success, "Could not intialize GLFW!");
+			EAGLE_ENG_ASSERT(success, "Could not intialize GLFW!");
 			glfwSetErrorCallback(GLFWErrorCallback);
 			isGLFWInit = true;
 		}

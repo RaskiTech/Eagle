@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Eagle/Window.h"
+#include "Eagle/Core/Window.h"
 #include <GLFW/glfw3.h>
 #include "Eagle/Rendering/RenderingContext.h"
 

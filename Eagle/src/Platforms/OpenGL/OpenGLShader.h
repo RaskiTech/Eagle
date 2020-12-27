@@ -6,7 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 namespace Egl {
-	Shader::Shader(const std::string& vertexSource, const std::string& fragmentSource) {
+	Shader::Shader(const std::string& vertexSource, const std::string& fragmentSource) : mRendererID(0) {
 		// Read our shaders into the appropriate buffers
 
 		// Create an empty vertex shader handle
@@ -122,8 +122,12 @@ namespace Egl {
 	void Shader::Unbind() const {
 		glUseProgram(0);
 	}
-	void Shader::UploadUniformMat4(const glm::mat4& matrix, const std::string& name) {
+	void Shader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix) {
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
+	}
+	void Shader::UploadUniformInt(const std::string& name, int value) {
+		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		glUniform1i(location, value);
 	}
 }

@@ -14,7 +14,17 @@ public:
 	BaseLayer() : Layer("BaseLayer", true) 
 	{
 		/*
-		testPointer.reset(new VertexArray());
+		{
+			float vertices[6] = {
+				-0.8f, -0.8f,
+				 0.8f, -0.8f,
+				 0.0f,    0.6f
+			};
+			Ref<VertexBuffer> buffer;
+			buffer.reset(new VertexBuffer(vertices, sizeof(vertices)));
+		}
+		/*
+		Application::Get().mVertexArray.reset(new VertexArray());
 		
 		float vertices[6] = {
 			-0.8f, -0.8f,
@@ -22,22 +32,21 @@ public:
 			 0.0f,    0.6f
 		};
 
-		VertexBuffer mVertexBuffer(vertices, sizeof(vertices));
-		//*
-		
+		Ref<VertexBuffer> mVertexBuffer;
+		mVertexBuffer.reset(new VertexBuffer(vertices, sizeof(vertices)));
 		mVertexBuffer->SetLayout({
 			{ShaderDataType::Float2, "position"},
 			{ShaderDataType::Float4, "color"}
-			});
-		mVertexArray->AddVertexBuffer(mVertexBuffer);
+		});
+		Application::Get().mVertexArray->AddVertexBuffer(mVertexBuffer);
 
 		uint32_t indices[3] = {
 			0, 1, 2
 		};
 
-		std::shared_ptr<IndexBuffer> mIndexBuffer;
+		Ref<IndexBuffer> mIndexBuffer;
 		mIndexBuffer.reset(new IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));
-		mVertexArray->SetIndexBuffer(mIndexBuffer);
+		Application::Get().mVertexArray->SetIndexBuffer(mIndexBuffer);
 
 		std::string vertexSource = R"(
 			#version 330 core
@@ -59,35 +68,28 @@ public:
 			}
 		)";
 
-		mShader.reset(new Shader(vertexSource, fragmentSource));
-		*/
+		Application::Get().mShader.reset(new Shader(vertexSource, fragmentSource));
+		//*/
 	}
 
 	void OnUpdate() override {
-		LOG(Time::GetDeltaTime());
-		if (Input::IsKeyPressed(EGL_KEY_A)) Application::Get().mCamera.SetPosition(Application::Get().mCamera.GetPosition() + glm::vec3(-0.1, 0, 0) * Time::GetDeltaTime());
-		if (Input::IsKeyPressed(EGL_KEY_D)) Application::Get().mCamera.SetPosition(Application::Get().mCamera.GetPosition() - glm::vec3(-0.1, 0, 0) * Time::GetDeltaTime());
+		Application::Get().mCameraController.OnUpdate();
 
 		RenderCommand::SetColor({ 0.1f, 0.1f, 0.2f, 1 });
 		RenderCommand::Clear();
 
-		Renderer::BeginScene(Application::Get().mCamera);
+		Renderer::BeginScene(Application::Get().mCameraController.GetCamera());
 		Renderer::Submit(Application::Get().mVertexArray, Application::Get().mShader);
-		//Renderer::DrawQuad({ 0, 0 }, { 1, 1 }, { 1, 0, 0, 1 });
+		Application::Get().mTexture->Bind();
+		Renderer::Submit(Application::Get().mTextureVertexArray, Application::Get().mTextureShader);
+
+		//Renderer::DrawQuad({0, 0}, {1, 1}, {1, 0, 0, 1});
 		Renderer::EndScene();
 	}
 
 	void OnEvent(Egl::Event& event) override {
-		//if (event.GetEventType() == Egl::EventType::KeyPressed)
-		//	LOG("Key pressed: {0}", event.GetName());
-		//LOG_INFO("Event occured: {0}", event);
+		Application::Get().mCameraController.OnEvent(event);
 	}
-
-	/*virtual void OnImGuiRender() override {
-		ImGui::Begin("Test");
-		ImGui::Text("Test");
-		ImGui::End();
-	}*/
 };
 
 class Sandbox : public Egl::Application {

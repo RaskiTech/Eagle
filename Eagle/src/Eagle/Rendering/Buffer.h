@@ -1,4 +1,5 @@
 #pragma once
+#include "Eagle/Core/Core.h"
 
 namespace Egl {
 	//////////////////////////////////// Buffer Layout ////////////////////////////////////
@@ -22,7 +23,7 @@ namespace Egl {
 			case ShaderDataType::Bool:    return 1;
 		}
 
-		EAGLE_CORE_ASSERT(false, "The shaderDataType was None or unknown");
+		EAGLE_ENG_ASSERT(false, "The shaderDataType was None or unknown");
 		return 0;
 	}
 
@@ -53,7 +54,7 @@ namespace Egl {
 				case Egl::ShaderDataType::Int4:    return 4;
 				case Egl::ShaderDataType::Bool:    return 1;
 			}
-			EAGLE_CORE_ASSERT(false, "The shaderDataType was None or unknown");
+			EAGLE_ENG_ASSERT(false, "The shaderDataType was None or unknown");
 			return 0;
 		}
 	};

@@ -5,7 +5,7 @@
 #include <utility>
 #include <functional>
 #include <sstream>
-#include <Eagle/Log.h>
+#include <Eagle/Core/Log.h>
 
 #include <string>
 #include <vector>

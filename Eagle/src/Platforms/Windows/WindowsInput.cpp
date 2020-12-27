@@ -1,7 +1,7 @@
 #include "EaglePCH.h"
 #include "WindowsInput.h"
 #include <GLFW/glfw3.h>
-#include "Eagle/Application.h"
+#include "Eagle/Core/Application.h"
 
 namespace Egl {
 	Input* Input::mInstance = new WindowsInput();

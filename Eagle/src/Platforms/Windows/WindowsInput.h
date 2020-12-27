@@ -1,5 +1,5 @@
 #pragma once
-#include "Eagle/Input.h"
+#include "Eagle/Core/Input.h"
 
 namespace Egl {
 	class WindowsInput : public Input {

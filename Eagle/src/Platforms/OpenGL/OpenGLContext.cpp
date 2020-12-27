@@ -1,5 +1,6 @@
 #include "EaglePCH.h"
 #include "OpenGLContext.h"
+#include "Eagle/Core/Core.h"
 
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
@@ -19,7 +20,7 @@ namespace Egl {
 	OpenGLContext::OpenGLContext(GLFWwindow* windowHandle)
 		: mWindowHandle(windowHandle)
 	{
-		EAGLE_CORE_ASSERT(windowHandle, "WindowHandle is not defined, it's null!")
+		EAGLE_ENG_ASSERT(windowHandle, "WindowHandle is not defined, it's null!")
 	}
 	void OpenGLContext::SwapBuffers()
 	{

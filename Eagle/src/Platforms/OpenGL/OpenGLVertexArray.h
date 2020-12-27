@@ -20,7 +20,7 @@ namespace Egl {
 			case Egl::ShaderDataType::Int4:    return GL_INT;
 			case Egl::ShaderDataType::Bool:    return GL_BOOL;
 		}
-		EAGLE_CORE_ASSERT(false, "The shaderDataType was None or unknown");
+		EAGLE_ENG_ASSERT(false, "The shaderDataType was None or unknown");
 		return 0;
 	}
 
@@ -39,8 +39,8 @@ namespace Egl {
 		glBindVertexArray(0);
 	}
 
-	void VertexArray::AddVertexBuffer(const std::shared_ptr<VertexBuffer>& buffer) {
-		EAGLE_CORE_ASSERT(buffer->GetLayout().GetElements().size(), "Vertex buffer layout doesn't exist");
+	void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& buffer) {
+		EAGLE_ENG_ASSERT(buffer->GetLayout().GetElements().size(), "Vertex buffer layout doesn't exist");
 
 		glBindVertexArray(mRendererID);
 		buffer->Bind();
@@ -54,7 +54,7 @@ namespace Egl {
 		mVertexBuffers.push_back(buffer);
 	}
 
-	void VertexArray::SetIndexBuffer(const std::shared_ptr<IndexBuffer>& buffer)
+	void VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& buffer)
 	{
 		glBindVertexArray(mRendererID);
 		buffer->Bind();

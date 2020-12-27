@@ -12,8 +12,8 @@ namespace Egl {
 		void Bind() const;
 		void Unbind() const;
 
-		void AddVertexBuffer(const std::shared_ptr<VertexBuffer>& buffer);
-		void SetIndexBuffer(const std::shared_ptr<IndexBuffer>& buffer);
+		void AddVertexBuffer(const Ref<VertexBuffer>& buffer);
+		void SetIndexBuffer(const  Ref<IndexBuffer>& buffer);
 
 
 #ifdef EAGLE_RENDERER_OPENGL
@@ -23,8 +23,8 @@ namespace Egl {
 	private:
 
 		uint32_t mRendererID;
-		std::vector<std::shared_ptr<VertexBuffer>> mVertexBuffers;
-		std::shared_ptr<IndexBuffer> mIndexBuffer;
+		std::vector<Ref<VertexBuffer>> mVertexBuffers;
+		Ref<IndexBuffer> mIndexBuffer;
 #endif
 
 	};
