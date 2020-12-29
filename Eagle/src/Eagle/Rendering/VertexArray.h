@@ -1,11 +1,11 @@
 #pragma once
-#include <EaglePCH.h>
+#include <memory>
 #include "Eagle/Rendering/Buffer.h"
 
 namespace Egl {
 	class VertexArray {
 	public:
-		inline static VertexArray* Create() { return new VertexArray(); }
+		inline static Ref<VertexArray> Create() { return std::make_shared<VertexArray>(); }
 		VertexArray();
 		~VertexArray();
 
@@ -14,17 +14,18 @@ namespace Egl {
 
 		void AddVertexBuffer(const Ref<VertexBuffer>& buffer);
 		void SetIndexBuffer(const  Ref<IndexBuffer>& buffer);
+		std::string ToString();
 
-
-#ifdef EAGLE_RENDERER_OPENGL
-	public:
 		const auto& GetVertexBuffers() { return mVertexBuffers; }
 		const auto& GetIndexBuffer() { return mIndexBuffer; } 
 	private:
-
-		uint32_t mRendererID;
 		std::vector<Ref<VertexBuffer>> mVertexBuffers;
 		Ref<IndexBuffer> mIndexBuffer;
+
+
+#ifdef EAGLE_RENDERER_OPENGL
+	private:
+		uint32_t mRendererID;
 #endif
 
 	};

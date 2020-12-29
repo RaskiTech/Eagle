@@ -12,7 +12,6 @@ namespace Egl {
 	Application* Application::mInstance = nullptr;
 
 	Application::Application()
-		: mCameraController(1280.0f / 720.0f, true)
 	{
 		mInstance = this;
 
@@ -23,118 +22,6 @@ namespace Egl {
 
 		mImGuiLayer = new ImGuiLayer();
 		AddOverlay(mImGuiLayer);
-
-		// Little less temp code to render a triangle
-		// Rendering
-		
-		mVertexArray.reset(new VertexArray());
-
-		float vertices[] = {
-			-0.8f + 1, -0.8f + 0.3f, 1, 0, 1, 1,
-			 0.8f + 1, -0.8f + 0.3f, 0, 1, 1, 1,
-			 0.0f + 1,  0.6f + 0.3f, 1, 1, 0, 1
-		};
-
-		Ref<VertexBuffer> mVertexBuffer;
-		mVertexBuffer.reset(new VertexBuffer(vertices, sizeof(vertices)));
-		mVertexBuffer->SetLayout({
-			{ShaderDataType::Float2, "position"},
-			{ShaderDataType::Float4, "color"}
-		});
-		mVertexArray->AddVertexBuffer(mVertexBuffer);
-
-		uint32_t indices[] = {
-			0, 1, 2
-		};
-
-		Ref<IndexBuffer> mIndexBuffer;
-		mIndexBuffer.reset(new IndexBuffer(indices, sizeof(indices) / sizeof(uint32_t)));
-		mVertexArray->SetIndexBuffer(mIndexBuffer);
-
-		std::string vertexSource = R"(
-			#version 330 core
-			layout(location = 0) in vec2 position;
-			layout(location = 1) in vec4 color;
-
-			uniform mat4 uViewProjection;
-			out vec4 vColor;
-
-			void main() {
-				vColor = color;
-				gl_Position = uViewProjection * vec4(position, 0.0, 1.0);
-			}
-		)";
-
-		std::string fragmentSource = R"(
-			#version 330 core
-			layout(location = 0) out vec4 color;
-			in vec4 vColor;
-
-			void main() { 
-				color = vColor;
-			}
-		)";
-
-		mShader.reset(new Shader(vertexSource, fragmentSource));
-
-
-		// Texture
-		mTextureVertexArray.reset(new VertexArray());
-
-		float textureVertices[] = {
-			-0.8f + 1, -0.8f, 0.0f, 0.0f,
-			 0.8f + 1,  0.8f, 1.0f, 1.0f,
-			-0.8f + 1,  0.8f, 0.0f, 1.0f,
-			 0.8f + 1, -0.8f, 1.0f, 0.0f
-		};
-
-		Ref<VertexBuffer> mTextureVertexBuffer;
-		mTextureVertexBuffer.reset(new VertexBuffer(textureVertices, sizeof(textureVertices)));
-		mTextureVertexBuffer->SetLayout({
-			{ ShaderDataType::Float2, "Position" },
-			{ ShaderDataType::Float2, "TextureCoordinates" }
-		});
-		mTextureVertexArray->AddVertexBuffer(mTextureVertexBuffer);
-
-		uint32_t textureIndices[] = {
-			0, 1, 2, 0, 3, 1
-		};
-
-		Ref<IndexBuffer> mTextureIndexBuffer;
-		mTextureIndexBuffer.reset(new IndexBuffer(textureIndices, sizeof(textureIndices) / sizeof(uint32_t)));
-		mTextureVertexArray->SetIndexBuffer(mTextureIndexBuffer);
-
-		std::string vertexTextureSource = R"(
-			#version 330 core
-			layout(location = 0) in vec2 position;
-			layout(location = 1) in vec2 texCoord;
-
-			out vec2 vTexCoord;
-
-			uniform mat4 uViewProjection;
-
-			void main() {
-				vTexCoord = texCoord;
-				gl_Position = uViewProjection * vec4(position, 0.0, 1.0);
-			}
-		)";
-
-		std::string fragmentTextureSource = R"(
-			#version 330 core
-			layout(location = 0) out vec4 color;
-			in vec2 vTexCoord;
-
-			uniform sampler2D uTexture;
-
-			void main() { 
-				color = texture(uTexture, vTexCoord);
-			}
-		)";
-
-		mTextureShader.reset(new Shader(vertexTextureSource, fragmentTextureSource));
-		mTexture = Texture::Create("Assets/EagleLogo.png");
-		mTextureShader->Bind();
-		mTextureShader->UploadUniformInt("uTexture", 0);
 	}
 
 	Application::~Application() {
@@ -167,7 +54,6 @@ namespace Egl {
 
 	void Application::Run() {
 		while (mRunning) {
-			// Time class
 			float time = (float)glfwGetTime();
 			Time::SetTime(time, time - mLastFrameTime);
 			mLastFrameTime = time;
@@ -185,7 +71,7 @@ namespace Egl {
 				if (layer->IsActive())
 					layer->OnImGuiRender();
 			mImGuiLayer->End();
-			// Update the window
+
 			mWindow->OnUpdate();
 		}
 

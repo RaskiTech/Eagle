@@ -111,22 +111,47 @@ namespace Egl {
 		// Always detach shaders after a successful link.
 		glDetachShader(mRendererID, vertexShader);
 		glDetachShader(mRendererID, fragmentShader);
+
+		LOG_GL_STATUS("Shader init {0}", (unsigned int)mRendererID);
 	}
 	Shader::~Shader() {
+		LOG_GL_STATUS("Shader destroy {0}", (unsigned int)mRendererID);
 		glDeleteProgram(mRendererID);
 	}
 
 	void Shader::Bind() const {
+		LOG_GL_STATUS("Shader bind {0}", (unsigned int)mRendererID);
 		glUseProgram(mRendererID);
 	}
 	void Shader::Unbind() const {
+		LOG_GL_STATUS("Shader unbind");
 		glUseProgram(0);
 	}
-	void Shader::UploadUniformMat4(const std::string& name, const glm::mat4& matrix) {
+
+	////////////////////////// Set Uniforms //////////////////////////
+
+	void Shader::SetFloat2(const std::string& name, const glm::vec2& values) {
+		LOG_GL_STATUS("Shader upload uniform float2 {0}", (unsigned int)mRendererID);
+		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		glUniform2f(location, values.x, values.y);
+	}
+	void Shader::SetFloat3(const std::string& name, const glm::vec3& values) {
+		LOG_GL_STATUS("Shader upload uniform float3 {0}", (unsigned int)mRendererID);
+		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		glUniform3f(location, values.x, values.y, values.z);
+	}
+	void Shader::SetFloat4(const std::string& name, const glm::vec4& values) {
+		LOG_GL_STATUS("Shader upload uniform float4 {0}", (unsigned int)mRendererID);
+		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		glUniform4f(location, values.x, values.y, values.z, values.w);
+	}
+	void Shader::SetMat4(const std::string& name, const glm::mat4& matrix) {
+		LOG_GL_STATUS("Shader upload uniformMat4 {0}", (unsigned int)mRendererID);
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
-	void Shader::UploadUniformInt(const std::string& name, int value) {
+	void Shader::SetInt(const std::string& name, int value) {
+		LOG_GL_STATUS("Shader upload uniform int {0}", (unsigned int)mRendererID);
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());
 		glUniform1i(location, value);
 	}

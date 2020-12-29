@@ -16,8 +16,8 @@ namespace Egl {
 		virtual void OnEvent(Event& event) {}
 
 		inline bool IsActive() const { return mActive; }
-		inline void SetActive(bool active) { this->mActive = active; }
-		inline const std::string GetName() const { return mName; }
+		inline void SetActive(bool active) { mActive = active; }
+		inline const std::string& GetName() const { return mName; }
 	protected:
 		std::string mName;
 		bool mActive;

@@ -133,11 +133,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Sandbox.cpp" />
+    <ClCompile Include="src\TestingGround.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eagle\Eagle.vcxproj">
       <Project>{2390160D-8FA4-3EBE-5826-E21DC4F93AEF}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\TestingGround.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -32,15 +32,21 @@ namespace Egl {
 		glTextureParameteri(mRendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		if (scaleUpBlur) glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		else			 glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
 		glTextureSubImage2D(mRendererID, 0, 0, 0, mWidth, mHeight, dataFormat, GL_UNSIGNED_BYTE, data);
 
 		stbi_image_free(data);
+
+		LOG_GL_STATUS("Texture init {0}", (unsigned int)mRendererID);
 	}
 	Texture::~Texture() {
+		LOG_GL_STATUS("texture destroy {0}", (unsigned int)mRendererID);
 		glDeleteTextures(1, &mRendererID);
 	}
 	void Texture::Bind(uint32_t slot) {
+		LOG_GL_STATUS("texture bind {0}", (unsigned int)mRendererID);
 		glBindTextureUnit(slot, mRendererID);
 	}
 }

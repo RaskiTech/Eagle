@@ -1,4 +1,9 @@
 #include <EaglePCH.h>
+
+// Disable warninigs that are coused by imgui
+#pragma warning( push )
+#pragma warning( disable : 26495 )
+
 #include "ImGuiLayer.h"
 
 #include "imgui.h"
@@ -77,7 +82,6 @@ namespace Egl {
     }
 
     void ImGuiLayer::OnImGuiRender() {
-        static bool show = true;
-        ImGui::ShowDemoWindow(&show);
+
     }
 }

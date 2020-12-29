@@ -6,8 +6,10 @@ namespace Egl {
 
 	}
 	LayerStack::~LayerStack() {
-		for (Layer* layer : mLayers)
+		for (Layer* layer : mLayers) {
+			layer->OnDetach();
 			delete layer;
+		}
 	}
 
 	void LayerStack::AddLayer(Layer* layer) {

@@ -61,7 +61,6 @@ namespace Egl {
 
 class BufferLayout {
 	public:
-		BufferLayout() {}
 		BufferLayout(const std::initializer_list<BufferElement>& elements)
 			: mElements(elements) { CalculateOffsetsAndStride(); }
 
@@ -91,7 +90,7 @@ class BufferLayout {
 
 	class VertexBuffer {
 	public:
-		inline static VertexBuffer* Create(float* vertices, uint32_t size) { return new VertexBuffer(vertices, size); }
+		inline static Ref<VertexBuffer> Create(float* vertices, uint32_t size) { return std::make_shared<VertexBuffer>(vertices, size); }
 		VertexBuffer(float* vertices, uint32_t size);
 		~VertexBuffer();
 
@@ -115,7 +114,7 @@ class BufferLayout {
 
 	class IndexBuffer {
 	public:
-		inline static IndexBuffer* Create(uint32_t* indices, uint32_t count) { return new IndexBuffer(indices, count); }
+		inline static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count) { return std::make_shared<IndexBuffer>(indices, count); }
 		IndexBuffer(uint32_t* indices, uint32_t size);
 		~IndexBuffer();
 
@@ -131,6 +130,5 @@ class BufferLayout {
 	private:
 		uint32_t mRendererID;
 #endif
-
 	};
 }

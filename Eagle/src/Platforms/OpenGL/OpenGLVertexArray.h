@@ -2,6 +2,7 @@
 
 #include <EaglePCH.h>
 #include "Eagle/Rendering/VertexArray.h"
+#include "glad/glad.h"
 
 namespace Egl {
 
@@ -27,19 +28,24 @@ namespace Egl {
 
 	VertexArray::VertexArray() {
 		glCreateVertexArrays(1, &mRendererID);
+		LOG_GL_STATUS("VertexArray init {0}", (unsigned int)mRendererID);
 	}
 	VertexArray::~VertexArray() {
+		LOG_GL_STATUS("VertexArray destroy {0}", (unsigned int)mRendererID);
 		glDeleteVertexArrays(1, &mRendererID);
 	}
 
 	void VertexArray::Bind() const {
+		LOG_GL_STATUS("VertexArray bind {0}", (unsigned int)mRendererID);
 		glBindVertexArray(mRendererID);
 	}
 	void VertexArray::Unbind() const {
+		LOG_GL_STATUS("VertexArray unbind {0}", (unsigned int)mRendererID);
 		glBindVertexArray(0);
 	}
 
 	void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& buffer) {
+		LOG_GL_STATUS("VertexArray add vertexBuffer {0}", (unsigned int)mRendererID);
 		EAGLE_ENG_ASSERT(buffer->GetLayout().GetElements().size(), "Vertex buffer layout doesn't exist");
 
 		glBindVertexArray(mRendererID);
@@ -49,15 +55,25 @@ namespace Egl {
 		for (int i = 0; i < layout.GetElements().size(); i++) {
 			const auto& element = layout.GetElements()[i];
 			glEnableVertexAttribArray(i);
-			glVertexAttribPointer(i, element.GetComponentCount(), ShaderDataTypeToOpenGL(element.type), element.normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)element.offset);
+			glVertexAttribPointer(i, element.GetComponentCount(), ShaderDataTypeToOpenGL(element.type), element.normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)(unsigned int)element.offset);
 		}
 		mVertexBuffers.push_back(buffer);
 	}
 
 	void VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& buffer)
 	{
+		LOG_GL_STATUS("VertexArraySetIndexBuffer {0}", (unsigned int)mRendererID);
 		glBindVertexArray(mRendererID);
 		buffer->Bind();
 		mIndexBuffer = buffer;
+	}
+
+	std::string VertexArray::ToString() {
+		std::stringstream str;
+		str << "VertexArray: (indexBuffer: count:" << GetIndexBuffer()->GetCount() << ") (vertexBuffers: ";
+		for (Ref<VertexBuffer> buffer : GetVertexBuffers())
+			str << " (elements count: " << buffer->GetLayout().GetElements().size() << ")";
+
+		return str.str();
 	}
 }

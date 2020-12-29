@@ -1,6 +1,7 @@
 #pragma once
 #include "EaglePCH.h"
 #include "Layer.h"
+#include <vector>
 
 namespace Egl {
 	class LayerStack {
