@@ -8,7 +8,7 @@ namespace Egl {
 		Shader(const std::string& vectexShader, const std::string& fragmentShader);
 		~Shader();
 
-		static Ref<Shader> Create(const std::string& vectexShader, const std::string& fragmentShader) { return std::make_shared<Shader>(vectexShader, fragmentShader); }
+		static Ref<Shader> Create(const std::string& vectexShader, const std::string& fragmentShader) { return CreateRef<Shader>(vectexShader, fragmentShader); }
 
 		void Bind() const;
 		void Unbind() const;

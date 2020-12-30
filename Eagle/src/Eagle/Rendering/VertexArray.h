@@ -5,7 +5,7 @@
 namespace Egl {
 	class VertexArray {
 	public:
-		inline static Ref<VertexArray> Create() { return std::make_shared<VertexArray>(); }
+		inline static Ref<VertexArray> Create() { return CreateRef<VertexArray>(); }
 		VertexArray();
 		~VertexArray();
 
@@ -21,7 +21,7 @@ namespace Egl {
 	private:
 		std::vector<Ref<VertexBuffer>> mVertexBuffers;
 		Ref<IndexBuffer> mIndexBuffer;
-
+		uint32_t mVertexBufferInsertIndex = 0;
 
 #ifdef EAGLE_RENDERER_OPENGL
 	private:

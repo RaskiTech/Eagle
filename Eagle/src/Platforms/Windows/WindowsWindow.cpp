@@ -7,12 +7,13 @@
 #include "Platforms/OpenGL/OpenGLContext.h"
 
 namespace Egl {
-	static bool isGLFWInit = false;
-	Window* Window::Create(const WindowProps& props) {
-		return new WindowsWindow(props);
+	static uint8_t sGLFWwindowCount = 0;
+	Scope<Window> Window::Create(const WindowProps& props) {
+		return CreateScope<WindowsWindow>(props);
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& props) {
+		EAGLE_PROFILE_FUNCTION();
 		Init(props);
 	}
 
@@ -23,21 +24,30 @@ namespace Egl {
 	}
 
 	void WindowsWindow::Init(const WindowProps& props) {
+		EAGLE_PROFILE_FUNCTION();
+
 		mData.Title = props.Title;
 		mData.width = props.width;
 		mData.height = props.height;
 
 		LOG_ENG_INFO("Creating window: {0} ({1}, {2})", props.Title, props.width, props.height);
 
-		if (!isGLFWInit) {
-			int success = glfwInit();
+		if (sGLFWwindowCount == 0) {
+			{
+				EAGLE_PROFILE_SCOPE("glfwInit");
+				int success = glfwInit();
+			}
 			EAGLE_ENG_ASSERT(success, "Could not intialize GLFW!");
 			glfwSetErrorCallback(GLFWErrorCallback);
-			isGLFWInit = true;
+		}
+		sGLFWwindowCount++;
+
+		{
+			EAGLE_PROFILE_SCOPE("glfwCreateWindow");
+			mWindow = glfwCreateWindow((int)props.width, (int)props.height, mData.Title.c_str(), nullptr, nullptr);
 		}
 
 
-		mWindow = glfwCreateWindow((int)props.width, (int)props.height, mData.Title.c_str(), nullptr, nullptr);
 		mContext = new OpenGLContext(mWindow);
 		mContext->Init();
 
@@ -112,10 +122,18 @@ namespace Egl {
 	}
 
 	void WindowsWindow::Shutdown() {
+		EAGLE_PROFILE_FUNCTION();
+
 		glfwDestroyWindow(mWindow);
+		sGLFWwindowCount--;
+
+		if (sGLFWwindowCount == 0)
+			glfwTerminate();
 	}
 
 	void WindowsWindow::OnUpdate() {
+		EAGLE_PROFILE_FUNCTION();
+
 		glfwPollEvents();
 		mContext->SwapBuffers();
 	}
@@ -124,6 +142,8 @@ namespace Egl {
 		return mData.VSync;
 	}
 	void WindowsWindow::SetVSync(bool enabled) {
+		EAGLE_PROFILE_FUNCTION();
+
 		if (enabled)
 			glfwSwapInterval(1);
 		else

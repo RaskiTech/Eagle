@@ -8,6 +8,8 @@
 namespace Egl {
 	void OpenGLContext::Init()
 	{
+		EAGLE_PROFILE_FUNCTION();
+
 		glfwMakeContextCurrent(mWindowHandle);
 		int status = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 		EAGLE_ASSERT(status, "Failed to initialize glad");
@@ -24,6 +26,7 @@ namespace Egl {
 	}
 	void OpenGLContext::SwapBuffers()
 	{
+		EAGLE_PROFILE_FUNCTION();
 		glfwSwapBuffers(mWindowHandle);
 	}
 }

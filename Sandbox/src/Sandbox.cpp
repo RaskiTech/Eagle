@@ -6,37 +6,68 @@
 
 using namespace Egl;
 
-class Timer {
+class BaseLayer : public Layer {
 public:
-	Timer(const char* name) : mName(name), mStopped(false) {
-		mStartPoint = std::chrono::high_resolution_clock::now();
-	}
-	~Timer() {
-		if (!mStopped)
-			Stop();
-	}
-	void Stop() {
-		mStopped = true;
-
-		auto endTimePoint = std::chrono::high_resolution_clock::now();
-
-		long long start = std::chrono::time_point_cast<std::chrono::microseconds>(mStartPoint).time_since_epoch().count();
-		long long end = std::chrono::time_point_cast<std::chrono::microseconds>(endTimePoint).time_since_epoch().count();
-		float duration = (end - start) * 0.001f;
+	BaseLayer() : Layer("BaseLayer", true) 
+	{
 
 	}
-
-
-private:
-	const char* mName;
-	bool mStopped;
-	std::chrono::time_point<std::chrono::steady_clock> mStartPoint;
 };
-
 class Sandbox : public Egl::Application {
 public:
 	Sandbox() {
+		auto texture2 = Texture::Create("Assets/Water.png");
+		auto texture3 = Texture::Create("Assets/Water.png");
+		auto texture4 = Texture::Create("Assets/Water.png");
+		auto texture5 = Texture::Create("Assets/Water.png");
+		auto texture6 = Texture::Create("Assets/Water.png");
+		auto texture7 = Texture::Create("Assets/Water.png");
+		auto texture8 = Texture::Create("Assets/Water.png");
+		auto texture9 = Texture::Create("Assets/Water.png");
+		auto texture0 = Texture::Create("Assets/Water.png");
+		auto texture1 = Texture::Create("Assets/Water.png");
+		auto texture = Texture::Create("Assets/Water.png");
+		auto texture12 = Texture::Create("Assets/Water.png");
+		auto texture13 = Texture::Create("Assets/Water.png");
+		auto texture14 = Texture::Create("Assets/Water.png");
+		auto texture15 = Texture::Create("Assets/Water.png");
+		auto texture16 = Texture::Create("Assets/Water.png");
+		auto texture17 = Texture::Create("Assets/Water.png");
+		auto texture18 = Texture::Create("Assets/Water.png");
+		auto texture19 = Texture::Create("Assets/Water.png");
+		auto texture21 = Texture::Create("Assets/Water.png");
+		auto texture22 = Texture::Create("Assets/Water.png");
+		auto texture23 = Texture::Create("Assets/Water.png");
+		auto texture24 = Texture::Create("Assets/Water.png");
+		auto texture25 = Texture::Create("Assets/Water.png");
+		
+		auto qtexture2 = Texture::Create("Assets/Water.png");
+		auto qtexture3 = Texture::Create("Assets/Water.png");
+		auto qtexture4 = Texture::Create("Assets/Water.png");
+		auto qtexture5 = Texture::Create("Assets/Water.png");
+		auto qtexture6 = Texture::Create("Assets/Water.png");
+		auto qtexture7 = Texture::Create("Assets/Water.png");
+		auto qtexture8 = Texture::Create("Assets/Water.png");
+		auto qtexture9 = Texture::Create("Assets/Water.png");
+		auto qtexture0 = Texture::Create("Assets/Water.png");
+		auto qtexture1 = Texture::Create("Assets/Water.png");
+		auto qtexture = Texture::Create("Assets/Water.png");
+		auto qtexture12 = Texture::Create("Assets/Water.png");
+		auto qtexture13 = Texture::Create("Assets/Water.png");
+		auto qtexture14 = Texture::Create("Assets/Water.png");
+		auto qtexture15 = Texture::Create("Assets/Water.png");
+		auto qtexture16 = Texture::Create("Assets/Water.png");
+		auto qtexture17 = Texture::Create("Assets/Water.png");
+		auto qtexture18 = Texture::Create("Assets/Water.png");
+		auto qtexture19 = Texture::Create("Assets/Water.png");
+		auto qtexture21 = Texture::Create("Assets/Water.png");
+		auto qtexture22 = Texture::Create("Assets/Water.png");
+		auto qtexture23 = Texture::Create("Assets/Water.png");
+		auto qtexture24 = Texture::Create("Assets/Water.png");
+		auto qtexture25 = Texture::Create("Assets/Water.png");
+		EAGLE_PROFILE_FUNCTION();
 		AddLayer(new TestingGround());
+		//AddLayer(new BaseLayer());
 	}
 
 	~Sandbox() {
@@ -47,27 +78,3 @@ public:
 Egl::Application* Egl::CreateApplication() {
 	return new Sandbox();
 }
-
-class BaseLayer : public Layer {
-public:
-	BaseLayer() : Layer("BaseLayer", true) 
-	{
-		{
-			float vertices[6] = {
-				-0.8f, -0.8f,
-				 0.8f, -0.8f,
-				 0.0f,    0.6f
-			};
-			Ref<VertexBuffer> buffer;
-			buffer.reset(new VertexBuffer(vertices, sizeof(vertices)));
-		}
-	}
-
-	void OnUpdate() override {
-
-	}
-
-	void OnEvent(Egl::Event& event) override {
-
-	}
-};

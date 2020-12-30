@@ -17,8 +17,12 @@ namespace Egl {
 		virtual ~Application();
 		void Run();
 		void OnEvent(Event& e);
+
 		void AddLayer(Layer* layer);
 		void AddOverlay(Layer* layer);
+		void RemoveLayer(Layer* layer);
+		void RemoveOverlay(Layer* layer);
+
 		static inline Application& Get() { return *mInstance; }
 		inline Window& GetWindow() const { return *mWindow; }
 	private:

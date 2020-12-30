@@ -35,12 +35,12 @@ namespace Egl {
 }
 
 // Engine log macros
-// ... takes any number of arguments and __VA_ARGS__ pushes those arguments foward	
+// ... takes any number of arguments and __VA_ARGS__ pushes those arguments forward	
 #define LOG_ENG_TRACE(...) ::Egl::Log::GetEngineLogger()->trace(__VA_ARGS__)
 #define LOG_ENG_ERROR(...) ::Egl::Log::GetEngineLogger()->error(__VA_ARGS__)
 #define LOG_ENG_WARN(...)  ::Egl::Log::GetEngineLogger()->warn(__VA_ARGS__)
 #define LOG_ENG_INFO(...)  ::Egl::Log::GetEngineLogger()->info(__VA_ARGS__)
-#define LOG_ENG_FATAL(...) ::Egl::Log::GetEngineLogger()->fatal(__VA_ARGS__)
+#define LOG_ENG_FATAL(...) ::Egl::Log::GetEngineLogger()->critical(__VA_ARGS__)
 #define LOG_ENG(...)  LOG_ENG_TRACE(__VA_ARGS__)
 
 // Client log macros
@@ -48,5 +48,19 @@ namespace Egl {
 #define LOG_ERROR(...) ::Egl::Log::GetClientLogger()->error(__VA_ARGS__)
 #define LOG_WARN(...)  ::Egl::Log::GetClientLogger()->warn(__VA_ARGS__)
 #define LOG_INFO(...)  ::Egl::Log::GetClientLogger()->info(__VA_ARGS__)
-#define LOG_FATAL(...) ::Egl::Log::GetClientLogger()->fatal(__VA_ARGS__)
+#define LOG_FATAL(...) ::Egl::Log::GetClientLogger()->critical(__VA_ARGS__)
 #define LOG(...)  LOG_TRACE(__VA_ARGS__)
+
+//#define LOG_ENG_TRACE(...) 
+//#define LOG_ENG_ERROR(...) 
+//#define LOG_ENG_WARN(...)  
+//#define LOG_ENG_INFO(...)  
+//#define LOG_ENG_FATAL(...) 
+//#define LOG_ENG(...)  
+//
+//#define LOG_TRACE(...)
+//#define LOG_ERROR(...)
+//#define LOG_WARN(...) 
+//#define LOG_INFO(...) 
+//#define LOG_FATAL(...)
+//#define LOG(...)

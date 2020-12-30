@@ -12,6 +12,8 @@ namespace Egl {
 		mShouldRotate(rotate), mMoveSpeed(moveSpeed), mRotationSpeed(rotationSpeed) {}
 
 	void CameraController::OnUpdate() {
+		EAGLE_PROFILE_FUNCTION();
+
 		if (Input::IsKeyPressed(EGL_KEY_A)) mCameraPosition -= glm::vec3(mMoveSpeed, 0, 0) * Time::GetDeltaTime();
 		if (Input::IsKeyPressed(EGL_KEY_D)) mCameraPosition += glm::vec3(mMoveSpeed, 0, 0) * Time::GetDeltaTime();
 		if (Input::IsKeyPressed(EGL_KEY_W)) mCameraPosition += glm::vec3(0, mMoveSpeed, 0) * Time::GetDeltaTime();
@@ -24,9 +26,11 @@ namespace Egl {
 			mCamera.SetRotation(mCameraRotation);
 		}
 		mCamera.SetPosition(mCameraPosition);
+		mMoveSpeed = mZoomLevel;
 	}
 
 	bool CameraController::OnMouseScrolled(MouseScrolledEvent& event) {
+		EAGLE_PROFILE_FUNCTION();
 		LOG_ENG("{0}", event);
 		mZoomLevel -= event.GetScrollYOffset() * 0.25f;
 		mZoomLevel = std::max(mZoomLevel, 0.25f);
@@ -34,6 +38,7 @@ namespace Egl {
 		return false;
 	}
 	bool CameraController::OnApplicationRezised(WindowResizeEvent& event) {
+		EAGLE_PROFILE_FUNCTION();
 		mAspectRatio = (float)event.GetWidth() / (float)event.GetHeight();
 		mCamera.SetProjection(-mAspectRatio * mZoomLevel, mAspectRatio * mZoomLevel, -mZoomLevel, mZoomLevel);
 		return false;

@@ -23,7 +23,7 @@ namespace Egl {
 			case ShaderDataType::Bool:    return 1;
 		}
 
-		EAGLE_ENG_ASSERT(false, "The shaderDataType was None or unknown");
+		EAGLE_ENG_ASSERT(false, "The ShaderDataType was None or unknown");
 		return 0;
 	}
 
@@ -54,7 +54,7 @@ namespace Egl {
 				case Egl::ShaderDataType::Int4:    return 4;
 				case Egl::ShaderDataType::Bool:    return 1;
 			}
-			EAGLE_ENG_ASSERT(false, "The shaderDataType was None or unknown");
+			EAGLE_ENG_ASSERT(false, "The ShaderDataType was None or unknown");
 			return 0;
 		}
 	};
@@ -78,8 +78,8 @@ class BufferLayout {
 			for (auto& element : mElements) {
 				element.offset = offset;
 				offset += element.size;
+				mStride += element.size;
 			}
-			mStride = offset;
 		}
 
 		std::vector<BufferElement> mElements;
@@ -90,7 +90,7 @@ class BufferLayout {
 
 	class VertexBuffer {
 	public:
-		inline static Ref<VertexBuffer> Create(float* vertices, uint32_t size) { return std::make_shared<VertexBuffer>(vertices, size); }
+		inline static Ref<VertexBuffer> Create(float* vertices, uint32_t size) { return CreateRef<VertexBuffer>(vertices, size); }
 		VertexBuffer(float* vertices, uint32_t size);
 		~VertexBuffer();
 
@@ -114,7 +114,7 @@ class BufferLayout {
 
 	class IndexBuffer {
 	public:
-		inline static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count) { return std::make_shared<IndexBuffer>(indices, count); }
+		inline static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count) { return CreateRef<IndexBuffer>(indices, count); }
 		IndexBuffer(uint32_t* indices, uint32_t size);
 		~IndexBuffer();
 

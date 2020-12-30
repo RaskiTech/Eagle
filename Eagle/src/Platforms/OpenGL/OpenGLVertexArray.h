@@ -2,7 +2,7 @@
 
 #include <EaglePCH.h>
 #include "Eagle/Rendering/VertexArray.h"
-#include "glad/glad.h"
+#include <glad/glad.h>
 
 namespace Egl {
 
@@ -27,42 +27,44 @@ namespace Egl {
 
 
 	VertexArray::VertexArray() {
+		EAGLE_PROFILE_FUNCTION();
 		glCreateVertexArrays(1, &mRendererID);
-		LOG_GL_STATUS("VertexArray init {0}", (unsigned int)mRendererID);
 	}
 	VertexArray::~VertexArray() {
-		LOG_GL_STATUS("VertexArray destroy {0}", (unsigned int)mRendererID);
+		EAGLE_PROFILE_FUNCTION();
 		glDeleteVertexArrays(1, &mRendererID);
 	}
 
 	void VertexArray::Bind() const {
-		LOG_GL_STATUS("VertexArray bind {0}", (unsigned int)mRendererID);
+		EAGLE_PROFILE_FUNCTION();
 		glBindVertexArray(mRendererID);
 	}
 	void VertexArray::Unbind() const {
-		LOG_GL_STATUS("VertexArray unbind {0}", (unsigned int)mRendererID);
+		EAGLE_PROFILE_FUNCTION();
 		glBindVertexArray(0);
 	}
 
 	void VertexArray::AddVertexBuffer(const Ref<VertexBuffer>& buffer) {
-		LOG_GL_STATUS("VertexArray add vertexBuffer {0}", (unsigned int)mRendererID);
+		EAGLE_PROFILE_FUNCTION();
 		EAGLE_ENG_ASSERT(buffer->GetLayout().GetElements().size(), "Vertex buffer layout doesn't exist");
 
 		glBindVertexArray(mRendererID);
 		buffer->Bind();
 
+		
 		const auto& layout = buffer->GetLayout();
-		for (int i = 0; i < layout.GetElements().size(); i++) {
-			const auto& element = layout.GetElements()[i];
-			glEnableVertexAttribArray(i);
-			glVertexAttribPointer(i, element.GetComponentCount(), ShaderDataTypeToOpenGL(element.type), element.normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)(unsigned int)element.offset);
+		for (const auto& element : layout) {
+			glEnableVertexAttribArray(mVertexBufferInsertIndex);
+			glVertexAttribPointer(mVertexBufferInsertIndex, element.GetComponentCount(), ShaderDataTypeToOpenGL(element.type), element.normalized ? GL_TRUE : GL_FALSE, layout.GetStride(), (const void*)(intptr_t)element.offset);
+			mVertexBufferInsertIndex++;
 		}
 		mVertexBuffers.push_back(buffer);
 	}
 
 	void VertexArray::SetIndexBuffer(const Ref<IndexBuffer>& buffer)
 	{
-		LOG_GL_STATUS("VertexArraySetIndexBuffer {0}", (unsigned int)mRendererID);
+		EAGLE_PROFILE_FUNCTION();
+
 		glBindVertexArray(mRendererID);
 		buffer->Bind();
 		mIndexBuffer = buffer;

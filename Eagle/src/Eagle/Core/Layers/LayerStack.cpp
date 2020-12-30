@@ -17,8 +17,8 @@ namespace Egl {
 		mLayerInsertIndex++;
 	}
 	void LayerStack::RemoveLayer(Layer* layer) {
-		auto foundLayer = std::find(mLayers.begin(), mLayers.end(), layer);
-		if (foundLayer != mLayers.end()) {
+		auto foundLayer = std::find(mLayers.begin(), mLayers.begin() + mLayerInsertIndex, layer);
+		if (foundLayer != mLayers.begin() + mLayerInsertIndex) {
 			mLayers.erase(foundLayer);
 			mLayerInsertIndex--;
 		}
@@ -27,7 +27,7 @@ namespace Egl {
 		mLayers.emplace_back(layer);
 	}
 	void LayerStack::RemoveOverlay(Layer* layer) {
-		auto foundLayer = std::find(mLayers.begin(), mLayers.end(), layer);
+		auto foundLayer = std::find(mLayers.begin() + mLayerInsertIndex, mLayers.end(), layer);
 		if (foundLayer != mLayers.end())
 			mLayers.erase(foundLayer);
 	}

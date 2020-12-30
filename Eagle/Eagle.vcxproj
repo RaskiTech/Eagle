@@ -153,6 +153,7 @@
     <ClInclude Include="src\Eagle\Core\Log.h" />
     <ClInclude Include="src\Eagle\Core\Time.h" />
     <ClInclude Include="src\Eagle\Core\Window.h" />
+    <ClInclude Include="src\Eagle\Debug\Instrumentor.h" />
     <ClInclude Include="src\Eagle\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Eagle\Events\Event.h" />
     <ClInclude Include="src\Eagle\Events\KeyEvent.h" />
