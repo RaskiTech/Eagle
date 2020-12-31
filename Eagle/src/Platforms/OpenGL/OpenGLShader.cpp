@@ -129,6 +129,11 @@ namespace Egl {
 
 	////////////////////////// Set Uniforms //////////////////////////
 
+	void OpenGLShader::SetFloat(const std::string& name, float value) {
+		EAGLE_PROFILE_FUNCTION();
+		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		glUniform1f(location, value);
+	}
 	void OpenGLShader::SetFloat2(const std::string& name, const glm::vec2& values) {
 		EAGLE_PROFILE_FUNCTION();
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());

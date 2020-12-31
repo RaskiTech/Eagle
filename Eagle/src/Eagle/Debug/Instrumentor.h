@@ -122,7 +122,7 @@ namespace Egl {
     };
 }
 
-#define EAGLE_PROFILE 0
+//#define EAGLE_PROFILE 1
 #ifdef EAGLE_PROFILE
     #define EAGLE_PROFILE_BEGIN(name, filepath) ::Egl::Instrumentor::Get().BeginSession(name, filepath)
     #define EAGLE_PROFILE_FUNCTION() EAGLE_PROFILE_SCOPE(__FUNCSIG__)

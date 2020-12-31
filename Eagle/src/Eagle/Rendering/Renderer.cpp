@@ -3,13 +3,14 @@
 #include "RenderCommand.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <glad/glad.h>
+void UILibraryExampleUse() {
+	// x and y drivers will derive from baseClass called UIPosition and width and height drivers from UIArea
+	// Button might represent some parameters or a component like button
+	// Drviers like Left() and Right() are just to tell what there goes, not actual driveers
 
-#include "VertexArray.h"
-#include "Buffer.h"
-#include "Shader.h"
-#include "RenderAPI.h"
-#include "Texture.h"
+	//DrawUI(Button).xDriver().yDriver(TopAligment(10.0f)).widthDriver(Stretch(0.5f)).heightDriver(ConstValue(100.0f));
+	//DrawUI(Button).Drivers(TopAligment(1.0f), BottomScale(1.0f), Left(1.0f), Right(1.0f))
+}
 
 namespace Egl {
 
@@ -28,7 +29,7 @@ namespace Egl {
 		RenderCommand::Init();
 		sRendererData->vertexArray = VertexArray::Create();
 
-		// Keep these at 1s and -1s
+		// Keep these at 1s and -1s. Else size and position aren't in the right scale
 		float vertices[] = {
 			-1, -1, 0, 0, 0,
 			 1, -1, 0, 1, 0,
@@ -76,9 +77,10 @@ namespace Egl {
 			in vec2 vTexCoord;
 			uniform sampler2D uTexture;
 			uniform vec4 uColor;
+			uniform float uTilingFactor;
 
 			void main() { 
-				color = texture(uTexture, vTexCoord) * uColor;
+				color = texture(uTexture, vTexCoord * uTilingFactor) * uColor;
 			}
 		)";
 
@@ -101,22 +103,49 @@ namespace Egl {
 		sRendererData->quadShader->SetMat4("uViewProjection", camera.GetViewProjectionMatrix());
 	}
 
-	void Renderer::DrawQuad(const glm::vec3& position, float rotation, const glm::vec2& size, const glm::vec4& color) {
+	void Renderer::DrawRotatedColorQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 
 		sRendererData->quadShader->SetFloat4("uColor", color);
+		sRendererData->quadShader->SetFloat("uTilingFactor", 1);
 		sRendererData->whiteTexture->Bind();
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::rotate(glm::mat4(1.0f), glm::radians(-rotation), glm::vec3(0, 0, 1)) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 0 });
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::rotate(glm::mat4(1.0f), radiants, glm::vec3(0, 0, 1)) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 0 });
 		sRendererData->quadShader->SetMat4("uTransform", transform);
 		sRendererData->vertexArray->Bind();
 		RenderCommand::DrawIndexed(sRendererData->vertexArray);
 	}
-	void Renderer::DrawQuad(const glm::vec3& position, float rotation, const glm::vec2& size, const Ref<Texture>& texture, const glm::vec4& color) {
+	void Renderer::DrawRotatedTextureQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 		sRendererData->quadShader->SetFloat4("uColor", color);
+		sRendererData->quadShader->SetFloat("uTilingFactor", tilingFactor);
 
-		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::rotate(glm::mat4(1.0f), glm::radians(-rotation), glm::vec3(0, 0, 1)) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 0 });
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::rotate(glm::mat4(1.0f), radiants, glm::vec3(0, 0, 1)) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 0 });
+		sRendererData->quadShader->SetMat4("uTransform", transform);
+
+		texture->Bind(0);
+
+		sRendererData->vertexArray->Bind();
+		RenderCommand::DrawIndexed(sRendererData->vertexArray);
+	}
+	void Renderer::DrawColorQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
+		EAGLE_PROFILE_FUNCTION();
+
+		sRendererData->quadShader->SetFloat4("uColor", color);
+		sRendererData->quadShader->SetFloat("uTilingFactor", 1);
+		sRendererData->whiteTexture->Bind();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 0 });
+		sRendererData->quadShader->SetMat4("uTransform", transform);
+		sRendererData->vertexArray->Bind();
+		RenderCommand::DrawIndexed(sRendererData->vertexArray);
+	}
+	void Renderer::DrawTextureQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
+		EAGLE_PROFILE_FUNCTION();
+		sRendererData->quadShader->SetFloat4("uColor", color);
+		sRendererData->quadShader->SetFloat("uTilingFactor", tilingFactor);
+
+		glm::mat4 transform = glm::translate(glm::mat4(1.0f), position) * glm::scale(glm::mat4(1.0f), { size.x, size.y, 0 });
 		sRendererData->quadShader->SetMat4("uTransform", transform);
 
 		texture->Bind(0);

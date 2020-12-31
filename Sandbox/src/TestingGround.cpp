@@ -27,9 +27,9 @@ void TestingGround::OnUpdate() {
 	{
 		EAGLE_PROFILE_SCOPE("Rendering loop");
 		Renderer::BeginScene(mCameraController.GetCamera());
-		Renderer::DrawQuad({ 1, 0, -0.1f }, 0, {1, 1}, texture);
-		for (int i = 0; i < 10; i++) {
-			Renderer::DrawQuad({ i, 0 }, (float)i * 10, { 0.5f, i * 0.2f }, glm::vec4(color[0], color[1], color[2], color[3]));
+		Renderer::DrawTexturedQuad({ 1, 0, -0.1f }, {1, 1}, texture, glm::vec4(1, 0.9f, 0.3f, 1));
+		for (int i = 0; i < 20; i++) {
+			Renderer::DrawRotatedColorQuad({ i - 9, 0 }, (float)i * 0.2f, { 0.5f, 0.1f }, glm::vec4(color[0], color[1], color[2], color[3]));
 		}
 		Renderer::EndScene();
 	}
