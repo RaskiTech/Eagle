@@ -18,6 +18,8 @@ namespace Egl {
 
 		static Ref<Texture> Create(uint32_t width, uint32_t height, bool scaleUpBlur = false);
 		static Ref<Texture> Create(const std::string& path, bool scaleUpBlur = true);
+
+		virtual bool operator==(const Texture& other) const = 0;
 	};
 
 }

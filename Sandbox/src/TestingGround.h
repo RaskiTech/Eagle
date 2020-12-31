@@ -21,6 +21,7 @@ private:
 	//Temp
 	float color[4] = { 0.8f, 0.2f, 0.3f, 1.0f };
 	float texColor[4] = { 1, 1, 1, 1 };
+	float rotation = 0;
 	Ref<Texture> texture;
 	Ref<Texture> bg;
 	Ref<VertexArray> mVertexArray;

@@ -11,11 +11,13 @@ If the repository was cloned without the `--recursive` flag, it doesn't have the
 You can also copy Eagle with github without having to install git. Just click the green Code button at the top and from the dropdown the zip button. Unzip the dowloaded zip-file and you are good to go.
 
 
-### Planned features in no order:
+## Planned features in no order:
 - An interactive UI library
 - Particle system
 - Entity component system
-- Useful systems and components (Physics, Collision)
+- Serialization
+- Collision detection
+- Physics
 - Support for Mac, Linux, Android and iOS
 - Support for other rendering APIs (DirectX, Vulkan)
 - A scripting language

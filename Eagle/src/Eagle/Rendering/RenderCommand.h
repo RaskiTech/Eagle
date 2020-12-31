@@ -13,9 +13,7 @@ namespace Egl {
 		static inline void SetColor(const glm::vec4& color) { sRenderer->SetColor(color); }
 		static inline void Clear() { sRenderer->Clear(); }
 
-		static inline void DrawIndexed(const Ref<VertexArray>& vArray) {
-			sRenderer->DrawIndexed(vArray);
-		}
+		static inline void DrawIndexed(const Ref<VertexArray>& vArray, uint32_t indexCount = 0) { sRenderer->DrawIndexed(vArray, indexCount); }
 
 	private:
 		static RenderAPI* sRenderer;

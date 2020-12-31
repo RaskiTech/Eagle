@@ -35,7 +35,6 @@ namespace Egl {
 			// We don't need the shader anymore.
 			glDeleteShader(vertexShader);
 
-			LOG_ENG_ERROR("Vertex shader compilation failed. Error: ");
 			LOG_ENG_ERROR("{0}", infoLog.data());
 
 			return;
@@ -67,7 +66,6 @@ namespace Egl {
 			// Either of them. Don't leak shaders.
 			glDeleteShader(vertexShader);
 
-			LOG_ENG_ERROR("Fragment shader compilation failed. Error: ");
 			LOG_ENG_ERROR("{0}", infoLog.data());
 
 			return;
@@ -103,7 +101,6 @@ namespace Egl {
 			glDeleteShader(vertexShader);
 			glDeleteShader(fragmentShader);
 
-			LOG_ENG_ERROR("Shader linking failed. Error: ");
 			LOG_ENG_ERROR("{0}", infoLog.data());
 
 			return;
@@ -129,6 +126,16 @@ namespace Egl {
 
 	////////////////////////// Set Uniforms //////////////////////////
 
+	void OpenGLShader::SetInt(const std::string& name, int value) {
+		EAGLE_PROFILE_FUNCTION();
+		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		glUniform1i(location, value);
+	}
+	void OpenGLShader::SetIntArray(const std::string& name, int* values, uint32_t count) {
+		EAGLE_PROFILE_FUNCTION();
+		GLint location = glGetUniformLocation(mRendererID, name.c_str());
+		glUniform1iv(location, count, values);
+	}
 	void OpenGLShader::SetFloat(const std::string& name, float value) {
 		EAGLE_PROFILE_FUNCTION();
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());
@@ -153,10 +160,5 @@ namespace Egl {
 		EAGLE_PROFILE_FUNCTION();
 		GLint location = glGetUniformLocation(mRendererID, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
-	}
-	void OpenGLShader::SetInt(const std::string& name, int value) {
-		EAGLE_PROFILE_FUNCTION();
-		GLint location = glGetUniformLocation(mRendererID, name.c_str());
-		glUniform1i(location, value);
 	}
 }
