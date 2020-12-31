@@ -1,57 +1,39 @@
+// OpenGl impl for index and vertex buffers
 #pragma once
 
-// OpenGl impl for index and vertex buffers
-
-#include <EaglePCH.h>
 #include "Eagle/Rendering/Buffer.h"
-#include <glad/glad.h>
 
 namespace Egl {
 
-	///////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////////// Vertex buffers ////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////////
+	class OpenGLVertexBuffer : public VertexBuffer {
+	public:
+		OpenGLVertexBuffer(float* vertices, uint32_t size);
+		virtual ~OpenGLVertexBuffer();
 
-	VertexBuffer::VertexBuffer(float* vertices, uint32_t size) {
-		EAGLE_PROFILE_FUNCTION();
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
 
-		glCreateBuffers(1, &mRendererID);
-		glBindBuffer(GL_ARRAY_BUFFER, mRendererID);
-		glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW);
-	}
-	VertexBuffer::~VertexBuffer() {
-		EAGLE_PROFILE_FUNCTION();
-		glDeleteBuffers(1, &mRendererID);
-	}
-	void VertexBuffer::Bind() const {
-		EAGLE_PROFILE_FUNCTION();
-		glBindBuffer(GL_ARRAY_BUFFER, mRendererID);
-	}
-	void VertexBuffer::Unbind() const {
-		EAGLE_PROFILE_FUNCTION();
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
-	}
+		void SetLayout(const BufferLayout& layout) override { mLayout = layout; }
+		const BufferLayout& GetLayout() const { return mLayout; }
 
-	///////////////////////////////////////////////////////////////////////////////////////
-	/////////////////////////////////// Index buffers /////////////////////////////////////
-	///////////////////////////////////////////////////////////////////////////////////////
+	private:
+		BufferLayout mLayout;
+		uint32_t mRendererID;
+	};
 
-	IndexBuffer::IndexBuffer(uint32_t* indices, uint32_t count) : mCount(count) {
-		EAGLE_PROFILE_FUNCTION();
-		glCreateBuffers(1, &mRendererID);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mRendererID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(uint32_t), indices, GL_STATIC_DRAW);
-	}
-	IndexBuffer::~IndexBuffer() {
-		EAGLE_PROFILE_FUNCTION();
-		glDeleteBuffers(1, &mRendererID);
-	}
-	void IndexBuffer::Bind() const {
-		EAGLE_PROFILE_FUNCTION();
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mRendererID);
-	}
-	void IndexBuffer::Unbind() const {
-		EAGLE_PROFILE_FUNCTION();
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	}
+	class OpenGLIndexBuffer : public IndexBuffer {
+	public:
+		OpenGLIndexBuffer(uint32_t* indices, uint32_t count);
+		virtual ~OpenGLIndexBuffer();
+
+		virtual void Bind() const override;
+		virtual void Unbind() const override;
+
+		inline uint32_t GetCount() const override { return mCount; }
+
+	private:
+		uint32_t mCount;
+		uint32_t mRendererID;
+	};
+
 }

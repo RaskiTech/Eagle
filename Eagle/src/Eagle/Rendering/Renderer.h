@@ -4,6 +4,7 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "Texture.h"
+#include "RenderAPI.h"
 
 namespace Egl {
 	class Renderer {
@@ -11,6 +12,7 @@ namespace Egl {
 		static void Init();
 		static void Shutdown();
 		static void OnWindowResize(uint32_t width, uint32_t height);
+		static inline RenderAPI::API GetAPI() { return RenderAPI::GetRendererAPI(); }
 
 		static void BeginScene(Camera& camera);
 		static void EndScene();

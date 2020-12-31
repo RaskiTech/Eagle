@@ -1,4 +1,6 @@
 #pragma once
+#include <string>
+#include <vector>
 #include "Eagle/Core/Core.h"
 
 namespace Egl {
@@ -61,6 +63,7 @@ namespace Egl {
 
 class BufferLayout {
 	public:
+		BufferLayout() {};
 		BufferLayout(const std::initializer_list<BufferElement>& elements)
 			: mElements(elements) { CalculateOffsetsAndStride(); }
 
@@ -78,8 +81,8 @@ class BufferLayout {
 			for (auto& element : mElements) {
 				element.offset = offset;
 				offset += element.size;
-				mStride += element.size;
 			}
+			mStride = offset;
 		}
 
 		std::vector<BufferElement> mElements;
@@ -90,45 +93,25 @@ class BufferLayout {
 
 	class VertexBuffer {
 	public:
-		inline static Ref<VertexBuffer> Create(float* vertices, uint32_t size) { return CreateRef<VertexBuffer>(vertices, size); }
-		VertexBuffer(float* vertices, uint32_t size);
-		~VertexBuffer();
+		static Ref<VertexBuffer> Create(float* vertices, uint32_t size);
+		virtual ~VertexBuffer() = default;
 
-		void Bind() const;
-		void Unbind() const;
-		void SetLayout(const BufferLayout& layout) { mLayout = layout; }
-		const BufferLayout& GetLayout() const { return mLayout; }
-
-	private:
-		BufferLayout mLayout;
-
-
-#ifdef EAGLE_RENDERER_OPENGL
-	private:
-		uint32_t mRendererID;
-#endif
-
+		virtual void Bind() const = 0;
+		virtual void Unbind() const = 0;
+		virtual const BufferLayout& GetLayout() const = 0;
+		virtual void SetLayout(const BufferLayout& layout) = 0;
 	};
 
 	//////////////////////////////////// Index buffer /////////////////////////////////////
 
 	class IndexBuffer {
 	public:
-		inline static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count) { return CreateRef<IndexBuffer>(indices, count); }
-		IndexBuffer(uint32_t* indices, uint32_t size);
-		~IndexBuffer();
+		static Ref<IndexBuffer> Create(uint32_t* indices, uint32_t count);
+		virtual ~IndexBuffer() = default;
 
-		inline uint32_t GetCount() const { return mCount; }
-		void Bind() const;
-		void Unbind() const;
+		virtual void Bind() const = 0;
+		virtual void Unbind() const = 0;
 
-	private:
-		uint32_t mCount;
-
-
-#ifdef EAGLE_RENDERER_OPENGL
-	private:
-		uint32_t mRendererID;
-#endif
+		virtual uint32_t GetCount() const = 0;
 	};
 }

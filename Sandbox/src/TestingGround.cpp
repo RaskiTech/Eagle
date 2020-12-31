@@ -3,7 +3,7 @@
 
 using namespace Egl;
 
-TestingGround::TestingGround() : Layer("TestingGround"), mCameraController(1280.0f / 720.0f, true) {
+TestingGround::TestingGround() : Layer("TestingGround"), mCameraController(1280.0f / 720.0f) {
 
 }
 
@@ -27,7 +27,7 @@ void TestingGround::OnUpdate() {
 	{
 		EAGLE_PROFILE_SCOPE("Rendering loop");
 		Renderer::BeginScene(mCameraController.GetCamera());
-		Renderer::DrawQuad({ 0, 0, -0.1f }, 0, {0.4, 1}, texture);
+		Renderer::DrawQuad({ 1, 0, -0.1f }, 0, {1, 1}, texture);
 		for (int i = 0; i < 10; i++) {
 			Renderer::DrawQuad({ i, 0 }, (float)i * 10, { 0.5f, i * 0.2f }, glm::vec4(color[0], color[1], color[2], color[3]));
 		}

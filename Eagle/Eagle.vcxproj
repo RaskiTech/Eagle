@@ -600,13 +600,23 @@
     <ClCompile Include="src\Eagle\Core\Log.cpp" />
     <ClCompile Include="src\Eagle\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Eagle\ImGui\ImGuiLayer.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\Buffer.cpp" />
     <ClCompile Include="src\Eagle\Rendering\Camera.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\RenderAPI.cpp" />
     <ClCompile Include="src\Eagle\Rendering\RenderCommand.cpp" />
     <ClCompile Include="src\Eagle\Rendering\Renderer.cpp" />
     <ClCompile Include="src\EaglePCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Eagle\Rendering\Shader.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\Texture.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\VertexArray.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platforms\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLRenderAPI.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLShader.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLTexture.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLVertexArray.cpp" />
     <ClCompile Include="src\Platforms\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platforms\Windows\WindowsWindow.cpp" />
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />

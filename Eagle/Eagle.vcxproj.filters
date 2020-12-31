@@ -1455,5 +1455,15 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLBuffer.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\Buffer.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLVertexArray.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\VertexArray.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLShader.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\Shader.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\Texture.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLTexture.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\RenderAPI.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLRenderAPI.cpp" />
   </ItemGroup>
 </Project>

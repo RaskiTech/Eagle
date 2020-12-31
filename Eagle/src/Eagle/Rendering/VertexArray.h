@@ -5,28 +5,15 @@
 namespace Egl {
 	class VertexArray {
 	public:
-		inline static Ref<VertexArray> Create() { return CreateRef<VertexArray>(); }
-		VertexArray();
-		~VertexArray();
+		static Ref<VertexArray> Create();
+		virtual ~VertexArray() = default;
 
-		void Bind() const;
-		void Unbind() const;
+		virtual void Bind() const = 0;
+		virtual void Unbind() const = 0;
 
-		void AddVertexBuffer(const Ref<VertexBuffer>& buffer);
-		void SetIndexBuffer(const  Ref<IndexBuffer>& buffer);
-		std::string ToString();
-
-		const auto& GetVertexBuffers() { return mVertexBuffers; }
-		const auto& GetIndexBuffer() { return mIndexBuffer; } 
-	private:
-		std::vector<Ref<VertexBuffer>> mVertexBuffers;
-		Ref<IndexBuffer> mIndexBuffer;
-		uint32_t mVertexBufferInsertIndex = 0;
-
-#ifdef EAGLE_RENDERER_OPENGL
-	private:
-		uint32_t mRendererID;
-#endif
-
+		virtual void AddVertexBuffer(const Ref<VertexBuffer>& buffer) = 0;
+		virtual void SetIndexBuffer(const  Ref<IndexBuffer>& buffer) = 0;
+		virtual const Ref<IndexBuffer>& GetIndexBuffer() const = 0;
+		virtual const std::vector<Ref<VertexBuffer>>& GetVertexBuffers() const = 0;
 	};
 }
