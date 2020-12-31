@@ -41,7 +41,7 @@ namespace Egl {
 			mInternalFormat = GL_RGB8;
 			mDataFormat = GL_RGB;
 		}
-		EAGLE_ENG_ASSERT(glFormat != 0 || dataFormat != 0, "A texture isn't in format RGB or RGBA!");
+		EAGLE_ENG_ASSERT(mInternalFormat != 0 || mDataFormat != 0, "A texture isn't in format RGB or RGBA!");
 
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &mRendererID);

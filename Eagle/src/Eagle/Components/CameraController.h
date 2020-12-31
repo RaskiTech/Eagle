@@ -16,7 +16,6 @@ namespace Egl {
 
 		float GetMoveSpeed() const { return mMoveSpeed; }
 		float GetRotationSpeed() const { return mRotationSpeed; }
-		void SetMoveSpeed(float speed) { mMoveSpeed = speed; }
 		void SetRotationSpeed(float speed) { mRotationSpeed = speed; }
 
 	private:
@@ -24,7 +23,7 @@ namespace Egl {
 		bool OnApplicationRezised(WindowResizeEvent& event);
 
 		float mAspectRatio;
-		float mZoomLevel = 1;
+		float mZoomLevel = 2;
 		Camera mCamera;
 		bool mShouldRotate;
 

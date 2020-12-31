@@ -1,6 +1,5 @@
 #include <EaglePCH.h>
 #include "WindowsWindow.h"
-#include "Eagle/Core/Log.h"
 #include "Eagle/Events/ApplicationEvent.h"
 #include "Eagle/Events/KeyEvent.h"
 #include "Eagle/Events/MouseEvent.h"
@@ -20,7 +19,7 @@ namespace Egl {
 	WindowsWindow::~WindowsWindow() { Shutdown(); }
 
 	static void GLFWErrorCallback(int error, const char* description) {
-		LOG_ENG_ERROR("GLFW ERROR! Errorcode: {0}", 0);
+		LOG_ENG_ERROR("GLFW ERROR! {0}: {1}", error, description);
 	}
 
 	void WindowsWindow::Init(const WindowProps& props) {
@@ -30,14 +29,13 @@ namespace Egl {
 		mData.width = props.width;
 		mData.height = props.height;
 
-		LOG_ENG_INFO("Creating window: {0} ({1}, {2})", props.Title, props.width, props.height);
-
 		if (sGLFWwindowCount == 0) {
 			{
 				EAGLE_PROFILE_SCOPE("glfwInit");
 				int success = glfwInit();
+				EAGLE_ENG_ASSERT(success, "Could not intialize GLFW!");
 			}
-			EAGLE_ENG_ASSERT(success, "Could not intialize GLFW!");
+
 			glfwSetErrorCallback(GLFWErrorCallback);
 		}
 		sGLFWwindowCount++;

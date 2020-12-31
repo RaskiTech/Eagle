@@ -90,7 +90,7 @@ namespace Egl {
 	}
 	void Renderer::Shutdown() {
 		EAGLE_PROFILE_FUNCTION();
-		//delete sRendererData;
+		delete sRendererData;
 	}
 	void Renderer::OnWindowResize(uint32_t width, uint32_t height) {
 		EAGLE_PROFILE_FUNCTION();

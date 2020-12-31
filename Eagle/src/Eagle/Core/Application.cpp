@@ -100,8 +100,6 @@ namespace Egl {
 
 			mWindow->OnUpdate();
 		}
-
-		Renderer::Shutdown();
 	}
 	
 	bool Application::OnWindowClose(WindowCloseEvent& e) {

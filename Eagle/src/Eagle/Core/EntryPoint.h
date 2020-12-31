@@ -6,10 +6,14 @@
 extern Egl::Application* Egl::CreateApplication();
 
 int main(int agrc, char** argv) {
-	EAGLE_PROFILE_BEGIN("Engine Startup", "Eagle-Profile-Startup.json");
 	Egl::Log::Init();
+	LOG_ENG_INFO("Engine starting...");
+
+	EAGLE_PROFILE_BEGIN("Engine Startup", "Eagle-Profile-Startup.json");
 	auto app = Egl::CreateApplication();
 	EAGLE_PROFILE_END();
+
+	LOG_ENG_INFO("Inizialization complete");
 
 	EAGLE_PROFILE_BEGIN("Engine Runtime", "Eagle-Profile-Runtime.json");
 	app->Run();
@@ -18,8 +22,6 @@ int main(int agrc, char** argv) {
 	EAGLE_PROFILE_BEGIN("Engine Shutdown", "Eagle-Profile-Shutdown.json");
 	delete app;
 	EAGLE_PROFILE_END();
-
-	//while (true);
 }
 
 #endif // EAGLE_PLATFORM_WINDOWS
