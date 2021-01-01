@@ -8,9 +8,11 @@
 #include "Eagle/Core/Layers/Layer.h"
 #include "Eagle/Core/Keycodes.h"
 #include "Eagle/Core/Input.h"
+#include "Eagle/Core/Random.h"
 
 #include "Eagle/ImGui/ImGuiLayer.h"
 #include "Eagle/Components/CameraController.h"
+#include "Eagle/Components/ParticleSystem.h"
 
 //Rendering
 #include "Eagle/Rendering/Renderer.h"

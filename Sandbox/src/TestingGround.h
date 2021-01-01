@@ -26,4 +26,14 @@ private:
 	Ref<Texture> bg;
 	Ref<VertexArray> mVertexArray;
 	Ref<Shader> mShader;
+
+	ParticleSystemProps mParticleProps;
+	ParticleSystem mParticleSystem;
+
+	float particleMinColor[4] = { 0.2f, 0.3f, 0.8f, 1 };
+	float particleMaxColor[4] = { 0.8f, 0.3f, 0.2f, 1 };
+	float particleColorLifetime[4] = { 0.8f, 0.3f, 0.2f, 1 };
+	float particleMaxSize[2] = { 0.2f, 0.2f };
+	float particleMinSize[2] = { 0.2f, 0.2f };
+	float particleSizeAtEnd[2] = { -0.2f, -0.2f };
 };

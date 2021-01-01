@@ -14,18 +14,10 @@ void UILibraryExampleUse() {
 
 namespace Egl {
 
-	struct QuadVertex {
-		glm::vec3 position;
-		glm::vec4 color;
-		glm::vec2 texCoord;
-		float tilingFactor;
-		float textureID;
-	};
-
 	struct RendererData {
-		const uint32_t maxQuads = 10000;
-		const uint32_t maxVertices = 4 * maxQuads;
-		const uint32_t maxIndices = 6 * maxQuads;
+		static const uint32_t maxQuads = 50000;
+		static const uint32_t maxVertices = 4 * maxQuads;
+		static const uint32_t maxIndices = 6 * maxQuads;
 		static const uint32_t maxTextureSlots = 32;
 
 		std::array<Ref<Texture>, maxTextureSlots> textureSlots;
@@ -42,30 +34,34 @@ namespace Egl {
 
 		glm::vec4 sampleVertices[4];
 	};
-	static RendererData sRendererData;
+
+	static RendererData sData;
+	static RendererStats sStats;
+
+	RendererStats& Renderer::GetStats() { return sStats; }
 
 	void Renderer::Init() {
 		EAGLE_PROFILE_FUNCTION();
 
 		RenderCommand::Init();
-		sRendererData.quadVA = VertexArray::Create();
+		sData.quadVA = VertexArray::Create();
 
-		sRendererData.quadVB = VertexBuffer::Create(sRendererData.maxVertices * sizeof(QuadVertex));
-		sRendererData.quadVB->SetLayout({
+		sData.quadVB = VertexBuffer::Create(sData.maxVertices * sizeof(QuadVertex));
+		sData.quadVB->SetLayout({
 			{ ShaderDataType::Float3, "Position" },
 			{ ShaderDataType::Float4, "Color" },
 			{ ShaderDataType::Float2, "TextureCoordinates" },
 			{ ShaderDataType::Float, "TilingFactor" },
 			{ ShaderDataType::Float, "TextureID" }
 		});
-		sRendererData.quadVA->AddVertexBuffer(sRendererData.quadVB);
+		sData.quadVA->AddVertexBuffer(sData.quadVB);
 
-		sRendererData.quadVertexBufferBase = new QuadVertex[sRendererData.maxVertices];
+		sData.quadVertexBufferBase = new QuadVertex[sData.maxVertices];
 
-		uint32_t* quadIndices = new uint32_t[sRendererData.maxIndices];
+		uint32_t* quadIndices = new uint32_t[sData.maxIndices];
 
 		uint32_t offset = 0;
-		for (uint32_t i = 0; i < sRendererData.maxIndices; i += 6) {
+		for (uint32_t i = 0; i < sData.maxIndices; i += 6) {
 			quadIndices[i + 0] = offset + 0;
 			quadIndices[i + 1] = offset + 1;
 			quadIndices[i + 2] = offset + 2;
@@ -77,16 +73,16 @@ namespace Egl {
 			offset += 4;
 		}
 
-		Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, sRendererData.maxIndices);
-		sRendererData.quadVA->SetIndexBuffer(quadIB);
+		Ref<IndexBuffer> quadIB = IndexBuffer::Create(quadIndices, sData.maxIndices);
+		sData.quadVA->SetIndexBuffer(quadIB);
 		delete[] quadIndices;
 
-		sRendererData.whiteTexture = Texture::Create(1, 1);
+		sData.whiteTexture = Texture::Create(1, 1);
 		uint32_t data = 0xffffffff;
-		sRendererData.whiteTexture->SetData(&data, sizeof(uint32_t));
+		sData.whiteTexture->SetData(&data, sizeof(uint32_t));
 
-		int32_t samplers[sRendererData.maxTextureSlots];
-		for (int32_t i = 0; i < sRendererData.maxTextureSlots; i++)
+		int32_t samplers[sData.maxTextureSlots];
+		for (int32_t i = 0; i < sData.maxTextureSlots; i++)
 			samplers[i] = i;
 
 		// TODO: TilingFactor
@@ -130,17 +126,17 @@ namespace Egl {
 			}
 		)";
 		#pragma endregion
-		sRendererData.quadShader = Shader::Create(vertexSource, fragmentSource);
-		sRendererData.quadShader->Bind();
-		sRendererData.quadShader->SetIntArray("uTextures", samplers, sRendererData.maxTextureSlots);
+		sData.quadShader = Shader::Create(vertexSource, fragmentSource);
+		sData.quadShader->Bind();
+		sData.quadShader->SetIntArray("uTextures", samplers, sData.maxTextureSlots);
 
 		// Set the white texture to slot 0
-		sRendererData.textureSlots[0] = sRendererData.whiteTexture;
+		sData.textureSlots[0] = sData.whiteTexture;
 
-		sRendererData.sampleVertices[0] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
-		sRendererData.sampleVertices[1] = glm::vec4(0.5f, -0.5f, 0.0f, 1.0f);
-		sRendererData.sampleVertices[2] = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
-		sRendererData.sampleVertices[3] = glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f);
+		sData.sampleVertices[0] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
+		sData.sampleVertices[1] = glm::vec4(0.5f, -0.5f, 0.0f, 1.0f);
+		sData.sampleVertices[2] = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
+		sData.sampleVertices[3] = glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f);
 	}
 	void Renderer::Shutdown() {
 		EAGLE_PROFILE_FUNCTION();
@@ -152,63 +148,57 @@ namespace Egl {
 
 	void Renderer::BeginScene(Camera& camera) {
 		EAGLE_PROFILE_FUNCTION();
-		sRendererData.quadShader->Bind();
-		sRendererData.quadShader->SetMat4("uViewProjection", camera.GetViewProjectionMatrix());
+		sData.quadShader->Bind();
+		sData.quadShader->SetMat4("uViewProjection", camera.GetViewProjectionMatrix());
 
-		sRendererData.quadVertexBufferPtr = sRendererData.quadVertexBufferBase;
-		sRendererData.quadIndexCount = 0; 
-		sRendererData.textureSlotIndex = 1;
+		sData.quadVertexBufferPtr = sData.quadVertexBufferBase;
+		sData.quadIndexCount = 0; 
+		sData.textureSlotIndex = 1;
 	}
 
-	static inline void SetQuadVertexBufferDataAndIncrement(QuadVertex* ptr, const glm::vec3& position, const glm::vec4 color, const glm::vec2 texCoord) {
+	
+	void Renderer::StartNewBatch() {
+		EndScene();
+		sData.quadIndexCount = 0;
+		sData.quadVertexBufferPtr = sData.quadVertexBufferBase;
+		sData.textureSlotIndex = 1;
+	}
+	void Renderer::SetQuadVertexBufferDataAndIncrement(QuadVertex*& ptr, const glm::vec3& position, 
+		const glm::vec4& color, const glm::vec2& texCoord, float tiligFactor, float textureID) 
+	{
 		ptr->position = position;
 		ptr->color = color;
 		ptr->texCoord = texCoord;
+		ptr->tilingFactor = tiligFactor;
+		ptr->textureID = textureID;
 		ptr++;
 	}
 	void Renderer::DrawColorQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 
+		if (sData.quadIndexCount >= RendererData::maxIndices)
+			StartNewBatch();
+
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[0];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 0, 0 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = 1;
-		sRendererData.quadVertexBufferPtr->textureID = 0;
-		sRendererData.quadVertexBufferPtr++;
+		for (int i = 0; i < 4; i++)
+			SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[i], color, { 0, 0 }, 1, 0);
 
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[1];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 1, 0 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = 1;
-		sRendererData.quadVertexBufferPtr->textureID = 0;
-		sRendererData.quadVertexBufferPtr++;
+		sData.quadIndexCount += 6;
 
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[2];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 1, 1 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = 1;
-		sRendererData.quadVertexBufferPtr->textureID = 0;
-		sRendererData.quadVertexBufferPtr++;
-
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[3];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 0, 1 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = 1;
-		sRendererData.quadVertexBufferPtr->textureID = 0;
-		sRendererData.quadVertexBufferPtr++;
-
-		sRendererData.quadIndexCount += 6;
+		sStats.quadCount++;
 	}
 	void Renderer::DrawTextureQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 
-		// Is this texture bind in some slot already
+		if (sData.quadIndexCount >= RendererData::maxIndices)
+			StartNewBatch();
+
+		// Is this texture bound in some slot already
 		float textureIndex = 0;
-		for (uint32_t i = 1; i < sRendererData.textureSlotIndex; i++) {
-			if (*sRendererData.textureSlots[i].get() == *texture.get()) {
+		for (uint32_t i = 1; i < sData.textureSlotIndex; i++) {
+			if (*sData.textureSlots[i].get() == *texture.get()) {
 				textureIndex = (float)i;
 				break;
 			}
@@ -216,88 +206,50 @@ namespace Egl {
 
 		if (textureIndex == 0) {
 			// Not bound
-			textureIndex = (float)sRendererData.textureSlotIndex;
-			sRendererData.textureSlots[sRendererData.textureSlotIndex] = texture; // Should be replaced when switching to using assets
-			sRendererData.textureSlotIndex++;
+			textureIndex = (float)sData.textureSlotIndex;
+			sData.textureSlots[sData.textureSlotIndex] = texture; // Should be replaced when switching to using assets
+			sData.textureSlotIndex++;
 		}
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[0];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 0, 0 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = tilingFactor;
-		sRendererData.quadVertexBufferPtr->textureID = textureIndex;
-		sRendererData.quadVertexBufferPtr++;
+		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[0], color, { 0, 0 }, tilingFactor, textureIndex);
+		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[1], color, { 1, 0 }, tilingFactor, textureIndex);
+		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[2], color, { 1, 1 }, tilingFactor, textureIndex);
+		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[3], color, { 0, 1 }, tilingFactor, textureIndex);
 
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[1];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 1, 0 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = tilingFactor;
-		sRendererData.quadVertexBufferPtr->textureID = textureIndex;
-		sRendererData.quadVertexBufferPtr++;
+		sData.quadIndexCount += 6;
 
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[2];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 1, 1 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = tilingFactor;
-		sRendererData.quadVertexBufferPtr->textureID = textureIndex;
-		sRendererData.quadVertexBufferPtr++;
-
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[3];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 0, 1 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = tilingFactor;
-		sRendererData.quadVertexBufferPtr->textureID = textureIndex;
-		sRendererData.quadVertexBufferPtr++;
-
-		sRendererData.quadIndexCount += 6;
+		sStats.quadCount++;
 	}
 	void Renderer::DrawRotatedColorQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 		
+		if (sData.quadIndexCount >= RendererData::maxIndices)
+			StartNewBatch();
+
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[0];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 0, 0 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = 1;
-		sRendererData.quadVertexBufferPtr->textureID = 0;
-		sRendererData.quadVertexBufferPtr++;
+		for (int i = 0; i < 4; i++)
+			SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[i], color, { 0, 0 }, 1, 0);
+		
+		sData.quadIndexCount += 6;
 
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[1];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 1, 0 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = 1;
-		sRendererData.quadVertexBufferPtr->textureID = 0;
-		sRendererData.quadVertexBufferPtr++;
-
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[2];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 1, 1 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = 1;
-		sRendererData.quadVertexBufferPtr->textureID = 0;
-		sRendererData.quadVertexBufferPtr++;
-
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[3];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 0, 1 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = 1;
-		sRendererData.quadVertexBufferPtr->textureID = 0;
-		sRendererData.quadVertexBufferPtr++;
-
-		sRendererData.quadIndexCount += 6;
+		sStats.quadCount++;
 	}
 	void Renderer::DrawRotatedTextureQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 
+		if (sData.quadIndexCount >= RendererData::maxIndices)
+			StartNewBatch();
+
 		// Is this texture bind in some slot already
 		float textureIndex = 0;
-		for (uint32_t i = 1; i < sRendererData.textureSlotIndex; i++) {
-			if (*sRendererData.textureSlots[i].get() == *texture.get()) {
+		for (uint32_t i = 1; i < sData.textureSlotIndex; i++) {
+			if (*sData.textureSlots[i].get() == *texture.get()) {
 				textureIndex = (float)i;
 				break;
 			}
@@ -305,61 +257,40 @@ namespace Egl {
 
 		if (textureIndex == 0) {
 			// Not bound
-			textureIndex = (float)sRendererData.textureSlotIndex;
-			sRendererData.textureSlots[sRendererData.textureSlotIndex] = texture; // Should be replaced when switching to using assets
-			sRendererData.textureSlotIndex++;
+			textureIndex = (float)sData.textureSlotIndex;
+			sData.textureSlots[sData.textureSlotIndex] = texture; // Should be replaced when switching to using assets
+			sData.textureSlotIndex++;
 		}
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[0];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 0, 0 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = tilingFactor;
-		sRendererData.quadVertexBufferPtr->textureID = textureIndex;
-		sRendererData.quadVertexBufferPtr++;
+		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[0], color, { 0, 0 }, tilingFactor, textureIndex);
+		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[1], color, { 1, 0 }, tilingFactor, textureIndex);
+		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[2], color, { 1, 1 }, tilingFactor, textureIndex);
+		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[3], color, { 0, 1 }, tilingFactor, textureIndex);
 
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[1];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 1, 0 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = tilingFactor;
-		sRendererData.quadVertexBufferPtr->textureID = textureIndex;
-		sRendererData.quadVertexBufferPtr++;
+		sData.quadIndexCount += 6;
 
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[2];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 1, 1 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = tilingFactor;
-		sRendererData.quadVertexBufferPtr->textureID = textureIndex;
-		sRendererData.quadVertexBufferPtr++;
-
-		sRendererData.quadVertexBufferPtr->position = transform * sRendererData.sampleVertices[3];
-		sRendererData.quadVertexBufferPtr->color = color;
-		sRendererData.quadVertexBufferPtr->texCoord = { 0, 1 };
-		sRendererData.quadVertexBufferPtr->tilingFactor = tilingFactor;
-		sRendererData.quadVertexBufferPtr->textureID = textureIndex;
-		sRendererData.quadVertexBufferPtr++;
-
-		sRendererData.quadIndexCount += 6;
+		sStats.quadCount++;
 	}
 
 
 	void Renderer::EndScene() {
 		EAGLE_PROFILE_FUNCTION();
 
-		uint32_t size = (uint8_t*)sRendererData.quadVertexBufferPtr - (uint8_t*)sRendererData.quadVertexBufferBase;
-		sRendererData.quadVB->SetData(sRendererData.quadVertexBufferBase, size);
+		uint32_t size = (uint8_t*)sData.quadVertexBufferPtr - (uint8_t*)sData.quadVertexBufferBase;
+		sData.quadVB->SetData(sData.quadVertexBufferBase, size);
 		Flush();
 	}
 
 	void Renderer::Flush() {
 		EAGLE_PROFILE_FUNCTION();
-		for (uint32_t i = 0; i < sRendererData.textureSlotIndex; i++)
-			sRendererData.textureSlots[i]->Bind(i);
+		for (uint32_t i = 0; i < sData.textureSlotIndex; i++)
+			sData.textureSlots[i]->Bind(i);
 
-		RenderCommand::DrawIndexed(sRendererData.quadVA, sRendererData.quadIndexCount);
-
+		RenderCommand::DrawIndexed(sData.quadVA, sData.quadIndexCount);
+		sStats.drawCallCount++;
 	}
 }

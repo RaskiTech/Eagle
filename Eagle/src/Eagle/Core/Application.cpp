@@ -2,11 +2,13 @@
 #include "Application.h"
 #include "Eagle/Rendering/Renderer.h"
 #include "Eagle/Rendering/RenderCommand.h"
+#include "Eagle/Core/Random.h"
 
 #include "GLFW/glfw3.h"
-
 #include "Eagle/Rendering/VertexArray.h"
 namespace Egl {
+	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
+	std::mt19937 Random::sRandomizer;
 
 #define EAGLE_BIND_EVENT_FUNC(x) std::bind(&Application::x, this, std::placeholders::_1)
 
@@ -22,6 +24,7 @@ namespace Egl {
 		mWindow->SetEventCallback(EAGLE_BIND_EVENT_FUNC(OnEvent));
 
 		Renderer::Init();
+		Random::Init();
 
 		mImGuiLayer = new ImGuiLayer();
 		AddOverlay(mImGuiLayer);

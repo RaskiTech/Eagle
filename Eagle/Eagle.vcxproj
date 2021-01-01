@@ -143,6 +143,7 @@
   <ItemGroup>
     <ClInclude Include="src\Eagle.h" />
     <ClInclude Include="src\Eagle\Components\CameraController.h" />
+    <ClInclude Include="src\Eagle\Components\ParticleSystem.h" />
     <ClInclude Include="src\Eagle\Core\Application.h" />
     <ClInclude Include="src\Eagle\Core\Core.h" />
     <ClInclude Include="src\Eagle\Core\EntryPoint.h" />
@@ -151,6 +152,7 @@
     <ClInclude Include="src\Eagle\Core\Layers\Layer.h" />
     <ClInclude Include="src\Eagle\Core\Layers\LayerStack.h" />
     <ClInclude Include="src\Eagle\Core\Log.h" />
+    <ClInclude Include="src\Eagle\Core\Random.h" />
     <ClInclude Include="src\Eagle\Core\Time.h" />
     <ClInclude Include="src\Eagle\Core\Window.h" />
     <ClInclude Include="src\Eagle\Debug\Instrumentor.h" />
@@ -594,6 +596,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\CameraControler.cpp" />
+    <ClCompile Include="src\Eagle\Components\ParticleSystem.cpp" />
     <ClCompile Include="src\Eagle\Core\Application.cpp" />
     <ClCompile Include="src\Eagle\Core\Layers\Layer.cpp" />
     <ClCompile Include="src\Eagle\Core\Layers\LayerStack.cpp" />

@@ -50,7 +50,7 @@ namespace Egl {
 		mContext->Init();
 
 		glfwSetWindowUserPointer(mWindow, &mData);
-		SetVSync(true);
+		SetVSync(false);
 
 		// Set events
 		glfwSetWindowSizeCallback(mWindow, [](GLFWwindow* window, int width, int height) {

@@ -1408,6 +1408,8 @@
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Debug\Instrumentor.h" />
+    <ClInclude Include="src\Eagle\Components\ParticleSystem.h" />
+    <ClInclude Include="src\Eagle\Core\Random.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\CameraControler.cpp">
@@ -1465,5 +1467,6 @@
     <ClCompile Include="src\Platforms\OpenGL\OpenGLTexture.cpp" />
     <ClCompile Include="src\Eagle\Rendering\RenderAPI.cpp" />
     <ClCompile Include="src\Platforms\OpenGL\OpenGLRenderAPI.cpp" />
+    <ClCompile Include="src\Eagle\Components\ParticleSystem.cpp" />
   </ItemGroup>
 </Project>
