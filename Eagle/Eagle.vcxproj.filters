@@ -108,9 +108,6 @@
     <ClInclude Include="src\Eagle\Events\MouseEvent.h">
       <Filter>src\Eagle\Events</Filter>
     </ClInclude>
-    <ClInclude Include="src\Eagle\ImGui\ImGuiLayer.h">
-      <Filter>src\Eagle\ImGui</Filter>
-    </ClInclude>
     <ClInclude Include="src\Eagle\Rendering\Buffer.h">
       <Filter>src\Eagle\Rendering</Filter>
     </ClInclude>
@@ -1410,6 +1407,9 @@
     <ClInclude Include="src\Eagle\Debug\Instrumentor.h" />
     <ClInclude Include="src\Eagle\Components\ParticleSystem.h" />
     <ClInclude Include="src\Eagle\Core\Random.h" />
+    <ClInclude Include="src\Eagle\ImGui\ImGuiLayer.h">
+      <Filter>src\Eagle\ImGui</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\CameraControler.cpp">
@@ -1426,12 +1426,6 @@
     </ClCompile>
     <ClCompile Include="src\Eagle\Core\Log.cpp">
       <Filter>src\Eagle\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Eagle\ImGui\ImGuiBuild.cpp">
-      <Filter>src\Eagle\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Eagle\ImGui\ImGuiLayer.cpp">
-      <Filter>src\Eagle\ImGui</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\Rendering\Camera.cpp">
       <Filter>src\Eagle\Rendering</Filter>
@@ -1468,5 +1462,11 @@
     <ClCompile Include="src\Eagle\Rendering\RenderAPI.cpp" />
     <ClCompile Include="src\Platforms\OpenGL\OpenGLRenderAPI.cpp" />
     <ClCompile Include="src\Eagle\Components\ParticleSystem.cpp" />
+    <ClCompile Include="src\Eagle\ImGui\ImGuiBuild.cpp">
+      <Filter>src\Eagle\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\ImGui\ImGuiLayer.cpp">
+      <Filter>src\Eagle\ImGui</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

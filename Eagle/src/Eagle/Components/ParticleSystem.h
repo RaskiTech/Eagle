@@ -8,13 +8,12 @@ namespace Egl {
 		float emitAngleWidthRadiant = 3.141f, emitDirOffset = 0;
 		float minVelocity = 1, maxVelocity = 1;
 
-		float acceleration = 1;
+		float acceleration = 0;
 		float minLifeTime = 5, maxLifetime = 5;
 		glm::vec4 minColor, maxColor;
 		float minRotation, maxRotation;
 		glm::vec2 minSize = { 1, 1 }, maxSize = { 1, 1 };
 
-		glm::vec4 colorOverLifetime;
 		glm::vec2 sizeOverLifetime = { 0, 0 };
 		float rotationOverLifetime = 0;
 	};
@@ -30,10 +29,10 @@ namespace Egl {
 	private:
 		struct ParticleData {
 			float lifeTime, beenAlive;
+			glm::vec2 position;
+			float rotation;
 
-			glm::vec2 startVelocity;
-			glm::vec2 startPosition;
-			float startRotation;
+			glm::vec2 velocity;
 			glm::vec2 startSize;
 			glm::vec4 color;
 

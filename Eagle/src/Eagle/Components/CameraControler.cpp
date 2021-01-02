@@ -31,7 +31,6 @@ namespace Egl {
 	void CameraController::SetZoom(float zoom) {
 		EAGLE_PROFILE_FUNCTION();
 		mZoomLevel = zoom;
-		mZoomLevel = std::max(mZoomLevel, 0.25f);
 		mCamera.SetProjection(-mAspectRatio * mZoomLevel, mAspectRatio * mZoomLevel, -mZoomLevel, mZoomLevel);
 	}
 

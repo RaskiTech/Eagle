@@ -22,18 +22,13 @@ private:
 	float color[4] = { 0.8f, 0.2f, 0.3f, 1.0f };
 	float texColor[4] = { 1, 1, 1, 1 };
 	float rotation = 0;
-	Ref<Texture> texture;
-	Ref<Texture> bg;
+
+	Ref<Texture> mCaveTiles, bg;
+	Ref<SubTexture> creature;
+
 	Ref<VertexArray> mVertexArray;
 	Ref<Shader> mShader;
 
 	ParticleSystemProps mParticleProps;
 	ParticleSystem mParticleSystem;
-
-	float particleMinColor[4] = { 0.2f, 0.3f, 0.8f, 1 };
-	float particleMaxColor[4] = { 0.8f, 0.3f, 0.2f, 1 };
-	float particleColorLifetime[4] = { 0.8f, 0.3f, 0.2f, 1 };
-	float particleMaxSize[2] = { 0.2f, 0.2f };
-	float particleMinSize[2] = { 0.2f, 0.2f };
-	float particleSizeAtEnd[2] = { -0.2f, -0.2f };
 };

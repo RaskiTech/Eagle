@@ -26,4 +26,20 @@ namespace Egl {
 		return nullptr;
 	}
 
+	///////////////////////////// SubTexture /////////////////////////////
+
+	/// <summary> If the sub-textures in the texture form a grid, this can be used. </summary>
+	Ref<SubTexture> SubTexture::CreateFromIndexes(const Ref<Texture>& texture, const glm::vec2& subTextureIndexes, const glm::vec2& gridCellSize, const glm::vec2& cellsInSprite) {
+		glm::vec2 min = { subTextureIndexes.x * gridCellSize.x / texture->GetWidth(), subTextureIndexes.y * gridCellSize.y / texture->GetHeight() };
+		glm::vec2 max = { (subTextureIndexes.x + cellsInSprite.x) * gridCellSize.x / texture->GetWidth(), (subTextureIndexes.y + cellsInSprite.y) * gridCellSize.y / texture->GetHeight() };
+		return CreateRef<SubTexture>(texture, min, max);
+	}
+
+	SubTexture::SubTexture(const Ref<Texture>& texture, const glm::vec2& minCoords, const glm::vec2& maxCoords) : mTexture(texture)  {
+		mSubTextureCoords[0] = minCoords;
+		mSubTextureCoords[1] = { maxCoords.x, minCoords.y };
+		mSubTextureCoords[2] = maxCoords;
+		mSubTextureCoords[3] = { minCoords.x, maxCoords.y };
+	}
+
 }

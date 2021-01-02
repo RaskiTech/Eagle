@@ -85,7 +85,6 @@ namespace Egl {
 		for (int32_t i = 0; i < sData.maxTextureSlots; i++)
 			samplers[i] = i;
 
-		// TODO: TilingFactor
 		#pragma region Shader Sourcecode
 		std::string vertexSource = R"(
 			#version 330 core
@@ -122,7 +121,45 @@ namespace Egl {
 			uniform sampler2D uTextures[32];
 
 			void main() { 
-				color = texture(uTextures[int(vTextureID)], vTexCoord * vTilingFactor) * vColor;
+				// Aparently this doesn't work for some devices
+				//color = texture(uTextures[int(vTextureID)], vTexCoord * vTilingFactor) * vColor;
+				
+				vec4 texColor = vColor;
+				switch (int(vTextureID)) {
+					case 0:  texColor *= texture(uTextures[0],  vTexCoord * vTilingFactor); break;
+					case 1:  texColor *= texture(uTextures[1],  vTexCoord * vTilingFactor); break;
+					case 2:  texColor *= texture(uTextures[2],  vTexCoord * vTilingFactor); break;
+					case 3:  texColor *= texture(uTextures[3],  vTexCoord * vTilingFactor); break;
+					case 4:  texColor *= texture(uTextures[4],  vTexCoord * vTilingFactor); break;
+					case 5:  texColor *= texture(uTextures[5],  vTexCoord * vTilingFactor); break;
+					case 6:  texColor *= texture(uTextures[6],  vTexCoord * vTilingFactor); break;
+					case 7:  texColor *= texture(uTextures[7],  vTexCoord * vTilingFactor); break;
+					case 8:  texColor *= texture(uTextures[8],  vTexCoord * vTilingFactor); break;
+					case 9:  texColor *= texture(uTextures[9],  vTexCoord * vTilingFactor); break;
+					case 10: texColor *= texture(uTextures[10], vTexCoord * vTilingFactor); break;
+					case 11: texColor *= texture(uTextures[11], vTexCoord * vTilingFactor); break;
+					case 12: texColor *= texture(uTextures[12], vTexCoord * vTilingFactor); break;
+					case 13: texColor *= texture(uTextures[13], vTexCoord * vTilingFactor); break;
+					case 14: texColor *= texture(uTextures[14], vTexCoord * vTilingFactor); break;
+					case 15: texColor *= texture(uTextures[15], vTexCoord * vTilingFactor); break;
+					case 16: texColor *= texture(uTextures[16], vTexCoord * vTilingFactor); break;
+					case 17: texColor *= texture(uTextures[17], vTexCoord * vTilingFactor); break;
+					case 18: texColor *= texture(uTextures[18], vTexCoord * vTilingFactor); break;
+					case 19: texColor *= texture(uTextures[19], vTexCoord * vTilingFactor); break;
+					case 20: texColor *= texture(uTextures[20], vTexCoord * vTilingFactor); break;
+					case 21: texColor *= texture(uTextures[21], vTexCoord * vTilingFactor); break;
+					case 22: texColor *= texture(uTextures[22], vTexCoord * vTilingFactor); break;
+					case 23: texColor *= texture(uTextures[23], vTexCoord * vTilingFactor); break;
+					case 24: texColor *= texture(uTextures[24], vTexCoord * vTilingFactor); break;
+					case 25: texColor *= texture(uTextures[25], vTexCoord * vTilingFactor); break;
+					case 26: texColor *= texture(uTextures[26], vTexCoord * vTilingFactor); break;
+					case 27: texColor *= texture(uTextures[27], vTexCoord * vTilingFactor); break;
+					case 28: texColor *= texture(uTextures[28], vTexCoord * vTilingFactor); break;
+					case 29: texColor *= texture(uTextures[29], vTexCoord * vTilingFactor); break;
+					case 30: texColor *= texture(uTextures[30], vTexCoord * vTilingFactor); break;
+					case 31: texColor *= texture(uTextures[31], vTexCoord * vTilingFactor); break;
+				}
+				color = texColor;
 			}
 		)";
 		#pragma endregion
@@ -163,33 +200,64 @@ namespace Egl {
 		sData.quadVertexBufferPtr = sData.quadVertexBufferBase;
 		sData.textureSlotIndex = 1;
 	}
-	void Renderer::SetQuadVertexBufferDataAndIncrement(QuadVertex*& ptr, const glm::vec3& position, 
-		const glm::vec4& color, const glm::vec2& texCoord, float tiligFactor, float textureID) 
-	{
-		ptr->position = position;
-		ptr->color = color;
-		ptr->texCoord = texCoord;
-		ptr->tilingFactor = tiligFactor;
-		ptr->textureID = textureID;
-		ptr++;
-	}
+
 	void Renderer::DrawColorQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
-
-		if (sData.quadIndexCount >= RendererData::maxIndices)
-			StartNewBatch();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		for (int i = 0; i < 4; i++)
-			SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[i], color, { 0, 0 }, 1, 0);
-
-		sData.quadIndexCount += 6;
-
-		sStats.quadCount++;
+		DrawColorQuadLocal(transform, color);
 	}
+	void Renderer::DrawRotatedColorQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const glm::vec4& color) {
+		EAGLE_PROFILE_FUNCTION();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1), position)
+			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
+			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
+
+		DrawColorQuadLocal(transform, color);
+	}
+
 	void Renderer::DrawTextureQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
+		EAGLE_PROFILE_FUNCTION();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1), position)
+			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
+		glm::vec2 texCoords[4] = { {0, 0}, {1, 0}, {1, 1}, {0, 1} };
+
+		DrawTextureQuadLocal(transform, texture, texCoords, tilingFactor, color);
+	}
+	void Renderer::DrawRotatedTextureQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
+		EAGLE_PROFILE_FUNCTION();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1), position)
+			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
+			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
+		glm::vec2 texCoords[4] = { {0, 0}, {1, 0}, {1, 1}, {0, 1} };
+
+		DrawTextureQuadLocal(transform, texture, texCoords, tilingFactor, color);
+	}
+
+	void Renderer::DrawTextureQuad(const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) {
+		EAGLE_PROFILE_FUNCTION();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1), position)
+			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
+
+		DrawTextureQuadLocal(transform, subTexture->GetTexture(), subTexture->GetTextureCoords(), tilingFactor, color);
+	}
+	void Renderer::DrawRotatedTextureQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) {
+		EAGLE_PROFILE_FUNCTION();
+
+		glm::mat4 transform = glm::translate(glm::mat4(1), position)
+			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
+			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
+
+		DrawTextureQuadLocal(transform, subTexture->GetTexture(), subTexture->GetTextureCoords(), tilingFactor, color);
+	}
+
+	void Renderer::DrawTextureQuadLocal(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2 texCoords[4], float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 
 		if (sData.quadIndexCount >= RendererData::maxIndices)
@@ -211,68 +279,35 @@ namespace Egl {
 			sData.textureSlotIndex++;
 		}
 
-		glm::mat4 transform = glm::translate(glm::mat4(1), position)
-			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
-
-		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[0], color, { 0, 0 }, tilingFactor, textureIndex);
-		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[1], color, { 1, 0 }, tilingFactor, textureIndex);
-		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[2], color, { 1, 1 }, tilingFactor, textureIndex);
-		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[3], color, { 0, 1 }, tilingFactor, textureIndex);
+		for (int i = 0; i < 4; i++) {
+			sData.quadVertexBufferPtr->position = transform * sData.sampleVertices[i];
+			sData.quadVertexBufferPtr->color = color;
+			sData.quadVertexBufferPtr->texCoord = texCoords[i];
+			sData.quadVertexBufferPtr->tilingFactor = tilingFactor;
+			sData.quadVertexBufferPtr->textureID = textureIndex;
+			sData.quadVertexBufferPtr++;
+		}
 
 		sData.quadIndexCount += 6;
-
 		sStats.quadCount++;
 	}
-	void Renderer::DrawRotatedColorQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const glm::vec4& color) {
-		EAGLE_PROFILE_FUNCTION();
-		
-		if (sData.quadIndexCount >= RendererData::maxIndices)
-			StartNewBatch();
-
-		glm::mat4 transform = glm::translate(glm::mat4(1), position)
-			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
-			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
-
-		for (int i = 0; i < 4; i++)
-			SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[i], color, { 0, 0 }, 1, 0);
-		
-		sData.quadIndexCount += 6;
-
-		sStats.quadCount++;
-	}
-	void Renderer::DrawRotatedTextureQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
+	void Renderer::DrawColorQuadLocal(const glm::mat4& transform, const glm::vec4& color)
+	{
 		EAGLE_PROFILE_FUNCTION();
 
 		if (sData.quadIndexCount >= RendererData::maxIndices)
 			StartNewBatch();
 
-		// Is this texture bind in some slot already
-		float textureIndex = 0;
-		for (uint32_t i = 1; i < sData.textureSlotIndex; i++) {
-			if (*sData.textureSlots[i].get() == *texture.get()) {
-				textureIndex = (float)i;
-				break;
-			}
+		for (int i = 0; i < 4; i++) {
+			sData.quadVertexBufferPtr->position = transform * sData.sampleVertices[i];
+			sData.quadVertexBufferPtr->color = color;
+			sData.quadVertexBufferPtr->texCoord = { 0, 0 }; // This could probably be removed
+			sData.quadVertexBufferPtr->tilingFactor = 0;   	// This could probably be removed
+			sData.quadVertexBufferPtr->textureID = 0;
+			sData.quadVertexBufferPtr++;
 		}
-
-		if (textureIndex == 0) {
-			// Not bound
-			textureIndex = (float)sData.textureSlotIndex;
-			sData.textureSlots[sData.textureSlotIndex] = texture; // Should be replaced when switching to using assets
-			sData.textureSlotIndex++;
-		}
-
-		glm::mat4 transform = glm::translate(glm::mat4(1), position)
-			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
-			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
-
-		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[0], color, { 0, 0 }, tilingFactor, textureIndex);
-		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[1], color, { 1, 0 }, tilingFactor, textureIndex);
-		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[2], color, { 1, 1 }, tilingFactor, textureIndex);
-		SetQuadVertexBufferDataAndIncrement(sData.quadVertexBufferPtr, transform * sData.sampleVertices[3], color, { 0, 1 }, tilingFactor, textureIndex);
 
 		sData.quadIndexCount += 6;
-
 		sStats.quadCount++;
 	}
 

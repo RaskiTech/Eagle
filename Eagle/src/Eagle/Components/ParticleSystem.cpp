@@ -30,11 +30,13 @@ namespace Egl {
 			particle.beenAlive += Time::GetFrameDelta();
 			float lifePercentage = particle.beenAlive / particle.lifeTime;
 
-			glm::vec2 size = glm::lerp(particle.startSize, mProps.sizeOverLifetime+particle.startSize, lifePercentage);
-			float rotation = glm::lerp(mProps.rotationOverLifetime+particle.startRotation, particle.startRotation, lifePercentage);
-			glm::vec3 position = { particle.startPosition + particle.startVelocity * lifePercentage + mProps.acceleration * lifePercentage * lifePercentage, mProps.zPosition };
+			particle.velocity += particle.velocity * mProps.acceleration * Time::GetFrameDelta();
+			particle.position += particle.velocity * Time::GetFrameDelta();
+			particle.rotation += mProps.rotationOverLifetime * Time::GetFrameDelta();
 
-			Renderer::DrawRotatedColorQuad(position, rotation, size, particle.color);
+			glm::vec2 size = glm::lerp(particle.startSize, mProps.sizeOverLifetime+particle.startSize, lifePercentage);
+
+			Renderer::DrawRotatedColorQuad(glm::vec3(particle.position, mProps.zPosition), particle.rotation, size, particle.color);
 		}
 		Renderer::EndScene();
 	}
@@ -46,12 +48,12 @@ namespace Egl {
 		data.lifeTime = Random::Float(mProps.minLifeTime, mProps.maxLifetime);
 		data.beenAlive = 0;
 		data.color = glm::lerp(mProps.minColor, mProps.maxColor, Random::Float01());
-		data.startPosition = position;
-		data.startRotation = Random::Float(mProps.minRotation, mProps.maxRotation);
+		data.position = position;
+		data.rotation = Random::Float(mProps.minRotation, mProps.maxRotation);
 		data.startSize = glm::lerp(mProps.minSize, mProps.maxSize, Random::Float01());
 
 		float angle = Random::Float(mProps.emitDirOffset, mProps.emitAngleWidthRadiant + mProps.emitDirOffset);
-		data.startVelocity = glm::vec2(glm::cos(angle), sin(angle)) * Random::Float(mProps.minVelocity, mProps.maxVelocity);
+		data.velocity = glm::vec2(glm::cos(angle), sin(angle)) * Random::Float(mProps.minVelocity, mProps.maxVelocity);
 
 		mNextParticleIndex = --mNextParticleIndex % mData.size();
 	}
