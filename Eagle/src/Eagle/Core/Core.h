@@ -1,6 +1,18 @@
 #pragma once
 #include <memory>
 
+#ifdef _WIN32
+	#ifdef _WIN64
+		// Currently this is also defined in predefinded macros 
+		//#define EAGLE_PLATFORM_WINDOWS
+	#else
+		#error Eagle doesn't support x86
+	#endif
+#else
+	#error Currently Eagle supports only windows
+#endif
+
+
 #ifdef EAGLE_PLATFORM_WINDOWS
 
 #else
@@ -9,13 +21,16 @@
 
 #define BIT(x) (1<<x)
 
-#ifdef EAGLE_DEBUG
+#if defined EAGLE_DEBUG || defined EAGLE_RELEASE
 	#define EAGLE_ENABLE_ASSERTS
 #endif
 
 #ifdef EAGLE_ENABLE_ASSERTS
 	#define EAGLE_ASSERT(x, ...) { if (!(x)) { LOG_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
 	#define EAGLE_ENG_ASSERT(x, ...) { if (!(x)) { LOG_ENG_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+
+	//#define EAGLE_ASSERT(x) { if (!(x)) { LOG_ERROR("Assertion Failed"); __debugbreak(); } }
+	//#define EAGLE_ENG_ASSERT(x) { if (!(x)) { LOG_ENG_ERROR("Assertion Failed"); __debugbreak(); } }
 #else
 	#define EAGLE_ASSERT(x, ...)
 	#define EAGLE_ENG_ASSERT(x, ...)

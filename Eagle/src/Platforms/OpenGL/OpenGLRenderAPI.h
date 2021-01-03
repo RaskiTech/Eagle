@@ -1,6 +1,6 @@
 #pragma once
-#include "Eagle/Rendering/RenderAPI.h"
 #include <glad/glad.h>
+#include "Eagle/Rendering/RenderAPI.h"
 
 namespace Egl {
 

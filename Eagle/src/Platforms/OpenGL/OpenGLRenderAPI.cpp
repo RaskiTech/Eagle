@@ -1,7 +1,8 @@
 #pragma once
-#include "EaglePCH.h"
-#include "OpenGLRenderAPI.h"
+#include <EaglePCH.h>
 #include <glad/glad.h>
+
+#include "OpenGLRenderAPI.h"
 
 
 namespace Egl {

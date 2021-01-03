@@ -15,10 +15,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}</ProjectGuid>
+    <ProjectGuid>{2AF439F6-96A9-B2EB-1F9E-ACC28B52A9EF}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>Sandbox</RootNamespace>
+    <RootNamespace>EagleEditor</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -55,23 +55,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\bin\Debug-windows-x86_64\Sandbox\</OutDir>
-    <IntDir>..\bin-int\Debug-windows-x86_64\Sandbox\</IntDir>
-    <TargetName>Sandbox</TargetName>
+    <OutDir>..\bin\Debug-windows-x86_64\EagleEditor\</OutDir>
+    <IntDir>..\bin-int\Debug-windows-x86_64\EagleEditor\</IntDir>
+    <TargetName>EagleEditor</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\bin\Release-windows-x86_64\Sandbox\</OutDir>
-    <IntDir>..\bin-int\Release-windows-x86_64\Sandbox\</IntDir>
-    <TargetName>Sandbox</TargetName>
+    <OutDir>..\bin\Release-windows-x86_64\EagleEditor\</OutDir>
+    <IntDir>..\bin-int\Release-windows-x86_64\EagleEditor\</IntDir>
+    <TargetName>EagleEditor</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\bin\Dist-windows-x86_64\Sandbox\</OutDir>
-    <IntDir>..\bin-int\Dist-windows-x86_64\Sandbox\</IntDir>
-    <TargetName>Sandbox</TargetName>
+    <OutDir>..\bin\Dist-windows-x86_64\EagleEditor\</OutDir>
+    <IntDir>..\bin-int\Dist-windows-x86_64\EagleEditor\</IntDir>
+    <TargetName>EagleEditor</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -132,11 +132,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\TestingGround.h" />
+    <ClInclude Include="src\EditorLayer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Sandbox.cpp" />
-    <ClCompile Include="src\TestingGround.cpp" />
+    <ClCompile Include="src\EagleEditorApplication.cpp" />
+    <ClCompile Include="src\EditorLayer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eagle\Eagle.vcxproj">

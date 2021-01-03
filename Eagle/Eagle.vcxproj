@@ -163,6 +163,7 @@
     <ClInclude Include="src\Eagle\ImGui\ImGuiLayer.h" />
     <ClInclude Include="src\Eagle\Rendering\Buffer.h" />
     <ClInclude Include="src\Eagle\Rendering\Camera.h" />
+    <ClInclude Include="src\Eagle\Rendering\FrameBuffer.h" />
     <ClInclude Include="src\Eagle\Rendering\RenderAPI.h" />
     <ClInclude Include="src\Eagle\Rendering\RenderCommand.h" />
     <ClInclude Include="src\Eagle\Rendering\Renderer.h" />
@@ -173,11 +174,11 @@
     <ClInclude Include="src\EaglePCH.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLContext.h" />
+    <ClInclude Include="src\Platforms\OpenGL\OpenGLFrameBuffer.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLRenderAPI.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLShader.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLTexture.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLVertexArray.h" />
-    <ClInclude Include="src\Platforms\Windows\WindowsInput.h" />
     <ClInclude Include="src\Platforms\Windows\WindowsWindow.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
@@ -605,17 +606,19 @@
     <ClCompile Include="src\Eagle\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="src\Eagle\Rendering\Buffer.cpp" />
     <ClCompile Include="src\Eagle\Rendering\Camera.cpp" />
+    <ClCompile Include="src\Eagle\Rendering\FrameBuffer.cpp" />
     <ClCompile Include="src\Eagle\Rendering\RenderAPI.cpp" />
     <ClCompile Include="src\Eagle\Rendering\RenderCommand.cpp" />
     <ClCompile Include="src\Eagle\Rendering\Renderer.cpp" />
-    <ClCompile Include="src\EaglePCH.cpp">
-      <PrecompiledHeader>Create</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="src\Eagle\Rendering\Shader.cpp" />
     <ClCompile Include="src\Eagle\Rendering\Texture.cpp" />
     <ClCompile Include="src\Eagle\Rendering\VertexArray.cpp" />
+    <ClCompile Include="src\EaglePCH.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="src\Platforms\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platforms\OpenGL\OpenGLContext.cpp" />
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLFrameBuffer.cpp" />
     <ClCompile Include="src\Platforms\OpenGL\OpenGLRenderAPI.cpp" />
     <ClCompile Include="src\Platforms\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Platforms\OpenGL\OpenGLTexture.cpp" />

@@ -1,26 +1,25 @@
-#include "EaglePCH.h"
+#include <EaglePCH.h>
 #include "Application.h"
 #include "Eagle/Rendering/Renderer.h"
 #include "Eagle/Rendering/RenderCommand.h"
 #include "Eagle/Core/Random.h"
 
-#include "GLFW/glfw3.h"
+#include <GLFW/glfw3.h>
 #include "Eagle/Rendering/VertexArray.h"
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
 	std::mt19937 Random::sRandomizer;
+	Application* Application::mInstance = nullptr;
 
 #define EAGLE_BIND_EVENT_FUNC(x) std::bind(&Application::x, this, std::placeholders::_1)
 
-	Application* Application::mInstance = nullptr;
-
-	Application::Application()
+	Application::Application(const std::string& name)
 	{
 		EAGLE_PROFILE_FUNCTION();
 
 		mInstance = this;
 
-		mWindow = Window::Create();
+		mWindow = Window::Create(name);
 		mWindow->SetEventCallback(EAGLE_BIND_EVENT_FUNC(OnEvent));
 
 		Renderer::Init();
@@ -48,6 +47,9 @@ namespace Egl {
 					break;
 			}
 		}
+	}
+	void Application::Close() {
+		mRunning = false;
 	}
 
 	void Application::AddLayer(Layer* layer) {
@@ -106,7 +108,7 @@ namespace Egl {
 	}
 	
 	bool Application::OnWindowClose(WindowCloseEvent& e) {
-		mRunning = false;
+		Close();
 		return true;
 	}
 	bool Application::OnWindowResize(WindowResizeEvent& e) {

@@ -5,6 +5,7 @@ TestingGround::TestingGround() : Layer("TestingGround"), mCameraController(1280.
 	mCameraController.SetZoom(2);
 }
 
+///////////////////// On Attach //////////////////////
 void TestingGround::OnAttach() {
 	EAGLE_PROFILE_FUNCTION();
 	bg = Texture::Create("Assets/BG.png", false);
@@ -12,9 +13,9 @@ void TestingGround::OnAttach() {
 	creature = SubTexture::CreateFromIndexes(mCaveTiles, { 1, 0 }, { 16, 16 });
 
 	// Particles
-	mParticleProps = ParticleSystemProps();
+	auto mParticleProps = ParticleSystemProps();
 	mParticleProps.zPosition = -0.2f;
-	mParticleProps.emitAngleWidthRadiant = 6.282;
+	mParticleProps.emitAngleWidthRadiant = 6.282f;
 	mParticleProps.minColor = { 0.7f, 0.7f, 0.7f, 1.0f };
 	mParticleProps.maxColor = { 0.9f, 0.9f, 0.9f, 1.0f };
 	mParticleProps.minSize = { 0.2f, 0.2f };
@@ -28,6 +29,7 @@ void TestingGround::OnDetach() {
 	EAGLE_PROFILE_FUNCTION();
 }
 
+///////////////////// On Update //////////////////////
 void TestingGround::OnUpdate() {
 	EAGLE_PROFILE_FUNCTION();
 
@@ -38,12 +40,14 @@ void TestingGround::OnUpdate() {
 	RenderCommand::SetColor({ 0.1f, 0.1f, 0.1f, 1 });
 	RenderCommand::Clear();
 	
+	// Emit a particle every 10 frames
 	static int v = 0;
 	if (v > 10) {
 		mParticleSystem.Emit({ 0, 0 });
 		v = 0;
 	}
 	v++;
+
 	mParticleSystem.OnRender(mCameraController.GetCamera());
 
 	{
@@ -72,22 +76,11 @@ void TestingGround::OnEvent(Egl::Event& event) {
 
 void TestingGround::OnImGuiRender() {
 	EAGLE_PROFILE_FUNCTION();
+
 	ImGui::Begin("Example window");
-
-	ImGui::Text("Renderer Stats");
-	ImGui::Text("Drawcalls: %d", Renderer::GetStats().GetDrawCallCount());
-	ImGui::Text("Quads: %d", Renderer::GetStats().GetQuadCount());
-	ImGui::Text("Vertices: %d", Renderer::GetStats().GetVertexCount());
-	ImGui::Text("Indeces: %d", Renderer::GetStats().GetIndexCount());
-	ImGui::Spacing();
-
 	ImGui::Text("Scene editor");
 	ImGui::ColorEdit4("Square color", color);
 	ImGui::ColorEdit4("Texture color", texColor);
 	ImGui::DragFloat("Rotation", &rotation, 0.01f, -10, 10);
-
-
-	//ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
-
 	ImGui::End();
 }

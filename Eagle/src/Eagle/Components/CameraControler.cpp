@@ -28,6 +28,10 @@ namespace Egl {
 		mCamera.SetPosition(mCameraPosition);
 		mMoveSpeed = mZoomLevel;
 	}
+	void CameraController::Resize(float width, float height) {
+		mAspectRatio = width / height;
+		mCamera.SetProjection(-mAspectRatio * mZoomLevel, mAspectRatio * mZoomLevel, -mZoomLevel, mZoomLevel);
+	}
 	void CameraController::SetZoom(float zoom) {
 		EAGLE_PROFILE_FUNCTION();
 		mZoomLevel = zoom;
@@ -41,8 +45,7 @@ namespace Egl {
 	}
 	bool CameraController::OnApplicationRezised(WindowResizeEvent& event) {
 		EAGLE_PROFILE_FUNCTION();
-		mAspectRatio = (float)event.GetWidth() / (float)event.GetHeight();
-		mCamera.SetProjection(-mAspectRatio * mZoomLevel, mAspectRatio * mZoomLevel, -mZoomLevel, mZoomLevel);
+		Resize((float)event.GetWidth(), (float)event.GetHeight());
 		return false;
 	}
 	void CameraController::OnEvent(Event& event) {

@@ -13,18 +13,19 @@ namespace Egl {
 	class Application
 	{
 	public:
-		Application();
+		Application(const std::string& name = "Eagle App");
 		virtual ~Application();
 		void Run();
+		void Close();
 		void OnEvent(Event& e);
 
 		void AddLayer(Layer* layer);
 		void AddOverlay(Layer* layer);
 		void RemoveLayer(Layer* layer);
 		void RemoveOverlay(Layer* layer);
-
-		static inline Application& Get() { return *mInstance; }
+		ImGuiLayer* GetImGuiLayer() const { return mImGuiLayer; }
 		inline Window& GetWindow() const { return *mWindow; }
+		static inline Application& Get() { return *mInstance; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);

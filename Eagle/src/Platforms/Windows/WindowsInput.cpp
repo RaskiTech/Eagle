@@ -1,24 +1,22 @@
 #include "EaglePCH.h"
-#include "WindowsInput.h"
+#include "Eagle/Core/Input.h"
 #include <GLFW/glfw3.h>
 #include "Eagle/Core/Application.h"
 
 namespace Egl {
-	Input* Input::mInstance = new WindowsInput();
-
-	bool WindowsInput::IsKeyPressedImp(int keycode) {
+	bool Input::IsKeyPressed(int keycode) {
 		auto window = Application::Get().GetWindow().NativeWindow();
 
 		int key = glfwGetKey((GLFWwindow*)window, keycode);
 		return key == GLFW_PRESS || key == GLFW_REPEAT;
 	}
-	bool WindowsInput::IsMousePressedImp(int mouseButton) {
+	bool Input::IsMousePressed(int mouseButton) {
 		auto window = Application::Get().GetWindow().NativeWindow();
 
 		int key = glfwGetMouseButton((GLFWwindow*)window, mouseButton);
 		return key == GLFW_PRESS;
 	}
-	std::pair<float, float> WindowsInput::GetMousePosImp() {
+	std::pair<float, float> Input::MousePos() {
 		auto window = Application::Get().GetWindow().NativeWindow();
 		double xPos, yPos;
 		glfwGetCursorPos((GLFWwindow*)window, &xPos, &yPos);

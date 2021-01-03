@@ -1,9 +1,9 @@
 #pragma once
 
 #include <EaglePCH.h>
-#include "OpenGLShader.h"
 #include <glad/glad.h>
 #include <glm/gtc/type_ptr.hpp>
+#include "OpenGLShader.h"
 
 namespace Egl {
 	OpenGLShader::OpenGLShader(const std::string& vertexSource, const std::string& fragmentSource) {

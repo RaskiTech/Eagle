@@ -1,6 +1,6 @@
 #include <EaglePCH.h>
-#include "OpenGLBuffer.h"
 #include <glad/glad.h>
+#include "OpenGLBuffer.h"
 
 namespace Egl {
 

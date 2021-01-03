@@ -10,10 +10,13 @@ namespace Egl {
 
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
+		virtual void OnEvent(Event& event) override;
 
 		void Begin();
 		void End();
+		void LetEventsThrough(bool letThrogh) { mLetMouseThrough = letThrogh; }
 	private:
+		bool mLetMouseThrough = true;
 		float mTime = 0.0f;
 	};
 }

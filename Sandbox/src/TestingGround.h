@@ -18,7 +18,7 @@ public:
 private:
 	CameraController mCameraController;
 
-	//Temp
+	// For simple ImGui editing
 	float color[4] = { 0.8f, 0.2f, 0.3f, 1.0f };
 	float texColor[4] = { 1, 1, 1, 1 };
 	float rotation = 0;
@@ -29,6 +29,5 @@ private:
 	Ref<VertexArray> mVertexArray;
 	Ref<Shader> mShader;
 
-	ParticleSystemProps mParticleProps;
 	ParticleSystem mParticleSystem;
 };

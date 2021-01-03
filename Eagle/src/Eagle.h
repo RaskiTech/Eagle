@@ -19,6 +19,7 @@
 #include "Eagle/Rendering/RenderCommand.h"
 #include "Eagle/Rendering/Camera.h"
 #include "Eagle/Rendering/VertexArray.h"
+#include "Eagle/Rendering/FrameBuffer.h"
 #include "Eagle/Rendering/Buffer.h"
 #include "Eagle/Rendering/Shader.h"
 #include "Eagle/Rendering/Texture.h"

@@ -32,9 +32,9 @@ namespace Egl {
 		inline bool IsInGategory(EventGategory category) {
 			return GetGategoryFlags() & (int)category;
 		}
-		inline bool IsHandled() const { return mHandled; }
-	protected:
-		bool mHandled = false;
+		inline bool IsHandled() const { return handled; }
+
+		bool handled = false;
 	};
 
 	class EventDispatcher {
@@ -46,7 +46,7 @@ namespace Egl {
 		template<typename T>
 		bool Dispatch(EventFn<T> func) {
 			if (mEvent.GetEventType() == T::GetStaticType()) {
-				mEvent.mHandled = func(*(T*)&mEvent);
+				mEvent.handled = func(*(T*)&mEvent);
 				return true;
 			}
 			return false;

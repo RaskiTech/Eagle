@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Eagle/Rendering/Shader.h"
 #include <glm/glm.hpp>
+#include "Eagle/Rendering/Shader.h"
 
 namespace Egl {
 

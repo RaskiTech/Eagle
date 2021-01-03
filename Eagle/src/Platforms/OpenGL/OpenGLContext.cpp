@@ -1,9 +1,9 @@
-#include "EaglePCH.h"
-#include "OpenGLContext.h"
-#include "Eagle/Core/Core.h"
-
+#include <EaglePCH.h>
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
+
+#include "OpenGLContext.h"
+#include "Eagle/Core/Core.h"
 
 namespace Egl {
 	void OpenGLContext::Init()

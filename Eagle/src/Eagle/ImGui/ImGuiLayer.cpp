@@ -4,11 +4,11 @@
 #pragma warning( push )
 #pragma warning( disable : 26495 )
 
-#include "ImGuiLayer.h"
+#include <Eagle/ImGui/ImGuiLayer.h>
 
-#include "imgui.h"
-#include "backends/imgui_impl_glfw.h"
-#include "backends/imgui_impl_opengl3.h"
+#include <imgui.h>
+#include <backends/imgui_impl_glfw.h>
+#include <backends/imgui_impl_opengl3.h>
 
 #include "Eagle/Core/Application.h"
 
@@ -82,6 +82,13 @@ namespace Egl {
             ImGui::UpdatePlatformWindows();
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(backup_current_context);
+        }
+    }
+    void ImGuiLayer::OnEvent(Event& event) {
+        if (!mLetMouseThrough) {
+            ImGuiIO& io = ImGui::GetIO();
+            event.handled |= event.IsInGategory(EventGategoryMouse) & io.WantCaptureMouse;
+            event.handled |= event.IsInGategory(EventGategoryKeyboard) & io.WantCaptureKeyboard;
         }
     }
 }

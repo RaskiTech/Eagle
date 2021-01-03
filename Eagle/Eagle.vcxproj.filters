@@ -16,6 +16,9 @@
     <Filter Include="src\Eagle\Core\Layers">
       <UniqueIdentifier>{918DBD96-FDF9-7891-C6ED-10EF32199BF9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Eagle\Debug">
+      <UniqueIdentifier>{701C7DD8-DCA7-EA9C-E5B8-6D9151C3469D}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Eagle\Events">
       <UniqueIdentifier>{1EFDAAEB-0AF6-C93D-3328-AFC21F80A949}</UniqueIdentifier>
     </Filter>
@@ -66,6 +69,9 @@
     <ClInclude Include="src\Eagle\Components\CameraController.h">
       <Filter>src\Eagle\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eagle\Components\ParticleSystem.h">
+      <Filter>src\Eagle\Components</Filter>
+    </ClInclude>
     <ClInclude Include="src\Eagle\Core\Application.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
@@ -90,11 +96,17 @@
     <ClInclude Include="src\Eagle\Core\Log.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eagle\Core\Random.h">
+      <Filter>src\Eagle\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Eagle\Core\Time.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Core\Window.h">
       <Filter>src\Eagle\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\Debug\Instrumentor.h">
+      <Filter>src\Eagle\Debug</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Events\ApplicationEvent.h">
       <Filter>src\Eagle\Events</Filter>
@@ -108,10 +120,16 @@
     <ClInclude Include="src\Eagle\Events\MouseEvent.h">
       <Filter>src\Eagle\Events</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eagle\ImGui\ImGuiLayer.h">
+      <Filter>src\Eagle\ImGui</Filter>
+    </ClInclude>
     <ClInclude Include="src\Eagle\Rendering\Buffer.h">
       <Filter>src\Eagle\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Rendering\Camera.h">
+      <Filter>src\Eagle\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\Rendering\FrameBuffer.h">
       <Filter>src\Eagle\Rendering</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Rendering\RenderAPI.h">
@@ -144,6 +162,9 @@
     <ClInclude Include="src\Platforms\OpenGL\OpenGLContext.h">
       <Filter>src\Platforms\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platforms\OpenGL\OpenGLFrameBuffer.h">
+      <Filter>src\Platforms\OpenGL</Filter>
+    </ClInclude>
     <ClInclude Include="src\Platforms\OpenGL\OpenGLRenderAPI.h">
       <Filter>src\Platforms\OpenGL</Filter>
     </ClInclude>
@@ -155,9 +176,6 @@
     </ClInclude>
     <ClInclude Include="src\Platforms\OpenGL\OpenGLVertexArray.h">
       <Filter>src\Platforms\OpenGL</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Platforms\Windows\WindowsInput.h">
-      <Filter>src\Platforms\Windows</Filter>
     </ClInclude>
     <ClInclude Include="src\Platforms\Windows\WindowsWindow.h">
       <Filter>src\Platforms\Windows</Filter>
@@ -1404,15 +1422,12 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Eagle\Debug\Instrumentor.h" />
-    <ClInclude Include="src\Eagle\Components\ParticleSystem.h" />
-    <ClInclude Include="src\Eagle\Core\Random.h" />
-    <ClInclude Include="src\Eagle\ImGui\ImGuiLayer.h">
-      <Filter>src\Eagle\ImGui</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\CameraControler.cpp">
+      <Filter>src\Eagle\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\Components\ParticleSystem.cpp">
       <Filter>src\Eagle\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\Core\Application.cpp">
@@ -1427,7 +1442,22 @@
     <ClCompile Include="src\Eagle\Core\Log.cpp">
       <Filter>src\Eagle\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Eagle\ImGui\ImGuiBuild.cpp">
+      <Filter>src\Eagle\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\ImGui\ImGuiLayer.cpp">
+      <Filter>src\Eagle\ImGui</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\Rendering\Buffer.cpp">
+      <Filter>src\Eagle\Rendering</Filter>
+    </ClCompile>
     <ClCompile Include="src\Eagle\Rendering\Camera.cpp">
+      <Filter>src\Eagle\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\Rendering\FrameBuffer.cpp">
+      <Filter>src\Eagle\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\Rendering\RenderAPI.cpp">
       <Filter>src\Eagle\Rendering</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\Rendering\RenderCommand.cpp">
@@ -1436,10 +1466,37 @@
     <ClCompile Include="src\Eagle\Rendering\Renderer.cpp">
       <Filter>src\Eagle\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="src\Eagle\Rendering\Shader.cpp">
+      <Filter>src\Eagle\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\Rendering\Texture.cpp">
+      <Filter>src\Eagle\Rendering</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\Rendering\VertexArray.cpp">
+      <Filter>src\Eagle\Rendering</Filter>
+    </ClCompile>
     <ClCompile Include="src\EaglePCH.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLBuffer.cpp">
+      <Filter>src\Platforms\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="src\Platforms\OpenGL\OpenGLContext.cpp">
+      <Filter>src\Platforms\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLFrameBuffer.cpp">
+      <Filter>src\Platforms\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLRenderAPI.cpp">
+      <Filter>src\Platforms\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLShader.cpp">
+      <Filter>src\Platforms\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLTexture.cpp">
+      <Filter>src\Platforms\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platforms\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\Platforms\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="src\Platforms\Windows\WindowsInput.cpp">
@@ -1450,23 +1507,6 @@
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Platforms\OpenGL\OpenGLBuffer.cpp" />
-    <ClCompile Include="src\Eagle\Rendering\Buffer.cpp" />
-    <ClCompile Include="src\Platforms\OpenGL\OpenGLVertexArray.cpp" />
-    <ClCompile Include="src\Eagle\Rendering\VertexArray.cpp" />
-    <ClCompile Include="src\Platforms\OpenGL\OpenGLShader.cpp" />
-    <ClCompile Include="src\Eagle\Rendering\Shader.cpp" />
-    <ClCompile Include="src\Eagle\Rendering\Texture.cpp" />
-    <ClCompile Include="src\Platforms\OpenGL\OpenGLTexture.cpp" />
-    <ClCompile Include="src\Eagle\Rendering\RenderAPI.cpp" />
-    <ClCompile Include="src\Platforms\OpenGL\OpenGLRenderAPI.cpp" />
-    <ClCompile Include="src\Eagle\Components\ParticleSystem.cpp" />
-    <ClCompile Include="src\Eagle\ImGui\ImGuiBuild.cpp">
-      <Filter>src\Eagle\ImGui</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Eagle\ImGui\ImGuiLayer.cpp">
-      <Filter>src\Eagle\ImGui</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

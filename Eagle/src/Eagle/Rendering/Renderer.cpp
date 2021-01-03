@@ -8,8 +8,13 @@ void UILibraryExampleUse() {
 	// Button might represent some parameters or a component like button
 	// Drviers like Left() and Right() are just to tell what there goes, not actual driveers
 
-	//DrawUI(Button).xDriver().yDriver(TopAligment(10.0f)).widthDriver(Stretch(0.5f)).heightDriver(ConstValue(100.0f));
+	//DrawUI(Button).xDriver().yDriver(UITopAligment(10.0f)).widthDriver(UIStretch(0.5f)).heightDriver(UIConstSize(100.0f));
 	//DrawUI(Button).Drivers(TopAligment(1.0f), BottomScale(1.0f), Left(1.0f), Right(1.0f))
+
+	// Or probably just
+
+	// DrawUI(Button).Drivers(UICenterAligment, UITopAligment(10.0f), UIStretch(0.5f), UIConstSize(100.0f))
+	// DrawUI(Button).Drivers(Top(), Bottom(200f), Left(), Right())
 }
 
 namespace Egl {
@@ -32,7 +37,12 @@ namespace Egl {
 		QuadVertex* quadVertexBufferBase = nullptr;
 		QuadVertex* quadVertexBufferPtr = nullptr;
 
-		glm::vec4 sampleVertices[4];
+		glm::vec4 sampleVertices[4] = {
+			{-0.5f, -0.5f, 0.0f, 1.0f},
+			{ 0.5f, -0.5f, 0.0f, 1.0f},
+			{ 0.5f,  0.5f, 0.0f, 1.0f},
+			{-0.5f,  0.5f, 0.0f, 1.0f}
+		};
 	};
 
 	static RendererData sData;
@@ -169,11 +179,6 @@ namespace Egl {
 
 		// Set the white texture to slot 0
 		sData.textureSlots[0] = sData.whiteTexture;
-
-		sData.sampleVertices[0] = glm::vec4(-0.5f, -0.5f, 0.0f, 1.0f);
-		sData.sampleVertices[1] = glm::vec4(0.5f, -0.5f, 0.0f, 1.0f);
-		sData.sampleVertices[2] = glm::vec4(0.5f, 0.5f, 0.0f, 1.0f);
-		sData.sampleVertices[3] = glm::vec4(-0.5f, 0.5f, 0.0f, 1.0f);
 	}
 	void Renderer::Shutdown() {
 		EAGLE_PROFILE_FUNCTION();
@@ -241,6 +246,7 @@ namespace Egl {
 
 	void Renderer::DrawTextureQuad(const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
+		EAGLE_ENG_ASSERT(subTexture != nullptr, "Texture cannot be null!");
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
@@ -249,6 +255,7 @@ namespace Egl {
 	}
 	void Renderer::DrawRotatedTextureQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
+		EAGLE_ENG_ASSERT(subTexture != nullptr, "Texture cannot be null!");
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
@@ -259,6 +266,7 @@ namespace Egl {
 
 	void Renderer::DrawTextureQuadLocal(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2 texCoords[4], float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
+		EAGLE_ENG_ASSERT(texture != nullptr, "Texture cannot be null!");
 
 		if (sData.quadIndexCount >= RendererData::maxIndices)
 			StartNewBatch();
@@ -315,7 +323,7 @@ namespace Egl {
 	void Renderer::EndScene() {
 		EAGLE_PROFILE_FUNCTION();
 
-		uint32_t size = (uint8_t*)sData.quadVertexBufferPtr - (uint8_t*)sData.quadVertexBufferBase;
+		uint32_t size = (uint32_t)((uint8_t*)sData.quadVertexBufferPtr - (uint8_t*)sData.quadVertexBufferBase);
 		sData.quadVB->SetData(sData.quadVertexBufferBase, size);
 		Flush();
 	}

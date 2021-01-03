@@ -9,8 +9,11 @@ namespace Egl {
 	public:
 		CameraController(float aspectRatio, bool rotation = false);
 		CameraController(float aspectRatio, float moveSpeed, bool rotation = false, float rotationSpeed = 70);
+
 		void OnUpdate();
+		void Resize(float width, float height);
 		void OnEvent(Event& event);
+
 		Camera& GetCamera() { return mCamera; }
 		const Camera& GetCamera() const { return mCamera; }
 

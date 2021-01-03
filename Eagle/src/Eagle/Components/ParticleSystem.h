@@ -10,8 +10,8 @@ namespace Egl {
 
 		float acceleration = 0;
 		float minLifeTime = 5, maxLifetime = 5;
-		glm::vec4 minColor, maxColor;
-		float minRotation, maxRotation;
+		glm::vec4 minColor = { 1, 1, 1, 1 }, maxColor = { 1, 1, 1, 1 };
+		float minRotation = 0, maxRotation = 0;
 		glm::vec2 minSize = { 1, 1 }, maxSize = { 1, 1 };
 
 		glm::vec2 sizeOverLifetime = { 0, 0 };
