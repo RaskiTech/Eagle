@@ -7,11 +7,11 @@ The goal for the Eagle engine is to have most of the things done through the cod
 ## Start using Eagle
 ### Copy with git
 To start using Eagle, make sure you have git installed. If not, you can get it here: https://git-scm.com/downloads.
-After that open Command prompt and type `git clone --recursive https://github.com/RaskiTech/Eagle`.
-If the repository was cloned without the `--recursive` flag, it doesn't have the required submodules. You can go in the project folder and use `git submodule update --init` to fix this.
+Open Command prompt and run `git clone --recursive https://github.com/RaskiTech/Eagle Eagle`.
+If the repository was previously cloned without the `--recursive` flag, it doesn't have the required submodules. You get them by going into the Eagle folder and running `git submodule update --init`.
 
 ### Copy from github
-You can also copy Eagle with github without having to install git. Just click the green Code button at the top and from the dropdown the zip button. Unzip the dowloaded zip-file and you are good to go.
+You can also copy Eagle with github without having to install git. Just click the green Code button at the top and from the dropdown the zip button. Then unzip the dowloaded zip-file.
 
 
 ## Planned features in no order:
