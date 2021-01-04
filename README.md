@@ -1,4 +1,4 @@
-#Eagle [![License](https://img.shields.io/github/license/RaskiTech/Eagle.svg)](https://github.com/RaskiTech/Eagle/blob/master/LICENSE)
+# Eagle [![License](https://img.shields.io/github/license/RaskiTech/Eagle.svg)](https://github.com/RaskiTech/Eagle/blob/master/LICENSE)
 
 Eagle is a 2D graphics rendering engine that is currently only awailable for windows. Eagle can be used to make any sorts of desktop applications or games. Currently Eagle uses OpenGL to rended it's graphics.
 
@@ -30,3 +30,4 @@ You can also copy Eagle with github without having to install git. Just click th
 More plans and information on the Eagle trello page: https://trello.com/b/Q6aYRSKR/eagle-engine
 
 [![Trello](https://img.shields.io/badge/%40RaskiTech--blue.svg?style=social&logo=Trello)](https://trello.com/b/Q6aYRSKR/eagle-engine)
+
