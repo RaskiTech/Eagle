@@ -17,8 +17,7 @@ namespace Egl {
 
 	private:
 
-		// Temp, game fields
-		CameraController mCameraController;
+		// Temp, game fields;
 		float color[4] = { 0.8f, 0.2f, 0.3f, 1.0f };
 		float texColor[4] = { 1, 1, 1, 1 };
 		float rotation = 0;
@@ -32,7 +31,12 @@ namespace Egl {
 		ParticleSystemProps mParticleProps;
 		ParticleSystem mParticleSystem;
 
-		// Editor fields
+		// ECS fields
+		Ref<Scene> mScene;
+		Entity mPlayer, mCamera, mSecondCamera;
+		bool use1camera;
+
+		// Actual Editor fields
 		glm::vec2 mScenePanelSize = { 0.0f, 0.0f };
 		bool mScenePanelFocused = false, mScenePanelHovered = false;
 	};

@@ -16,29 +16,30 @@ namespace Egl {
 
 	void ParticleSystem::OnRender(Camera& camera) {
 		EAGLE_PROFILE_FUNCTION();
-		Renderer::BeginScene(camera);
-
-		for (ParticleData& particle : mData) {
-			if (!particle.active)
-				continue;
-
-			if (particle.beenAlive > particle.lifeTime) {
-				particle.active = false;
-				continue;
-			}
-
-			particle.beenAlive += Time::GetFrameDelta();
-			float lifePercentage = particle.beenAlive / particle.lifeTime;
-
-			particle.velocity += particle.velocity * mProps.acceleration * Time::GetFrameDelta();
-			particle.position += particle.velocity * Time::GetFrameDelta();
-			particle.rotation += mProps.rotationOverLifetime * Time::GetFrameDelta();
-
-			glm::vec2 size = glm::lerp(particle.startSize, mProps.sizeOverLifetime+particle.startSize, lifePercentage);
-
-			Renderer::DrawRotatedColorQuad(glm::vec3(particle.position, mProps.zPosition), particle.rotation, size, particle.color);
-		}
-		Renderer::EndScene();
+		EAGLE_ENG_ASSERT(false, "Refactor Particlesystem for ECS");
+		//Renderer::BeginScene(camera);
+		//
+		//for (ParticleData& particle : mData) {
+		//	if (!particle.active)
+		//		continue;
+		//
+		//	if (particle.beenAlive > particle.lifeTime) {
+		//		particle.active = false;
+		//		continue;
+		//	}
+		//
+		//	particle.beenAlive += Time::GetFrameDelta();
+		//	float lifePercentage = particle.beenAlive / particle.lifeTime;
+		//
+		//	particle.velocity += particle.velocity * mProps.acceleration * Time::GetFrameDelta();
+		//	particle.position += particle.velocity * Time::GetFrameDelta();
+		//	particle.rotation += mProps.rotationOverLifetime * Time::GetFrameDelta();
+		//
+		//	glm::vec2 size = glm::lerp(particle.startSize, mProps.sizeOverLifetime+particle.startSize, lifePercentage);
+		//
+		//	Renderer::DrawRotatedColorQuad(glm::vec3(particle.position, mProps.zPosition), particle.rotation, size, particle.color);
+		//}
+		//Renderer::EndScene();
 	}
 
 	void ParticleSystem::Emit(const glm::vec2& position) {

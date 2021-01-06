@@ -1,6 +1,6 @@
 #pragma once
 
-// This file is for applications only. They can do #include <Eagle.g> and have everything needed
+// This file is for applications only. They can do #include <Eagle.h> and have everything they need
 
 #include "Eagle/Core/Application.h"
 #include "Eagle/Core/Time.h"
@@ -14,12 +14,16 @@
 #include "Eagle/Components/CameraController.h"
 #include "Eagle/Components/ParticleSystem.h"
 
+#include "Eagle/ECS/Entity.h"
+#include "Eagle/ECS/Scene.h"
+#include "Eagle/ECS/Components.h"
+
 //Rendering
 #include "Eagle/Rendering/Renderer.h"
 #include "Eagle/Rendering/RenderCommand.h"
 #include "Eagle/Rendering/Camera.h"
-#include "Eagle/Rendering/VertexArray.h"
 #include "Eagle/Rendering/FrameBuffer.h"
+#include "Eagle/Rendering/VertexArray.h"
 #include "Eagle/Rendering/Buffer.h"
 #include "Eagle/Rendering/Shader.h"
 #include "Eagle/Rendering/Texture.h"

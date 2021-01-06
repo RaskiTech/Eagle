@@ -8,8 +8,17 @@ workspace "Eagle"
 		"Dist"
 	}
 
-	outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+	-- Includedirs relative to the solution dir --
+	Includes = {}
+	Includes["GLFW"] = "Eagle/vendor/GLFW/include"
+	Includes["Glad"] = "Eagle/vendor/Glad/include"
+	Includes["glm"] = "Eagle/vendor/glm"
+	Includes["ImGui"] = "Eagle/vendor/ImGui"
+	Includes["stb_image"] = "Eagle/vendor/stb_image"
+	Includes["entt"] = "Eagle/vendor/entt/include"
+	Includes["spdlog"] = "Eagle/vendor/spdlog/include"
 
+	outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project "Eagle"
 	location "Eagle"
@@ -39,12 +48,13 @@ project "Eagle"
 
 	includedirs {
 		"%{prj.name}/src",
-		"%{prj.name}/vendor/spdlog/include",
-		"%{prj.name}/vendor/GLFW/include",
-		"%{prj.name}/vendor/Glad/include",
-		"%{prj.name}/vendor/ImGui",
-		"%{prj.name}/vendor/glm",
-		"%{prj.name}/vendor/stb_image"
+		"%{Includes.spdlog}",
+		"%{Includes.GLFW}",
+		"%{Includes.Glad}",
+		"%{Includes.ImGui}",
+		"%{Includes.glm}",
+		"%{Includes.stb_image}",
+		"%{Includes.entt}"
 	}
 
 	links {
@@ -94,8 +104,9 @@ project "EagleEditor"
 	}
 
 	includedirs {
-		"Eagle/vendor/spdlog/include",
-		"Eagle/vendor/glm",
+		"%{Includes.spdlog}",
+		"%{Includes.glm}",
+		"%{Includes.entt}",
 		"Eagle/src",
 		"Eagle/vendor"
 	}
@@ -141,8 +152,9 @@ project "Sandbox"
 	}
 
 	includedirs {
-		"Eagle/vendor/spdlog/include",
-		"Eagle/vendor/glm",
+		"%{Includes.spdlog}",
+		"%{Includes.glm}",
+		"%{Includes.entt}",
 		"Eagle/src",
 		"Eagle/vendor"
 	}

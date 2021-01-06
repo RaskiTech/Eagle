@@ -21,16 +21,13 @@
 
 #define BIT(x) (1<<x)
 
-#if defined EAGLE_DEBUG || defined EAGLE_RELEASE
+#if defined EAGLE_DEBUG // || defined EAGLE_RELEASE
 	#define EAGLE_ENABLE_ASSERTS
 #endif
 
 #ifdef EAGLE_ENABLE_ASSERTS
 	#define EAGLE_ASSERT(x, ...) { if (!(x)) { LOG_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
 	#define EAGLE_ENG_ASSERT(x, ...) { if (!(x)) { LOG_ENG_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-
-	//#define EAGLE_ASSERT(x) { if (!(x)) { LOG_ERROR("Assertion Failed"); __debugbreak(); } }
-	//#define EAGLE_ENG_ASSERT(x) { if (!(x)) { LOG_ENG_ERROR("Assertion Failed"); __debugbreak(); } }
 #else
 	#define EAGLE_ASSERT(x, ...)
 	#define EAGLE_ENG_ASSERT(x, ...)

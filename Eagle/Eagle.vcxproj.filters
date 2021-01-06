@@ -61,6 +61,9 @@
     <Filter Include="vendor\stb_image">
       <UniqueIdentifier>{0DA0BA59-F998-D9AB-22CB-BE300E23B9B7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Eagle\ECS">
+      <UniqueIdentifier>{6A62FB0A-565B-1A5D-7F8D-FFE16BE5F968}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Eagle.h">
@@ -1422,6 +1425,11 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eagle\ECS\Entity.h" />
+    <ClInclude Include="src\Eagle\ECS\Scene.h">
+      <Filter>src\Eagle\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\ECS\Components.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\CameraControler.cpp">
@@ -1507,6 +1515,10 @@
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\ECS\Entity.cpp" />
+    <ClCompile Include="src\Eagle\ECS\Scene.cpp">
+      <Filter>src\Eagle\ECS</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

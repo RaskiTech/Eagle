@@ -188,10 +188,13 @@ namespace Egl {
 		RenderCommand::SetViewport(0, 0, width, height);
 	}
 
-	void Renderer::BeginScene(Camera& camera) {
+	void Renderer::BeginScene(const Camera& camera, const glm::mat4& transform) {
 		EAGLE_PROFILE_FUNCTION();
+
+		glm::mat4 viewProj = camera.GetProjection() * glm::inverse(transform);
+
 		sData.quadShader->Bind();
-		sData.quadShader->SetMat4("uViewProjection", camera.GetViewProjectionMatrix());
+		sData.quadShader->SetMat4("uViewProjection", viewProj);
 
 		sData.quadVertexBufferPtr = sData.quadVertexBufferBase;
 		sData.quadIndexCount = 0; 
@@ -212,7 +215,7 @@ namespace Egl {
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		DrawColorQuadLocal(transform, color);
+		DrawColorQuad(transform, color);
 	}
 	void Renderer::DrawRotatedColorQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
@@ -221,7 +224,7 @@ namespace Egl {
 			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		DrawColorQuadLocal(transform, color);
+		DrawColorQuad(transform, color);
 	}
 
 	void Renderer::DrawTextureQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
@@ -231,7 +234,7 @@ namespace Egl {
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 		glm::vec2 texCoords[4] = { {0, 0}, {1, 0}, {1, 1}, {0, 1} };
 
-		DrawTextureQuadLocal(transform, texture, texCoords, tilingFactor, color);
+		DrawTextureQuad(transform, texture, texCoords, tilingFactor, color);
 	}
 	void Renderer::DrawRotatedTextureQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
@@ -241,7 +244,7 @@ namespace Egl {
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 		glm::vec2 texCoords[4] = { {0, 0}, {1, 0}, {1, 1}, {0, 1} };
 
-		DrawTextureQuadLocal(transform, texture, texCoords, tilingFactor, color);
+		DrawTextureQuad(transform, texture, texCoords, tilingFactor, color);
 	}
 
 	void Renderer::DrawTextureQuad(const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) {
@@ -251,7 +254,7 @@ namespace Egl {
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		DrawTextureQuadLocal(transform, subTexture->GetTexture(), subTexture->GetTextureCoords(), tilingFactor, color);
+		DrawTextureQuad(transform, subTexture->GetTexture(), subTexture->GetTextureCoords(), tilingFactor, color);
 	}
 	void Renderer::DrawRotatedTextureQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
@@ -261,10 +264,10 @@ namespace Egl {
 			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		DrawTextureQuadLocal(transform, subTexture->GetTexture(), subTexture->GetTextureCoords(), tilingFactor, color);
+		DrawTextureQuad(transform, subTexture->GetTexture(), subTexture->GetTextureCoords(), tilingFactor, color);
 	}
 
-	void Renderer::DrawTextureQuadLocal(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2 texCoords[4], float tilingFactor, const glm::vec4& color) {
+	void Renderer::DrawTextureQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2 texCoords[4], float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 		EAGLE_ENG_ASSERT(texture != nullptr, "Texture cannot be null!");
 
@@ -299,7 +302,7 @@ namespace Egl {
 		sData.quadIndexCount += 6;
 		sStats.quadCount++;
 	}
-	void Renderer::DrawColorQuadLocal(const glm::mat4& transform, const glm::vec4& color)
+	void Renderer::DrawColorQuad(const glm::mat4& transform, const glm::vec4& color)
 	{
 		EAGLE_PROFILE_FUNCTION();
 

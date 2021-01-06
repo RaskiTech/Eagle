@@ -2,6 +2,18 @@
 #include <glm/glm.hpp>
 
 namespace Egl {
+	// Mainly used in CameraComponent
+	class Camera {
+	public:
+		Camera(const glm::mat4& projection) : mProjection(projection) {}
+
+		const glm::mat4 GetProjection() const { return mProjection; }
+	private:
+		glm::mat4 mProjection;
+	};
+
+	// From when didn't have an ECS
+	/*
 	// An orthographic camera
 	class Camera {
 	public:
@@ -10,7 +22,7 @@ namespace Egl {
 
 		inline void SetPosition(const glm::vec3& position) { mPosition = position; RecalculateViewMatrix(); }
 		inline void SetRotation(float rotation) { mRotation = rotation; RecalculateViewMatrix(); }
-
+		
 		inline const glm::vec3& GetPosition() const { return mPosition; }
 		inline float GetRotation() const { return mRotation; }
 
@@ -27,4 +39,5 @@ namespace Egl {
 		glm::vec3 mPosition = {0.0f, 0.0f, 0.0f};
 		float mRotation = 0;
 	};
+	*/
 }
