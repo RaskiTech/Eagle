@@ -1,6 +1,5 @@
 #pragma once
 #include <entt.hpp>
-#include "Components.h"
 #include "Scene.h"
 
 namespace Egl {
@@ -41,11 +40,11 @@ namespace Egl {
 
 		operator bool() const { return mEntity != entt::null; }
 
-		std::string ToString() const { 
-			std::stringstream str;
-			str << "Entity (" << GetComponent<TagComponent>().tag << " - " << GetID() << ")";
-			return str.str();
-		}
+		//std::string ToString() const { 
+		//	std::stringstream str;
+		//	str << "Entity (" << GetComponent<TagComponent>().tag << " - " << GetID() << ")";
+		//	return str.str();
+		//}
 	private:
 		entt::entity mEntity{ entt::null };
 		Scene* mScene = nullptr;

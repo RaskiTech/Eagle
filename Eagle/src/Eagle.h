@@ -16,6 +16,7 @@
 #include "Eagle/ECS/Entity.h"
 #include "Eagle/ECS/Scene.h"
 #include "Eagle/ECS/Components.h"
+#include "Eagle/ECS/Script.h"
 
 //Rendering
 #include "Eagle/Rendering/Renderer.h"

@@ -1,9 +1,13 @@
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include "EditorLayer.h"
 #include "ImGui/imgui.h"
 #include "Eagle/ECS/Components.h"
 #include "Eagle/ECS/Scene.h"
-#include "glm/gtc/type_ptr.hpp"
+#include "Eagle/ECS/Script.h"
+
+#include "Eagle/Core/Input.h"
+#include "Eagle/Core/Keycodes.h"
 
 namespace Egl {
 
@@ -42,6 +46,7 @@ namespace Egl {
 		mPlayer = mScene->AddEntity("Player");
 		mPlayer.AddComponent<SpriteComponent>(glm::vec4(0.2f, 0.3f, 0.4f, 1.0f));
 
+#pragma region Testing ECS 
 		mCamera = mScene->AddEntity("Camera");
 		mCamera.AddComponent<CameraComponent>();
 		mScene->SetPrimaryCamera(mCamera);
@@ -50,6 +55,28 @@ namespace Egl {
 		mSecondCamera.AddComponent<CameraComponent>();
 		mSecondCamera.GetComponent<CameraComponent>().camera.SetBounds(5, -1, 1);
 
+		// Camera controller
+		class CameraController : public Script {
+		public:
+			void OnCreate() {
+				
+			}
+			void OnDestroy() {
+
+			}
+			void OnUpdate() {
+				auto& transform = GetComponent<TransformComponent>().transform;
+				float speed = 5;
+
+				if (Input::IsKeyPressed(EGL_KEY_A)) transform[3][0] -= speed * Time::GetFrameDelta();
+				if (Input::IsKeyPressed(EGL_KEY_D)) transform[3][0] += speed * Time::GetFrameDelta();
+				if (Input::IsKeyPressed(EGL_KEY_S)) transform[3][1] -= speed * Time::GetFrameDelta();
+				if (Input::IsKeyPressed(EGL_KEY_W)) transform[3][1] += speed * Time::GetFrameDelta();
+			}
+		};
+
+		mCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+#pragma endregion
 	}
 
 	void EditorLayer::OnDetach() {

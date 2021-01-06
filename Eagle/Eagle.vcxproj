@@ -157,6 +157,7 @@
     <ClInclude Include="src\Eagle\Core\Window.h" />
     <ClInclude Include="src\Eagle\Debug\Instrumentor.h" />
     <ClInclude Include="src\Eagle\ECS\SceneCamera.h" />
+    <ClInclude Include="src\Eagle\ECS\Script.h" />
     <ClInclude Include="src\Eagle\Events\ApplicationEvent.h" />
     <ClInclude Include="src\Eagle\Events\Event.h" />
     <ClInclude Include="src\Eagle\Events\KeyEvent.h" />

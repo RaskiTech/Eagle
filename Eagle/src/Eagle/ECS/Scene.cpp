@@ -35,6 +35,20 @@ namespace Egl {
 
 	void Scene::OnUpdate()
 	{
+		{
+			// TODO: Move this to somewhere in startup and also call the OnDestroy func
+			mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
+				//EAGLE_ASSERT(!scriptComponent.baseInstance, "The instance is null");
+				if (!scriptComponent.baseInstance) {
+					scriptComponent.InstantiateFunc();
+					scriptComponent.baseInstance->mEntity = Entity{ entity, this };
+					scriptComponent.OnCreateFunc(scriptComponent.baseInstance);
+				}
+
+				scriptComponent.OnUpdateFunc(scriptComponent.baseInstance);
+			});
+		}
+
 		if (mPrimaryCamera != entt::null) {
 			Camera& camera = mRegistry.get<CameraComponent>(mPrimaryCamera).camera;
 			TransformComponent& transform = mRegistry.get<TransformComponent>(mPrimaryCamera);
@@ -43,7 +57,7 @@ namespace Egl {
 
 			auto group = mRegistry.group<TransformComponent>(entt::get<SpriteComponent>);
 			for (auto entity : group) {
-				auto& [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
+				auto [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
 				Renderer::DrawColorQuad(transform, sprite.color);
 			}
 

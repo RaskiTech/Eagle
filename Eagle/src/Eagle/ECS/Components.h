@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "Eagle/Rendering/Texture.h"
+#include "Eagle/ECS/Script.h"
 #include "SceneCamera.h"
 
 namespace Egl {
@@ -35,5 +36,27 @@ namespace Egl {
 		bool fixedAspectRatio = false;
 
 		CameraComponent() = default;
+	};
+
+	struct NativeScriptComponent {
+		Script* baseInstance = nullptr;
+
+		std::function<void()> InstantiateFunc;
+		std::function<void()> DestroyFunc;
+
+		std::function<void(Script*)> OnCreateFunc;
+		std::function<void(Script*)> OnDestroyFunc;
+		std::function<void(Script*)> OnUpdateFunc;
+
+		template<typename T>
+		void Bind() {
+			// Figure out how to call the functions
+			InstantiateFunc = [&]() {baseInstance = new T(); };
+			DestroyFunc = [&]() { delete (T*)baseInstance; };
+
+			OnCreateFunc = [](Script* instance) { ((T*)instance)->OnCreate(); };
+			OnDestroyFunc = [](Script* instance) { ((T*)instance)->OnDestroy(); };
+			OnUpdateFunc = [](Script* instance) { ((T*)instance)->OnUpdate(); };
+		}
 	};
 }

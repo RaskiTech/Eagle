@@ -1428,6 +1428,7 @@
     </ClInclude>
     <ClInclude Include="src\Eagle\ECS\Components.h" />
     <ClInclude Include="src\Eagle\ECS\SceneCamera.h" />
+    <ClInclude Include="src\Eagle\ECS\Script.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\ParticleSystem.cpp">
