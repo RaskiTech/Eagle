@@ -1,7 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include "Eagle/Rendering/Texture.h"
-#include "Eagle/Rendering/Camera.h"
+#include "SceneCamera.h"
 
 namespace Egl {
 	struct TransformComponent {
@@ -31,9 +31,9 @@ namespace Egl {
 	};
 
 	struct CameraComponent {
-		Camera camera;
+		SceneCamera camera;
+		bool fixedAspectRatio = false;
 
 		CameraComponent() = default;
-		CameraComponent(const glm::mat4& projection) : camera(projection) {};
 	};
 }

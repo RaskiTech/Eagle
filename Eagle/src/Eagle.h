@@ -11,7 +11,6 @@
 #include "Eagle/Core/Random.h"
 
 #include "Eagle/ImGui/ImGuiLayer.h"
-#include "Eagle/Components/CameraController.h"
 #include "Eagle/Components/ParticleSystem.h"
 
 #include "Eagle/ECS/Entity.h"

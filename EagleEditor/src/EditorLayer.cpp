@@ -41,12 +41,14 @@ namespace Egl {
 		mScene = CreateRef<Scene>();
 		mPlayer = mScene->AddEntity("Player");
 		mPlayer.AddComponent<SpriteComponent>(glm::vec4(0.2f, 0.3f, 0.4f, 1.0f));
+
 		mCamera = mScene->AddEntity("Camera");
-		mCamera.AddComponent<CameraComponent>(glm::ortho(-16.0f, 16.0f, -9.0f, 9.0f));
+		mCamera.AddComponent<CameraComponent>();
 		mScene->SetPrimaryCamera(mCamera);
 
 		mSecondCamera = mScene->AddEntity("SecondCamera");
-		mSecondCamera.AddComponent<CameraComponent>(glm::ortho(-2.0f, 2.0f, -2.0f, 2.0f));
+		mSecondCamera.AddComponent<CameraComponent>();
+		mSecondCamera.GetComponent<CameraComponent>().camera.SetBounds(5, -1, 1);
 
 	}
 
@@ -58,19 +60,23 @@ namespace Egl {
 	void EditorLayer::OnUpdate() {
 		EAGLE_PROFILE_FUNCTION();
 
-		if (mScenePanelFocused) {
-			// What happens only when window is focused
-			//mCameraController.OnUpdate();
+		// Handle resize
+		FrameBufferDefenition def = mFrameBuffer->GetDefenition();
+		if ( mScenePanelSize.x > 0.0f && mScenePanelSize.y > 0.0f 
+			&& (mScenePanelSize.x != def.width || mScenePanelSize.y != def.height))
+		//if (mScenePanelSize.x != def.width || mScenePanelSize.y != def.height)
+		{
+			mFrameBuffer->Resize((uint32_t)mScenePanelSize.x, (uint32_t)mScenePanelSize.y);
+			mScene->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
 		}
 
+		//if (mScenePanelFocused) {
+		//	// What happens only when window is focused
+		//	//mCameraController.OnUpdate();
+		//}
+
 		Renderer::GetStats().ResetStats();
-
 		mFrameBuffer->Bind();
-
-		// Random note: 
-		// Input needs to probably go through some kind of check to make sure the game window is focused. idk what to do about input polling
-
-		// --- Rendering --- // 
 
 		RenderCommand::SetColor({ 0.1f, 0.1f, 0.1f, 1 });
 		RenderCommand::Clear();
@@ -78,6 +84,9 @@ namespace Egl {
 		mScene->OnUpdate();
 
 		mFrameBuffer->Unbind();
+
+		// Random note: 
+		// Input needs to probably go through some kind of check to make sure the game window is focused. idk what to do about input polling
 	}
 
 	void EditorLayer::OnEvent(Egl::Event& event) {
@@ -94,27 +103,22 @@ namespace Egl {
 		ImGui::Text("Quads: %d", Renderer::GetStats().GetQuadCount());
 		ImGui::Text("Vertices: %d", Renderer::GetStats().GetVertexCount());
 		ImGui::Text("Indeces: %d", Renderer::GetStats().GetIndexCount());
-
-		ImGui::DragFloat3("CameraTransform", glm::value_ptr(mSecondCamera.GetComponent<TransformComponent>().transform[3]));
-		if (ImGui::Checkbox("Camera 1", &use1camera)) {
-			//LOG("Shoulf be false: {0}", mCamera == mSecondCamera);
-			//Entity e = Entity( (entt::entity)mCamera.GetID(), &*mScene );
-			//LOG("Should be true {0}", mCamera == e);
-			LOG("{0}, {1}", mScene->GetPrimaryCamera().ToString(), mCamera.ToString());
-			auto& cameraToUse = mScene->GetPrimaryCamera() == mCamera ? mSecondCamera : mCamera;
-			LOG("PromaryCamera now: {0}, Is it {1}: {2}, result was:  {3}", mScene->GetPrimaryCamera().ToString(), mCamera.ToString(), mScene->GetPrimaryCamera() == mCamera, cameraToUse.ToString());
-			mScene->SetPrimaryCamera(cameraToUse);
-		}
 		ImGui::End();
+		
+		ImGui::Begin("Components window");
+		ImGui::DragFloat3("CameraTransform", glm::value_ptr(mSecondCamera.GetComponent<TransformComponent>().transform[3]));
+		if (ImGui::Checkbox("Camera 1", &use1camera))
+			mScene->SetPrimaryCamera(mScene->GetPrimaryCamera() == mCamera ? mSecondCamera : mCamera);
+		ImGui::End();
+
 
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("Scene");
 
+		// The actual resizing happens in onUpdate. This is just a "notification". Currently could as well be here.
 		ImVec2 scenePanelSize = ImGui::GetContentRegionAvail();
-		if (mScenePanelSize != *((glm::vec2*)&scenePanelSize)) {
+		if (mScenePanelSize != *((glm::vec2*)&scenePanelSize))
 			mScenePanelSize = { scenePanelSize.x, scenePanelSize.y };
-			mFrameBuffer->Resize((uint32_t)scenePanelSize.x, (uint32_t)scenePanelSize.y);
-		}
 
 		mScenePanelFocused = ImGui::IsWindowFocused();
 		mScenePanelHovered = ImGui::IsWindowHovered();

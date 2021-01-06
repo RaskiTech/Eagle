@@ -49,7 +49,16 @@ namespace Egl {
 
 			Renderer::EndScene();
 		}
-
-
+	}
+	void Scene::SetViewportAspectRatio(float aspectRatio)
+	{
+		// Resize cameras that don't have a fixed aspect ratio
+		auto& view = mRegistry.view<CameraComponent>();
+		for (auto entity : view) {
+			CameraComponent& camera = view.get<CameraComponent>(entity);
+			if (!camera.fixedAspectRatio) {
+				camera.camera.SetAspectRatio(aspectRatio);
+			}
+		}
 	}
 }

@@ -69,9 +69,6 @@
     <ClInclude Include="src\Eagle.h">
       <Filter>src</Filter>
     </ClInclude>
-    <ClInclude Include="src\Eagle\Components\CameraController.h">
-      <Filter>src\Eagle\Components</Filter>
-    </ClInclude>
     <ClInclude Include="src\Eagle\Components\ParticleSystem.h">
       <Filter>src\Eagle\Components</Filter>
     </ClInclude>
@@ -1430,11 +1427,9 @@
       <Filter>src\Eagle\ECS</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\ECS\Components.h" />
+    <ClInclude Include="src\Eagle\ECS\SceneCamera.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Eagle\Components\CameraControler.cpp">
-      <Filter>src\Eagle\Components</Filter>
-    </ClCompile>
     <ClCompile Include="src\Eagle\Components\ParticleSystem.cpp">
       <Filter>src\Eagle\Components</Filter>
     </ClCompile>
@@ -1520,5 +1515,6 @@
     <ClCompile Include="src\Eagle\ECS\Scene.cpp">
       <Filter>src\Eagle\ECS</Filter>
     </ClCompile>
+    <ClCompile Include="src\Eagle\ECS\SceneCamera.cpp" />
   </ItemGroup>
 </Project>
