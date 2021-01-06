@@ -30,8 +30,10 @@ namespace Egl {
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
 
-		LayerStack mLayerStack;
+		// Keep this at top because it terminates glfw context
 		Scope<Window> mWindow;
+
+		LayerStack mLayerStack;
 		ImGuiLayer* mImGuiLayer;
 		bool mRunning = true;
 		bool mMinimized = false;
