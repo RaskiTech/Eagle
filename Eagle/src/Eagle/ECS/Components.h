@@ -3,6 +3,7 @@
 #include "Eagle/Rendering/Texture.h"
 #include "Eagle/ECS/Script.h"
 #include "SceneCamera.h"
+#include "Eagle/Core/DoesExist.h"
 
 namespace Egl {
 	struct TransformComponent {
@@ -47,16 +48,24 @@ namespace Egl {
 		std::function<void(Script*)> OnCreateFunc;
 		std::function<void(Script*)> OnDestroyFunc;
 		std::function<void(Script*)> OnUpdateFunc;
-
+		
 		template<typename T>
 		void Bind() {
 			// Figure out how to call the functions
 			InstantiateFunc = [&]() {baseInstance = new T(); };
 			DestroyFunc = [&]() { delete (T*)baseInstance; };
 
-			OnCreateFunc = [](Script* instance) { ((T*)instance)->OnCreate(); };
-			OnDestroyFunc = [](Script* instance) { ((T*)instance)->OnDestroy(); };
-			OnUpdateFunc = [](Script* instance) { ((T*)instance)->OnUpdate(); };
+				
+			// COMPILE_IF_VALID is a macro from DoesExist.h
+			COMPILE_IF_VALID(T, OnCreate(),
+				OnCreateFunc = [](Script* instance) { ((T*)instance)->OnCreate(); }
+			);
+			COMPILE_IF_VALID(T, OnDestroy(),
+				OnDestroyFunc = [](Script* instance) { ((T*)instance)->OnDestroy(); }
+			);
+			COMPILE_IF_VALID(T, OnUpdate(),
+				OnUpdateFunc = [](Script* instance) { ((T*)instance)->OnUpdate(); }
+			);
 		}
 	};
 }

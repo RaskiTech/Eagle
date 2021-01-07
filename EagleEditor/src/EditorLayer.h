@@ -17,11 +17,6 @@ namespace Egl {
 
 	private:
 
-		// Temp, game fields;
-		float color[4] = { 0.8f, 0.2f, 0.3f, 1.0f };
-		float texColor[4] = { 1, 1, 1, 1 };
-		float rotation = 0;
-
 		Ref<Texture> mCaveTiles, bg;
 		Ref<SubTexture> creature;
 		Ref<FrameBuffer> mFrameBuffer;

@@ -42,10 +42,11 @@ namespace Egl {
 				if (!scriptComponent.baseInstance) {
 					scriptComponent.InstantiateFunc();
 					scriptComponent.baseInstance->mEntity = Entity{ entity, this };
-					scriptComponent.OnCreateFunc(scriptComponent.baseInstance);
+					if (scriptComponent.OnCreateFunc)
+						scriptComponent.OnCreateFunc(scriptComponent.baseInstance);
 				}
-
-				scriptComponent.OnUpdateFunc(scriptComponent.baseInstance);
+				if (scriptComponent.OnUpdateFunc)
+					scriptComponent.OnUpdateFunc(scriptComponent.baseInstance);
 			});
 		}
 

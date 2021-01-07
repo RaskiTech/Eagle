@@ -58,12 +58,6 @@ namespace Egl {
 		// Camera controller
 		class CameraController : public Script {
 		public:
-			void OnCreate() {
-				
-			}
-			void OnDestroy() {
-
-			}
 			void OnUpdate() {
 				auto& transform = GetComponent<TransformComponent>().transform;
 				float speed = 5;
@@ -105,20 +99,16 @@ namespace Egl {
 		Renderer::GetStats().ResetStats();
 		mFrameBuffer->Bind();
 
-		RenderCommand::SetColor({ 0.1f, 0.1f, 0.1f, 1 });
+		RenderCommand::SetColor({ 0.1f, 0.1f, 0.1f, 1.0f });
 		RenderCommand::Clear();
 
 		mScene->OnUpdate();
 
 		mFrameBuffer->Unbind();
-
-		// Random note: 
-		// Input needs to probably go through some kind of check to make sure the game window is focused. idk what to do about input polling
 	}
 
 	void EditorLayer::OnEvent(Egl::Event& event) {
 		EAGLE_PROFILE_FUNCTION();
-		//mCameraController.OnEvent(event);
 	}
 
 	void EditorLayer::OnImGuiRender() {
