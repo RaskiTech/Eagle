@@ -1,5 +1,6 @@
 #pragma once
 #include "Eagle.h"
+#include "Panels/HierarchyPanel.h"
 
 namespace Egl {
 
@@ -28,11 +29,11 @@ namespace Egl {
 
 		// ECS fields
 		Ref<Scene> mScene;
-		Entity mPlayer, mCamera, mSecondCamera;
-		bool use1camera;
+		Entity mPlayer, mCamera;
 
 		// Actual Editor fields
 		glm::vec2 mScenePanelSize = { 0.0f, 0.0f };
 		bool mScenePanelFocused = false, mScenePanelHovered = false;
+		HierarchyPanel mHierarchyPanel;
 	};
 }

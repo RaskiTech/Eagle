@@ -11,8 +11,8 @@
 
 namespace Egl {
 
-	EditorLayer::EditorLayer() : Layer("EditorLayer") {//, mCameraController(1280.0f / 720.0f, true) {
-		//mCameraController.SetZoom(2);
+	EditorLayer::EditorLayer() : Layer("EditorLayer") {
+
 	}
 
 	///////////////////// On Attach //////////////////////
@@ -27,33 +27,20 @@ namespace Egl {
 		defenition.height = 720;
 		mFrameBuffer = FrameBuffer::Create(defenition);
 
-		// TODO: Refactor particleSystem
-
-		// Particles
-		//mParticleProps = ParticleSystemProps();
-		//mParticleProps.zPosition = -0.2f;
-		//mParticleProps.emitAngleWidthRadiant = 6.282f;
-		//mParticleProps.minColor = { 0.7f, 0.7f, 0.7f, 1.0f };
-		//mParticleProps.maxColor = { 0.9f, 0.9f, 0.9f, 1.0f };
-		//mParticleProps.minSize = { 0.2f, 0.2f };
-		//mParticleProps.maxSize = { 0.2f, 0.2f };
-		//mParticleProps.sizeOverLifetime = { -0.2, -0.2 };
-		//
-		//mParticleSystem = ParticleSystem(mParticleProps, 10000);
-
-
-		mScene = CreateRef<Scene>();
-		mPlayer = mScene->AddEntity("Player");
-		mPlayer.AddComponent<SpriteComponent>(glm::vec4(0.2f, 0.3f, 0.4f, 1.0f));
 
 #pragma region Testing ECS 
-		mCamera = mScene->AddEntity("Camera");
-		mCamera.AddComponent<CameraComponent>();
-		mScene->SetPrimaryCamera(mCamera);
+		mScene = CreateRef<Scene>();
 
-		mSecondCamera = mScene->AddEntity("SecondCamera");
-		mSecondCamera.AddComponent<CameraComponent>();
-		mSecondCamera.GetComponent<CameraComponent>().camera.SetBounds(5, -1, 1);
+		for (int i = 0; i < 8; i++) {
+			mPlayer = mScene->AddEntity("Cube");
+			mPlayer.AddComponent<SpriteComponent>(glm::vec4(0.2f, 0.3f, 0.4f, 1.0f));
+			mPlayer.GetComponent<TransformComponent>().SetPosition({ i * 1.5f, 0, 0 });
+			//mPlayer.GetComponent<TransformComponent>().SetRotation(i * 10);
+		}
+
+		mCamera = mScene->AddEntity("Camera");
+		mCamera.AddComponent<CameraComponent>().camera.SetBounds(5);
+		mScene->SetPrimaryCamera(mCamera);
 
 		// Camera controller
 		class CameraController : public Script {
@@ -68,9 +55,15 @@ namespace Egl {
 				if (Input::IsKeyPressed(EGL_KEY_W)) transform[3][1] += speed * Time::GetFrameDelta();
 			}
 		};
-
 		mCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+
+		Entity particle = mScene->AddEntity("ParticleSystem");
+		ParticleSystemProps props;
+		props.zPosition = 0.9f;
+		particle.AddComponent<ParticleSystemComponent>(props);
 #pragma endregion
+
+		mHierarchyPanel.SetContext(mScene);
 	}
 
 	void EditorLayer::OnDetach() {
@@ -87,34 +80,24 @@ namespace Egl {
 			&& (mScenePanelSize.x != def.width || mScenePanelSize.y != def.height))
 		//if (mScenePanelSize.x != def.width || mScenePanelSize.y != def.height)
 		{
-			mFrameBuffer->Resize((uint32_t)mScenePanelSize.x, (uint32_t)mScenePanelSize.y);
-			mScene->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
+			//mFrameBuffer->Resize((uint32_t)mScenePanelSize.x, (uint32_t)mScenePanelSize.y);
+			//mScene->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
 		}
 
-		//if (mScenePanelFocused) {
-		//	// What happens only when window is focused
-		//	//mCameraController.OnUpdate();
-		//}
-
-		Renderer::GetStats().ResetStats();
 		mFrameBuffer->Bind();
 
-		RenderCommand::SetColor({ 0.1f, 0.1f, 0.1f, 1.0f });
-		RenderCommand::Clear();
+		Renderer::GetStats().ResetStats();
 
 		mScene->OnUpdate();
 
 		mFrameBuffer->Unbind();
 	}
 
-	void EditorLayer::OnEvent(Egl::Event& event) {
-		EAGLE_PROFILE_FUNCTION();
-	}
-
 	void EditorLayer::OnImGuiRender() {
 		EAGLE_PROFILE_FUNCTION();
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
 
+		///////// Renderer stats //////////
 		ImGui::Begin("Renderer Stats");
 		ImGui::Text("Drawcalls: %d", Renderer::GetStats().GetDrawCallCount());
 		ImGui::Text("Quads: %d", Renderer::GetStats().GetQuadCount());
@@ -122,20 +105,22 @@ namespace Egl {
 		ImGui::Text("Indeces: %d", Renderer::GetStats().GetIndexCount());
 		ImGui::End();
 		
+		///////// Components window //////////
 		ImGui::Begin("Components window");
-		ImGui::DragFloat3("CameraTransform", glm::value_ptr(mSecondCamera.GetComponent<TransformComponent>().transform[3]));
-		if (ImGui::Checkbox("Camera 1", &use1camera))
-			mScene->SetPrimaryCamera(mScene->GetPrimaryCamera() == mCamera ? mSecondCamera : mCamera);
+		ImGui::DragFloat3("CameraTransform", glm::value_ptr(mCamera.GetComponent<TransformComponent>().transform[3]));
 		ImGui::End();
 
-
+		///////// Scene //////////
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("Scene");
 
 		// The actual resizing happens in onUpdate. This is just a "notification". Currently could as well be here.
 		ImVec2 scenePanelSize = ImGui::GetContentRegionAvail();
-		if (mScenePanelSize != *((glm::vec2*)&scenePanelSize))
+		if (mScenePanelSize != *((glm::vec2*) & scenePanelSize)) {
 			mScenePanelSize = { scenePanelSize.x, scenePanelSize.y };
+			mFrameBuffer->Resize((uint32_t)mScenePanelSize.x, (uint32_t)mScenePanelSize.y);
+			mScene->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
+		}
 
 		mScenePanelFocused = ImGui::IsWindowFocused();
 		mScenePanelHovered = ImGui::IsWindowHovered();
@@ -146,6 +131,10 @@ namespace Egl {
 		ImGui::End();
 		ImGui::PopStyleVar();
 
+		mHierarchyPanel.OnImGuiRender();
 	}
 
+	void EditorLayer::OnEvent(Egl::Event& event) {
+		EAGLE_PROFILE_FUNCTION();
+	}
 }

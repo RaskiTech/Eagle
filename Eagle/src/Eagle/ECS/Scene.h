@@ -13,6 +13,7 @@ namespace Egl {
 		~Scene() = default;
 
 		Entity AddEntity(const std::string& name = "New Entity");
+		void RemoveEntity(Entity& entity);
 		void SetPrimaryCamera(Entity& camera);
 		const Entity GetPrimaryCamera();
 
@@ -23,5 +24,6 @@ namespace Egl {
 		entt::entity mPrimaryCamera{ entt::null };
 
 		friend class Entity;
+		friend class HierarchyPanel;
 	};
 }

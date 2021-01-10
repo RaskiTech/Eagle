@@ -1,5 +1,6 @@
 #pragma once
 #include <entt.hpp>
+#include "Eagle/Core/Core.h"
 #include "Scene.h"
 
 namespace Egl {

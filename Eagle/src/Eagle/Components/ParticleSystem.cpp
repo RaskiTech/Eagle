@@ -7,39 +7,36 @@
 #include "Eagle/Rendering/Renderer.h"
 
 namespace Egl {
-	ParticleSystem::ParticleSystem(ParticleSystemProps& particleProps, uint32_t particleAmount = 10000)
+	ParticleSystem::ParticleSystem(ParticleSystemProps& particleProps, uint32_t particleAmount)
 		: mProps(particleProps), mNextParticleIndex(particleAmount-1) 
 	{
 		EAGLE_PROFILE_FUNCTION();
 		mData.resize(particleAmount);
 	}
 
-	void ParticleSystem::OnRender(Camera& camera) {
+	void ParticleSystem::OnRender() {
 		EAGLE_PROFILE_FUNCTION();
-		EAGLE_ENG_ASSERT(false, "Refactor Particlesystem for ECS");
-		//Renderer::BeginScene(camera);
-		//
-		//for (ParticleData& particle : mData) {
-		//	if (!particle.active)
-		//		continue;
-		//
-		//	if (particle.beenAlive > particle.lifeTime) {
-		//		particle.active = false;
-		//		continue;
-		//	}
-		//
-		//	particle.beenAlive += Time::GetFrameDelta();
-		//	float lifePercentage = particle.beenAlive / particle.lifeTime;
-		//
-		//	particle.velocity += particle.velocity * mProps.acceleration * Time::GetFrameDelta();
-		//	particle.position += particle.velocity * Time::GetFrameDelta();
-		//	particle.rotation += mProps.rotationOverLifetime * Time::GetFrameDelta();
-		//
-		//	glm::vec2 size = glm::lerp(particle.startSize, mProps.sizeOverLifetime+particle.startSize, lifePercentage);
-		//
-		//	Renderer::DrawRotatedColorQuad(glm::vec3(particle.position, mProps.zPosition), particle.rotation, size, particle.color);
-		//}
-		//Renderer::EndScene();
+		
+		for (ParticleData& particle : mData) {
+			if (!particle.active)
+				continue;
+
+			if (particle.beenAlive > particle.lifeTime) {
+				particle.active = false;
+				continue;
+			}
+		
+			particle.beenAlive += Time::GetFrameDelta();
+			float lifePercentage = particle.beenAlive / particle.lifeTime;
+		
+			particle.velocity += particle.velocity * mProps.acceleration * Time::GetFrameDelta();
+			particle.position += particle.velocity * Time::GetFrameDelta();
+			particle.rotation += mProps.rotationOverLifetime * Time::GetFrameDelta();
+		
+			glm::vec2 size = glm::lerp(particle.startSize, mProps.sizeOverLifetime+particle.startSize, lifePercentage);
+		
+			Renderer::DrawRotatedColorQuad(glm::vec3(particle.position, mProps.zPosition), particle.rotation, size, particle.color);
+		}
 	}
 
 	void ParticleSystem::Emit(const glm::vec2& position) {

@@ -310,7 +310,7 @@ namespace Egl {
 			StartNewBatch();
 
 		for (int i = 0; i < 4; i++) {
-			sData.quadVertexBufferPtr->position = transform * sData.sampleVertices[i];
+			sData.quadVertexBufferPtr->position = transform * sData.sampleVertices[i]; // Access violation here? Maybe didn't begin scene?
 			sData.quadVertexBufferPtr->color = color;
 			sData.quadVertexBufferPtr->texCoord = { 0, 0 }; // This could probably be removed
 			sData.quadVertexBufferPtr->tilingFactor = 0;   	// This could probably be removed

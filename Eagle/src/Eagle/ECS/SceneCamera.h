@@ -8,7 +8,7 @@ namespace Egl {
 		virtual ~SceneCamera() = default;
 
 
-		void SetBounds(float size, float nearClip, float farClip);
+		void SetBounds(float size, float nearClip = -1, float farClip = 1);
 		void SetAspectRatio(float aspectRatio);
 
 		void SetCameraSize(float size) { mSize = size; }

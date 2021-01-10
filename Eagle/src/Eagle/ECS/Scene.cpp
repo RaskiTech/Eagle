@@ -2,7 +2,9 @@
 #include "Scene.h"
 #include "Components.h"
 #include "Eagle/Rendering/Renderer.h"
+#include "Eagle/Rendering/RenderCommand.h"
 #include "Entity.h"
+#include "Eagle/Core/Time.h"
 
 namespace Egl {
 	Scene::Scene()
@@ -16,6 +18,11 @@ namespace Egl {
 		entity.AddComponent<TransformComponent>();
 		entity.AddComponent<TagComponent>(name);
 		return entity;
+	}
+
+	void Scene::RemoveEntity(Entity& entity)
+	{
+		mRegistry.destroy((entt::entity)entity.GetID());
 	}
 
 	void Scene::SetPrimaryCamera(Entity& camera)
@@ -51,15 +58,35 @@ namespace Egl {
 		}
 
 		if (mPrimaryCamera != entt::null) {
-			Camera& camera = mRegistry.get<CameraComponent>(mPrimaryCamera).camera;
+			CameraComponent& camera = mRegistry.get<CameraComponent>(mPrimaryCamera);
 			TransformComponent& transform = mRegistry.get<TransformComponent>(mPrimaryCamera);
 
-			Renderer::BeginScene(camera, transform.transform);
+			RenderCommand::SetColor(camera.backgroundColor);
+			RenderCommand::Clear();
 
-			auto group = mRegistry.group<TransformComponent>(entt::get<SpriteComponent>);
-			for (auto entity : group) {
-				auto [transform, sprite] = group.get<TransformComponent, SpriteComponent>(entity);
-				Renderer::DrawColorQuad(transform, sprite.color);
+			Renderer::BeginScene(camera.camera, transform.transform);
+
+			{
+				/////// Sprite ///////
+				auto group = mRegistry.group<SpriteComponent>(entt::get<TransformComponent>);
+				for (auto entity : group) {
+					auto [sprite, transform] = group.get<SpriteComponent, TransformComponent>(entity);
+					Renderer::DrawColorQuad(transform, sprite.color);
+				}
+			}
+
+			{
+				/////// ParticleSystem ///////
+				auto group = mRegistry.group<ParticleSystemComponent>(entt::get<TransformComponent>);
+				for (auto entity : group) {
+					auto [particleSystem, transform] = group.get<ParticleSystemComponent, TransformComponent>(entity);
+					while (particleSystem.timeUntilEmit < 0) {
+						particleSystem.particleSystem.Emit({ transform.transform[3][0], transform.transform[3][1] });
+						particleSystem.timeUntilEmit = particleSystem.timeBetweenEmits;
+					}
+					particleSystem.timeUntilEmit -= Time::GetFrameDelta();
+					particleSystem.particleSystem.OnRender();
+				}
 			}
 
 			Renderer::EndScene();

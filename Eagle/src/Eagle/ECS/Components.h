@@ -4,10 +4,14 @@
 #include "Eagle/ECS/Script.h"
 #include "SceneCamera.h"
 #include "Eagle/Core/DoesExist.h"
+#include "Eagle/Components/ParticleSystem.h"
 
 namespace Egl {
 	struct TransformComponent {
 		glm::mat4 transform = glm::mat4(1);
+
+		const glm::vec3& GetPosition() { return transform[3]; }
+		void SetPosition(const glm::vec3& position) { transform[3] = glm::vec4(position, 0); }
 
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent&) = default;
@@ -34,9 +38,22 @@ namespace Egl {
 
 	struct CameraComponent {
 		SceneCamera camera;
+		glm::vec4 backgroundColor = { 0.1f, 0.1f, 0.1f, 1.0f };
 		bool fixedAspectRatio = false;
 
 		CameraComponent() = default;
+		CameraComponent(const glm::vec4& backgroundColor, bool fixedAspectRatio = false) : backgroundColor(backgroundColor), fixedAspectRatio(fixedAspectRatio) {}
+	};
+
+	struct ParticleSystemComponent {
+		ParticleSystem particleSystem;
+
+		float timeBetweenEmits = 0.1f;
+		float timeUntilEmit = 0;
+
+		ParticleSystemComponent() = default;
+		ParticleSystemComponent(ParticleSystemProps& props, uint32_t particleAmount = 10000, float timeBetweenEmits = 0.1f)
+			: particleSystem(props, particleAmount), timeBetweenEmits(timeBetweenEmits) {}
 	};
 
 	struct NativeScriptComponent {

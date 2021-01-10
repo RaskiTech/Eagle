@@ -21,10 +21,10 @@ namespace Egl {
 	class ParticleSystem {
 	public:
 		ParticleSystem() {}
-		ParticleSystem(ParticleSystemProps& props, uint32_t particleAmount);
+		ParticleSystem(ParticleSystemProps& props, uint32_t particleAmount = 10000);
 		void SetProps(ParticleSystemProps& props) { mProps = props; }
 
-		void OnRender(Camera& camera);
+		void OnRender();
 		void Emit(const glm::vec2& position);
 	private:
 		struct ParticleData {
