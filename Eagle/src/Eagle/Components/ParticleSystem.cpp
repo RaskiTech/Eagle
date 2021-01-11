@@ -33,7 +33,9 @@ namespace Egl {
 			particle.position += particle.velocity * Time::GetFrameDelta();
 			particle.rotation += mProps.rotationOverLifetime * Time::GetFrameDelta();
 		
-			glm::vec2 size = glm::lerp(particle.startSize, mProps.sizeOverLifetime+particle.startSize, lifePercentage);
+			glm::vec2 size = mProps.sizeAtEnd == glm::vec2{ -1, -1 } ? 
+				particle.startSize :
+				glm::lerp(particle.startSize, mProps.sizeAtEnd, lifePercentage);
 		
 			Renderer::DrawRotatedColorQuad({ particle.position.x, particle.position.y, zPosition }, particle.rotation, size, particle.color);
 		}

@@ -18,6 +18,11 @@ namespace Egl {
 	void HierarchyPanel::OnImGuiRender()
 	{
 		ImGui::Begin("Hierarchy");
+		ImGuiIO& io = ImGui::GetIO();
+		auto boldFont = io.Fonts->Fonts[0];
+		ImGui::PushFont(boldFont);
+		ImGui::Text("Scene Hierarchy");
+		ImGui::PopFont();
 
 		mScene->mRegistry.each([&](entt::entity entityID) {
 			DrawEntityNode(entityID);

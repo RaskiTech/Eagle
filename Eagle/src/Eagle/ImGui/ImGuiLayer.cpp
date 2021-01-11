@@ -45,11 +45,13 @@ namespace Egl {
 
         // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
         ImGuiStyle& style = ImGui::GetStyle();
+        
         if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
         {
             style.WindowRounding = 0.0f;
             style.Colors[ImGuiCol_WindowBg].w = 1.0f;
         }
+        SetDarkThemeColors();
 
         Application& app = Application::Get();
         GLFWwindow* window = (GLFWwindow*)app.GetWindow().NativeWindow();
@@ -86,6 +88,63 @@ namespace Egl {
             ImGui::RenderPlatformWindowsDefault();
             glfwMakeContextCurrent(backup_current_context);
         }
+    }
+    void ImGuiLayer::SetDarkThemeColors() {
+        ImGuiStyle& style = ImGui::GetStyle();
+
+        // From british palette, flatuicolors
+        ImVec4 white1     = ImVec4{ 245.0f / 255, 246.0f / 255, 250.0f / 255, 1.0f };
+        ImVec4 white2     = ImVec4{ 220.0f / 255, 221.0f / 255, 225.0f / 255, 1.0f };
+
+        ImVec4 violet1    = ImVec4{ 156.0 / 255 - 0.1f, 136.0 / 255 - 0.1f, 255.0 / 255 - 0.1f, 1.0f };
+        ImVec4 violet2    = ImVec4{ 140.0 / 255 - 0.1f, 122.0 / 255 - 0.1f, 230.0 / 255 - 0.1f, 1.0f };
+
+        ImVec4 lightBlue1 = ImVec4{ 64.0 / 255, 115.0 / 255, 158.0 / 255, 1.0f };
+        ImVec4 lightBlue2 = ImVec4{ 72.0 / 255, 126.0 / 255, 176.0 / 255, 1.0f };
+
+        ImVec4 darkBlue1  = ImVec4{ 25.0 / 255, 42.0 / 255, 86.0 / 255, 1.0f };
+        ImVec4 darkBlue2  = ImVec4{ 39.0 / 255, 60.0 / 255, 117.0 / 255, 1.0f };
+
+        ImVec4 lightGray1 = ImVec4{ 127.0 / 255, 143.0 / 255, 166.0 / 255, 1.0f };
+        ImVec4 lightGray2 = ImVec4{ 113.0 / 255, 128.0 / 255, 147.0 / 255, 1.0f };
+
+        ImVec4 darkGray0  = ImVec4{ 53.0 / 255+0.15, 59.0 / 255+0.15, 72.0 / 255+0.15, 1.0f };
+        ImVec4 darkGray1  = ImVec4{ 53.0 / 255+0.1f, 59.0 / 255 + 0.1f, 72.0 / 255 + 0.1f, 1.0f };
+        ImVec4 darkGray2  = ImVec4{ 47.0 / 255, 54.0 / 255, 64.0 / 255, 1.0f };
+
+        ImVec4 dark = ImVec4{ 0.1f, 0.1f, 0.1f, 1.0f };
+
+        style.Colors[ImGuiCol_WindowBg]           = dark;
+
+        style.Colors[ImGuiCol_Header]             = lightBlue1;
+        style.Colors[ImGuiCol_HeaderHovered]      = lightBlue1;
+        style.Colors[ImGuiCol_HeaderActive]       = lightBlue1;
+
+        style.Colors[ImGuiCol_Button]             = darkGray1;
+        style.Colors[ImGuiCol_ButtonHovered]      = darkGray0;
+        style.Colors[ImGuiCol_ButtonActive]       = darkGray0;
+                                                    
+        style.Colors[ImGuiCol_FrameBg]            = darkGray1;
+        style.Colors[ImGuiCol_FrameBgHovered]     = darkGray0;
+        style.Colors[ImGuiCol_FrameBgActive]      = darkGray0;
+
+        style.Colors[ImGuiCol_Tab]                = lightBlue1;
+        style.Colors[ImGuiCol_TabHovered]         = lightBlue2;
+        style.Colors[ImGuiCol_TabActive]          = lightBlue2;
+        style.Colors[ImGuiCol_TabUnfocused]       = lightBlue1;
+        style.Colors[ImGuiCol_TabUnfocusedActive] = lightBlue2;
+                                                                   
+        style.Colors[ImGuiCol_TitleBg]            = darkGray2;
+        style.Colors[ImGuiCol_TitleBgActive]      = darkGray2;
+        style.Colors[ImGuiCol_TitleBgCollapsed]   = darkGray2;
+
+        style.Colors[ImGuiCol_CheckMark]          = white1;
+        style.Colors[ImGuiCol_Text]               = white1;
+        style.Colors[ImGuiCol_TextDisabled]       = white2;
+
+        style.Colors[ImGuiCol_Separator]          = darkGray2;
+        style.Colors[ImGuiCol_SeparatorHovered]   = lightGray2;
+        style.Colors[ImGuiCol_SeparatorActive]    = lightGray2;
     }
     void ImGuiLayer::OnEvent(Event& event) {
         if (!mLetMouseThrough) {

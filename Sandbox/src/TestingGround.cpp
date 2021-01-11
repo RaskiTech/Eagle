@@ -20,7 +20,7 @@ void TestingGround::OnAttach() {
 	mParticleProps.maxColor = { 0.9f, 0.9f, 0.9f, 1.0f };
 	mParticleProps.minSize = { 0.2f, 0.2f };
 	mParticleProps.maxSize = { 0.2f, 0.2f };
-	mParticleProps.sizeOverLifetime = { -0.2, -0.2 };
+	mParticleProps.sizeAtEnd = { -0.2, -0.2 };
 
 	mParticleSystem = ParticleSystem(mParticleProps, 10000);
 }

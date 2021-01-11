@@ -10,7 +10,7 @@ namespace Egl {
 		uint32_t height;
 
 		WindowProps(const std::string& title,
-			uint32_t width = 1280, uint32_t height = 720)
+			uint32_t width = 1400, uint32_t height = 800)
 			: Title(title), width(width), height(height) {}
 	};
 

@@ -45,7 +45,7 @@ namespace Egl {
 
 	struct CameraComponent {
 		SceneCamera camera;
-		glm::vec4 backgroundColor = { 0.1f, 0.1f, 0.1f, 1.0f };
+		glm::vec4 backgroundColor = { 0.2f, 0.2f, 0.2f, 1.0f };
 		bool fixedAspectRatio = false;
 
 		CameraComponent() = default;

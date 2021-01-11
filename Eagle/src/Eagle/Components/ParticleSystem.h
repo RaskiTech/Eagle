@@ -13,7 +13,7 @@ namespace Egl {
 		float minRotation = 0, maxRotation = 0;
 		glm::vec2 minSize = { 1, 1 }, maxSize = { 1, 1 };
 
-		glm::vec2 sizeOverLifetime = { 0, 0 };
+		glm::vec2 sizeAtEnd = { -1, -1 };
 		float rotationOverLifetime = 0;
 	};
 

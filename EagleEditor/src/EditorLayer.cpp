@@ -24,18 +24,18 @@ namespace Egl {
 		defenition.height = 720;
 		mFrameBuffer = FrameBuffer::Create(defenition);
 
-#pragma region Testing ECS 
+#pragma region ECS 
 		mScene = CreateRef<Scene>();
 
 		for (int i = 0; i < 8; i++) {
 			mPlayer = mScene->AddEntity("Cube");
 			mPlayer.AddComponent<SpriteComponent>(glm::vec4(0.2f, 0.3f, 0.4f, 1.0f));
-			mPlayer.GetComponent<TransformComponent>().position = { i * 1.5f, 0, 0 };
+			mPlayer.GetComponent<TransformComponent>().position = { i * 1.5f - 5, 2, 0 };
 			mPlayer.GetComponent<TransformComponent>().rotation = (float)i;
 		}
 
 		mCamera = mScene->AddEntity("Camera");
-		mCamera.AddComponent<CameraComponent>().camera.SetBounds(6);
+		mCamera.AddComponent<CameraComponent>().camera.SetBounds(7);
 		mScene->SetPrimaryCamera(mCamera);
 
 		// Camera controller
@@ -43,13 +43,13 @@ namespace Egl {
 		public:
 			void OnUpdate() {
 				auto& transform = GetComponent<TransformComponent>();
+				float zoomSize = GetComponent<CameraComponent>().camera.GetCameraSize();
 				float speed = 5;
 
-				if (Input::IsKeyPressed(EGL_KEY_A)) transform.position.x -= speed * Time::GetFrameDelta();
-				if (Input::IsKeyPressed(EGL_KEY_D)) transform.position.x += speed * Time::GetFrameDelta();
-				if (Input::IsKeyPressed(EGL_KEY_S)) transform.position.y -= speed * Time::GetFrameDelta();
-				if (Input::IsKeyPressed(EGL_KEY_W)) transform.position.y += speed * Time::GetFrameDelta();
-
+				if (Input::IsKeyPressed(EGL_KEY_A)) transform.position.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f;
+				if (Input::IsKeyPressed(EGL_KEY_D)) transform.position.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f;
+				if (Input::IsKeyPressed(EGL_KEY_S)) transform.position.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f;
+				if (Input::IsKeyPressed(EGL_KEY_W)) transform.position.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f;
 			}
 		};
 		mCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
@@ -60,7 +60,7 @@ namespace Egl {
 		props.minSize = { 0.4f, 0.4f };
 		props.maxColor = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
 		props.minColor = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-		props.sizeOverLifetime = { -0.4, -0.4 };
+		props.sizeAtEnd = { 0, 0 };
 		particle.AddComponent<ParticleSystemComponent>(props);
 #pragma endregion
 
@@ -95,7 +95,11 @@ namespace Egl {
 
 	void EditorLayer::OnImGuiRender() {
 		EAGLE_PROFILE_FUNCTION();
+		auto& style = ImGui::GetStyle();
+		float windowMinSize = style.WindowMinSize.x;
+		style.WindowMinSize.x = 300.0f; // 319.0f;
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+		style.WindowMinSize.x = windowMinSize;
 
 		///////// Renderer stats //////////
 		ImGui::Begin("Renderer Stats");
@@ -124,6 +128,13 @@ namespace Egl {
 		ImGui::PopStyleVar();
 
 		mHierarchyPanel.OnImGuiRender();
+
+		//// Restart scene button ////
+		ImGui::Begin("Restart Scene");
+		if (ImGui::Button("Reset scene", ImVec2(ImGui::GetWindowWidth(), 0))) {
+			// TODO: Handle scene Reset
+		}
+		ImGui::End();
 	}
 
 	void EditorLayer::OnEvent(Egl::Event& event) {

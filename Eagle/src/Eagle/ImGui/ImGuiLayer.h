@@ -15,6 +15,8 @@ namespace Egl {
 		void Begin();
 		void End();
 		void LetEventsThrough(bool letThrogh) { mLetMouseThrough = letThrogh; }
+
+		void SetDarkThemeColors();
 	private:
 		bool mLetMouseThrough = true;
 		float mTime = 0.0f;
