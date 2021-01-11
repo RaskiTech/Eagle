@@ -11,7 +11,6 @@ namespace Egl {
 		void SetBounds(float size, float nearClip = -1, float farClip = 1);
 		void SetAspectRatio(float aspectRatio);
 
-		void SetCameraSize(float size) { mSize = size; }
 		float GetCameraSize() { return mSize; }
 	private:
 		void RecaulculateProjection();

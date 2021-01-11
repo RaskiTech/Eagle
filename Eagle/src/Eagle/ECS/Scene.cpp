@@ -64,14 +64,14 @@ namespace Egl {
 			RenderCommand::SetColor(camera.backgroundColor);
 			RenderCommand::Clear();
 
-			Renderer::BeginScene(camera.camera, transform.transform);
+			Renderer::BeginScene(camera.camera, transform.GetTransform());
 
 			{
 				/////// Sprite ///////
 				auto group = mRegistry.group<SpriteComponent>(entt::get<TransformComponent>);
 				for (auto entity : group) {
 					auto [sprite, transform] = group.get<SpriteComponent, TransformComponent>(entity);
-					Renderer::DrawColorQuad(transform, sprite.color);
+					Renderer::DrawColorQuad(transform.GetTransform(), sprite.color);
 				}
 			}
 
@@ -81,11 +81,11 @@ namespace Egl {
 				for (auto entity : group) {
 					auto [particleSystem, transform] = group.get<ParticleSystemComponent, TransformComponent>(entity);
 					while (particleSystem.timeUntilEmit < 0) {
-						particleSystem.particleSystem.Emit({ transform.transform[3][0], transform.transform[3][1] });
+						particleSystem.particleSystem.Emit(transform.position);
 						particleSystem.timeUntilEmit = particleSystem.timeBetweenEmits;
 					}
 					particleSystem.timeUntilEmit -= Time::GetFrameDelta();
-					particleSystem.particleSystem.OnRender();
+					particleSystem.particleSystem.OnRender(transform.position.z);
 				}
 			}
 

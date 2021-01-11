@@ -1,24 +1,31 @@
 #pragma once
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "Eagle/Rendering/Texture.h"
 #include "Eagle/ECS/Script.h"
 #include "SceneCamera.h"
 #include "Eagle/Core/DoesExist.h"
 #include "Eagle/Components/ParticleSystem.h"
+#include "Eagle/Events/Event.h"
 
 namespace Egl {
 	struct TransformComponent {
-		glm::mat4 transform = glm::mat4(1);
-
-		const glm::vec3& GetPosition() { return transform[3]; }
-		void SetPosition(const glm::vec3& position) { transform[3] = glm::vec4(position, 0); }
+		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
+		float rotation = 0;
+		glm::vec2 scale = { 1.0f, 1.0f };
 
 		TransformComponent() = default;
 		TransformComponent(const TransformComponent&) = default;
-		TransformComponent(const glm::mat4& transform) : transform(transform) {}
+		TransformComponent(const glm::vec3& position) : position(position) {}
 
-		operator glm::mat4& () { return transform; }
-		operator const glm::mat4& () const { return transform; }
+		glm::mat4 GetTransform() const {
+			return rotation == 0 ?
+				glm::translate(glm::mat4(1), position) *                                                    glm::scale(glm::mat4(1), glm::vec3(scale, 1)):
+				glm::translate(glm::mat4(1), position) * glm::rotate(glm::mat4(1), rotation, { 0, 0, 1 }) * glm::scale(glm::mat4(1), glm::vec3(scale, 1));
+		}
+
+		operator glm::mat4& () { return GetTransform(); }
+		operator const glm::mat4& () const { return GetTransform(); }
 	};
 	struct TagComponent {
 		std::string tag;
@@ -83,6 +90,7 @@ namespace Egl {
 			COMPILE_IF_VALID(T, OnUpdate(),
 				OnUpdateFunc = [](Script* instance) { ((T*)instance)->OnUpdate(); }
 			);
+
 		}
 	};
 }

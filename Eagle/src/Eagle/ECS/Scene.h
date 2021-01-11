@@ -18,6 +18,7 @@ namespace Egl {
 		const Entity GetPrimaryCamera();
 
 		void SetViewportAspectRatio(float aspectRatio);
+
 		void OnUpdate();
 	private:
 		entt::registry mRegistry;

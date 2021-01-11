@@ -18,20 +18,12 @@ namespace Egl {
 
 	private:
 
-		Ref<Texture> mCaveTiles, bg;
-		Ref<SubTexture> creature;
-		Ref<FrameBuffer> mFrameBuffer;
-		Ref<VertexArray> mVertexArray;
-		Ref<Shader> mShader;
-
-		ParticleSystemProps mParticleProps;
-		ParticleSystem mParticleSystem;
-
 		// ECS fields
 		Ref<Scene> mScene;
 		Entity mPlayer, mCamera;
 
 		// Actual Editor fields
+		Ref<FrameBuffer> mFrameBuffer;
 		glm::vec2 mScenePanelSize = { 0.0f, 0.0f };
 		bool mScenePanelFocused = false, mScenePanelHovered = false;
 		HierarchyPanel mHierarchyPanel;

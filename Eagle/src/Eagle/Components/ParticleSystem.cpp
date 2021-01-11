@@ -14,7 +14,7 @@ namespace Egl {
 		mData.resize(particleAmount);
 	}
 
-	void ParticleSystem::OnRender() {
+	void ParticleSystem::OnRender(float zPosition) {
 		EAGLE_PROFILE_FUNCTION();
 		
 		for (ParticleData& particle : mData) {
@@ -35,11 +35,11 @@ namespace Egl {
 		
 			glm::vec2 size = glm::lerp(particle.startSize, mProps.sizeOverLifetime+particle.startSize, lifePercentage);
 		
-			Renderer::DrawRotatedColorQuad(glm::vec3(particle.position, mProps.zPosition), particle.rotation, size, particle.color);
+			Renderer::DrawRotatedColorQuad({ particle.position.x, particle.position.y, zPosition }, particle.rotation, size, particle.color);
 		}
 	}
 
-	void ParticleSystem::Emit(const glm::vec2& position) {
+	void ParticleSystem::Emit(const glm::vec3& position) {
 		EAGLE_PROFILE_FUNCTION();
 		ParticleData& data = mData[mNextParticleIndex];
 		data.active = true;

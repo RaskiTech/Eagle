@@ -4,8 +4,7 @@
 
 namespace Egl {
 	struct ParticleSystemProps {
-		float zPosition = 0;
-		float emitAngleWidthRadiant = 3.141f, emitDirOffset = 0;
+		float emitAngleWidthRadiant = 3.141f * 2, emitDirOffset = 0;
 		float minVelocity = 1, maxVelocity = 1;
 
 		float acceleration = 0;
@@ -24,8 +23,8 @@ namespace Egl {
 		ParticleSystem(ParticleSystemProps& props, uint32_t particleAmount = 10000);
 		void SetProps(ParticleSystemProps& props) { mProps = props; }
 
-		void OnRender();
-		void Emit(const glm::vec2& position);
+		void OnRender(float zPosition);
+		void Emit(const glm::vec3& position);
 	private:
 		struct ParticleData {
 			float lifeTime, beenAlive;

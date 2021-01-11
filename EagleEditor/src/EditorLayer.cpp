@@ -5,6 +5,7 @@
 #include "Eagle/ECS/Components.h"
 #include "Eagle/ECS/Scene.h"
 #include "Eagle/ECS/Script.h"
+#include "Eagle/Events/MouseEvent.h"
 
 #include "Eagle/Core/Input.h"
 #include "Eagle/Core/Keycodes.h"
@@ -18,15 +19,10 @@ namespace Egl {
 	///////////////////// On Attach //////////////////////
 	void EditorLayer::OnAttach() {
 		EAGLE_PROFILE_FUNCTION();
-		bg = Texture::Create("Assets/BG.png", false);
-		mCaveTiles = Texture::Create("Assets/Atlas.png", false);
-		creature = SubTexture::CreateFromIndexes(mCaveTiles, { 1, 0 }, { 16, 16 });
-
 		FrameBufferDefenition defenition;
 		defenition.width = 1280;
 		defenition.height = 720;
 		mFrameBuffer = FrameBuffer::Create(defenition);
-
 
 #pragma region Testing ECS 
 		mScene = CreateRef<Scene>();
@@ -34,32 +30,37 @@ namespace Egl {
 		for (int i = 0; i < 8; i++) {
 			mPlayer = mScene->AddEntity("Cube");
 			mPlayer.AddComponent<SpriteComponent>(glm::vec4(0.2f, 0.3f, 0.4f, 1.0f));
-			mPlayer.GetComponent<TransformComponent>().SetPosition({ i * 1.5f, 0, 0 });
-			//mPlayer.GetComponent<TransformComponent>().SetRotation(i * 10);
+			mPlayer.GetComponent<TransformComponent>().position = { i * 1.5f, 0, 0 };
+			mPlayer.GetComponent<TransformComponent>().rotation = (float)i;
 		}
 
 		mCamera = mScene->AddEntity("Camera");
-		mCamera.AddComponent<CameraComponent>().camera.SetBounds(5);
+		mCamera.AddComponent<CameraComponent>().camera.SetBounds(6);
 		mScene->SetPrimaryCamera(mCamera);
 
 		// Camera controller
 		class CameraController : public Script {
 		public:
 			void OnUpdate() {
-				auto& transform = GetComponent<TransformComponent>().transform;
+				auto& transform = GetComponent<TransformComponent>();
 				float speed = 5;
 
-				if (Input::IsKeyPressed(EGL_KEY_A)) transform[3][0] -= speed * Time::GetFrameDelta();
-				if (Input::IsKeyPressed(EGL_KEY_D)) transform[3][0] += speed * Time::GetFrameDelta();
-				if (Input::IsKeyPressed(EGL_KEY_S)) transform[3][1] -= speed * Time::GetFrameDelta();
-				if (Input::IsKeyPressed(EGL_KEY_W)) transform[3][1] += speed * Time::GetFrameDelta();
+				if (Input::IsKeyPressed(EGL_KEY_A)) transform.position.x -= speed * Time::GetFrameDelta();
+				if (Input::IsKeyPressed(EGL_KEY_D)) transform.position.x += speed * Time::GetFrameDelta();
+				if (Input::IsKeyPressed(EGL_KEY_S)) transform.position.y -= speed * Time::GetFrameDelta();
+				if (Input::IsKeyPressed(EGL_KEY_W)) transform.position.y += speed * Time::GetFrameDelta();
+
 			}
 		};
 		mCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 
 		Entity particle = mScene->AddEntity("ParticleSystem");
 		ParticleSystemProps props;
-		props.zPosition = 0.9f;
+		props.minSize = { 0.2f, 0.2f };
+		props.minSize = { 0.4f, 0.4f };
+		props.maxColor = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
+		props.minColor = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
+		props.sizeOverLifetime = { -0.4, -0.4 };
 		particle.AddComponent<ParticleSystemComponent>(props);
 #pragma endregion
 
@@ -78,10 +79,9 @@ namespace Egl {
 		FrameBufferDefenition def = mFrameBuffer->GetDefenition();
 		if ( mScenePanelSize.x > 0.0f && mScenePanelSize.y > 0.0f 
 			&& (mScenePanelSize.x != def.width || mScenePanelSize.y != def.height))
-		//if (mScenePanelSize.x != def.width || mScenePanelSize.y != def.height)
 		{
-			//mFrameBuffer->Resize((uint32_t)mScenePanelSize.x, (uint32_t)mScenePanelSize.y);
-			//mScene->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
+			mFrameBuffer->Resize((uint32_t)mScenePanelSize.x, (uint32_t)mScenePanelSize.y);
+			mScene->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
 		}
 
 		mFrameBuffer->Bind();
@@ -104,11 +104,6 @@ namespace Egl {
 		ImGui::Text("Vertices: %d", Renderer::GetStats().GetVertexCount());
 		ImGui::Text("Indeces: %d", Renderer::GetStats().GetIndexCount());
 		ImGui::End();
-		
-		///////// Components window //////////
-		ImGui::Begin("Components window");
-		ImGui::DragFloat3("CameraTransform", glm::value_ptr(mCamera.GetComponent<TransformComponent>().transform[3]));
-		ImGui::End();
 
 		///////// Scene //////////
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
@@ -116,11 +111,8 @@ namespace Egl {
 
 		// The actual resizing happens in onUpdate. This is just a "notification". Currently could as well be here.
 		ImVec2 scenePanelSize = ImGui::GetContentRegionAvail();
-		if (mScenePanelSize != *((glm::vec2*) & scenePanelSize)) {
+		if (mScenePanelSize != *((glm::vec2*) & scenePanelSize))
 			mScenePanelSize = { scenePanelSize.x, scenePanelSize.y };
-			mFrameBuffer->Resize((uint32_t)mScenePanelSize.x, (uint32_t)mScenePanelSize.y);
-			mScene->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
-		}
 
 		mScenePanelFocused = ImGui::IsWindowFocused();
 		mScenePanelHovered = ImGui::IsWindowHovered();
