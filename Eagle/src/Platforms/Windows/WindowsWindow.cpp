@@ -61,6 +61,8 @@ namespace Egl {
 			WindowResizeEvent event(width, height);
 			data.EventCallback(event);
 		});
+
+
 		glfwSetWindowCloseCallback(mWindow, [](GLFWwindow* window) {
 			WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
 			WindowCloseEvent event;
@@ -118,6 +120,18 @@ namespace Egl {
 			data.EventCallback(event);
 		});
 	}
+	
+	static void WindowSizeCallback(GLFWwindow* window, int width, int height) {
+		LOG("RESIZE ATTEMT");
+		//WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
+		//data.width = width;
+		//data.height = height;
+		//auto data = *(WindowData*)glfwGetWindowUserPointer(window);
+		//
+		//WindowResizeEvent event(width, height);
+		//data.EventCallback(event);
+		//mContext->SwapBuffers();
+	}
 
 	void WindowsWindow::Shutdown() {
 		EAGLE_PROFILE_FUNCTION();
@@ -133,6 +147,9 @@ namespace Egl {
 		EAGLE_PROFILE_FUNCTION();
 
 		glfwPollEvents();
+		Render();
+	}
+	void WindowsWindow::Render() {
 		mContext->SwapBuffers();
 	}
 

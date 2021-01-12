@@ -96,21 +96,21 @@ namespace Egl {
         ImVec4 white1     = ImVec4{ 245.0f / 255, 246.0f / 255, 250.0f / 255, 1.0f };
         ImVec4 white2     = ImVec4{ 220.0f / 255, 221.0f / 255, 225.0f / 255, 1.0f };
 
-        ImVec4 violet1    = ImVec4{ 156.0 / 255 - 0.1f, 136.0 / 255 - 0.1f, 255.0 / 255 - 0.1f, 1.0f };
-        ImVec4 violet2    = ImVec4{ 140.0 / 255 - 0.1f, 122.0 / 255 - 0.1f, 230.0 / 255 - 0.1f, 1.0f };
+        ImVec4 violet1    = ImVec4{ 156.0f / 255 - 0.1f, 136.0f / 255 - 0.1f, 255.0f / 255 - 0.1f, 1.0f };
+        ImVec4 violet2    = ImVec4{ 140.0f / 255 - 0.1f, 122.0f / 255 - 0.1f, 230.0f / 255 - 0.1f, 1.0f };
 
-        ImVec4 lightBlue1 = ImVec4{ 64.0 / 255, 115.0 / 255, 158.0 / 255, 1.0f };
-        ImVec4 lightBlue2 = ImVec4{ 72.0 / 255, 126.0 / 255, 176.0 / 255, 1.0f };
+        ImVec4 lightBlue1 = ImVec4{ 64.0f / 255, 115.0f / 255, 158.0f / 255, 1.0f };
+        ImVec4 lightBlue2 = ImVec4{ 72.0f / 255, 126.0f / 255, 176.0f / 255, 1.0f };
+                                        
+        ImVec4 darkBlue1  = ImVec4{ 25.0f / 255, 42.0f / 255, 86.0f / 255, 1.0f };
+        ImVec4 darkBlue2  = ImVec4{ 39.0f / 255, 60.0f / 255, 117.0f / 255, 1.0f };
 
-        ImVec4 darkBlue1  = ImVec4{ 25.0 / 255, 42.0 / 255, 86.0 / 255, 1.0f };
-        ImVec4 darkBlue2  = ImVec4{ 39.0 / 255, 60.0 / 255, 117.0 / 255, 1.0f };
+        ImVec4 lightGray1 = ImVec4{ 127.0f / 255, 143.0f / 255, 166.0f / 255, 1.0f };
+        ImVec4 lightGray2 = ImVec4{ 113.0f / 255, 128.0f / 255, 147.0f / 255, 1.0f };
 
-        ImVec4 lightGray1 = ImVec4{ 127.0 / 255, 143.0 / 255, 166.0 / 255, 1.0f };
-        ImVec4 lightGray2 = ImVec4{ 113.0 / 255, 128.0 / 255, 147.0 / 255, 1.0f };
-
-        ImVec4 darkGray0  = ImVec4{ 53.0 / 255+0.15, 59.0 / 255+0.15, 72.0 / 255+0.15, 1.0f };
-        ImVec4 darkGray1  = ImVec4{ 53.0 / 255+0.1f, 59.0 / 255 + 0.1f, 72.0 / 255 + 0.1f, 1.0f };
-        ImVec4 darkGray2  = ImVec4{ 47.0 / 255, 54.0 / 255, 64.0 / 255, 1.0f };
+        ImVec4 darkGray0  = ImVec4{ 53.0f / 255+0.15f, 59.0f / 255+0.15f, 72.0f / 255+0.15f, 1.0f };
+        ImVec4 darkGray1  = ImVec4{ 53.0f / 255+0.1f, 59.0f / 255 + 0.1f, 72.0f / 255 + 0.1f, 1.0f };
+        ImVec4 darkGray2  = ImVec4{ 47.0f / 255, 54.0f / 255, 64.0f / 255, 1.0f };
 
         ImVec4 dark = ImVec4{ 0.1f, 0.1f, 0.1f, 1.0f };
 

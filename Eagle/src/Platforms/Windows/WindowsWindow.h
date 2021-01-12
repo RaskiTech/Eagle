@@ -11,6 +11,7 @@ namespace Egl {
 		virtual ~WindowsWindow();
 
 		void OnUpdate() override;
+		void Render() override;
 
 		inline uint32_t GetWidth() const override { return mData.width; }
 		inline uint32_t GetHeight() const override { return mData.height; }
@@ -20,11 +21,8 @@ namespace Egl {
 		void SetVSync(bool enabled) override;
 
 		inline virtual void* NativeWindow() const override { return mWindow; }
-	private:
-		GLFWwindow* mWindow;
-		virtual void Init(const WindowProps& props);
-		virtual void Shutdown();
 
+	private:
 		struct WindowData {
 			std::string Title;
 			unsigned int width = 0, height = 0;
@@ -32,6 +30,10 @@ namespace Egl {
 			EventCallbackFn EventCallback;
 			inline std::string ToString() { return Title; }
 		};
+		GLFWwindow* mWindow;
+		virtual void Init(const WindowProps& props);
+		virtual void Shutdown();
+
 
 		WindowData mData;
 		RenderingContext* mContext;

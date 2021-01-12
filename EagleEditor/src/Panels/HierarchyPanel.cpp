@@ -10,9 +10,13 @@ namespace Egl {
 		SetContext(scene);
 	}
 
-	void Egl::HierarchyPanel::SetContext(const Ref<Scene>& scene)
+	void HierarchyPanel::SetContext(const Ref<Scene>& scene)
 	{
 		mScene = scene;
+	}
+	void HierarchyPanel::ResetSelection() {
+		mSelectedEntity = entt::null;
+		mPropertiesPanel.SetDrawedEntity({});
 	}
 
 	void HierarchyPanel::OnImGuiRender()

@@ -121,6 +121,33 @@ namespace Egl {
 		mMinimized = false;
 
 		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+
+		// Render so the scene doesn't stop going. Remove when moving to seperate thread
+		//*
+		float time = (float)glfwGetTime();
+		Time::SetTime(time, time - mLastFrameTime);
+		mLastFrameTime = time;
+		{
+			EAGLE_PROFILE_SCOPE("Layer OnUpdates");
+			// Update the layers
+			for (Layer* layer : mLayerStack)
+				if (layer->IsActive()) {
+					EAGLE_PROFILE_SCOPE(layer->GetName().c_str());
+					layer->OnUpdate();
+				}
+		}
+		
+		{
+			EAGLE_PROFILE_SCOPE("ImGui update");
+			mImGuiLayer->Begin();
+			for (Layer* layer : mLayerStack)
+				if (layer->IsActive())
+					layer->OnImGuiRender();
+			mImGuiLayer->End();
+		}
+		mWindow->Render();
+		//*/
+
 		return false;
 	}
 }

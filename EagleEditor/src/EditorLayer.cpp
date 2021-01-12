@@ -10,6 +10,9 @@
 #include "Eagle/Core/Input.h"
 #include "Eagle/Core/Keycodes.h"
 
+// This wouldn't be inside Eagle, but probably somewhere defined.
+#include "Eagle/Scripting/ExampleScript.h"
+
 namespace Egl {
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer") {
@@ -24,51 +27,19 @@ namespace Egl {
 		defenition.height = 720;
 		mFrameBuffer = FrameBuffer::Create(defenition);
 
-#pragma region ECS 
-		mScene = CreateRef<Scene>();
+		// Scripting
+		mActiveScene = ApplicationStartup();
 
-		for (int i = 0; i < 8; i++) {
-			mPlayer = mScene->AddEntity("Cube");
-			mPlayer.AddComponent<SpriteComponent>(glm::vec4(0.2f, 0.3f, 0.4f, 1.0f));
-			mPlayer.GetComponent<TransformComponent>().position = { i * 1.5f - 5, 2, 0 };
-			mPlayer.GetComponent<TransformComponent>().rotation = (float)i;
-		}
+		mHierarchyPanel.SetContext(mActiveScene);
+		mHierarchyPanel.ResetSelection();
 
-		mCamera = mScene->AddEntity("Camera");
-		mCamera.AddComponent<CameraComponent>().camera.SetBounds(7);
-		mScene->SetPrimaryCamera(mCamera);
+		mActiveScene->SceneBegin();
 
-		// Camera controller
-		class CameraController : public Script {
-		public:
-			void OnUpdate() {
-				auto& transform = GetComponent<TransformComponent>();
-				float zoomSize = GetComponent<CameraComponent>().camera.GetCameraSize();
-				float speed = 5;
-
-				if (Input::IsKeyPressed(EGL_KEY_A)) transform.position.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f;
-				if (Input::IsKeyPressed(EGL_KEY_D)) transform.position.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f;
-				if (Input::IsKeyPressed(EGL_KEY_S)) transform.position.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f;
-				if (Input::IsKeyPressed(EGL_KEY_W)) transform.position.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f;
-			}
-		};
-		mCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-
-		Entity particle = mScene->AddEntity("ParticleSystem");
-		ParticleSystemProps props;
-		props.minSize = { 0.2f, 0.2f };
-		props.minSize = { 0.4f, 0.4f };
-		props.maxColor = glm::vec4(0.8f, 0.2f, 0.3f, 1.0f);
-		props.minColor = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
-		props.sizeAtEnd = { 0, 0 };
-		particle.AddComponent<ParticleSystemComponent>(props);
-#pragma endregion
-
-		mHierarchyPanel.SetContext(mScene);
 	}
 
 	void EditorLayer::OnDetach() {
 		EAGLE_PROFILE_FUNCTION();
+		mActiveScene->SceneEnd();
 	}
 
 	///////////////////// On Update //////////////////////
@@ -81,14 +52,14 @@ namespace Egl {
 			&& (mScenePanelSize.x != def.width || mScenePanelSize.y != def.height))
 		{
 			mFrameBuffer->Resize((uint32_t)mScenePanelSize.x, (uint32_t)mScenePanelSize.y);
-			mScene->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
+			mActiveScene->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
 		}
 
 		mFrameBuffer->Bind();
 
 		Renderer::GetStats().ResetStats();
 
-		mScene->OnUpdate();
+		mActiveScene->OnUpdate();
 
 		mFrameBuffer->Unbind();
 	}
@@ -131,10 +102,16 @@ namespace Egl {
 
 		//// Restart scene button ////
 		ImGui::Begin("Restart Scene");
-		if (ImGui::Button("Reset scene", ImVec2(ImGui::GetWindowWidth(), 0))) {
-			// TODO: Handle scene Reset
-		}
+		if (ImGui::Button("Reset scene", ImVec2(ImGui::GetWindowWidth(), 0)))
+			ResetApplication();
+
 		ImGui::End();
+	}
+
+	// Mainly the reset button
+	void EditorLayer::ResetApplication() {
+		OnDetach();
+		OnAttach();
 	}
 
 	void EditorLayer::OnEvent(Egl::Event& event) {

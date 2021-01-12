@@ -11,6 +11,7 @@ namespace Egl {
 		HierarchyPanel(const Ref<Scene>& scene);
 
 		void SetContext(const Ref<Scene>& scene);
+		void ResetSelection();
 
 		void OnImGuiRender();
 	private:

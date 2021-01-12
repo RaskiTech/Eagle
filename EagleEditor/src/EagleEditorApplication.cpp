@@ -10,12 +10,14 @@ namespace Egl {
 	public:
 		EagleEditor() : Application("Eagle Editor") {
 			EAGLE_PROFILE_FUNCTION();
-			AddLayer(new EditorLayer());
+			mEditorLayer = new EditorLayer();
+			AddLayer(mEditorLayer);
 		}
-
 		~EagleEditor() {
 
 		}
+	private:
+		Layer* mEditorLayer;
 	};
 
 	Application* CreateApplication() {

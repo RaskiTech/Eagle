@@ -42,6 +42,8 @@ namespace Egl {
 
 	void Scene::OnUpdate()
 	{
+		// This function handles rendering the objects in this scene and updating components.
+
 		{
 			// TODO: Move this to somewhere in startup and also call the OnDestroy func
 			mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {

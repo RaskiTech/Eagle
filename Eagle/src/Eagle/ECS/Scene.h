@@ -1,7 +1,7 @@
 #pragma once
 #include <entt.hpp>
 
-// Note: Can't include Entity.h
+// The client will inherit this scene and provide the functions.
 
 namespace Egl {
 
@@ -10,20 +10,27 @@ namespace Egl {
 	class Scene {
 	public:
 		Scene();
-		~Scene() = default;
+		virtual ~Scene() = default;
 
 		Entity AddEntity(const std::string& name = "New Entity");
 		void RemoveEntity(Entity& entity);
 		void SetPrimaryCamera(Entity& camera);
 		const Entity GetPrimaryCamera();
 
-		void SetViewportAspectRatio(float aspectRatio);
 
-		void OnUpdate();
+
+		// User-defined functions unique to each instance
+		virtual void SceneBegin() = 0;
+		virtual void SceneEnd() = 0;
+
 	private:
+		void SetViewportAspectRatio(float aspectRatio);
+		void OnUpdate();
+
 		entt::registry mRegistry;
 		entt::entity mPrimaryCamera{ entt::null };
 
+		friend class EditorLayer;
 		friend class Entity;
 		friend class HierarchyPanel;
 	};

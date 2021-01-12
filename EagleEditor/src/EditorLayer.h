@@ -13,14 +13,15 @@ namespace Egl {
 		virtual void OnDetach() override;
 
 		virtual void OnUpdate() override;
+		void ResetApplication();
+
 		virtual void OnEvent(Event& event) override;
 		virtual void OnImGuiRender() override;
 
 	private:
 
 		// ECS fields
-		Ref<Scene> mScene;
-		Entity mPlayer, mCamera;
+		Ref<Scene> mActiveScene;
 
 		// Actual Editor fields
 		Ref<FrameBuffer> mFrameBuffer;
