@@ -21,6 +21,11 @@ namespace Egl {
 	///////////////////// On Attach //////////////////////
 	void EditorLayer::OnAttach() {
 		EAGLE_PROFILE_FUNCTION();
+		FrameBufferDefenition defenition;
+		defenition.width = 1280;
+		defenition.height = 720;
+		mFrameBuffer = FrameBuffer::Create(defenition);
+
 		mHierarchyPanel.SetContext(Application::Get().GetGameLayer()->GetActiveScene());
 		mHierarchyPanel.ResetSelection();
 	}
@@ -29,9 +34,11 @@ namespace Egl {
 		EAGLE_PROFILE_FUNCTION();
 	}
 
-	void EditorLayer::PreUpdate()
-	{
-		Application::Get().GetGameLayer()->GetFrameBuffer()->Bind();
+	void EditorLayer::PreUpdate() {
+		mFrameBuffer->Bind();
+	}
+	void EditorLayer::PostUpdate() {
+		mFrameBuffer->Unbind();
 	}
 
 	///////////////////// On Update //////////////////////
@@ -39,22 +46,18 @@ namespace Egl {
 		EAGLE_PROFILE_FUNCTION();
 
 		// Handle resize
-		//mScenePanelSize = { 1600, 900 };
-		FrameBufferDefenition def = Application::Get().GetGameLayer()->GetFrameBuffer()->GetDefenition();
+		FrameBufferDefenition def = mFrameBuffer->GetDefenition();
 		if ( mScenePanelSize.x > 0.0f && mScenePanelSize.y > 0.0f 
 			&& (mScenePanelSize.x != def.width || mScenePanelSize.y != def.height))
 		{
-			Application::Get().GetGameLayer()->GetFrameBuffer()->Resize((uint32_t)mScenePanelSize.x, (uint32_t)mScenePanelSize.y);
+			mFrameBuffer->Resize((uint32_t)mScenePanelSize.x, (uint32_t)mScenePanelSize.y);
 			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
 		}
 
 		Renderer::GetStats().ResetStats();
 	}
 
-	void EditorLayer::PostUpdate()
-	{
-		Application::Get().GetGameLayer()->GetFrameBuffer()->Unbind();
-	}
+	
 
 	void EditorLayer::OnImGuiRender() {
 		EAGLE_PROFILE_FUNCTION();
@@ -85,7 +88,7 @@ namespace Egl {
 		mScenePanelHovered = ImGui::IsWindowHovered();
 		Application::Get().GetImGuiLayer()->LetEventsThrough(mScenePanelFocused && mScenePanelHovered);
 
-		uint32_t textureID = Application::Get().GetGameLayer()->GetFrameBuffer()->GetColorAttachementsRendererID();
+		uint32_t textureID = mFrameBuffer->GetColorAttachementsRendererID();
 		ImGui::Image((void*)(intptr_t)textureID, scenePanelSize, ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
 		ImGui::PopStyleVar();

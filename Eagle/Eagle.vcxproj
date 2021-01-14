@@ -23,19 +23,19 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
@@ -54,22 +54,25 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
     <OutDir>..\bin\Debug-windows-x86_64\Eagle\</OutDir>
     <IntDir>..\bin-int\Debug-windows-x86_64\Eagle\</IntDir>
     <TargetName>Eagle</TargetName>
-    <TargetExt>.lib</TargetExt>
+    <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\Release-windows-x86_64\Eagle\</OutDir>
     <IntDir>..\bin-int\Release-windows-x86_64\Eagle\</IntDir>
     <TargetName>Eagle</TargetName>
-    <TargetExt>.lib</TargetExt>
+    <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
+    <LinkIncremental>false</LinkIncremental>
     <OutDir>..\bin\Dist-windows-x86_64\Eagle\</OutDir>
     <IntDir>..\bin-int\Dist-windows-x86_64\Eagle\</IntDir>
     <TargetName>Eagle</TargetName>
-    <TargetExt>.lib</TargetExt>
+    <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -84,12 +87,10 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-    <Lib>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -107,13 +108,11 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-    </Link>
-    <Lib>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
+    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <ClCompile>
@@ -132,21 +131,18 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-    </Link>
-    <Lib>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
+    </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Eagle.h" />
-    <ClInclude Include="src\Eagle\ECS\Components.h" />
     <ClInclude Include="src\Eagle\Components\ParticleSystem.h" />
     <ClInclude Include="src\Eagle\Core\Application.h" />
     <ClInclude Include="src\Eagle\Core\Core.h" />
-    <ClInclude Include="src\Eagle\Core\EntryPoint.h" />
+    <ClInclude Include="src\Eagle\Core\DoesExist.h" />
     <ClInclude Include="src\Eagle\Core\Input.h" />
     <ClInclude Include="src\Eagle\Core\Keycodes.h" />
     <ClInclude Include="src\Eagle\Core\Layers\Layer.h" />
@@ -156,6 +152,9 @@
     <ClInclude Include="src\Eagle\Core\Time.h" />
     <ClInclude Include="src\Eagle\Core\Window.h" />
     <ClInclude Include="src\Eagle\Debug\Instrumentor.h" />
+    <ClInclude Include="src\Eagle\ECS\Components.h" />
+    <ClInclude Include="src\Eagle\ECS\Entity.h" />
+    <ClInclude Include="src\Eagle\ECS\Scene.h" />
     <ClInclude Include="src\Eagle\ECS\SceneCamera.h" />
     <ClInclude Include="src\Eagle\ECS\Script.h" />
     <ClInclude Include="src\Eagle\Events\ApplicationEvent.h" />
@@ -173,9 +172,12 @@
     <ClInclude Include="src\Eagle\Rendering\Shader.h" />
     <ClInclude Include="src\Eagle\Rendering\Texture.h" />
     <ClInclude Include="src\Eagle\Rendering\VertexArray.h" />
-    <ClInclude Include="src\Eagle\ECS\Entity.h" />
-    <ClInclude Include="src\Eagle\ECS\Scene.h" />
+    <ClInclude Include="src\Eagle\Scripting\ExampleScript.h" />
     <ClInclude Include="src\EaglePCH.h" />
+    <ClInclude Include="src\Eagle\Scripting\GameLayer.h" />
+    <ClInclude Include="src\EditorLayer\EditorLayer.h" />
+    <ClInclude Include="src\EditorLayer\Panels\HierarchyPanel.h" />
+    <ClInclude Include="src\EditorLayer\Panels\PropertiesPanel.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLBuffer.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLContext.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLFrameBuffer.h" />
@@ -602,9 +604,12 @@
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\ParticleSystem.cpp" />
     <ClCompile Include="src\Eagle\Core\Application.cpp" />
+    <ClCompile Include="src\Eagle\Core\EntryPoint.cpp" />
     <ClCompile Include="src\Eagle\Core\Layers\Layer.cpp" />
     <ClCompile Include="src\Eagle\Core\Layers\LayerStack.cpp" />
     <ClCompile Include="src\Eagle\Core\Log.cpp" />
+    <ClCompile Include="src\Eagle\ECS\Entity.cpp" />
+    <ClCompile Include="src\Eagle\ECS\Scene.cpp" />
     <ClCompile Include="src\Eagle\ECS\SceneCamera.cpp" />
     <ClCompile Include="src\Eagle\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Eagle\ImGui\ImGuiLayer.cpp" />
@@ -617,11 +622,13 @@
     <ClCompile Include="src\Eagle\Rendering\Shader.cpp" />
     <ClCompile Include="src\Eagle\Rendering\Texture.cpp" />
     <ClCompile Include="src\Eagle\Rendering\VertexArray.cpp" />
-    <ClCompile Include="src\Eagle\ECS\Entity.cpp" />
-    <ClCompile Include="src\Eagle\ECS\Scene.cpp" />
     <ClCompile Include="src\EaglePCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\Eagle\Scripting\GameLayer.cpp" />
+    <ClCompile Include="src\EditorLayer\EditorLayer.cpp" />
+    <ClCompile Include="src\EditorLayer\Panels\HierarchyPanel.cpp" />
+    <ClCompile Include="src\EditorLayer\Panels\PropertiesPanel.cpp" />
     <ClCompile Include="src\Platforms\OpenGL\OpenGLBuffer.cpp" />
     <ClCompile Include="src\Platforms\OpenGL\OpenGLContext.cpp" />
     <ClCompile Include="src\Platforms\OpenGL\OpenGLFrameBuffer.cpp" />
@@ -642,6 +649,9 @@
     </ProjectReference>
     <ProjectReference Include="vendor\ImGui\ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Sandbox\Sandbox.vcxproj">
+      <Project>{F4C124E3-60A1-A37E-69B9-2E55D5170AE0}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

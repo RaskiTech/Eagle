@@ -19,6 +19,9 @@
     <Filter Include="src\Eagle\Debug">
       <UniqueIdentifier>{701C7DD8-DCA7-EA9C-E5B8-6D9151C3469D}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Eagle\ECS">
+      <UniqueIdentifier>{C43F2D18-3000-A94E-F93A-F2CB65BAED2A}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Eagle\Events">
       <UniqueIdentifier>{1EFDAAEB-0AF6-C93D-3328-AFC21F80A949}</UniqueIdentifier>
     </Filter>
@@ -27,6 +30,9 @@
     </Filter>
     <Filter Include="src\Eagle\Rendering">
       <UniqueIdentifier>{474893A4-B3A9-70B2-3C17-B764A877A771}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Eagle\Scripting">
+      <UniqueIdentifier>{FCF3E680-6855-C48E-F1C2-0A415D23FB4D}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Platforms">
       <UniqueIdentifier>{B40E5C85-20CF-D7BB-E909-213955891C98}</UniqueIdentifier>
@@ -61,9 +67,6 @@
     <Filter Include="vendor\stb_image">
       <UniqueIdentifier>{0DA0BA59-F998-D9AB-22CB-BE300E23B9B7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Eagle\ECS">
-      <UniqueIdentifier>{6A62FB0A-565B-1A5D-7F8D-FFE16BE5F968}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Eagle.h">
@@ -78,7 +81,7 @@
     <ClInclude Include="src\Eagle\Core\Core.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Eagle\Core\EntryPoint.h">
+    <ClInclude Include="src\Eagle\Core\DoesExist.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Core\Input.h">
@@ -107,6 +110,21 @@
     </ClInclude>
     <ClInclude Include="src\Eagle\Debug\Instrumentor.h">
       <Filter>src\Eagle\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\ECS\Components.h">
+      <Filter>src\Eagle\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\ECS\Entity.h">
+      <Filter>src\Eagle\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\ECS\Scene.h">
+      <Filter>src\Eagle\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\ECS\SceneCamera.h">
+      <Filter>src\Eagle\ECS</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\ECS\Script.h">
+      <Filter>src\Eagle\ECS</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Events\ApplicationEvent.h">
       <Filter>src\Eagle\Events</Filter>
@@ -152,6 +170,9 @@
     </ClInclude>
     <ClInclude Include="src\Eagle\Rendering\VertexArray.h">
       <Filter>src\Eagle\Rendering</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\Scripting\ExampleScript.h">
+      <Filter>src\Eagle\Scripting</Filter>
     </ClInclude>
     <ClInclude Include="src\EaglePCH.h">
       <Filter>src</Filter>
@@ -1422,19 +1443,19 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Eagle\ECS\Entity.h" />
-    <ClInclude Include="src\Eagle\ECS\Scene.h">
-      <Filter>src\Eagle\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Eagle\ECS\Components.h" />
-    <ClInclude Include="src\Eagle\ECS\SceneCamera.h" />
-    <ClInclude Include="src\Eagle\ECS\Script.h" />
+    <ClInclude Include="src\Eagle\Scripting\GameLayer.h" />
+    <ClInclude Include="src\EditorLayer\Panels\HierarchyPanel.h" />
+    <ClInclude Include="src\EditorLayer\Panels\PropertiesPanel.h" />
+    <ClInclude Include="src\EditorLayer\EditorLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\ParticleSystem.cpp">
       <Filter>src\Eagle\Components</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\Core\Application.cpp">
+      <Filter>src\Eagle\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\Core\EntryPoint.cpp">
       <Filter>src\Eagle\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\Core\Layers\Layer.cpp">
@@ -1445,6 +1466,15 @@
     </ClCompile>
     <ClCompile Include="src\Eagle\Core\Log.cpp">
       <Filter>src\Eagle\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\ECS\Entity.cpp">
+      <Filter>src\Eagle\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\ECS\Scene.cpp">
+      <Filter>src\Eagle\ECS</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\ECS\SceneCamera.cpp">
+      <Filter>src\Eagle\ECS</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\ImGui\ImGuiBuild.cpp">
       <Filter>src\Eagle\ImGui</Filter>
@@ -1512,10 +1542,9 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Eagle\ECS\Entity.cpp" />
-    <ClCompile Include="src\Eagle\ECS\Scene.cpp">
-      <Filter>src\Eagle\ECS</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Eagle\ECS\SceneCamera.cpp" />
+    <ClCompile Include="src\Eagle\Scripting\GameLayer.cpp" />
+    <ClCompile Include="src\EditorLayer\Panels\HierarchyPanel.cpp" />
+    <ClCompile Include="src\EditorLayer\Panels\PropertiesPanel.cpp" />
+    <ClCompile Include="src\EditorLayer\EditorLayer.cpp" />
   </ItemGroup>
 </Project>

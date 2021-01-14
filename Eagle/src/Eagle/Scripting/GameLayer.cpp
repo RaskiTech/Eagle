@@ -5,41 +5,32 @@
 #include "Eagle/Scripting/ExampleScript.h"
 
 namespace Egl {
-	GameLayer::GameLayer()
-	{
-		FrameBufferDefenition defenition;
-		defenition.width = 1280;
-		defenition.height = 720;
-		mFrameBuffer = FrameBuffer::Create(defenition);
+	GameLayer::GameLayer() {
+		
 	}
-	void GameLayer::OnAttach()
-	{
+	void GameLayer::OnAttach() {
 		mActiveScene = ApplicationStartup();
 		mActiveScene->SceneBegin();
+
+		mActiveScene->SetViewportAspectRatio(1280.0f / 720.0f);
 	}
-	void GameLayer::OnDetach()
-	{
+	void GameLayer::OnDetach() {
 		mActiveScene->SceneEnd();
 	}
-	void GameLayer::OnUpdate()
-	{
+	void GameLayer::OnUpdate() {
 		mActiveScene->OnUpdate();
 	}
-	void GameLayer::ResetApplication()
-	{
+	void GameLayer::ResetApplication() {
 		OnDetach();
 		OnAttach();
 	}
-	void GameLayer::SetScale()
-	{
+	void GameLayer::SetScale() {
 		mActiveScene->SetViewportAspectRatio(1.6f / 0.9f);
 	}
-	void GameLayer::OnEvent(Event& event)
-	{
+	void GameLayer::OnEvent(Event& event) {
 
 	}
-	void GameLayer::OnImGuiRender()
-	{
+	void GameLayer::OnImGuiRender() {
 
 	}
 }

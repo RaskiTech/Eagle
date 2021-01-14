@@ -27,6 +27,7 @@ namespace Egl {
 
 		friend class GameLayer;
 		friend class EditorLayer;
+		friend class Application;
 	private:
 		entt::registry mRegistry;
 		entt::entity mPrimaryCamera{ entt::null };

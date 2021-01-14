@@ -24,10 +24,8 @@ namespace Egl {
 
 		void ResetApplication();
 		void SetScale();
-		Ref<FrameBuffer> GetFrameBuffer() const { return mFrameBuffer; }
 		Ref<Scene> GetActiveScene() const { return mActiveScene; }
 	private:
 		Ref<Scene> mActiveScene;
-		Ref<FrameBuffer> mFrameBuffer;
 	};
 }

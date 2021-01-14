@@ -28,6 +28,7 @@ namespace Egl {
 
 	private:
 		// Actual Editor fields
+		Ref<FrameBuffer> mFrameBuffer;
 		glm::vec2 mScenePanelSize = { 0.0f, 0.0f };
 		bool mScenePanelFocused = false, mScenePanelHovered = false;
 		HierarchyPanel mHierarchyPanel;

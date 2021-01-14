@@ -57,6 +57,7 @@ class ExampleScene : public Scene {
 				if (Input::IsKeyPressed(EGL_KEY_D)) transform.position.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f;
 				if (Input::IsKeyPressed(EGL_KEY_S)) transform.position.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f;
 				if (Input::IsKeyPressed(EGL_KEY_W)) transform.position.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f;
+				//if (Input::IsKeyPressed(EGL_KEY_Z)) AddEntity("Entity");
 				//if (Input::IsKeyPressed(EGL_KEY_Z)) SwitchScene(CreateRef<ExampleScene2>());
 			}
 		};

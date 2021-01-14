@@ -9,7 +9,7 @@
 #include <GLFW/glfw3.h>
 #include "Eagle/Rendering/VertexArray.h"
 
-#define EAGLE_EDITOR 0;
+#define EAGLE_EDITOR 1
 
 
 namespace Egl {
@@ -40,8 +40,6 @@ namespace Egl {
 #if EAGLE_EDITOR
 		mEditorLayer = new EditorLayer();
 		AddLayer(mEditorLayer);
-#else
-		mGameLayer->SetScale();
 #endif
 	}
 
@@ -102,23 +100,31 @@ namespace Egl {
 				{
 					EAGLE_PROFILE_SCOPE("Layer OnUpdates");
 					// Update the layers
-					//mEditorLayer->PreUpdate();
+
+#if EAGLE_EDITOR
+					mEditorLayer->PreUpdate();
+#endif
+
 					for (Layer* layer : mLayerStack)
 						if (layer->IsActive()) {
 							EAGLE_PROFILE_SCOPE(layer->GetName().c_str());
 							layer->OnUpdate();
 						}
-					//mEditorLayer->PostUpdate();
-				}
 
-				{
-					//EAGLE_PROFILE_SCOPE("ImGui update");
-					//mImGuiLayer->Begin();
-					//for (Layer* layer : mLayerStack)
-					//	if (layer->IsActive())
-					//		layer->OnImGuiRender();
-					//mImGuiLayer->End();
+#if EAGLE_EDITOR
+					mEditorLayer->PostUpdate();
+#endif
 				}
+#if EAGLE_EDITOR
+				{
+					EAGLE_PROFILE_SCOPE("ImGui update");
+					mImGuiLayer->Begin();
+					for (Layer* layer : mLayerStack)
+						if (layer->IsActive())
+							layer->OnImGuiRender();
+					mImGuiLayer->End();
+				}
+#endif
 			}
 
 			mWindow->OnUpdate();
@@ -139,33 +145,9 @@ namespace Egl {
 		mMinimized = false;
 
 		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
-
-		// Render so the scene doesn't stop going. Remove when moving to seperate thread
-		/*
-		float time = (float)glfwGetTime();
-		Time::SetTime(time, time - mLastFrameTime);
-		mLastFrameTime = time;
-		{
-			EAGLE_PROFILE_SCOPE("Layer OnUpdates");
-			// Update the layers
-			for (Layer* layer : mLayerStack)
-				if (layer->IsActive()) {
-					EAGLE_PROFILE_SCOPE(layer->GetName().c_str());
-					layer->OnUpdate();
-				}
-		}
-		
-		{
-			EAGLE_PROFILE_SCOPE("ImGui update");
-			mImGuiLayer->Begin();
-			for (Layer* layer : mLayerStack)
-				if (layer->IsActive())
-					layer->OnImGuiRender();
-			mImGuiLayer->End();
-		}
-		mWindow->Render();
-		//*/
-
+#if !EAGLE_EDITOR
+		mGameLayer->GetActiveScene()->SetViewportAspectRatio((float)e.GetWidth() / e.GetHeight());
+#endif
 		return false;
 	}
 }
