@@ -13,6 +13,8 @@ namespace Egl {
 
 #define EAGLE_BIND_EVENT_FUNC(x) std::bind(&Application::x, this, std::placeholders::_1)
 
+	extern Layer* MakeEditorLayer();
+
 	Application::Application(const std::string& name)
 	{
 		EAGLE_PROFILE_FUNCTION();
@@ -27,6 +29,9 @@ namespace Egl {
 
 		mImGuiLayer = new ImGuiLayer();
 		AddOverlay(mImGuiLayer);
+
+		mEditorLayer = MakeEditorLayer();
+		AddLayer(mEditorLayer);
 	}
 
 	Application::~Application() {
@@ -123,7 +128,7 @@ namespace Egl {
 		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 
 		// Render so the scene doesn't stop going. Remove when moving to seperate thread
-		//*
+		/*
 		float time = (float)glfwGetTime();
 		Time::SetTime(time, time - mLastFrameTime);
 		mLastFrameTime = time;

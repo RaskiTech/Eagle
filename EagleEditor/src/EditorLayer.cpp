@@ -47,6 +47,7 @@ namespace Egl {
 		EAGLE_PROFILE_FUNCTION();
 
 		// Handle resize
+		//mScenePanelSize = { 1600, 900 };
 		FrameBufferDefenition def = mFrameBuffer->GetDefenition();
 		if ( mScenePanelSize.x > 0.0f && mScenePanelSize.y > 0.0f 
 			&& (mScenePanelSize.x != def.width || mScenePanelSize.y != def.height))
@@ -79,12 +80,12 @@ namespace Egl {
 		ImGui::Text("Vertices: %d", Renderer::GetStats().GetVertexCount());
 		ImGui::Text("Indeces: %d", Renderer::GetStats().GetIndexCount());
 		ImGui::End();
-
+		
 		///////// Scene //////////
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("Scene");
 
-		// The actual resizing happens in onUpdate. This is just a "notification". Currently could as well be here.
+		// The actual resizing happens in onUpdate. This is just a "notification"
 		ImVec2 scenePanelSize = ImGui::GetContentRegionAvail();
 		if (mScenePanelSize != *((glm::vec2*) & scenePanelSize))
 			mScenePanelSize = { scenePanelSize.x, scenePanelSize.y };

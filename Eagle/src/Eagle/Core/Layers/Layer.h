@@ -1,7 +1,8 @@
 #pragma once
-
 #include <string>
+
 #include "Eagle/Events/Event.h"
+
 
 namespace Egl {
 	class Layer {

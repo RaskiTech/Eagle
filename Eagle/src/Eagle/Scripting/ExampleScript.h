@@ -2,6 +2,36 @@
 #include <Eagle.h>
 using namespace Egl;
 
+class ExampleScene2 : public Scene {
+	void SceneBegin() override {
+		Entity mCamera = AddEntity("Camera");
+		mCamera.AddComponent<CameraComponent>().camera.SetBounds(7);
+		SetPrimaryCamera(mCamera);
+
+		// Camera controller
+		class CameraController : public Script {
+		public:
+			void OnUpdate() {
+				auto& transform = GetComponent<TransformComponent>();
+				float zoomSize = GetComponent<CameraComponent>().camera.GetCameraSize();
+				float speed = 5;
+
+				if (Input::IsKeyPressed(EGL_KEY_A)) transform.position.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f;
+				if (Input::IsKeyPressed(EGL_KEY_D)) transform.position.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f;
+				if (Input::IsKeyPressed(EGL_KEY_S)) transform.position.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f;
+				if (Input::IsKeyPressed(EGL_KEY_W)) transform.position.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f;
+				//if (Input::IsKeyPressed(EGL_KEY_X)) SwitchScene(CreateRef<ExampleScene>());
+			}
+		};
+		mCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+		auto e = AddEntity("Entity");
+		e.AddComponent<SpriteComponent>();
+	}
+	void SceneEnd() {
+
+	}
+};
+
 class ExampleScene : public Scene {
 	void SceneBegin() override {
 		for (int i = 0; i < 8; i++) {
@@ -27,6 +57,7 @@ class ExampleScene : public Scene {
 				if (Input::IsKeyPressed(EGL_KEY_D)) transform.position.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f;
 				if (Input::IsKeyPressed(EGL_KEY_S)) transform.position.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f;
 				if (Input::IsKeyPressed(EGL_KEY_W)) transform.position.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f;
+				//if (Input::IsKeyPressed(EGL_KEY_Z)) SwitchScene(CreateRef<ExampleScene2>());
 			}
 		};
 		mCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();

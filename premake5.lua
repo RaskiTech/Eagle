@@ -1,6 +1,6 @@
 workspace "Eagle"
 	architecture "x64"
-	startproject "EagleEditor"
+	startproject "Eagle"
 
 	configurations {
 		"Debug",
@@ -22,7 +22,7 @@ workspace "Eagle"
 
 project "Eagle"
 	location "Eagle"
-	kind "StaticLib"
+	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "on"
@@ -61,7 +61,9 @@ project "Eagle"
 		"GLFW",
 		"Glad",
 		"ImGui",
-		"opengl32.lib"
+		"opengl32.lib",
+		"Sandbox",
+		"EagleEditor"
 	}
 
 	filter "system:windows"
@@ -90,7 +92,7 @@ project "Eagle"
 
 project "EagleEditor"
 	location "EagleEditor"
-	kind "ConsoleApp"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "on"
@@ -109,10 +111,6 @@ project "EagleEditor"
 		"%{Includes.entt}",
 		"Eagle/src",
 		"Eagle/vendor"
-	}
-
-	links {
-		"Eagle"
 	}
 
 	filter "system:windows"
@@ -138,7 +136,7 @@ project "EagleEditor"
 
 project "Sandbox"
 	location "Sandbox"
-	kind "ConsoleApp"
+	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "on"
@@ -157,10 +155,6 @@ project "Sandbox"
 		"%{Includes.entt}",
 		"Eagle/src",
 		"Eagle/vendor"
-	}
-
-	links {
-		"Eagle"
 	}
 
 	filter "system:windows"

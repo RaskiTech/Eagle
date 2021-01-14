@@ -1,5 +1,4 @@
 #include <Eagle.h>
-#include <Eagle/Core/EntryPoint.h>
 
 #include "ImGui/imgui.h"
 #include "TestingGround.h"
@@ -10,7 +9,7 @@ class Sandbox : public Egl::Application {
 public:
 	Sandbox() {
 		EAGLE_PROFILE_FUNCTION();
-		AddLayer(new TestingGround());
+		//AddLayer(new TestingGround());
 	}
 
 	~Sandbox() {
@@ -18,6 +17,6 @@ public:
 	}
 };
 
-Egl::Application* Egl::CreateApplication() {
-	return new Sandbox();
-}
+//Egl::Application* Egl::CreateApplication() {
+//	return new Sandbox();
+//}

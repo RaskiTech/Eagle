@@ -1,16 +1,15 @@
-#pragma once
+#include <EaglePCH.h>
+#include "Application.h"
 #include "Eagle/Rendering/Texture.h"
 
 #ifdef EAGLE_PLATFORM_WINDOWS
-
-extern Egl::Application* Egl::CreateApplication();
 
 int main(int agrc, char** argv) {
 	Egl::Log::Init();
 	LOG_ENG_INFO("Engine starting...");
 
 	EAGLE_PROFILE_BEGIN("Engine Startup", "Eagle-Profile-Startup.json");
-	auto app = Egl::CreateApplication();
+	auto app = new Egl::Application();
 	EAGLE_PROFILE_END();
 
 	LOG_ENG_INFO("Inizialization complete");

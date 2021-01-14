@@ -1,4 +1,7 @@
 #pragma once
+// ????
+//#include "Eagle/Core/Layers/Layer.h"
+
 #include "Core.h"
 #include "Window.h"
 #include "Eagle/Events/Event.h"
@@ -34,7 +37,10 @@ namespace Egl {
 		Scope<Window> mWindow;
 
 		LayerStack mLayerStack;
+
 		ImGuiLayer* mImGuiLayer;
+		Layer* mEditorLayer;
+
 		bool mRunning = true;
 		bool mMinimized = false;
 		static Application* mInstance;

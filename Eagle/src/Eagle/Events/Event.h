@@ -1,4 +1,5 @@
 #pragma once
+
 #include "Eagle/Core/Core.h"
 
 namespace Egl {

@@ -1,6 +1,5 @@
 #include <Eagle.h>
-#include <Eagle/Core/EntryPoint.h>
-
+#include "Eagle/Core/Application.h"
 #include "ImGui/imgui.h"
 #include "EditorLayer.h"
 
@@ -22,6 +21,9 @@ namespace Egl {
 
 	Application* CreateApplication() {
 		return new EagleEditor();
+	}
+	Layer* MakeEditorLayer() {
+		return new EditorLayer();
 	}
 
 }

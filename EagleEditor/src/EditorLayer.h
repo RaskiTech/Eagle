@@ -1,6 +1,13 @@
 #pragma once
-#include "Eagle.h"
+
+#include "Eagle/Core/Application.h"
+#include "Eagle/Core/Layers/Layer.h"
+#include "Eagle/Events/Event.h"
+
+#include "Eagle/ECS/Scene.h"
+#include "Eagle/Rendering/FrameBuffer.h"
 #include "Panels/HierarchyPanel.h"
+
 
 namespace Egl {
 

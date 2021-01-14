@@ -6,6 +6,11 @@
 #include "Eagle/Core/Core.h"
 
 namespace Egl {
+	OpenGLContext::OpenGLContext(GLFWwindow* windowHandle)
+		: mWindowHandle(windowHandle)
+	{
+		EAGLE_ENG_ASSERT(windowHandle, "WindowHandle is not defined, it's null!")
+	}
 	void OpenGLContext::Init()
 	{
 		EAGLE_PROFILE_FUNCTION();
@@ -18,11 +23,6 @@ namespace Egl {
 		LOG_ENG("	Vendor: {0}", glGetString(GL_VENDOR));
 		LOG_ENG("	Renderer: {0}", glGetString(GL_RENDERER));
 		LOG_ENG("	Version: {0}", glGetString(GL_VERSION));
-	}
-	OpenGLContext::OpenGLContext(GLFWwindow* windowHandle)
-		: mWindowHandle(windowHandle)
-	{
-		EAGLE_ENG_ASSERT(windowHandle, "WindowHandle is not defined, it's null!")
 	}
 	void OpenGLContext::SwapBuffers()
 	{

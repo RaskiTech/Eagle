@@ -17,8 +17,6 @@ namespace Egl {
 		void SetPrimaryCamera(Entity& camera);
 		const Entity GetPrimaryCamera();
 
-
-
 		// User-defined functions unique to each instance
 		virtual void SceneBegin() = 0;
 		virtual void SceneEnd() = 0;
