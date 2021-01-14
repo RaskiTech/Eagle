@@ -25,10 +25,12 @@ namespace Egl {
 		void SetViewportAspectRatio(float aspectRatio);
 		void OnUpdate();
 
+		friend class GameLayer;
+		friend class EditorLayer;
+	private:
 		entt::registry mRegistry;
 		entt::entity mPrimaryCamera{ entt::null };
 
-		friend class EditorLayer;
 		friend class Entity;
 		friend class HierarchyPanel;
 	};

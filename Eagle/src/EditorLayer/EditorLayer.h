@@ -19,19 +19,15 @@ namespace Egl {
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
 
+		void PreUpdate();
 		virtual void OnUpdate() override;
-		void ResetApplication();
+		void PostUpdate();
 
 		virtual void OnEvent(Event& event) override;
 		virtual void OnImGuiRender() override;
 
 	private:
-
-		// ECS fields
-		Ref<Scene> mActiveScene;
-
 		// Actual Editor fields
-		Ref<FrameBuffer> mFrameBuffer;
 		glm::vec2 mScenePanelSize = { 0.0f, 0.0f };
 		bool mScenePanelFocused = false, mScenePanelHovered = false;
 		HierarchyPanel mHierarchyPanel;

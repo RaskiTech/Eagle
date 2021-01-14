@@ -1,13 +1,11 @@
 #pragma once
-// ????
-//#include "Eagle/Core/Layers/Layer.h"
-
 #include "Core.h"
 #include "Window.h"
 #include "Eagle/Events/Event.h"
 #include "Eagle/Events/ApplicationEvent.h"
 #include "Layers/LayerStack.h"
 #include "Eagle/ImGui/ImGuiLayer.h"
+#include "Eagle/Scripting/GameLayer.h"
 
 #include "Eagle/Core/Time.h"
 
@@ -26,7 +24,9 @@ namespace Egl {
 		void AddOverlay(Layer* layer);
 		void RemoveLayer(Layer* layer);
 		void RemoveOverlay(Layer* layer);
+
 		ImGuiLayer* GetImGuiLayer() const { return mImGuiLayer; }
+		GameLayer* GetGameLayer() const { return mGameLayer; }
 		inline Window& GetWindow() const { return *mWindow; }
 		static inline Application& Get() { return *mInstance; }
 	private:
@@ -39,7 +39,8 @@ namespace Egl {
 		LayerStack mLayerStack;
 
 		ImGuiLayer* mImGuiLayer;
-		Layer* mEditorLayer;
+		EditorLayer* mEditorLayer;
+		GameLayer* mGameLayer;
 
 		bool mRunning = true;
 		bool mMinimized = false;

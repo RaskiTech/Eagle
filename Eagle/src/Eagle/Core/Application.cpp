@@ -3,17 +3,21 @@
 #include "Eagle/Rendering/Renderer.h"
 #include "Eagle/Rendering/RenderCommand.h"
 #include "Eagle/Core/Random.h"
+#include "Eagle/Scripting/GameLayer.h"
+#include "EditorLayer/EditorLayer.h"
 
 #include <GLFW/glfw3.h>
 #include "Eagle/Rendering/VertexArray.h"
+
+#define EAGLE_EDITOR 0;
+
+
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
 	std::mt19937 Random::sRandomizer;
 	Application* Application::mInstance = nullptr;
 
 #define EAGLE_BIND_EVENT_FUNC(x) std::bind(&Application::x, this, std::placeholders::_1)
-
-	extern Layer* MakeEditorLayer();
 
 	Application::Application(const std::string& name)
 	{
@@ -27,11 +31,18 @@ namespace Egl {
 		Renderer::Init();
 		Random::Init();
 
+#if EAGLE_EDITOR
 		mImGuiLayer = new ImGuiLayer();
 		AddOverlay(mImGuiLayer);
-
-		mEditorLayer = MakeEditorLayer();
+#endif
+		mGameLayer = new GameLayer();
+		AddLayer(mGameLayer);
+#if EAGLE_EDITOR
+		mEditorLayer = new EditorLayer();
 		AddLayer(mEditorLayer);
+#else
+		mGameLayer->SetScale();
+#endif
 	}
 
 	Application::~Application() {
@@ -91,20 +102,22 @@ namespace Egl {
 				{
 					EAGLE_PROFILE_SCOPE("Layer OnUpdates");
 					// Update the layers
+					//mEditorLayer->PreUpdate();
 					for (Layer* layer : mLayerStack)
 						if (layer->IsActive()) {
 							EAGLE_PROFILE_SCOPE(layer->GetName().c_str());
 							layer->OnUpdate();
 						}
+					//mEditorLayer->PostUpdate();
 				}
 
 				{
-					EAGLE_PROFILE_SCOPE("ImGui update");
-					mImGuiLayer->Begin();
-					for (Layer* layer : mLayerStack)
-						if (layer->IsActive())
-							layer->OnImGuiRender();
-					mImGuiLayer->End();
+					//EAGLE_PROFILE_SCOPE("ImGui update");
+					//mImGuiLayer->Begin();
+					//for (Layer* layer : mLayerStack)
+					//	if (layer->IsActive())
+					//		layer->OnImGuiRender();
+					//mImGuiLayer->End();
 				}
 			}
 
