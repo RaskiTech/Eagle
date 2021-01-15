@@ -47,15 +47,11 @@ namespace Egl {
 	}
 	void EditorLayer::PostUpdate() {
 		mFrameBuffer->Unbind();
-		LOG("POST");
 	}
 
 	///////////////////// On Update //////////////////////
 	void EditorLayer::OnUpdate() {
 		EAGLE_PROFILE_FUNCTION();
-		LOG("EDITOR UPDATE");
-		
-
 		Renderer::GetStats().ResetStats();
 	}
 

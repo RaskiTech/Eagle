@@ -1,6 +1,6 @@
-#include "EaglePCH.h"
-#include "Eagle/Core/Input.h"
+#include <EaglePCH.h>
 #include <GLFW/glfw3.h>
+#include "Eagle/Core/Input.h"
 #include "Eagle/Core/Application.h"
 
 namespace Egl {

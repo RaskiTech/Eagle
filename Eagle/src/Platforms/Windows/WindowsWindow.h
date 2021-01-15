@@ -15,6 +15,7 @@ namespace Egl {
 
 		inline uint32_t GetWidth() const override { return mData.width; }
 		inline uint32_t GetHeight() const override { return mData.height; }
+		inline float GetTime() const override { return (float)glfwGetTime(); }
 
 		inline void SetEventCallback(const EventCallbackFn& callback) override { mData.EventCallback = callback; }
 		bool IsVSync() const override;

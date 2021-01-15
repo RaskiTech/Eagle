@@ -6,12 +6,8 @@
 #include "Eagle/Scripting/GameLayer.h"
 #include "EditorLayer/EditorLayer.h"
 
-#include <GLFW/glfw3.h>
-#include "Eagle/Rendering/VertexArray.h"
-
 // This is the only file that does different things depending on this
 #define EAGLE_EDITOR 1
-
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
@@ -65,44 +61,19 @@ namespace Egl {
 			}
 		}
 	}
-	void Application::Close() {
-		mRunning = false;
-	}
-
-	void Application::AddLayer(Layer* layer) {
-		EAGLE_PROFILE_FUNCTION();
-		mLayerStack.AddLayer(layer);
-		layer->OnAttach();
-	}
-	void Application::AddOverlay(Layer* layer) {
-		EAGLE_PROFILE_FUNCTION();
-		mLayerStack.AddOverlay(layer);
-		layer->OnAttach();
-	}
-	void Application::RemoveLayer(Layer* layer) {
-		EAGLE_PROFILE_FUNCTION();
-		layer->OnDetach();
-		mLayerStack.RemoveLayer(layer);
-	}
-	void Application::RemoveOverlay(Layer* layer) {
-		EAGLE_PROFILE_FUNCTION();
-		layer->OnDetach();
-		mLayerStack.RemoveOverlay(layer);
-	}
 
 	void Application::Run() {
 		EAGLE_PROFILE_FUNCTION();
 		while (mRunning) {
 			EAGLE_PROFILE_SCOPE("RunLoop");
 
-			float time = (float)glfwGetTime();
+			float time = mWindow->GetTime();
 			Time::SetTime(time, time - mLastFrameTime);
 			mLastFrameTime = time;
 
 			if (!mMinimized) {
 				{
 					EAGLE_PROFILE_SCOPE("Layer OnUpdates");
-					LOG_INFO("START");
 #if EAGLE_EDITOR
 					mEditorLayer->PreUpdate();
 #endif
@@ -116,7 +87,6 @@ namespace Egl {
 #if EAGLE_EDITOR
 					mEditorLayer->PostUpdate();
 #endif
-					LOG_INFO("STOP");
 				}
 #if EAGLE_EDITOR
 				{
@@ -152,5 +122,29 @@ namespace Egl {
 		mGameLayer->GetActiveScene()->SetViewportAspectRatio((float)e.GetWidth() / e.GetHeight());
 #endif
 		return false;
+	}
+
+	void Application::Close() {
+		mRunning = false;
+	}
+	void Application::AddLayer(Layer* layer) {
+		EAGLE_PROFILE_FUNCTION();
+		mLayerStack.AddLayer(layer);
+		layer->OnAttach();
+	}
+	void Application::AddOverlay(Layer* layer) {
+		EAGLE_PROFILE_FUNCTION();
+		mLayerStack.AddOverlay(layer);
+		layer->OnAttach();
+	}
+	void Application::RemoveLayer(Layer* layer) {
+		EAGLE_PROFILE_FUNCTION();
+		layer->OnDetach();
+		mLayerStack.RemoveLayer(layer);
+	}
+	void Application::RemoveOverlay(Layer* layer) {
+		EAGLE_PROFILE_FUNCTION();
+		layer->OnDetach();
+		mLayerStack.RemoveOverlay(layer);
 	}
 }

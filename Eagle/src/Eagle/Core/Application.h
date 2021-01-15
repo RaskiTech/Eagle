@@ -48,7 +48,4 @@ namespace Egl {
 
 		float mLastFrameTime = 0;
 	};
-
-	// Client will define
-	Application* CreateApplication();
 }
