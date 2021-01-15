@@ -9,7 +9,8 @@
 #include <GLFW/glfw3.h>
 #include "Eagle/Rendering/VertexArray.h"
 
-#define EAGLE_EDITOR 1
+// This is the only file that does different things depending on this
+#define EAGLE_EDITOR 0
 
 
 namespace Egl {
@@ -40,6 +41,8 @@ namespace Egl {
 #if EAGLE_EDITOR
 		mEditorLayer = new EditorLayer();
 		AddLayer(mEditorLayer);
+#else
+		mGameLayer->GetActiveScene()->SetViewportAspectRatio((float)mWindow->GetWidth() / mWindow->GetHeight());
 #endif
 	}
 
@@ -99,8 +102,7 @@ namespace Egl {
 			if (!mMinimized) {
 				{
 					EAGLE_PROFILE_SCOPE("Layer OnUpdates");
-					// Update the layers
-
+					LOG_INFO("START");
 #if EAGLE_EDITOR
 					mEditorLayer->PreUpdate();
 #endif
@@ -114,6 +116,7 @@ namespace Egl {
 #if EAGLE_EDITOR
 					mEditorLayer->PostUpdate();
 #endif
+					LOG_INFO("STOP");
 				}
 #if EAGLE_EDITOR
 				{

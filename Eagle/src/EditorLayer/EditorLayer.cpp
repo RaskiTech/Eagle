@@ -35,24 +35,26 @@ namespace Egl {
 	}
 
 	void EditorLayer::PreUpdate() {
-		mFrameBuffer->Bind();
-	}
-	void EditorLayer::PostUpdate() {
-		mFrameBuffer->Unbind();
-	}
-
-	///////////////////// On Update //////////////////////
-	void EditorLayer::OnUpdate() {
-		EAGLE_PROFILE_FUNCTION();
-
-		// Handle resize
 		FrameBufferDefenition def = mFrameBuffer->GetDefenition();
-		if ( mScenePanelSize.x > 0.0f && mScenePanelSize.y > 0.0f 
+		if (mScenePanelSize.x > 0.0f && mScenePanelSize.y > 0.0f
 			&& (mScenePanelSize.x != def.width || mScenePanelSize.y != def.height))
 		{
 			mFrameBuffer->Resize((uint32_t)mScenePanelSize.x, (uint32_t)mScenePanelSize.y);
 			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
 		}
+		mFrameBuffer->Bind();
+		
+	}
+	void EditorLayer::PostUpdate() {
+		mFrameBuffer->Unbind();
+		LOG("POST");
+	}
+
+	///////////////////// On Update //////////////////////
+	void EditorLayer::OnUpdate() {
+		EAGLE_PROFILE_FUNCTION();
+		LOG("EDITOR UPDATE");
+		
 
 		Renderer::GetStats().ResetStats();
 	}

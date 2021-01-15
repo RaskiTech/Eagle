@@ -23,7 +23,6 @@ namespace Egl {
 		virtual void OnImGuiRender() override;
 
 		void ResetApplication();
-		void SetScale();
 		Ref<Scene> GetActiveScene() const { return mActiveScene; }
 	private:
 		Ref<Scene> mActiveScene;

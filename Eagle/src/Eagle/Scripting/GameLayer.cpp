@@ -12,20 +12,18 @@ namespace Egl {
 		mActiveScene = ApplicationStartup();
 		mActiveScene->SceneBegin();
 
-		mActiveScene->SetViewportAspectRatio(1280.0f / 720.0f);
+		//mActiveScene->SetViewportAspectRatio((float)Application::Get().GetWindow().GetWidth() / Application::Get().GetWindow().GetWidth());
 	}
 	void GameLayer::OnDetach() {
 		mActiveScene->SceneEnd();
 	}
 	void GameLayer::OnUpdate() {
 		mActiveScene->OnUpdate();
+		LOG("Game UPDATE");
 	}
 	void GameLayer::ResetApplication() {
 		OnDetach();
 		OnAttach();
-	}
-	void GameLayer::SetScale() {
-		mActiveScene->SetViewportAspectRatio(1.6f / 0.9f);
 	}
 	void GameLayer::OnEvent(Event& event) {
 
