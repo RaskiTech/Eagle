@@ -62,8 +62,7 @@ project "Eagle"
 		"Glad",
 		"ImGui",
 		"opengl32.lib",
-		"Sandbox",
-		"EagleEditor"
+		"Sandbox"
 	}
 
 	filter "system:windows"
