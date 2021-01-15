@@ -1,5 +1,5 @@
+#include <Dependencies/ImGui.h>
 #include "TestingGround.h"
-#include "ImGui/imgui.h"
 
 TestingGround::TestingGround() : Layer("TestingGround") {
 

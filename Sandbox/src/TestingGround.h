@@ -1,5 +1,5 @@
 #pragma once
-#include "Eagle.h"
+#include <Eagle.h>
 
 using namespace Egl;
 

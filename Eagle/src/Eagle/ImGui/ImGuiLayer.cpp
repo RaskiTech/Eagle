@@ -6,7 +6,7 @@
 
 #include <Eagle/ImGui/ImGuiLayer.h>
 
-#include <imgui.h>
+#include <Dependencies/ImGui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 

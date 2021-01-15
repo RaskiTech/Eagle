@@ -10,7 +10,7 @@
 #include "Eagle/Rendering/VertexArray.h"
 
 // This is the only file that does different things depending on this
-#define EAGLE_EDITOR 0
+#define EAGLE_EDITOR 1
 
 
 namespace Egl {

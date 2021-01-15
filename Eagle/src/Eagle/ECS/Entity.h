@@ -1,5 +1,5 @@
 #pragma once
-#include <entt.hpp>
+#include <Dependencies/Entt.h>
 #include "Eagle/Core/Core.h"
 #include "Scene.h"
 

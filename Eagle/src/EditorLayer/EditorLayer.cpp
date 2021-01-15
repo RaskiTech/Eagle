@@ -1,7 +1,7 @@
 #include <EaglePCH.h>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <imgui.h>
+#include <Dependencies/ImGui.h>
 #include "EditorLayer.h"
 #include "Eagle/ECS/Components.h"
 #include "Eagle/ECS/Scene.h"

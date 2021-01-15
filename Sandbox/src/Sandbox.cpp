@@ -1,6 +1,6 @@
 #include <Eagle.h>
 
-#include "ImGui/imgui.h"
+#include <Dependencies/ImGui.h>
 #include "TestingGround.h"
 
 using namespace Egl;

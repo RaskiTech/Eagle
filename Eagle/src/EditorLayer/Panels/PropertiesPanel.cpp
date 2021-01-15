@@ -1,5 +1,5 @@
 #include <EaglePCH.h>
-#include <imgui.h>
+#include <Dependencies/ImGui.h>
 #include <glm/gtc/type_ptr.hpp>
 #include "PropertiesPanel.h"
 #include "Eagle/ECS/Components.h"

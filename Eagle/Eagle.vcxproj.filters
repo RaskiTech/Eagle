@@ -4,6 +4,9 @@
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Dependencies">
+      <UniqueIdentifier>{E3A7544D-CFA0-739F-F8D2-5824E42A53AB}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Eagle">
       <UniqueIdentifier>{7A9ED3B2-E608-8829-2F47-39CF9BF0657E}</UniqueIdentifier>
     </Filter>
@@ -33,6 +36,12 @@
     </Filter>
     <Filter Include="src\Eagle\Scripting">
       <UniqueIdentifier>{FCF3E680-6855-C48E-F1C2-0A415D23FB4D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\EditorLayer">
+      <UniqueIdentifier>{E04C43CE-4CD8-B092-55E9-3387C1F30C93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\EditorLayer\Panels">
+      <UniqueIdentifier>{324157ED-1E3B-803F-07A8-1650F340E6AB}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\Platforms">
       <UniqueIdentifier>{B40E5C85-20CF-D7BB-E909-213955891C98}</UniqueIdentifier>
@@ -69,6 +78,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Dependencies\Entt.h">
+      <Filter>src\Dependencies</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Dependencies\ImGui.h">
+      <Filter>src\Dependencies</Filter>
+    </ClInclude>
     <ClInclude Include="src\Eagle.h">
       <Filter>src</Filter>
     </ClInclude>
@@ -174,8 +189,20 @@
     <ClInclude Include="src\Eagle\Scripting\ExampleScript.h">
       <Filter>src\Eagle\Scripting</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eagle\Scripting\GameLayer.h">
+      <Filter>src\Eagle\Scripting</Filter>
+    </ClInclude>
     <ClInclude Include="src\EaglePCH.h">
       <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EditorLayer\EditorLayer.h">
+      <Filter>src\EditorLayer</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EditorLayer\Panels\HierarchyPanel.h">
+      <Filter>src\EditorLayer\Panels</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EditorLayer\Panels\PropertiesPanel.h">
+      <Filter>src\EditorLayer\Panels</Filter>
     </ClInclude>
     <ClInclude Include="src\Platforms\OpenGL\OpenGLBuffer.h">
       <Filter>src\Platforms\OpenGL</Filter>
@@ -1443,10 +1470,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Eagle\Scripting\GameLayer.h" />
-    <ClInclude Include="src\EditorLayer\Panels\HierarchyPanel.h" />
-    <ClInclude Include="src\EditorLayer\Panels\PropertiesPanel.h" />
-    <ClInclude Include="src\EditorLayer\EditorLayer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\ParticleSystem.cpp">
@@ -1509,8 +1532,20 @@
     <ClCompile Include="src\Eagle\Rendering\VertexArray.cpp">
       <Filter>src\Eagle\Rendering</Filter>
     </ClCompile>
+    <ClCompile Include="src\Eagle\Scripting\GameLayer.cpp">
+      <Filter>src\Eagle\Scripting</Filter>
+    </ClCompile>
     <ClCompile Include="src\EaglePCH.cpp">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EditorLayer\EditorLayer.cpp">
+      <Filter>src\EditorLayer</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EditorLayer\Panels\HierarchyPanel.cpp">
+      <Filter>src\EditorLayer\Panels</Filter>
+    </ClCompile>
+    <ClCompile Include="src\EditorLayer\Panels\PropertiesPanel.cpp">
+      <Filter>src\EditorLayer\Panels</Filter>
     </ClCompile>
     <ClCompile Include="src\Platforms\OpenGL\OpenGLBuffer.cpp">
       <Filter>src\Platforms\OpenGL</Filter>
@@ -1542,9 +1577,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Eagle\Scripting\GameLayer.cpp" />
-    <ClCompile Include="src\EditorLayer\Panels\HierarchyPanel.cpp" />
-    <ClCompile Include="src\EditorLayer\Panels\PropertiesPanel.cpp" />
-    <ClCompile Include="src\EditorLayer\EditorLayer.cpp" />
   </ItemGroup>
 </Project>

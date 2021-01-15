@@ -1,5 +1,5 @@
 #pragma once
-#include <entt.hpp>
+#include <Dependencies/Entt.h>
 
 // The client will inherit this scene and provide the functions.
 

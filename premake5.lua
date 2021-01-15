@@ -109,8 +109,8 @@ project "Sandbox"
 		"%{Includes.spdlog}",
 		"%{Includes.glm}",
 		"%{Includes.entt}",
-		"Eagle/src",
-		"Eagle/vendor"
+		"%{Includes.ImGui}",
+		"Eagle/src"
 	}
 
 	filter "system:windows"

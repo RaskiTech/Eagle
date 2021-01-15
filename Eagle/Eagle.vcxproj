@@ -111,7 +111,7 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;EagleEditor.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
@@ -134,10 +134,12 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>opengl32.lib;EagleEditor.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Dependencies\Entt.h" />
+    <ClInclude Include="src\Dependencies\ImGui.h" />
     <ClInclude Include="src\Eagle.h" />
     <ClInclude Include="src\Eagle\Components\ParticleSystem.h" />
     <ClInclude Include="src\Eagle\Core\Application.h" />
@@ -173,8 +175,8 @@
     <ClInclude Include="src\Eagle\Rendering\Texture.h" />
     <ClInclude Include="src\Eagle\Rendering\VertexArray.h" />
     <ClInclude Include="src\Eagle\Scripting\ExampleScript.h" />
-    <ClInclude Include="src\EaglePCH.h" />
     <ClInclude Include="src\Eagle\Scripting\GameLayer.h" />
+    <ClInclude Include="src\EaglePCH.h" />
     <ClInclude Include="src\EditorLayer\EditorLayer.h" />
     <ClInclude Include="src\EditorLayer\Panels\HierarchyPanel.h" />
     <ClInclude Include="src\EditorLayer\Panels\PropertiesPanel.h" />
@@ -622,10 +624,10 @@
     <ClCompile Include="src\Eagle\Rendering\Shader.cpp" />
     <ClCompile Include="src\Eagle\Rendering\Texture.cpp" />
     <ClCompile Include="src\Eagle\Rendering\VertexArray.cpp" />
+    <ClCompile Include="src\Eagle\Scripting\GameLayer.cpp" />
     <ClCompile Include="src\EaglePCH.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="src\Eagle\Scripting\GameLayer.cpp" />
     <ClCompile Include="src\EditorLayer\EditorLayer.cpp" />
     <ClCompile Include="src\EditorLayer\Panels\HierarchyPanel.cpp" />
     <ClCompile Include="src\EditorLayer\Panels\PropertiesPanel.cpp" />
