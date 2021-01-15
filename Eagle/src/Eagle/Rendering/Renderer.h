@@ -70,6 +70,7 @@ namespace Egl {
 		static inline void DrawRotatedTextureQuad(const glm::vec2& position, float rotation, const glm::vec2& size, const Ref<SubTexture>& subTexture)                                             { DrawRotatedTextureQuad(glm::vec3(position, 0), rotation, size, subTexture, 1, { 1, 1, 1, 1 }); }
 		#pragma endregion
 
+		static inline void DrawTextureQuad(const glm::mat4& transform, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) { glm::vec2 c[4] = { {0, 0}, {1, 0}, {1, 1}, {0, 1} }; DrawTextureQuad(transform, texture, c, tilingFactor, color); }
 		static void DrawTextureQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2 texCoords[4], float tilingFactor, const glm::vec4& color);
 		static void DrawColorQuad(const glm::mat4& transform, const glm::vec4& color);
 	private:

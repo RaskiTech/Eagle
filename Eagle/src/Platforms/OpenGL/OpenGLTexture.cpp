@@ -53,6 +53,7 @@ namespace Egl {
 		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
 		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
+		// GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels
 		glTextureSubImage2D(mRendererID, 0, 0, 0, mWidth, mHeight, mDataFormat, GL_UNSIGNED_BYTE, data);
 
 		stbi_image_free(data);

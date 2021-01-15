@@ -76,7 +76,7 @@ namespace Egl {
 			ImGui::Checkbox("Fixed Aspectratio", &component.fixedAspectRatio);
 		});
 
-		DrawComponent<SpriteComponent>("Sprite Renderer", drawedEntity, [](auto& component) {
+		DrawComponent<SpriteRendererComponent>("Sprite Renderer", drawedEntity, [](auto& component) {
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
 		});
 	}

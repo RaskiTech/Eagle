@@ -35,12 +35,14 @@ namespace Egl {
 
 	};
 
-	struct SpriteComponent {
+	struct SpriteRendererComponent {
 		glm::vec4 color = { 1, 1, 1, 1 };
-		//Texture texture;
-
-		SpriteComponent() = default;
-		SpriteComponent(const glm::vec4& color) : color(color) {}
+		Ref<Texture> texture = nullptr;
+		float tilingFactor = 1;
+		
+		SpriteRendererComponent() = default;
+		SpriteRendererComponent(Ref<Texture> texture, const glm::vec4& color = {1, 1, 1, 1}, float tilingFactor = 1) : color(color), texture(texture), tilingFactor(tilingFactor) {  }
+		SpriteRendererComponent(const glm::vec4& color) : color(color) {  }
 	};
 
 	struct CameraComponent {

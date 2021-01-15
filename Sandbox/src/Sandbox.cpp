@@ -3,41 +3,11 @@
 #include <EagleApplicationStart.h>
 using namespace Egl;
 
-class ExampleScene2 : public Scene {
-	void SceneBegin() override {
-		Entity mCamera = AddEntity("Camera");
-		mCamera.AddComponent<CameraComponent>().camera.SetBounds(7);
-		SetPrimaryCamera(mCamera);
-
-		// Camera controller
-		class CameraController : public Script {
-		public:
-			void OnUpdate() {
-				auto& transform = GetComponent<TransformComponent>();
-				float zoomSize = GetComponent<CameraComponent>().camera.GetCameraSize();
-				float speed = 5;
-
-				if (Input::IsKeyPressed(EGL_KEY_A)) transform.position.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f;
-				if (Input::IsKeyPressed(EGL_KEY_D)) transform.position.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f;
-				if (Input::IsKeyPressed(EGL_KEY_S)) transform.position.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f;
-				if (Input::IsKeyPressed(EGL_KEY_W)) transform.position.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f;
-				//if (Input::IsKeyPressed(EGL_KEY_X)) SwitchScene(CreateRef<ExampleScene>());
-			}
-		};
-		mCamera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-		auto e = AddEntity("Entity");
-		e.AddComponent<SpriteComponent>();
-	}
-	void SceneEnd() {
-
-	}
-};
-
 class ExampleScene : public Scene {
 	void SceneBegin() override {
 		for (int i = 0; i < 8; i++) {
 			Entity mPlayer = AddEntity("Cube");
-			mPlayer.AddComponent<SpriteComponent>(glm::vec4(0.2f, 0.3f, 0.4f, 1.0f));
+			mPlayer.AddComponent<SpriteRendererComponent>(glm::vec4(0.2f, 0.3f, 0.4f, 1.0f));
 			mPlayer.GetComponent<TransformComponent>().position = { i * 1.5f - 5, 2, 0 };
 			mPlayer.GetComponent<TransformComponent>().rotation = (float)i;
 		}
@@ -45,6 +15,13 @@ class ExampleScene : public Scene {
 		Entity mCamera = AddEntity("Camera");
 		mCamera.AddComponent<CameraComponent>().camera.SetBounds(7);
 		SetPrimaryCamera(mCamera);
+
+		for (int i = 0; i < 3; i++) {
+			auto& entity = AddEntity("Player");
+			entity.AddComponent<SpriteRendererComponent>(Texture::Create("Assets/Player.png", false));
+			entity.GetComponent<TransformComponent>().scale = { 6, 1 };
+			entity.GetComponent<TransformComponent>().position = { 0, i * 0.7f, i * -0.1f };
+		}
 
 		// Camera controller
 		class CameraController : public Script {
@@ -72,6 +49,7 @@ class ExampleScene : public Scene {
 		props.minColor = glm::vec4(0.2f, 0.8f, 0.3f, 1.0f);
 		props.sizeAtEnd = { 0, 0 };
 		particle.AddComponent<ParticleSystemComponent>(props);
+		particle.GetComponent<TransformComponent>().position.y = -2.5f;
 	}
 	void SceneEnd() {
 

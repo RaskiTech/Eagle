@@ -68,14 +68,6 @@ namespace Egl {
 
 			Renderer::BeginScene(camera.camera, transform.GetTransform());
 
-			{
-				/////// Sprite ///////
-				auto group = mRegistry.group<SpriteComponent>(entt::get<TransformComponent>);
-				for (auto entity : group) {
-					auto [sprite, transform] = group.get<SpriteComponent, TransformComponent>(entity);
-					Renderer::DrawColorQuad(transform.GetTransform(), sprite.color);
-				}
-			}
 
 			{
 				/////// ParticleSystem ///////
@@ -91,6 +83,30 @@ namespace Egl {
 				}
 			}
 
+			{
+				/////// Sprite ///////
+				auto group = mRegistry.group<SpriteRendererComponent>(entt::get<TransformComponent>);
+				for (auto entity : group) {
+					auto [spriteRenderer, transform] = group.get<SpriteRendererComponent, TransformComponent>(entity);
+					if (spriteRenderer.texture == nullptr)
+						Renderer::DrawColorQuad(transform.GetTransform(), spriteRenderer.color);
+					else
+						Renderer::DrawTextureQuad(transform.GetTransform(), spriteRenderer.texture, spriteRenderer.tilingFactor, spriteRenderer.color);
+				}
+			}
+
+			//glm::mat4 transformMat = glm::translate(glm::mat4(1), { 0, 5, 0.9f })
+			//	* glm::scale(glm::mat4(1), { 6, 1, 1 });
+			//glm::vec2 texCoords[4] = { {0, 0}, {1, 0}, {1, 1}, {0, 1} };
+			//
+			//auto group = mRegistry.group<SpriteRendererComponent>(entt::get<TransformComponent>);
+			//auto entity = group[0];
+			//auto [spriteRenderer, transformA] = group.get<SpriteRendererComponent, TransformComponent>(entity);
+			//if (spriteRenderer.texture == nullptr)
+			//	Renderer::DrawColorQuad(transformA.GetTransform() + glm::mat4(1), spriteRenderer.color);
+			//else
+			//	Renderer::DrawTextureQuad(transformA.GetTransform()+glm::mat4(1), spriteRenderer.texture, spriteRenderer.tilingFactor, spriteRenderer.color);
+			//Renderer::DrawTextureQuad(transformMat, Texture::Create("Assets/Player.png", false), texCoords, 1, { 1, 1, 1, 1 });
 			Renderer::EndScene();
 		}
 	}

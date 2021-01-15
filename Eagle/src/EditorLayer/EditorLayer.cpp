@@ -27,7 +27,6 @@ namespace Egl {
 		mFrameBuffer = FrameBuffer::Create(defenition);
 
 		mHierarchyPanel.SetContext(Application::Get().GetGameLayer()->GetActiveScene());
-		mHierarchyPanel.ResetSelection();
 	}
 
 	void EditorLayer::OnDetach() {
@@ -95,8 +94,12 @@ namespace Egl {
 
 		//// Restart scene button ////
 		ImGui::Begin("Restart Scene");
-		if (ImGui::Button("Reset scene", ImVec2(ImGui::GetWindowWidth(), 0)))
+		if (ImGui::Button("Reset scene", ImVec2(ImGui::GetWindowWidth(), 0))) {
 			Application::Get().GetGameLayer()->ResetApplication();
+			mHierarchyPanel.SetContext(Application::Get().GetGameLayer()->GetActiveScene());
+			mHierarchyPanel.ResetSelection();
+			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
+		}
 
 		ImGui::End();
 	}
