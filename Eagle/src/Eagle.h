@@ -10,7 +10,7 @@
 #include "Eagle/Core/Input.h"
 #include "Eagle/Core/Random.h"
 
-#include "Eagle/ImGui/ImGuiLayer.h"
+#include "Eagle/Debug/ImGui/ImGuiLayer.h"
 #include "Eagle/Components/ParticleSystem.h"
 
 #include "Eagle/ECS/Entity.h"

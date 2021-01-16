@@ -1,7 +1,7 @@
 #pragma once
 
 #include <EaglePCH.h>
-#include "Eagle/Events/Event.h"
+#include "Eagle/Core/Events/Event.h"
 
 namespace Egl {
 	struct WindowProps {

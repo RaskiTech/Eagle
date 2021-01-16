@@ -122,8 +122,9 @@ namespace Egl {
     };
 }
 
-//#define EAGLE_PROFILE 1
-#ifdef EAGLE_PROFILE
+#include <EagleBuildSettings.h>
+
+#if EAGLE_PROFILE
     #define EAGLE_PROFILE_BEGIN(name, filepath) ::Egl::Instrumentor::Get().BeginSession(name, filepath)
     #define EAGLE_PROFILE_FUNCTION() EAGLE_PROFILE_SCOPE(__FUNCSIG__)
     #define EAGLE_PROFILE_SCOPE(name) ::Egl::InstrumentationTimer timer##__LINE__(name)

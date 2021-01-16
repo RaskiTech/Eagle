@@ -1,13 +1,12 @@
 #include <EaglePCH.h>
+#include <EagleBuildSettings.h>
 #include "Application.h"
 #include "Eagle/Rendering/Renderer.h"
 #include "Eagle/Rendering/RenderCommand.h"
 #include "Eagle/Core/Random.h"
-#include "Eagle/Scripting/GameLayer.h"
-#include "EditorLayer/EditorLayer.h"
-
-// This is the only file that does different things depending on this
-#define EAGLE_EDITOR 1
+#include "Eagle/Core/GameLayer.h"
+#include "Eagle/Debug/EditorLayer.h"
+#include "Eagle/Core/Time.h"
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
@@ -38,7 +37,8 @@ namespace Egl {
 		mEditorLayer = new EditorLayer();
 		AddLayer(mEditorLayer);
 #else
-		mGameLayer->GetActiveScene()->SetViewportAspectRatio((float)mWindow->GetWidth() / mWindow->GetHeight());
+		mViewportSize = { (float)mWindow->GetWidth(), (float)mWindow->GetHeight() };
+		mGameLayer->GetActiveScene()->SetViewportAspectRatio(mViewportSize.x / mViewportSize.y);
 #endif
 	}
 
@@ -77,18 +77,14 @@ namespace Egl {
 #if EAGLE_EDITOR
 					mEditorLayer->PreUpdate();
 #endif
-
 					for (Layer* layer : mLayerStack)
 						if (layer->IsActive()) {
 							EAGLE_PROFILE_SCOPE(layer->GetName().c_str());
 							layer->OnUpdate();
 						}
-
 #if EAGLE_EDITOR
 					mEditorLayer->PostUpdate();
-#endif
 				}
-#if EAGLE_EDITOR
 				{
 					EAGLE_PROFILE_SCOPE("ImGui update");
 					mImGuiLayer->Begin();
@@ -96,8 +92,8 @@ namespace Egl {
 						if (layer->IsActive())
 							layer->OnImGuiRender();
 					mImGuiLayer->End();
-				}
 #endif
+				}
 			}
 
 			mWindow->OnUpdate();
@@ -119,7 +115,8 @@ namespace Egl {
 
 		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
 #if !EAGLE_EDITOR
-		mGameLayer->GetActiveScene()->SetViewportAspectRatio((float)e.GetWidth() / e.GetHeight());
+		mViewportSize = { (float)e.GetWidth(), (float)e.GetHeight() };
+		mGameLayer->GetActiveScene()->SetViewportAspectRatio(mViewportSize.x / mViewportSize.y);
 #endif
 		return false;
 	}

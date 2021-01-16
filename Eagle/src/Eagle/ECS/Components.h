@@ -3,10 +3,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Eagle/Rendering/Texture.h"
 #include "Eagle/ECS/Script.h"
-#include "SceneCamera.h"
+#include "Eagle/Components/SceneCamera.h"
 #include "Eagle/Core/DoesExist.h"
 #include "Eagle/Components/ParticleSystem.h"
-#include "Eagle/Events/Event.h"
+#include "Eagle/Core/Events/Event.h"
 
 namespace Egl {
 	struct TransformComponent {

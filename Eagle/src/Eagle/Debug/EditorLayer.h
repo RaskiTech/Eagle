@@ -2,7 +2,7 @@
 
 #include "Eagle/Core/Application.h"
 #include "Eagle/Core/Layers/Layer.h"
-#include "Eagle/Events/Event.h"
+#include "Eagle/Core/Events/Event.h"
 
 #include "Eagle/ECS/Scene.h"
 #include "Eagle/Rendering/FrameBuffer.h"
@@ -29,7 +29,6 @@ namespace Egl {
 	private:
 		// Actual Editor fields
 		Ref<FrameBuffer> mFrameBuffer;
-		glm::vec2 mScenePanelSize = { 0.0f, 0.0f };
 		bool mScenePanelFocused = false, mScenePanelHovered = false;
 		HierarchyPanel mHierarchyPanel;
 	};

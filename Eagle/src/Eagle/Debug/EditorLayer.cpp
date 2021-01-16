@@ -6,7 +6,7 @@
 #include "Eagle/ECS/Components.h"
 #include "Eagle/ECS/Scene.h"
 #include "Eagle/ECS/Script.h"
-#include "Eagle/Events/MouseEvent.h"
+#include "Eagle/Core/Events/MouseEvent.h"
 #include "Eagle/Rendering/Renderer.h"
 
 #include "Eagle/Core/Input.h"
@@ -34,24 +34,26 @@ namespace Egl {
 	}
 
 	void EditorLayer::PreUpdate() {
+		EAGLE_PROFILE_FUNCTION();
+		Renderer::GetStats().ResetStats();
+
 		FrameBufferDefenition def = mFrameBuffer->GetDefenition();
-		if (mScenePanelSize.x > 0.0f && mScenePanelSize.y > 0.0f
-			&& (mScenePanelSize.x != def.width || mScenePanelSize.y != def.height))
-		{
-			mFrameBuffer->Resize((uint32_t)mScenePanelSize.x, (uint32_t)mScenePanelSize.y);
-			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
+		const glm::vec2& size = Application::Get().GetViewportSize();
+		if (size.x > 0.0f && size.y > 0.0f && (size.x != def.width || size.y != def.height)) {
+			mFrameBuffer->Resize((uint32_t)size.x, (uint32_t)size.y);
+			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(size.x / size.y);
 		}
+
 		mFrameBuffer->Bind();
-		
 	}
 	void EditorLayer::PostUpdate() {
+		EAGLE_PROFILE_FUNCTION();
 		mFrameBuffer->Unbind();
 	}
 
 	///////////////////// On Update //////////////////////
 	void EditorLayer::OnUpdate() {
 		EAGLE_PROFILE_FUNCTION();
-		Renderer::GetStats().ResetStats();
 	}
 
 	
@@ -78,8 +80,8 @@ namespace Egl {
 
 		// The actual resizing happens in onUpdate. This is just a "notification"
 		ImVec2 scenePanelSize = ImGui::GetContentRegionAvail();
-		if (mScenePanelSize != *((glm::vec2*) & scenePanelSize))
-			mScenePanelSize = { scenePanelSize.x, scenePanelSize.y };
+		if (Application::Get().GetViewportSize() != *((glm::vec2*) &scenePanelSize))
+			Application::Get().SetViewportSize({ scenePanelSize.x, scenePanelSize.y });
 
 		mScenePanelFocused = ImGui::IsWindowFocused();
 		mScenePanelHovered = ImGui::IsWindowHovered();
@@ -98,7 +100,7 @@ namespace Egl {
 			Application::Get().GetGameLayer()->ResetApplication();
 			mHierarchyPanel.SetContext(Application::Get().GetGameLayer()->GetActiveScene());
 			mHierarchyPanel.ResetSelection();
-			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(mScenePanelSize.x / mScenePanelSize.y);
+			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(Application::Get().GetViewportSize().x / Application::Get().GetViewportSize().y);
 		}
 
 		ImGui::End();

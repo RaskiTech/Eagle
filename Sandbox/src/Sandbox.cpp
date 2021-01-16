@@ -1,6 +1,6 @@
 #pragma once
 #include <Eagle.h>
-#include <EagleApplicationStart.h>
+#include <EagleApplicationStartup.h>
 using namespace Egl;
 
 class ExampleScene : public Scene {

@@ -42,6 +42,7 @@ namespace Egl {
 
 	void Scene::OnUpdate()
 	{
+		EAGLE_PROFILE_FUNCTION();
 		// This function handles rendering the objects in this scene and updating components.
 
 		{

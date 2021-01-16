@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-#include "Eagle/Events/Event.h"
+#include "Eagle/Core/Events/Event.h"
 
 
 namespace Egl {

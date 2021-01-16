@@ -1,5 +1,5 @@
 #include <EaglePCH.h>
-#include <EagleApplicationStart.h>
+#include <EagleApplicationStartup.h>
 #include "GameLayer.h"
 
 namespace Egl {
@@ -7,11 +7,20 @@ namespace Egl {
 		
 	}
 	void GameLayer::OnAttach() {
-		mActiveScene = ApplicationStartup();
-		mActiveScene->SceneBegin();
+		{
+			EAGLE_PROFILE_SCOPE("Application - ApplicationStartup");
+			mActiveScene = ApplicationStartup();
+		}
+		{
+			EAGLE_PROFILE_SCOPE("Application - SceneBegin");
+			mActiveScene->SceneBegin();
+		}
 	}
 	void GameLayer::OnDetach() {
-		mActiveScene->SceneEnd();
+		{
+			EAGLE_PROFILE_SCOPE("Application - SceneEnd");
+			mActiveScene->SceneEnd();
+		}
 	}
 	void GameLayer::OnUpdate() {
 		mActiveScene->OnUpdate();

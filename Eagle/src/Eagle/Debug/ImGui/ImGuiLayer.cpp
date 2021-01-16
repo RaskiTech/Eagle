@@ -1,11 +1,5 @@
 #include <EaglePCH.h>
-
-// Disable warninigs that are coused by imgui
-#pragma warning( push )
-#pragma warning( disable : 26495 )
-
-#include <Eagle/ImGui/ImGuiLayer.h>
-
+#include <Eagle/Debug/ImGui/ImGuiLayer.h>
 #include <Dependencies/ImGui.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>

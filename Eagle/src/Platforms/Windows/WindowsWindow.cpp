@@ -1,8 +1,8 @@
 #include <EaglePCH.h>
 #include "WindowsWindow.h"
-#include "Eagle/Events/ApplicationEvent.h"
-#include "Eagle/Events/KeyEvent.h"
-#include "Eagle/Events/MouseEvent.h"
+#include "Eagle/Core/Events/ApplicationEvent.h"
+#include "Eagle/Core/Events/KeyEvent.h"
+#include "Eagle/Core/Events/MouseEvent.h"
 #include "Platforms/OpenGL/OpenGLContext.h"
 
 namespace Egl {

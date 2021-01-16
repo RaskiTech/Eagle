@@ -1,13 +1,13 @@
 #pragma once
+#include <glm/glm.hpp>
 #include "Core.h"
 #include "Window.h"
-#include "Eagle/Events/Event.h"
-#include "Eagle/Events/ApplicationEvent.h"
-#include "Layers/LayerStack.h"
-#include "Eagle/ImGui/ImGuiLayer.h"
-#include "Eagle/Scripting/GameLayer.h"
-
-#include "Eagle/Core/Time.h"
+#include "Eagle/Core/Events/Event.h"
+#include "Eagle/Core/Events/ApplicationEvent.h"
+#include "Eagle/Core/Events/Event.h"
+#include "Eagle/Core/Layers/LayerStack.h"
+#include "Eagle/Debug/ImGui/ImGuiLayer.h"
+#include "Eagle/Core/GameLayer.h"
 
 namespace Egl {
 
@@ -28,6 +28,9 @@ namespace Egl {
 		ImGuiLayer* GetImGuiLayer() const { return mImGuiLayer; }
 		GameLayer* GetGameLayer() const { return mGameLayer; }
 		inline Window& GetWindow() const { return *mWindow; }
+		const glm::vec2& GetViewportSize() const { return mViewportSize; }
+		void SetViewportSize(const glm::vec2& size) { mViewportSize = size; }
+
 		static inline Application& Get() { return *mInstance; }
 	private:
 		bool OnWindowClose(WindowCloseEvent& e);
@@ -41,6 +44,7 @@ namespace Egl {
 		ImGuiLayer* mImGuiLayer;
 		EditorLayer* mEditorLayer;
 		GameLayer* mGameLayer;
+		glm::vec2 mViewportSize = { 0, 0 };
 
 		bool mRunning = true;
 		bool mMinimized = false;

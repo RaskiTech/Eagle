@@ -4,5 +4,4 @@
 #pragma warning( disable : 6011 )
 
 #include <imgui.h>
-
 #pragma warning( pop )

@@ -33,10 +33,6 @@ project "Eagle"
 	pchheader "EaglePCH.h"
 	pchsource "Eagle/src/EaglePCH.cpp"
 
-	defines {
-		"_CRT_SECURE_NO_WARNINGS"
-	}
-
 	files {
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
@@ -51,10 +47,14 @@ project "Eagle"
 		"%{Includes.spdlog}",
 		"%{Includes.GLFW}",
 		"%{Includes.Glad}",
-		"%{Includes.ImGui}",
 		"%{Includes.glm}",
 		"%{Includes.stb_image}",
+		"%{Includes.ImGui}",
 		"%{Includes.entt}"
+	}
+
+	defines {
+		"_CRT_SECURE_NO_WARNINGS"
 	}
 
 	links {
@@ -70,7 +70,6 @@ project "Eagle"
 		defines {
 			"EAGLE_PLATFORM_WINDOWS",
 			"EAGLE_RENDERER_OPENGL",
-			"EAGLE_BUILD_DLL",
 			"GLFW_INCLUDE_NONE"
 		}
 

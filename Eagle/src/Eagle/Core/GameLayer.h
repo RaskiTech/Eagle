@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Eagle/Core/Layers/Layer.h"
-#include "Eagle/Events/Event.h"
+#include "Eagle/Core/Events/Event.h"
 
 #include "Eagle/ECS/Scene.h"
 #include "Eagle/Rendering/FrameBuffer.h"
