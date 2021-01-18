@@ -31,7 +31,8 @@ namespace Egl {
 	}
 
 	void BasicTimeGen::generate(float deltaTime, ParticleData* p, uint32_t startId, uint32_t endId) {
-		for (uint32_t i = startId; i < endId; ++i)
+		for (uint32_t i = startId; i < endId; ++i) {
 			p->mTime[i] = { 0, glm::linearRand(mMinTime, mMaxTime) };
+		}
 	}
 }

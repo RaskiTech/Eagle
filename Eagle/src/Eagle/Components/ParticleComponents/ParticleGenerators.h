@@ -56,8 +56,8 @@ namespace Egl {
 	class BasicTimeGen : public ParticleGenerator
 	{
 	public:
-		float mMinTime { 1 };
-		float mMaxTime { 1 };
+		float mMinTime = 1;
+		float mMaxTime = 1;
 	public:
 		BasicTimeGen() { }
 

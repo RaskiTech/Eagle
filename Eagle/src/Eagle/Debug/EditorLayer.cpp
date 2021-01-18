@@ -8,6 +8,7 @@
 #include "Eagle/ECS/Script.h"
 #include "Eagle/Core/Events/MouseEvent.h"
 #include "Eagle/Rendering/Renderer.h"
+#include "Eagle/Core/Time.h"
 
 #include "Eagle/Core/Input.h"
 #include "Eagle/Core/Keycodes.h"
@@ -67,13 +68,40 @@ namespace Egl {
 		style.WindowMinSize.x = originalWindowMinSize;
 
 		///////// Renderer stats //////////
-		ImGui::Begin("Renderer Stats");
-		ImGui::Text("Drawcalls: %d", Renderer::GetStats().GetDrawCallCount());
-		ImGui::Text("Quads: %d", Renderer::GetStats().GetQuadCount());
-		ImGui::Text("Vertices: %d", Renderer::GetStats().GetVertexCount());
-		ImGui::Text("Indeces: %d", Renderer::GetStats().GetIndexCount());
+		ImGui::Begin("Game Stats");
+
+		ImGuiIO& io = ImGui::GetIO();
+		auto& boldFont = io.Fonts->Fonts[0];
+		ImGui::PushFont(boldFont);
+		ImGui::Text("Renderer");
+		ImGui::PopFont();
+
+		ImGui::Text("  Drawcalls: %d", Renderer::GetStats().GetDrawCallCount());
+		ImGui::Text("  Quads: %d", Renderer::GetStats().GetQuadCount());
+		ImGui::Text("  Vertices: %d", Renderer::GetStats().GetVertexCount());
+		ImGui::Text("  Indeces: %d", Renderer::GetStats().GetIndexCount());
+
+		ImGui::Spacing();
+		ImGui::PushFont(boldFont);
+		ImGui::Text("Framerate");
+		ImGui::PopFont();
+
+		// Change the renderer only sometimes
+		static float time = -0.1f;
+		static uint32_t fps;
+		static float ms;
+
+		time -= Time::GetFrameDelta();
+		if (time < 0) {
+			fps = (uint32_t)(1 / Time::GetFrameDelta());
+			ms = Time::GetFrameDeltaMilliseconds();
+			time = 0.1f;
+		}
+		ImGui::Text("  FPS: %d", fps);
+		ImGui::Text("  Ms per frame: %.1f", ms);
+
 		ImGui::End();
-		
+
 		///////// Scene //////////
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("Scene");

@@ -4,15 +4,62 @@
 using namespace Egl;
 
 class ExampleScene : public Scene {
+	void ParticleBegin(const glm::vec2& pos, const glm::vec2& vel) {
+		{
+			Entity particle = AddEntity("ParticleSystem");
+			auto& comp = particle.AddComponent<ParticleSystemComponent>(500000);
+
+			Ref<ParticleEmitter> emitter = CreateRef<ParticleEmitter>();
+
+			emitter->mEmitsPerSecond = 3000; // The amount of particles spawned
+
+			//// Generation
+			Ref<RoundPosGen> generator = CreateRef<RoundPosGen>();
+			generator->mCenter = pos;
+			generator->mRadX = 2;
+			generator->mRadY = 2;
+
+			Ref<BasicColorGen> colorGen = CreateRef<BasicColorGen>();
+			colorGen->mMaxStartCol = { 1, 1, 0, 1 };
+			colorGen->mMinStartCol = { 0, 1, 1, 1 };
+			colorGen->mMaxEndCol = { 1, 0, 1, 1 };
+			colorGen->mMinEndCol = { 1, 0, 0, 1 };
+			Ref<BasicTimeGen> timeGen = CreateRef<BasicTimeGen>();
+			timeGen->mMaxTime = 9;
+			timeGen->mMinTime = 6;
+			Ref<BasicVelGen> velGen = CreateRef<BasicVelGen>();
+			velGen->mMinStartVel = vel;
+			velGen->mMaxStartVel = { vel.x*2, vel.y };
+
+			emitter->addGenerator(colorGen);
+			emitter->addGenerator(velGen);
+			emitter->addGenerator(timeGen);
+			emitter->addGenerator(generator);
+			comp.particleSystem.addEmitter(emitter);
+			////
+
+			//// Updation
+			Ref<ParticleUpdaterEuler> eulerUpdater = CreateRef<ParticleUpdaterEuler>();
+			eulerUpdater->mGlobalAcceleration = { 0, -2 };
+			Ref<ParticleUpdaterBasicTime> timeUpdater = CreateRef<ParticleUpdaterBasicTime>();
+			Ref<ParticleUpdaterBasicColor> colorUpdater = CreateRef<ParticleUpdaterBasicColor>();
+
+			comp.particleSystem.addUpdater(timeUpdater);
+			comp.particleSystem.addUpdater(colorUpdater);
+			comp.particleSystem.addUpdater(eulerUpdater);
+			////
+		}
+	}
+
 	void SceneBegin() override {
 		Entity mCamera = AddEntity("Camera");
-		mCamera.AddComponent<CameraComponent>().camera.SetBounds(7);
+		mCamera.AddComponent<CameraComponent>().camera.SetBounds(20);
 		SetPrimaryCamera(mCamera);
 
 		auto& entity = AddEntity("Player");
 		auto texture = Texture::Create("Assets/Player.png", false);
 		entity.AddComponent<SpriteRendererComponent>(SubTexture::CreateFromIndexes(texture, { 0, 0 }, { 16, 16 }));
-		entity.GetComponent<TransformComponent>().position = { -3, -1.5f, 0.1f };
+		entity.GetComponent<TransformComponent>().position = { -3, -1.5f, -0.1f };
 
 		Entity mPlayer = AddEntity("Ground");
 		mPlayer.AddComponent<SpriteRendererComponent>(glm::vec4(0.239f, 0.275f, 0.29f, 1.0f));
@@ -32,36 +79,9 @@ class ExampleScene : public Scene {
 		// TODO: New particles don't reset memory when spawned. If the particle isn't new, it will use old particles memory and since time is 1 die
 		// Then can also remove the memory setting in generate().
 
-		Entity particle = AddEntity("ParticleSystem");
-		auto& comp = particle.AddComponent<ParticleSystemComponent>(10000);
+		ParticleBegin({ -11, -4 }, {  1, 7 });
+		ParticleBegin({  11, -4 }, { -1, 7 });
 
-
-		Ref<ParticleUpdaterEuler> eulerUpdater = CreateRef<ParticleUpdaterEuler>();
-		eulerUpdater->mGlobalAcceleration = { 0.01f, 0.01f };
-		Ref<ParticleUpdaterBasicTime> timeUpdater = CreateRef<ParticleUpdaterBasicTime>();
-		Ref<ParticleUpdaterBasicColor> colorUpdater = CreateRef<ParticleUpdaterBasicColor>();
-
-
-		comp.particleSystem.addUpdater(timeUpdater);
-		comp.particleSystem.addUpdater(colorUpdater);
-		comp.particleSystem.addUpdater(eulerUpdater);
-
-
-		Ref<ParticleEmitter> emitter = CreateRef<ParticleEmitter>();
-		emitter->mEmitsPerSecond = 2;
-
-		Ref<ParticleBoxGenerator> generator = CreateRef<ParticleBoxGenerator>();
-		generator->mMaxStartPosOffset = { 1, 1 };
-
-		Ref<BasicColorGen> colorGen = CreateRef<BasicColorGen>();
-		Ref<BasicTimeGen> timeGen = CreateRef<BasicTimeGen>();
-		Ref<BasicVelGen> velGen = CreateRef<BasicVelGen>();
-
-		emitter->addGenerator(colorGen);
-		emitter->addGenerator(velGen);
-		emitter->addGenerator(timeGen);
-		emitter->addGenerator(generator);
-		comp.particleSystem.addEmitter(emitter);
 		// Camera controller
 		/*
 		class CameraController : public Script {

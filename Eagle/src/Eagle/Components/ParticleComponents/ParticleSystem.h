@@ -29,7 +29,7 @@ namespace Egl {
 		explicit ParticleSystem(uint32_t maxCount = 10000);
 		~ParticleSystem() {}
 
-		void Update(float dt);
+		void Update(float deltaTime);
 		void Render();
 		void Reset();
 

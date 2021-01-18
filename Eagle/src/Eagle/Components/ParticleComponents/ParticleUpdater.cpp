@@ -4,17 +4,18 @@
 
 namespace Egl {
     void ParticleUpdaterEuler::update(float deltaTime, ParticleData* p) {
-        const glm::vec2 globalA { deltaTime * mGlobalAcceleration.x, deltaTime * mGlobalAcceleration.y };
+        const glm::vec2 globalA { mGlobalAcceleration.x, mGlobalAcceleration.y };
         const uint32_t endId = p->mAliveCount;
 
-        for (uint32_t i = 0; i < endId; ++i)
+		uint32_t i;
+        for (i = 0; i < endId; ++i)
             p->mAcc[i] += globalA;
 
-        for (uint32_t i = 0; i < endId; ++i)
-            p->mVel[i] += p->mAcc[i];
+        for (i = 0; i < endId; ++i)
+            p->mVel[i] += p->mAcc[i] * deltaTime;
 
-        for (uint32_t i = 0; i < endId; ++i)
-            p->mPos[i] += p->mVel[i];
+        for (i = 0; i < endId; ++i)
+            p->mPos[i] += p->mVel[i] * deltaTime;
     }
 	void ParticleUpdaterFloor::update(float deltaTime, ParticleData* p) {
 		const uint32_t endId = p->mAliveCount;
@@ -96,13 +97,12 @@ namespace Egl {
 	}
 
 	void ParticleUpdaterBasicTime::update(float deltaTime, ParticleData* p) {
-		unsigned int endId = p->mAliveCount;
+		uint32_t endId = p->mAliveCount;
 		if (endId == 0)
 			return;
 
 		for (uint32_t i = 0; i < endId; ++i) {
 			p->mTime[i].x += deltaTime / p->mTime[i].y;
-
 			if (p->mTime[i].x > 1) {
 				p->kill(i);
 				endId = p->mAliveCount < p->mCount ? p->mAliveCount : p->mCount;

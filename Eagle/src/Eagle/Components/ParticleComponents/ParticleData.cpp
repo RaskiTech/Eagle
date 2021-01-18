@@ -23,7 +23,6 @@ namespace Egl {
     }
 
     void ParticleData::wake(uint32_t id) {
-        mTime[id] = { 0, 1 };
         mAlive[id] = true;
 
         swapData(id, mAliveCount);

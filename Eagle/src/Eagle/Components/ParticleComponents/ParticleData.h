@@ -11,7 +11,7 @@ namespace Egl {
         Ref<glm::vec4[]> mEndCol;
         Ref<glm::vec2[]> mVel;
         Ref<glm::vec2[]> mAcc;
-        Ref<glm::vec2[]> mTime; // x is time amive from 0 to 1 and y is maxTime
+        Ref<glm::vec2[]> mTime; // x is time time from 0 to 1 and y is startTime
         Ref<bool[]> mAlive;
 
         uint32_t mCount = 0;

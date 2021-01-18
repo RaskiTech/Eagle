@@ -50,6 +50,7 @@ namespace Egl {
 
 		DrawComponent<TransformComponent>("Transform", drawedEntity, [](auto& component) {
 			ImGui::Text("Position  ");
+
 			ImGui::SameLine();
 			ImGui::DragFloat3("", glm::value_ptr(component.position), 0.1f);
 
@@ -58,7 +59,9 @@ namespace Egl {
 			float rotation = glm::degrees(component.rotation);
 			if (ImGui::DragFloat("##rotation", &rotation, 0.5f))
 				component.rotation = glm::radians(rotation);
+
 			ImGui::Text("Scale       ");
+
 			ImGui::SameLine();
 			ImGui::DragFloat2("##scale", glm::value_ptr(component.scale), 0.1f);
 		});

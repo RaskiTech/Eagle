@@ -15,9 +15,10 @@ namespace Egl {
     ///// Particle Emitter /////
     void ParticleEmitter::Emit(float deltaTime, ParticleData* data)
     {
-		mEmitTime += deltaTime;
-        const uint32_t maxNewParticles = (uint32_t)(mEmitTime * mEmitsPerSecond);
-		mEmitTime -= glm::floor(mEmitTime);
+		mEmitTime += deltaTime * mEmitsPerSecond;
+        const uint32_t maxNewParticles = (uint32_t)mEmitTime;
+		mEmitTime -= maxNewParticles;
+
         const uint32_t startId = data->mAliveCount;
         const uint32_t endId = std::min(startId + maxNewParticles, data->mCount - 1);
 
@@ -32,7 +33,6 @@ namespace Egl {
 		: mCount(maxCount)
 	{
 		mParticles.generate(maxCount);
-		// mAliveParticles.generate(maxCount);
 	}
 
 	void ParticleSystem::Update(float dt) {
@@ -47,7 +47,7 @@ namespace Egl {
 	}
 	void ParticleSystem::Render() {
 		for (uint32_t i = 0; i < mParticles.mAliveCount; i++)
-			Renderer::DrawColorQuad(mParticles.mPos[i], { 1, 1 }, mParticles.mCol[i]);
+			Renderer::DrawColorQuad(mParticles.mPos[i], { 0.05f, 0.05f }, mParticles.mCol[i]);
 	}
 	void ParticleSystem::Reset() {
 		mParticles.mAliveCount = 0;
