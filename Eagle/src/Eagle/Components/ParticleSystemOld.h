@@ -17,10 +17,10 @@ namespace Egl {
 		float rotationOverLifetime = 0;
 	};
 
-	class ParticleSystem {
+	class ParticleSystemOld {
 	public:
-		ParticleSystem() {}
-		ParticleSystem(ParticleSystemProps& props, uint32_t particleAmount = 10000);
+		ParticleSystemOld() {}
+		ParticleSystemOld(ParticleSystemProps& props, uint32_t particleAmount = 10000);
 		void SetProps(ParticleSystemProps& props) { mProps = props; }
 
 		void OnRender(float zPosition);

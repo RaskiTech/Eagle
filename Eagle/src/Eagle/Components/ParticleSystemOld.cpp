@@ -1,5 +1,5 @@
 #include <EaglePCH.h>
-#include "ParticleSystem.h"
+#include "ParticleSystemOld.h"
 #include "Eagle/Core/Random.h"
 #include "Eagle/Core/Time.h"
 #include <glm/gtx/compatibility.hpp>
@@ -7,14 +7,14 @@
 #include "Eagle/Rendering/Renderer.h"
 
 namespace Egl {
-	ParticleSystem::ParticleSystem(ParticleSystemProps& particleProps, uint32_t particleAmount)
+	ParticleSystemOld::ParticleSystemOld(ParticleSystemProps& particleProps, uint32_t particleAmount)
 		: mProps(particleProps), mNextParticleIndex(particleAmount-1) 
 	{
 		EAGLE_PROFILE_FUNCTION();
 		mData.resize(particleAmount);
 	}
 
-	void ParticleSystem::OnRender(float zPosition) {
+	void ParticleSystemOld::OnRender(float zPosition) {
 		EAGLE_PROFILE_FUNCTION();
 		
 		for (ParticleData& particle : mData) {
@@ -41,7 +41,7 @@ namespace Egl {
 		}
 	}
 
-	void ParticleSystem::Emit(const glm::vec3& position) {
+	void ParticleSystemOld::Emit(const glm::vec3& position) {
 		EAGLE_PROFILE_FUNCTION();
 		ParticleData& data = mData[mNextParticleIndex];
 		data.active = true;

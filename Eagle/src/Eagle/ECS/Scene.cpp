@@ -71,16 +71,31 @@ namespace Egl {
 
 
 			{
-				/////// ParticleSystem ///////
-				auto group = mRegistry.group<ParticleSystemComponent>(entt::get<TransformComponent>);
+				/////// ParticleSystemOld ///////
+				auto group = mRegistry.group<ParticleSystemOldComponent>(entt::get<TransformComponent>);
 				for (auto entity : group) {
-					auto [particleSystem, transform] = group.get<ParticleSystemComponent, TransformComponent>(entity);
+					auto [particleSystem, transform] = group.get<ParticleSystemOldComponent, TransformComponent>(entity);
 					while (particleSystem.timeUntilEmit < 0) {
 						particleSystem.particleSystem.Emit(transform.position);
 						particleSystem.timeUntilEmit = particleSystem.timeBetweenEmits;
 					}
 					particleSystem.timeUntilEmit -= Time::GetFrameDelta();
 					particleSystem.particleSystem.OnRender(transform.position.z);
+				}
+			}
+			
+			{
+				/////// ParticleSystem ///////
+				auto group = mRegistry.group<ParticleSystemComponent>(entt::get<TransformComponent>);
+				for (auto entity : group) {
+					auto [particleSystem, transform] = group.get<ParticleSystemComponent, TransformComponent>(entity);
+					float delta = Time::GetFrameDelta();
+					particleSystem.particleSystem.Update(delta);
+					particleSystem.particleSystem.Render();
+					//const uint32_t count = particleSystem.particleSystem.AliveParticlesCount();
+					//for (int i = 0; i < count; i++) {
+					//	//Renderer::DrawColorQuad(particleSystem.particleSystem.)
+					//}
 				}
 			}
 
@@ -92,7 +107,7 @@ namespace Egl {
 					if (spriteRenderer.texture == nullptr)
 						Renderer::DrawColorQuad(transform.GetTransform(), spriteRenderer.color);
 					else
-						Renderer::DrawTextureQuad(transform.GetTransform(), spriteRenderer.texture, spriteRenderer.tilingFactor, spriteRenderer.color);
+						Renderer::DrawTextureQuad(transform.GetTransform(), spriteRenderer.texture->GetTexture(), spriteRenderer.texture->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
 				}
 			}
 

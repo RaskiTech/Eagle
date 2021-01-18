@@ -5,7 +5,8 @@
 #include "Eagle/ECS/Script.h"
 #include "Eagle/Components/SceneCamera.h"
 #include "Eagle/Core/DoesExist.h"
-#include "Eagle/Components/ParticleSystem.h"
+#include "Eagle/Components/ParticleSystemOld.h"
+#include "Eagle/Components/ParticleComponents/ParticleSystem.h"
 #include "Eagle/Core/Events/Event.h"
 
 namespace Egl {
@@ -37,11 +38,13 @@ namespace Egl {
 
 	struct SpriteRendererComponent {
 		glm::vec4 color = { 1, 1, 1, 1 };
-		Ref<Texture> texture = nullptr;
+		Ref<SubTexture> texture = nullptr;
 		float tilingFactor = 1;
 		
 		SpriteRendererComponent() = default;
-		SpriteRendererComponent(Ref<Texture> texture, const glm::vec4& color = {1, 1, 1, 1}, float tilingFactor = 1) : color(color), texture(texture), tilingFactor(tilingFactor) {  }
+		SpriteRendererComponent(Ref<Texture> texture, const glm::vec4& color = {1, 1, 1, 1}, float tilingFactor = 1) 
+			: color(color), tilingFactor(tilingFactor), texture(CreateRef<SubTexture>(texture, glm::vec2{ 0, 0 }, glm::vec2{ 1, 1 })) {}
+		SpriteRendererComponent(Ref<SubTexture> texture, const glm::vec4& color = {1, 1, 1, 1}, float tilingFactor = 1) : color(color), texture(texture), tilingFactor(tilingFactor) {}
 		SpriteRendererComponent(const glm::vec4& color) : color(color) {  }
 	};
 
@@ -54,15 +57,22 @@ namespace Egl {
 		CameraComponent(const glm::vec4& backgroundColor, bool fixedAspectRatio = false) : backgroundColor(backgroundColor), fixedAspectRatio(fixedAspectRatio) {}
 	};
 
-	struct ParticleSystemComponent {
-		ParticleSystem particleSystem;
+	struct ParticleSystemOldComponent {
+		ParticleSystemOld particleSystem;
 
 		float timeBetweenEmits = 0.1f;
 		float timeUntilEmit = 0;
 
-		ParticleSystemComponent() = default;
-		ParticleSystemComponent(ParticleSystemProps& props, uint32_t particleAmount = 10000, float timeBetweenEmits = 0.1f)
+		ParticleSystemOldComponent() = default;
+		ParticleSystemOldComponent(ParticleSystemProps& props, uint32_t particleAmount = 10000, float timeBetweenEmits = 0.1f)
 			: particleSystem(props, particleAmount), timeBetweenEmits(timeBetweenEmits) {}
+	};
+
+	struct ParticleSystemComponent {
+		ParticleSystem particleSystem;
+
+		ParticleSystemComponent(uint32_t maxParticlesAmount = 10000)
+			: particleSystem(maxParticlesAmount) {}
 	};
 
 	struct NativeScriptComponent {
