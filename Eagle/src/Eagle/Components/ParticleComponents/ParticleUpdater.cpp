@@ -1,9 +1,12 @@
 #include <EaglePCH.h>
+#include <glm/gtc/type_ptr.hpp>
+#include <Dependencies/ImGui.h>
+#include "Eagle/Core/UniqueID.h"
 #include "ParticleUpdater.h"
 #include "ParticleData.h"
 
 namespace Egl {
-    void ParticleUpdaterEuler::update(float deltaTime, ParticleData* p) {
+    void ParticleUpdaterEuler::Update(float deltaTime, ParticleData* p) {
         const glm::vec2 globalA { mGlobalAcceleration.x, mGlobalAcceleration.y };
         const uint32_t endId = p->mAliveCount;
 
@@ -17,7 +20,14 @@ namespace Egl {
         for (i = 0; i < endId; ++i)
             p->mPos[i] += p->mVel[i] * deltaTime;
     }
-	void ParticleUpdaterFloor::update(float deltaTime, ParticleData* p) {
+	void ParticleUpdaterEuler::OnImGuiRender() {
+		ImGui::Text("Euler updater");
+		ImGui::Indent();
+		ImGui::DragFloat2("Global Acceleration", glm::value_ptr(mGlobalAcceleration));
+		ImGui::Unindent();
+	}
+
+	void ParticleUpdaterFloor::Update(float deltaTime, ParticleData* p) {
 		const uint32_t endId = p->mAliveCount;
 		for (uint32_t i = 0; i < endId; ++i)
 		{
@@ -37,15 +47,22 @@ namespace Egl {
 		}
 
 	}
+	void ParticleUpdaterFloor::OnImGuiRender() {
+		ImGui::Text("Floor updater");
+		ImGui::Indent();
+		ImGui::DragFloat("FloorY", &mFloorY);
+		ImGui::DragFloat("Bounce amount", &mBounceFactor);
+		ImGui::Unindent();
+	}
 
-	void ParticleUpdaterAttractor::update(float deltaTime, ParticleData* p) {
+	void ParticleUpdaterAttractor::Update(float deltaTime, ParticleData* p) {
 		const uint32_t endId = p->mAliveCount;
-		const uint32_t countAttractors = (uint32_t)mAttractors.size();
+		const uint32_t attractorCount = (uint32_t)mAttractors.size();
 		glm::vec2 particleOffset;
 		float dist;
 		uint32_t a;
 		for (uint32_t i = 0; i < endId; ++i) {
-			for (a = 0; a < countAttractors; ++a) {
+			for (a = 0; a < attractorCount; ++a) {
 				particleOffset.x = mAttractors[a].x - p->mPos[i].x;
 				particleOffset.y = mAttractors[a].y - p->mPos[i].y;
 				dist = glm::dot(particleOffset, particleOffset);
@@ -57,14 +74,36 @@ namespace Egl {
 			}
 		}
 	}
+	void ParticleUpdaterAttractor::OnImGuiRender() {
+		ImGui::Text("Attractor updater");
 
-	void ParticleUpdaterBasicColor::update(float deltaTime, ParticleData* p) {
+		if (ImGui::Button("Add Attractor"))
+			mAttractors.push_back(glm::vec3(0));
+
+		for (auto& attractor : mAttractors) {
+			ImGui::PushID(UniqueID::GetUniqueFrameID());
+			ImGui::Text("Attractor");
+			ImGui::Indent();
+
+			ImGui::DragFloat2("Position", glm::value_ptr(attractor));
+			ImGui::DragFloat("Force", &attractor.z);
+
+			ImGui::Unindent();
+			ImGui::PopID();
+		}
+
+	}
+
+	void ParticleUpdaterBasicColor::Update(float deltaTime, ParticleData* p) {
 		const uint32_t endId = p->mAliveCount;
 		for (uint32_t i = 0; i < endId; ++i)
 			p->mCol[i] = glm::mix(p->mStartCol[i], p->mEndCol[i], p->mTime[i].x);
 	}
+	void ParticleUpdaterBasicColor::OnImGuiRender() {
+		ImGui::Text("Color updater");
+	}
 
-	void ParticleUpdaterPosColor::update(float deltaTime, ParticleData* p) {
+	void ParticleUpdaterPosColor::Update(float deltaTime, ParticleData* p) {
 		const uint32_t endId = p->mAliveCount;
 		float scaler, scaleg;
 		float diffr = mMaxPos.x - mMinPos.x;
@@ -79,8 +118,13 @@ namespace Egl {
 			p->mCol[i].a = glm::mix(p->mStartCol[i].a, p->mEndCol[i].a, p->mTime[i].x);
 		}
 	}
+	void ParticleUpdaterPosColor::OnImGuiRender() {
+		ImGui::Text("Position updater");
+		ImGui::DragFloat2("Min position", glm::value_ptr(mMinPos));
+		ImGui::DragFloat2("Max position", glm::value_ptr(mMaxPos));
+	}
 
-	void ParticleUpdaterVelColor::update(float deltaTime, ParticleData* p) {
+	void ParticleUpdaterVelColor::Update(float deltaTime, ParticleData* p) {
 		const uint32_t endId = p->mAliveCount;
 		float scaler, scaleg;
 		float diffr = mMaxVel.x - mMinVel.x;
@@ -95,8 +139,14 @@ namespace Egl {
 			p->mCol[i].a = glm::mix(p->mStartCol[i].a, p->mEndCol[i].a, p->mTime[i].x);
 		}
 	}
+	void ParticleUpdaterVelColor::OnImGuiRender() {
+		ImGui::Text("Velocity color updater");
+		ImGui::DragFloat2("Min velocity", glm::value_ptr(mMinVel));
+		ImGui::DragFloat2("Max velocity", glm::value_ptr(mMaxVel));
 
-	void ParticleUpdaterBasicTime::update(float deltaTime, ParticleData* p) {
+	}
+
+	void ParticleUpdaterBasicTime::Update(float deltaTime, ParticleData* p) {
 		uint32_t endId = p->mAliveCount;
 		if (endId == 0)
 			return;
@@ -109,10 +159,16 @@ namespace Egl {
 			}
 		}
 	}
+	void ParticleUpdaterBasicTime::OnImGuiRender() {
+		ImGui::Text("Time updater");
+	}
 
-	void ParticleUpdaterConstantSpeed::update(float deltaTime, ParticleData* p) {
+	void ParticleUpdaterConstantSpeed::Update(float deltaTime, ParticleData* p) {
 		const uint32_t endId = p->mAliveCount;
 		for (uint32_t i = 0; i < endId; ++i)
 			p->mPos[i] += p->mVel[i] * deltaTime;
+	}
+	void ParticleUpdaterConstantSpeed::OnImGuiRender() {
+		ImGui::Text("Constant speed updater");
 	}
 }

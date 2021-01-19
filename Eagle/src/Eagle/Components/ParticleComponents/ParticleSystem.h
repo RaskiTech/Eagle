@@ -15,6 +15,7 @@ namespace Egl {
 		virtual void Emit(float dt, ParticleData* p);
 
 		void addGenerator(Ref<ParticleGenerator> gen) { mGenerators.push_back(gen); }
+		auto& GetGenerators() const { return mGenerators; }
 
 		float mEmitsPerSecond{ 0.0 };
 	protected:
@@ -38,9 +39,11 @@ namespace Egl {
 
 		void addEmitter(Ref<ParticleEmitter> em) { mEmitters.push_back(em); }
 		void addUpdater(Ref<ParticleUpdater> up) { mUpdaters.push_back(up); }
+		auto& GetEmitters() const { return mEmitters; }
+		auto& GetUpdaters() const { return mUpdaters; }
 
 		ParticleData* finalData() { return &mParticles; }
-	protected:
+	private:
 		ParticleData mParticles;
 		// ParticleData mAliveParticles; ?
 

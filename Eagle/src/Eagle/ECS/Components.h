@@ -5,7 +5,6 @@
 #include "Eagle/ECS/Script.h"
 #include "Eagle/Components/SceneCamera.h"
 #include "Eagle/Core/DoesExist.h"
-#include "Eagle/Components/ParticleSystemOld.h"
 #include "Eagle/Components/ParticleComponents/ParticleSystem.h"
 #include "Eagle/Core/Events/Event.h"
 
@@ -55,17 +54,6 @@ namespace Egl {
 
 		CameraComponent() = default;
 		CameraComponent(const glm::vec4& backgroundColor, bool fixedAspectRatio = false) : backgroundColor(backgroundColor), fixedAspectRatio(fixedAspectRatio) {}
-	};
-
-	struct ParticleSystemOldComponent {
-		ParticleSystemOld particleSystem;
-
-		float timeBetweenEmits = 0.1f;
-		float timeUntilEmit = 0;
-
-		ParticleSystemOldComponent() = default;
-		ParticleSystemOldComponent(ParticleSystemProps& props, uint32_t particleAmount = 10000, float timeBetweenEmits = 0.1f)
-			: particleSystem(props, particleAmount), timeBetweenEmits(timeBetweenEmits) {}
 	};
 
 	struct ParticleSystemComponent {

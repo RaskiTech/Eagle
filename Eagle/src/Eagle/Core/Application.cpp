@@ -7,10 +7,13 @@
 #include "Eagle/Core/GameLayer.h"
 #include "Eagle/Debug/EditorLayer.h"
 #include "Eagle/Core/Time.h"
+#include "UniqueID.h"
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
 	std::mt19937 Random::sRandomizer;
+	uint32_t UniqueID::mCurrentFrameID;
+
 	Application* Application::mInstance = nullptr;
 
 #define EAGLE_BIND_EVENT_FUNC(x) std::bind(&Application::x, this, std::placeholders::_1)
@@ -70,6 +73,8 @@ namespace Egl {
 			float time = mWindow->GetTime();
 			Time::SetTime(time, time - mLastFrameTime);
 			mLastFrameTime = time;
+
+			UniqueID::ResetFrameIDs();
 
 			if (!mMinimized) {
 				{

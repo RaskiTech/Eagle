@@ -68,21 +68,6 @@ namespace Egl {
 			RenderCommand::Clear();
 
 			Renderer::BeginScene(camera.camera, transform.GetTransform());
-
-
-			{
-				/////// ParticleSystemOld ///////
-				auto group = mRegistry.group<ParticleSystemOldComponent>(entt::get<TransformComponent>);
-				for (auto entity : group) {
-					auto [particleSystem, transform] = group.get<ParticleSystemOldComponent, TransformComponent>(entity);
-					while (particleSystem.timeUntilEmit < 0) {
-						particleSystem.particleSystem.Emit(transform.position);
-						particleSystem.timeUntilEmit = particleSystem.timeBetweenEmits;
-					}
-					particleSystem.timeUntilEmit -= Time::GetFrameDelta();
-					particleSystem.particleSystem.OnRender(transform.position.z);
-				}
-			}
 			
 			{
 				/////// ParticleSystem ///////
@@ -92,10 +77,6 @@ namespace Egl {
 					float delta = Time::GetFrameDelta();
 					particleSystem.particleSystem.Update(delta);
 					particleSystem.particleSystem.Render();
-					//const uint32_t count = particleSystem.particleSystem.AliveParticlesCount();
-					//for (int i = 0; i < count; i++) {
-					//	//Renderer::DrawColorQuad(particleSystem.particleSystem.)
-					//}
 				}
 			}
 
@@ -111,18 +92,6 @@ namespace Egl {
 				}
 			}
 
-			//glm::mat4 transformMat = glm::translate(glm::mat4(1), { 0, 5, 0.9f })
-			//	* glm::scale(glm::mat4(1), { 6, 1, 1 });
-			//glm::vec2 texCoords[4] = { {0, 0}, {1, 0}, {1, 1}, {0, 1} };
-			//
-			//auto group = mRegistry.group<SpriteRendererComponent>(entt::get<TransformComponent>);
-			//auto entity = group[0];
-			//auto [spriteRenderer, transformA] = group.get<SpriteRendererComponent, TransformComponent>(entity);
-			//if (spriteRenderer.texture == nullptr)
-			//	Renderer::DrawColorQuad(transformA.GetTransform() + glm::mat4(1), spriteRenderer.color);
-			//else
-			//	Renderer::DrawTextureQuad(transformA.GetTransform()+glm::mat4(1), spriteRenderer.texture, spriteRenderer.tilingFactor, spriteRenderer.color);
-			//Renderer::DrawTextureQuad(transformMat, Texture::Create("Assets/Player.png", false), texCoords, 1, { 1, 1, 1, 1 });
 			Renderer::EndScene();
 		}
 	}

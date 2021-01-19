@@ -17,72 +17,74 @@ namespace Egl {
 		ParticleUpdater() = default;
 		virtual ~ParticleUpdater() = default;
 
-        virtual void update(float deltaTime, ParticleData* p) = 0;
+        virtual void Update(float deltaTime, ParticleData* p) = 0;
+		virtual void OnImGuiRender() = 0;
     };
 }
 
 
 namespace Egl {
-    class ParticleUpdaterEuler : public ParticleUpdater
-    {
+    class ParticleUpdaterEuler : public ParticleUpdater {
     public:
         glm::vec2 mGlobalAcceleration{ 0.0f };
-        virtual void update(float deltaTime, ParticleData* p) override;
+        virtual void Update(float deltaTime, ParticleData* p) override;
+		virtual void OnImGuiRender() override;
     };
-	class ParticleUpdaterConstantSpeed : public ParticleUpdater
-	{
+
+	class ParticleUpdaterConstantSpeed : public ParticleUpdater {
 	public:
-		virtual void update(float deltaTime, ParticleData* p) override;
+		virtual void Update(float deltaTime, ParticleData* p) override;
+		virtual void OnImGuiRender() override;
 	};
-	// collision with the floor :) todo: implement a collision model
-	class ParticleUpdaterFloor : public ParticleUpdater
-	{
+
+	class ParticleUpdaterFloor : public ParticleUpdater {
 	public:
 		float mFloorY{ 0.0f };
 		float mBounceFactor{ 0.5f };
 	public:
-		virtual void update(float deltaTime, ParticleData* p) override;
+		virtual void Update(float deltaTime, ParticleData* p) override;
+		virtual void OnImGuiRender() override;
 	};
 
-	class ParticleUpdaterAttractor : public ParticleUpdater
-	{
+	class ParticleUpdaterAttractor : public ParticleUpdater {
 	protected:
 		std::vector<glm::vec3> mAttractors; // .z is force
 	public:
-		virtual void update(float dt, ParticleData* p) override;
+		virtual void Update(float dt, ParticleData* p) override;
+		virtual void OnImGuiRender() override;
 
-		uint32_t collectionSize() const { return (uint32_t)mAttractors.size(); }
-		void add(const glm::vec3& attr) { mAttractors.push_back(attr); }
-		glm::vec3& get(uint32_t id) { return mAttractors[id]; }
+		uint32_t AttractorCount() const { return (uint32_t)mAttractors.size(); }
+		void AddAttractor(const glm::vec3& attr) { mAttractors.push_back(attr); }
+		glm::vec3& Get(uint32_t id) { return mAttractors[id]; }
 	};
 
-	class ParticleUpdaterBasicColor : public ParticleUpdater
-	{
+	class ParticleUpdaterBasicColor : public ParticleUpdater {
 	public:
-		virtual void update(float deltaTime, ParticleData* p) override;
+		virtual void Update(float deltaTime, ParticleData* p) override;
+		virtual void OnImGuiRender() override;
 	};
 
-	class ParticleUpdaterPosColor : public ParticleUpdater
-	{
+	class ParticleUpdaterPosColor : public ParticleUpdater {
 	public:
 		glm::vec2 mMinPos{ 0.0 };
 		glm::vec2 mMaxPos{ 1.0 };
 	public:
-		virtual void update(float deltaTime, ParticleData* p) override;
+		virtual void Update(float deltaTime, ParticleData* p) override;
+		virtual void OnImGuiRender() override;
 	};
 
-	class ParticleUpdaterVelColor : public ParticleUpdater
-	{
+	class ParticleUpdaterVelColor : public ParticleUpdater {
 	public:
 		glm::vec2 mMinVel{ 0.0 };
 		glm::vec2 mMaxVel{ 1.0 };
 	public:
-		virtual void update(float deltaTime, ParticleData* p) override;
+		virtual void Update(float deltaTime, ParticleData* p) override;
+		virtual void OnImGuiRender() override;
 	};
 
-	class ParticleUpdaterBasicTime : public ParticleUpdater
-	{
+	class ParticleUpdaterBasicTime : public ParticleUpdater {
 	public:
-		virtual void update(float deltaTime, ParticleData* p) override;
+		virtual void Update(float deltaTime, ParticleData* p) override;
+		virtual void OnImGuiRender() override;
 	};
 }

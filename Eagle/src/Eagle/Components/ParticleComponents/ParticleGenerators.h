@@ -5,6 +5,7 @@
 namespace Egl {
 	struct ParticleGenerator {
         virtual void generate(float deltaTime, ParticleData* p, uint32_t startId, uint32_t endId) = 0;
+		virtual void OnImGuiRender() = 0;
 	};
 
     struct ParticleBoxGenerator : public ParticleGenerator
@@ -15,18 +16,19 @@ namespace Egl {
         ParticleBoxGenerator() { }
 
         virtual void generate(float deltaTime, ParticleData* p, uint32_t startId, uint32_t endId) override;
+		virtual void OnImGuiRender() override;
     };
 	class RoundPosGen : public ParticleGenerator
 	{
 	public:
 		glm::vec2 mCenter { 0.0 };
-		float mRadX { 0.0 };
-		float mRadY { 0.0 };
+		glm::vec2 mRadius { 0.0 };
 	public:
 		RoundPosGen() { }
-		RoundPosGen(const glm::vec2& center, float radX, float radY) : mCenter(center), mRadX(radX), mRadY(radY) {}
+		RoundPosGen(const glm::vec2& center, const glm::vec2& radius) : mCenter(center), mRadius(radius) {}
 
 		virtual void generate(float deltaTime, ParticleData* p, uint32_t startId, uint32_t endId) override;
+		virtual void OnImGuiRender() override;
 	};
 
 	class BasicColorGen : public ParticleGenerator
@@ -40,6 +42,7 @@ namespace Egl {
 		BasicColorGen() { }
 
 		virtual void generate(float deltaTime, ParticleData* p, uint32_t startId, uint32_t endId) override;
+		virtual void OnImGuiRender() override;
 	};
 
 	class BasicVelGen : public ParticleGenerator
@@ -51,6 +54,7 @@ namespace Egl {
 		BasicVelGen() { }
 
 		virtual void generate(float deltaTime, ParticleData* p, uint32_t startId, uint32_t endId) override;
+		virtual void OnImGuiRender() override;
 	};
 
 	class BasicTimeGen : public ParticleGenerator
@@ -62,5 +66,6 @@ namespace Egl {
 		BasicTimeGen() { }
 
 		virtual void generate(float deltaTime, ParticleData* p, uint32_t startId, uint32_t endId) override;
+		virtual void OnImGuiRender() override;
 	};
 }

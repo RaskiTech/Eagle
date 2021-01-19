@@ -43,7 +43,7 @@ namespace Egl {
 			mParticles.mAcc[i] = glm::vec2(0.0f);
 
 		for (auto& up : mUpdaters)
-			up->update(dt, &mParticles);
+			up->Update(dt, &mParticles);
 	}
 	void ParticleSystem::Render() {
 		for (uint32_t i = 0; i < mParticles.mAliveCount; i++)
