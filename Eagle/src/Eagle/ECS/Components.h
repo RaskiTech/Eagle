@@ -57,7 +57,7 @@ namespace Egl {
 	};
 
 	struct ParticleSystemComponent {
-		ParticleSystem particleSystem;
+		Particles::ParticleSystem particleSystem;
 
 		ParticleSystemComponent(uint32_t maxParticlesAmount = 10000)
 			: particleSystem(maxParticlesAmount) {}

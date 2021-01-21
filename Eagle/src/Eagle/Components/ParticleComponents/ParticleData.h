@@ -3,27 +3,35 @@
 #include "Eagle/Core/Core.h"
 
 namespace Egl {
-    struct ParticleData {
-        // Idealy should use Scope<>, but entt doesn't like that
-        Ref<glm::vec2[]> mPos;
-        Ref<glm::vec4[]> mCol;
-        Ref<glm::vec4[]> mStartCol;
-        Ref<glm::vec4[]> mEndCol;
-        Ref<glm::vec2[]> mVel;
-        Ref<glm::vec2[]> mAcc;
-        Ref<glm::vec2[]> mTime; // x is time time from 0 to 1 and y is startTime
-        Ref<bool[]> mAlive;
+    namespace Particles {
 
-        uint32_t mCount = 0;
-        uint32_t mAliveCount = 0;
+        struct ParticleData {
+            // Idealy should use Scope<>, but entt doesn't like that
+            Ref<glm::vec2[]> position;
+            Ref<bool[]> alive;
 
-        ParticleData() {};
-        explicit ParticleData(uint32_t maxCount) { generate(maxCount); }
-        ~ParticleData() {}
+            Ref<glm::vec4[]> color;
+            Ref<glm::vec4[]> startCol;
+            Ref<glm::vec4[]> endCol;
 
-        void generate(uint32_t maxSize);
-        void kill(uint32_t id);
-        void wake(uint32_t id);
-        void swapData(uint32_t a, uint32_t b);
-    };
+            Ref<glm::vec2[]> startSize;
+            Ref<glm::vec2[]> size;
+
+            Ref<glm::vec2[]> velocity;
+            Ref<glm::vec2[]> acceleration;
+            Ref<glm::vec2[]> time; // x is time from 1 to 0 and y is startTime
+
+            uint32_t mCount = 0;
+            uint32_t mAliveCount = 0;
+
+            ParticleData() {};
+            explicit ParticleData(uint32_t maxCount) { Generate(maxCount); }
+            ~ParticleData() {}
+
+            void Generate(uint32_t maxSize);
+            void Kill(uint32_t id);
+            void Wake(uint32_t id);
+            void SwapData(uint32_t a, uint32_t b);
+        };
+    }
 }

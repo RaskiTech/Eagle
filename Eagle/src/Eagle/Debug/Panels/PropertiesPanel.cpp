@@ -1,10 +1,10 @@
 #include <EaglePCH.h>
 #include <Dependencies/ImGui.h>
+#include <Dependencies/ImGuiInternal.h>
 #include <glm/gtc/type_ptr.hpp>
 #include "PropertiesPanel.h"
 #include "Eagle/ECS/Components.h"
 #include "Eagle/Core/UniqueID.h"
-#include <imgui_internal.h>
 
 namespace Egl {
 	void PropertiesPanel::OnImGuiRender()
@@ -25,7 +25,7 @@ namespace Egl {
 			
 			auto& component = e.GetComponent<ComponentType>();
 
-			if (ImGui::TreeNodeEx((void*)UniqueID::GetUniqueFrameID(), flags, name.c_str())) {
+			if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), flags, name.c_str())) {
 				function(component);
 				ImGui::TreePop();
 			}
@@ -106,8 +106,6 @@ namespace Egl {
 		});
 
 		DrawComponent<ParticleSystemComponent>("Particle System", drawedEntity, [](ParticleSystemComponent& component) {
-			ImGuiIO& io = ImGui::GetIO();
-			auto& boldFont = io.Fonts->Fonts[0];
 			ImGui::Text("Max particles: %d", component.particleSystem.AllParticlesCount());
 			ImGui::Text("Alive particles: %d", component.particleSystem.AliveParticlesCount());
 			ImGui::Spacing();
@@ -115,15 +113,17 @@ namespace Egl {
 			const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth;
 			const ImGuiTreeNodeFlags flagsNotOpen = ImGuiTreeNodeFlags_SpanAvailWidth;
 
-			if (ImGui::TreeNodeEx((void*)UniqueID::GetUniqueFrameID(), flags, "Emitters")) {
+			if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), flags, "Emitters")) {
 				auto& emitters = component.particleSystem.GetEmitters();
 				for (auto& emitter : emitters) {
-
-					ImGui::DragFloat("Emitter emit amount", &emitter->mEmitsPerSecond, emitter->mEmitsPerSecond / 500);
+					float emitPerSec = emitter->GetEmistPerSecond();
+					ImGui::Text("Emitting amount per second");
+					if (ImGui::DragFloat("", &emitPerSec, emitPerSec / 500))
+						emitter->SetEmitsPerSecond(emitPerSec);
 					ImGui::Spacing();
-					auto& generators = emitter->GetGenerators();
+					auto& generators = emitter->GetSetters();
 
-					if (ImGui::TreeNodeEx((void*)UniqueID::GetUniqueFrameID(), flagsNotOpen, "Generators")) {
+					if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), flagsNotOpen, "Generators")) {
 						for(auto& generator : generators)
 							generator->OnImGuiRender();
 						ImGui::TreePop();
@@ -132,7 +132,7 @@ namespace Egl {
 
 				ImGui::TreePop();
 			}
-			if (ImGui::TreeNodeEx((void*)UniqueID::GetUniqueFrameID(), flags, "Updaters")) {
+			if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), flags, "Updaters")) {
 				auto& updaters = component.particleSystem.GetUpdaters();
 				for (auto& updater : updaters)
 					updater->OnImGuiRender();

@@ -2,41 +2,48 @@
 #include "ParticleData.h"
 
 namespace Egl {
-    void ParticleData::generate(uint32_t maxSize) {
-        mCount = maxSize;
-        mAliveCount = 0;
+    namespace Particles {
 
-        mPos.reset(new glm::vec2[maxSize]);
-        mCol.reset(new glm::vec4[maxSize]);
-        mStartCol.reset(new glm::vec4[maxSize]);
-        mEndCol.reset(new glm::vec4[maxSize]);
-        mVel.reset(new glm::vec2[maxSize]);
-        mAcc.reset(new glm::vec2[maxSize]);
-        mTime.reset(new glm::vec2[maxSize]);
-        mAlive.reset(new bool[maxSize]);
-    }
+        void ParticleData::Generate(uint32_t maxSize) {
+            mCount = maxSize;
+            mAliveCount = 0;
 
-    void ParticleData::kill(uint32_t id) {
-        mAlive[id] = false;
-        swapData(id, mAliveCount - 1);
-        mAliveCount--;
-    }
+            position.reset(new glm::vec2[maxSize]);
+            color.reset(new glm::vec4[maxSize]);
+            startCol.reset(new glm::vec4[maxSize]);
+            endCol.reset(new glm::vec4[maxSize]);
+            startSize.reset(new glm::vec2[maxSize]);
+            size.reset(new glm::vec2[maxSize]);
+            velocity.reset(new glm::vec2[maxSize]);
+            acceleration.reset(new glm::vec2[maxSize]);
+            time.reset(new glm::vec2[maxSize]);
+            alive.reset(new bool[maxSize]);
+        }
 
-    void ParticleData::wake(uint32_t id) {
-        mAlive[id] = true;
+        void ParticleData::Kill(uint32_t id) {
+            alive[id] = false;
+            SwapData(id, mAliveCount - 1);
+            mAliveCount--;
+        }
 
-        swapData(id, mAliveCount);
-        mAliveCount++;
-    }
+        void ParticleData::Wake(uint32_t id) {
+            alive[id] = true;
 
-    void ParticleData::swapData(uint32_t a, uint32_t b) {
-        std::swap(mPos[a], mPos[b]);
-        std::swap(mCol[a], mCol[b]);
-        std::swap(mStartCol[a], mStartCol[b]);
-        std::swap(mEndCol[a], mEndCol[b]);
-        std::swap(mVel[a], mVel[b]);
-        std::swap(mAcc[a], mAcc[b]);
-        std::swap(mTime[a], mTime[b]);
-        std::swap(mAlive[a], mAlive[b]);
+            SwapData(id, mAliveCount);
+            mAliveCount++;
+        }
+
+        void ParticleData::SwapData(uint32_t a, uint32_t b) {
+            std::swap(position[a], position[b]);
+            std::swap(color[a], color[b]);
+            std::swap(startCol[a], startCol[b]);
+            std::swap(endCol[a], endCol[b]);
+            std::swap(startSize[a], startSize[b]);
+            std::swap(size[a], size[b]);
+            std::swap(velocity[a], velocity[b]);
+            std::swap(acceleration[a], acceleration[b]);
+            std::swap(time[a], time[b]);
+            std::swap(alive[a], alive[b]);
+        }
     }
 }

@@ -11,80 +11,113 @@ BasicTimeUpdater - measures the time of life of a particle. It kills a particle 
 */
 
 namespace Egl {
-    class ParticleUpdater
-    {
-    public:
-		ParticleUpdater() = default;
-		virtual ~ParticleUpdater() = default;
+	namespace Particles {
+		struct ParticleUpdater {
+			ParticleUpdater() = default;
+			virtual ~ParticleUpdater() = default;
 
-        virtual void Update(float deltaTime, ParticleData* p) = 0;
-		virtual void OnImGuiRender() = 0;
-    };
+			virtual void Update(float deltaTime, ParticleData* data) = 0;
+			virtual void OnImGuiRender() = 0;
+		};
+	}
 }
 
 
 namespace Egl {
-    class ParticleUpdaterEuler : public ParticleUpdater {
-    public:
-        glm::vec2 mGlobalAcceleration{ 0.0f };
-        virtual void Update(float deltaTime, ParticleData* p) override;
-		virtual void OnImGuiRender() override;
-    };
+	namespace Particles {
 
-	class ParticleUpdaterConstantSpeed : public ParticleUpdater {
-	public:
-		virtual void Update(float deltaTime, ParticleData* p) override;
-		virtual void OnImGuiRender() override;
-	};
+		struct EulerUpdater : public ParticleUpdater {
+			EulerUpdater(const glm::vec2& globalAcceleration = { 0, 0 }) : globalAcceleration(globalAcceleration) {}
 
-	class ParticleUpdaterFloor : public ParticleUpdater {
-	public:
-		float mFloorY{ 0.0f };
-		float mBounceFactor{ 0.5f };
-	public:
-		virtual void Update(float deltaTime, ParticleData* p) override;
-		virtual void OnImGuiRender() override;
-	};
+			virtual void Update(float deltaTime, ParticleData* data) override;
+			virtual void OnImGuiRender() override;
 
-	class ParticleUpdaterAttractor : public ParticleUpdater {
-	protected:
-		std::vector<glm::vec3> mAttractors; // .z is force
-	public:
-		virtual void Update(float dt, ParticleData* p) override;
-		virtual void OnImGuiRender() override;
+			glm::vec2 globalAcceleration { 0.0f };
+		};
 
-		uint32_t AttractorCount() const { return (uint32_t)mAttractors.size(); }
-		void AddAttractor(const glm::vec3& attr) { mAttractors.push_back(attr); }
-		glm::vec3& Get(uint32_t id) { return mAttractors[id]; }
-	};
+		struct ConstSpeedUpdater : public ParticleUpdater {
+			ConstSpeedUpdater() = default;
 
-	class ParticleUpdaterBasicColor : public ParticleUpdater {
-	public:
-		virtual void Update(float deltaTime, ParticleData* p) override;
-		virtual void OnImGuiRender() override;
-	};
+			virtual void Update(float deltaTime, ParticleData* data) override;
+			virtual void OnImGuiRender() override;
+		};
 
-	class ParticleUpdaterPosColor : public ParticleUpdater {
-	public:
-		glm::vec2 mMinPos{ 0.0 };
-		glm::vec2 mMaxPos{ 1.0 };
-	public:
-		virtual void Update(float deltaTime, ParticleData* p) override;
-		virtual void OnImGuiRender() override;
-	};
+		struct FloorUpdater : public ParticleUpdater {
+			FloorUpdater() = default;
+			FloorUpdater(float floorY, float bounceFactor) : floorY(floorY), bounceFactor(bounceFactor) {}
 
-	class ParticleUpdaterVelColor : public ParticleUpdater {
-	public:
-		glm::vec2 mMinVel{ 0.0 };
-		glm::vec2 mMaxVel{ 1.0 };
-	public:
-		virtual void Update(float deltaTime, ParticleData* p) override;
-		virtual void OnImGuiRender() override;
-	};
+			virtual void Update(float deltaTime, ParticleData* data) override;
+			virtual void OnImGuiRender() override;
 
-	class ParticleUpdaterBasicTime : public ParticleUpdater {
-	public:
-		virtual void Update(float deltaTime, ParticleData* p) override;
-		virtual void OnImGuiRender() override;
-	};
+			float floorY{ 0 };
+			float bounceFactor{ 0.5f };
+		};
+
+		struct AttractorUpdater : public ParticleUpdater {
+			virtual void Update(float dt, ParticleData* data) override;
+			virtual void OnImGuiRender() override;
+
+			uint32_t AttractorCount() const { return (uint32_t)mAttractors.size(); }
+			void AddAttractor(const glm::vec3& attr) { mAttractors.push_back(attr); }
+			glm::vec3& Get(uint32_t id) { return mAttractors[id]; }
+		protected:
+			std::vector<glm::vec3> mAttractors; // .z is force
+		};
+
+		struct ColorUpdater : public ParticleUpdater {
+			ColorUpdater() = default;
+
+
+			virtual void Update(float deltaTime, ParticleData* data) override;
+			virtual void OnImGuiRender() override;
+		};
+
+		struct PosToColorUpdater : public ParticleUpdater {
+			PosToColorUpdater() = default;
+			PosToColorUpdater(const glm::vec2& minPos, const glm::vec2& maxPos) : minPos(minPos), maxPos(maxPos) {}
+
+			virtual void Update(float deltaTime, ParticleData* data) override;
+			virtual void OnImGuiRender() override;
+
+			glm::vec2 minPos { 0 };
+			glm::vec2 maxPos { 1 };
+		};
+
+		struct VelocityToColorUpdater : public ParticleUpdater {
+			VelocityToColorUpdater() = default;
+			VelocityToColorUpdater(const glm::vec2& minVel, const glm::vec2& maxVel) : minVel(minVel), maxVel(maxVel) {}
+
+			virtual void Update(float deltaTime, ParticleData* data) override;
+			virtual void OnImGuiRender() override;
+
+			glm::vec2 minVel { 0 };
+			glm::vec2 maxVel { 1 };
+		};
+
+		struct TimeUpdater : public ParticleUpdater {
+			TimeUpdater() = default;
+
+			virtual void Update(float deltaTime, ParticleData* data) override;
+			virtual void OnImGuiRender() override;
+		};
+
+		struct EndSizeUpdater : public ParticleUpdater {
+			EndSizeUpdater() = default;
+			EndSizeUpdater(const glm::vec2& endSize) : endSize(endSize) {}
+
+			virtual void Update(float deltaTime, ParticleData * data) override;
+			virtual void OnImGuiRender() override;
+
+			glm::vec2 endSize { 0 };
+		};
+		struct SizeChangeUpdater : public ParticleUpdater {
+			SizeChangeUpdater() = default;
+			SizeChangeUpdater(const glm::vec2 & sizeChangeInSecond) : sizeChangeInSecond(sizeChangeInSecond) {}
+
+			virtual void Update(float deltaTime, ParticleData * data) override;
+			virtual void OnImGuiRender() override;
+
+			glm::vec2 sizeChangeInSecond { 0 };
+		};
+	}
 }

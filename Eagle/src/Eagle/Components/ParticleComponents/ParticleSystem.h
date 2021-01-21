@@ -1,56 +1,58 @@
 #pragma once
 #include "Eagle/Core/Core.h"
 #include "ParticleData.h"
-#include "ParticleGenerators.h"
+#include "ParticleSetters.h"
 #include "ParticleUpdater.h"
 
 namespace Egl {
-	///// Particle Emitter /////
-    struct ParticleEmitter {
-	public:
-		ParticleEmitter() { }
-		virtual ~ParticleEmitter() { }
+	namespace Particles {
+		///// Particle Emitter /////
+		struct ParticleEmitter {
+		public:
+			ParticleEmitter(float emitsPerSecond = 0) : mEmitsPerSecond(emitsPerSecond) {}
+			virtual ~ParticleEmitter() = default;
 
-		// calls all the generators and at the end it activates (wakes) particle
-		virtual void Emit(float dt, ParticleData* p);
+			// calls all the generators and at the end it activates (wakes) particle
+			virtual void Emit(float dt, ParticleData* data);
 
-		void addGenerator(Ref<ParticleGenerator> gen) { mGenerators.push_back(gen); }
-		auto& GetGenerators() const { return mGenerators; }
+			void AddSetter(Ref<ParticleSetter> gen) { mSetters.push_back(gen); }
+			auto& GetSetters() const { return mSetters; }
 
-		float mEmitsPerSecond{ 0.0 };
-	protected:
-		std::vector<Ref<ParticleGenerator>> mGenerators;
-	private:
-		float mEmitTime{ 0 };
-    };
+			void SetEmitsPerSecond(float emitsPerSecond) { mEmitsPerSecond  = emitsPerSecond; }
+			float GetEmistPerSecond() const { return mEmitsPerSecond; }
 
-	///// Particle System /////
-    class ParticleSystem {
-	public:
-		explicit ParticleSystem(uint32_t maxCount = 10000);
-		~ParticleSystem() {}
+		private:
+			float mEmitsPerSecond = 0;
+			std::vector<Ref<ParticleSetter>> mSetters;
+			float mEmitTime{ 0 };
+		};
 
-		void Update(float deltaTime);
-		void Render();
-		void Reset();
+		///// Particle System /////
+		class ParticleSystem {
+		public:
+			explicit ParticleSystem(uint32_t maxCount = 10000);
+			~ParticleSystem() {}
 
-		uint32_t AllParticlesCount() const { return mParticles.mCount; }
-		uint32_t AliveParticlesCount() const { return mParticles.mAliveCount; }
+			void Update(float deltaTime);
+			void Render();
+			void Reset();
 
-		void addEmitter(Ref<ParticleEmitter> em) { mEmitters.push_back(em); }
-		void addUpdater(Ref<ParticleUpdater> up) { mUpdaters.push_back(up); }
-		auto& GetEmitters() const { return mEmitters; }
-		auto& GetUpdaters() const { return mUpdaters; }
+			uint32_t AllParticlesCount() const { return mParticles.mCount; }
+			uint32_t AliveParticlesCount() const { return mParticles.mAliveCount; }
 
-		ParticleData* finalData() { return &mParticles; }
-	private:
-		ParticleData mParticles;
-		// ParticleData mAliveParticles; ?
+			void AddEmitter(Ref<ParticleEmitter> em) { mEmitters.push_back(em); }
+			void AddUpdater(Ref<ParticleUpdater> up) { mUpdaters.push_back(up); }
+			auto& GetEmitters() const { return mEmitters; }
+			auto& GetUpdaters() const { return mUpdaters; }
 
-		uint32_t mCount;
+			const ParticleData* FinalData() { return &mParticles; }
+		private:
+			ParticleData mParticles;
 
-		std::vector<Ref<ParticleEmitter>> mEmitters;
-		std::vector<Ref<ParticleUpdater>> mUpdaters;
-    };
+			uint32_t mCount;
 
+			std::vector<Ref<ParticleEmitter>> mEmitters;
+			std::vector<Ref<ParticleUpdater>> mUpdaters;
+		};
+	}
 }
