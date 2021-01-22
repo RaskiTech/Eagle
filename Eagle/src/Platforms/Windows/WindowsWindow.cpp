@@ -1,7 +1,8 @@
 #include <EaglePCH.h>
-#include "WindowsWindow.h"
+#include "Eagle/Core/Input.h"
 #include "Eagle/Core/Events/ApplicationEvent.h"
 #include "Eagle/Core/Events/KeyEvent.h"
+#include "WindowsWindow.h"
 #include "Eagle/Core/Events/MouseEvent.h"
 #include "Platforms/OpenGL/OpenGLContext.h"
 
@@ -120,18 +121,6 @@ namespace Egl {
 			data.EventCallback(event);
 		});
 	}
-	
-	static void WindowSizeCallback(GLFWwindow* window, int width, int height) {
-		LOG("RESIZE ATTEMT");
-		//WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
-		//data.width = width;
-		//data.height = height;
-		//auto data = *(WindowData*)glfwGetWindowUserPointer(window);
-		//
-		//WindowResizeEvent event(width, height);
-		//data.EventCallback(event);
-		//mContext->SwapBuffers();
-	}
 
 	void WindowsWindow::Shutdown() {
 		EAGLE_PROFILE_FUNCTION();
@@ -145,6 +134,7 @@ namespace Egl {
 
 	void WindowsWindow::OnUpdate() {
 		EAGLE_PROFILE_FUNCTION();
+		Input::ResetInputState();
 
 		glfwPollEvents();
 		Render();

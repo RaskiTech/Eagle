@@ -36,10 +36,10 @@ namespace Egl {
 			ImGui::Text("Constant speed updater");
 		}
 
-		void FloorUpdater::Update(float deltaTime, ParticleData* data) {
+		void PerformantFloorUpdater::Update(float deltaTime, ParticleData* data) {
 			const uint32_t endId = data->mAliveCount;
 			for (uint32_t i = 0; i < endId; ++i) {
-				if (data->position[i].y < floorY) {
+				if (data->position[i].y < floorY && data->velocity[i].y < 0.01f) {
 					glm::vec2 force = data->acceleration[i];
 					float normalFactor = glm::dot(force, glm::vec2(0.0f, 1.0f));
 
@@ -54,7 +54,7 @@ namespace Egl {
 			}
 
 		}
-		void FloorUpdater::OnImGuiRender() {
+		void PerformantFloorUpdater::OnImGuiRender() {
 			ImGui::Text("Floor updater");
 			ImGui::Indent();
 			ImGui::DragFloat("FloorY", &floorY);

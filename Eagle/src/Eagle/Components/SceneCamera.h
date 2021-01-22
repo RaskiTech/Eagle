@@ -9,6 +9,7 @@ namespace Egl {
 
 
 		void SetBounds(float size, float nearClip = -1, float farClip = 1);
+		inline void SetSize(float size) { SetBounds(size); }
 		void SetAspectRatio(float aspectRatio);
 
 		float GetCameraSize() { return mSize; }

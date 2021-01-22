@@ -14,6 +14,6 @@ namespace Egl {
 
 	private:
 		Entity mEntity;
-		friend class Scene;
+		friend class GameLayer;
 	};
 }

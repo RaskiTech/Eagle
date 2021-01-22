@@ -4,6 +4,8 @@
 #include "Eagle/Core/Application.h"
 
 namespace Egl {
+	int Input::mMouseScrollX, Input::mMouseScrollY;
+
 	bool Input::IsKeyPressed(int keycode) {
 		auto window = Application::Get().GetWindow().NativeWindow();
 
@@ -21,5 +23,19 @@ namespace Egl {
 		double xPos, yPos;
 		glfwGetCursorPos((GLFWwindow*)window, &xPos, &yPos);
 		return std::pair<float, float>((float)xPos, (float)yPos);
+	}
+	void Input::OnEvent(Event& event) {
+		LOG("onEvent");
+		if (event.GetEventType() == MouseScrolledEvent::GetStaticType()) {
+			LOG("was same");
+			MouseScrolledEvent& scrollEvent = *(MouseScrolledEvent*)&event;
+			mMouseScrollX = scrollEvent.GetScrollXOffset();
+			mMouseScrollY = scrollEvent.GetScrollYOffset();
+
+			LOG("thwy are {0}, {1}", scrollEvent.GetScrollXOffset(), scrollEvent.GetScrollYOffset());
+		}
+	}
+	void Input::ResetInputState() {
+		mMouseScrollX = 0, mMouseScrollY = 0;
 	}
 }

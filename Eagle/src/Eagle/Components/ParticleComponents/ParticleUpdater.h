@@ -42,9 +42,9 @@ namespace Egl {
 			virtual void OnImGuiRender() override;
 		};
 
-		struct FloorUpdater : public ParticleUpdater {
-			FloorUpdater() = default;
-			FloorUpdater(float floorY, float bounceFactor) : floorY(floorY), bounceFactor(bounceFactor) {}
+		struct PerformantFloorUpdater : public ParticleUpdater {
+			PerformantFloorUpdater() = default;
+			PerformantFloorUpdater(float floorY, float bounceFactor) : floorY(floorY), bounceFactor(bounceFactor) {}
 
 			virtual void Update(float deltaTime, ParticleData* data) override;
 			virtual void OnImGuiRender() override;

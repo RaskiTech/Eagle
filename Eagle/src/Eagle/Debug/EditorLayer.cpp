@@ -72,21 +72,12 @@ namespace Egl {
 
 		ImGuiIO& io = ImGui::GetIO();
 		auto& boldFont = io.Fonts->Fonts[0];
-		ImGui::PushFont(boldFont);
-		ImGui::Text("Renderer");
-		ImGui::PopFont();
 
-		ImGui::Text("  Drawcalls: %d", Renderer::GetStats().GetDrawCallCount());
-		ImGui::Text("  Quads: %d", Renderer::GetStats().GetQuadCount());
-		ImGui::Text("  Vertices: %d", Renderer::GetStats().GetVertexCount());
-		ImGui::Text("  Indeces: %d", Renderer::GetStats().GetIndexCount());
-
-		ImGui::Spacing();
 		ImGui::PushFont(boldFont);
 		ImGui::Text("Framerate");
 		ImGui::PopFont();
 
-		// Change the renderer only sometimes
+		// Change the framerate stats only sometimes
 		static float time = -0.1f;
 		static uint32_t fps;
 		static float ms;
@@ -99,6 +90,17 @@ namespace Egl {
 		}
 		ImGui::Text("  FPS: %d", fps);
 		ImGui::Text("  Ms per frame: %.1f", ms);
+
+		ImGui::Spacing();
+		ImGui::PushFont(boldFont);
+		ImGui::Text("Renderer");
+		ImGui::PopFont();
+
+		ImGui::Text("  Drawcalls: %d", Renderer::GetStats().GetDrawCallCount());
+		ImGui::Text("  Quads: %d", Renderer::GetStats().GetQuadCount());
+		ImGui::Text("  Vertices: %d", Renderer::GetStats().GetVertexCount());
+		ImGui::Text("  Indeces: %d", Renderer::GetStats().GetIndexCount());
+
 
 		ImGui::End();
 

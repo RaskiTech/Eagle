@@ -46,15 +46,9 @@ namespace Egl {
 		// This function handles rendering the objects in this scene and updating components.
 
 		{
-			// TODO: Move this to somewhere in startup and also call the OnDestroy func
+			EAGLE_PROFILE_SCOPE("Application - Scripts: OnUpdate");
 			mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
-				//EAGLE_ASSERT(!scriptComponent.baseInstance, "The instance is null");
-				if (!scriptComponent.baseInstance) {
-					scriptComponent.InstantiateFunc();
-					scriptComponent.baseInstance->mEntity = Entity{ entity, this };
-					if (scriptComponent.OnCreateFunc)
-						scriptComponent.OnCreateFunc(scriptComponent.baseInstance);
-				}
+				EAGLE_ASSERT(scriptComponent.baseInstance != nullptr, "The instance is null");
 				if (scriptComponent.OnUpdateFunc)
 					scriptComponent.OnUpdateFunc(scriptComponent.baseInstance);
 			});
