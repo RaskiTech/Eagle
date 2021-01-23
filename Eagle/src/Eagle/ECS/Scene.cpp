@@ -1,47 +1,60 @@
 #include <EaglePCH.h>
 #include "Scene.h"
 #include "Components.h"
+#include "ComponentsInternal.h"
 #include "Eagle/Rendering/Renderer.h"
 #include "Eagle/Rendering/RenderCommand.h"
 #include "Entity.h"
 #include "Eagle/Core/Time.h"
 
 namespace Egl {
-	Scene::Scene()
-	{
+	Scene::Scene() {
 
 	}
 
-	Entity Scene::AddEntity(const std::string& name)
-	{
-		Entity entity = { mRegistry.create(), this };
+	Entity Scene::AddEntity(const std::string& name) {
+		entt::entity createdEntityID = mRegistry.create();
+		Entity entity = { createdEntityID, this };
 		entity.AddComponent<TransformComponent>();
 		entity.AddComponent<TagComponent>(name);
+		Relation& createdEntityRelation = entity.AddComponent<Relation>();
+
+		if (mFirstEntity == entt::null) {
+			mFirstEntity = createdEntityID;
+		}
+		else {
+			entt::entity lastEntity;
+			entt::entity tempEntity = mFirstEntity;
+			do {
+				lastEntity = tempEntity;
+				tempEntity = mRegistry.get<Relation>(tempEntity).nextSibling;
+			} while (tempEntity != entt::null);
+
+			mRegistry.get<Relation>(lastEntity).nextSibling = createdEntityID;
+			createdEntityRelation.previousSibling = lastEntity;
+		}
+
 		return entity;
 	}
 
-	void Scene::RemoveEntity(Entity& entity)
-	{
+	void Scene::RemoveEntity(Entity& entity) {
 		mRegistry.destroy((entt::entity)entity.GetID());
 	}
 
-	void Scene::SetPrimaryCamera(Entity& camera)
-	{
+	void Scene::SetPrimaryCamera(Entity& camera) {
 		EAGLE_ENG_ASSERT(camera.HasComponent<CameraComponent>(), "Tried to set a primary camera, but the entity doesn't have a camera");
 		EAGLE_ENG_ASSERT(camera.GetParentScene() == this, "Tried to set a primary camera, but the entity doesn't belong in this scene");
 		mPrimaryCamera = (entt::entity)camera.GetID();
 	}
 
-	const Entity Scene::GetPrimaryCamera()
-	{
+	const Entity Scene::GetPrimaryCamera() {
 		if (mPrimaryCamera != entt::null)
 			return Entity(mPrimaryCamera, this);
 		else
 			return Entity();
 	}
 
-	void Scene::OnUpdate()
-	{
+	void Scene::OnUpdate() {
 		EAGLE_PROFILE_FUNCTION();
 		// This function handles rendering the objects in this scene and updating components.
 
@@ -89,8 +102,7 @@ namespace Egl {
 			Renderer::EndScene();
 		}
 	}
-	void Scene::SetViewportAspectRatio(float aspectRatio)
-	{
+	void Scene::SetViewportAspectRatio(float aspectRatio) {
 		// Resize cameras that don't have a fixed aspect ratio
 		auto& view = mRegistry.view<CameraComponent>();
 		for (auto entity : view) {

@@ -30,7 +30,12 @@ namespace Egl {
 		friend class Application;
 	private:
 		entt::registry mRegistry;
-		entt::entity mPrimaryCamera{ entt::null };
+		entt::entity mPrimaryCamera = entt::null;
+
+		entt::entity mFirstEntity = entt::null;
+
+		// Entity.Find();
+		// 
 
 		friend class Entity;
 		friend class HierarchyPanel;

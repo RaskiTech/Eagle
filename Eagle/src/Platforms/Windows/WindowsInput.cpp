@@ -25,14 +25,10 @@ namespace Egl {
 		return std::pair<float, float>((float)xPos, (float)yPos);
 	}
 	void Input::OnEvent(Event& event) {
-		LOG("onEvent");
 		if (event.GetEventType() == MouseScrolledEvent::GetStaticType()) {
-			LOG("was same");
 			MouseScrolledEvent& scrollEvent = *(MouseScrolledEvent*)&event;
 			mMouseScrollX = scrollEvent.GetScrollXOffset();
 			mMouseScrollY = scrollEvent.GetScrollYOffset();
-
-			LOG("thwy are {0}, {1}", scrollEvent.GetScrollXOffset(), scrollEvent.GetScrollYOffset());
 		}
 	}
 	void Input::ResetInputState() {

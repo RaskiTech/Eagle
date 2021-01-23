@@ -9,6 +9,7 @@
 #include "Eagle/Core/Events/Event.h"
 
 namespace Egl {
+
 	struct TransformComponent {
 		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
 		float rotation = 0;
@@ -27,12 +28,12 @@ namespace Egl {
 		operator glm::mat4& () { return GetTransform(); }
 		operator const glm::mat4& () const { return GetTransform(); }
 	};
+
 	struct TagComponent {
 		std::string tag;
 
 		TagComponent() = default;
 		TagComponent(const std::string& tag) : tag(tag) {};
-
 	};
 
 	struct SpriteRendererComponent {
