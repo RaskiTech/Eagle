@@ -10,7 +10,7 @@ namespace Egl {
 		entt::entity previousSibling = entt::null;
 		entt::entity nextSibling = entt::null;
 
-		std::uint8_t childrenCount = 0;
+		std::uint8_t childCount = 0;
 		entt::entity firstChild = entt::null;
 	};
 }

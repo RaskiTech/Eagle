@@ -22,12 +22,12 @@ namespace Egl {
 		}
 		{
 			EAGLE_PROFILE_SCOPE("Application - Scripts: OnCreate");
-			LOG("starting");
 			mActiveScene->mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
 				scriptComponent.InstantiateFunc();
-				LOG("run it once {0}", !scriptComponent.baseInstance);
+
+				#pragma warning( suppress: 6011 )
 				scriptComponent.baseInstance->mEntity = Entity{ entity, mActiveScene.get() };
-				LOG("run it once {0}", !scriptComponent.baseInstance);
+
 				if (scriptComponent.OnCreateFunc)
 					scriptComponent.OnCreateFunc(scriptComponent.baseInstance);
 			});

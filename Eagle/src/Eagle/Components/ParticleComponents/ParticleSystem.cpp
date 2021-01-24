@@ -1,9 +1,9 @@
 #include <EaglePCH.h>
+#include <glm/glm.hpp>
 #include "ParticleSystem.h"
 #include "ParticleData.h"
 #include "ParticleSetters.h"
 #include "Eagle/Rendering/Renderer.h"
-
 
 namespace Egl {
 	namespace Particles {
@@ -23,8 +23,8 @@ namespace Egl {
 
 			for (uint32_t i = startId; i < endId; ++i)    // << wake loop
 				data->Wake(i);
-		}
 
+		}
 		ParticleSystem::ParticleSystem(uint32_t maxCount)
 			: mCount(maxCount)
 		{

@@ -6,60 +6,24 @@
 namespace Egl {
 	Entity::Entity(entt::entity entity, Scene* scene) : mEntity(entity), mScene(scene) {}
 
-	void Entity::SetParent(const Entity& parent) const {
-		parent.AddChild(*this);
-		//Relation& parentRelation = parent.GetComponent<Relation>();
-		//Relation& childRelation = mScene->mRegistry.get<Relation>(mEntity);
-		//RemoveFromHierarchy(childRelation);
-		//
-		//EAGLE_ENG_ASSERT(childRelation.parent == entt::null, "Entity already has a parent");
-		//
-		//if (parentRelation.childrenCount > 0) {
-		//	// Get the last child in the parent
-		//	entt::entity lastChild = parentRelation.firstChild;
-		//	uint8_t i = parentRelation.childrenCount - 1;
-		//	while (i > 0) {
-		//		EAGLE_ENG_ASSERT(lastChild != entt::null, "Entity doesn't have that many childs");
-		//		lastChild = mScene->mRegistry.get<Relation>(lastChild).nextSibling;
-		//		i--;
-		//	}
-		//	EAGLE_ENG_ASSERT(lastChild != entt::null, "Entity doesn't have that many childs");
-		//
-		//	mScene->mRegistry.get<Relation>(lastChild).nextSibling = mEntity;
-		//	childRelation.previousSibling = lastChild;
-		//}
-		//else {
-		//	parentRelation.firstChild = mEntity;
-		//}
-		//childRelation.parent = parent.mEntity;
-		//parentRelation.childrenCount++;
-	}
-
 	void Entity::AddChild(const Entity& child) const {
 		Relation& parentRelation = GetComponent<Relation>();
 		Relation& childRelation = mScene->mRegistry.get<Relation>(child.mEntity);
 		RemoveFromHierarchy(childRelation);
+
 		EAGLE_ENG_ASSERT(childRelation.parent == entt::null, "Entity already has a parent");
 
-		if (parentRelation.childrenCount > 0) {
-			// Get the last child in the parent
-			entt::entity lastChild = parentRelation.firstChild;
-			uint8_t i = parentRelation.childrenCount - 1;
-			while (i > 0) {
-				EAGLE_ENG_ASSERT(lastChild != entt::null, "Entity doesn't have that many childs");
-				lastChild = mScene->mRegistry.get<Relation>(lastChild).nextSibling;
-				i--;
-			}
-			EAGLE_ENG_ASSERT(lastChild != entt::null, "Entity doesn't have that many childs");
-
-			mScene->mRegistry.get<Relation>(lastChild).nextSibling = child.mEntity;
-			childRelation.previousSibling = lastChild;
+		if (parentRelation.childCount > 0) {
+			// Set the parentRelation.firstChild point to the new child and the new child point to the previous first child
+			childRelation.nextSibling = parentRelation.firstChild;
+			mScene->mRegistry.get<Relation>(parentRelation.firstChild).previousSibling = child.mEntity;
+			parentRelation.firstChild = child.mEntity;
 		}
 		else {
 			parentRelation.firstChild = child.mEntity;
 		}
 		childRelation.parent = mEntity;
-		parentRelation.childrenCount++;
+		parentRelation.childCount++;
 	}
 	
 	void Entity::RemoveFromHierarchy(Relation& entityRelation) const {
@@ -67,6 +31,8 @@ namespace Egl {
 			mScene->mRegistry.get<Relation>(entityRelation.nextSibling).previousSibling = entityRelation.previousSibling;
 		if (entityRelation.previousSibling != entt::null)
 			mScene->mRegistry.get<Relation>(entityRelation.previousSibling).nextSibling = entityRelation.nextSibling;
+		entityRelation.nextSibling = entt::null;
+		entityRelation.previousSibling = entt::null;
 	}
 
 	Entity Entity::GetParent() const {

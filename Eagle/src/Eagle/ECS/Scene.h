@@ -12,6 +12,8 @@ namespace Egl {
 		Scene();
 		virtual ~Scene() = default;
 
+		template<typename... EntityParam>
+		Entity AddEntity(const std::string& name, EntityParam...childs) { auto e = AddEntity(name); AddEntityChildsImp(e, childs...); return e; }
 		Entity AddEntity(const std::string& name = "New Entity");
 		void RemoveEntity(Entity& entity);
 		void SetPrimaryCamera(Entity& camera);
@@ -21,7 +23,10 @@ namespace Egl {
 		virtual void SceneBegin() = 0;
 		virtual void SceneEnd() = 0;
 
+
+
 	private:
+
 		void SetViewportAspectRatio(float aspectRatio);
 		void OnUpdate();
 
@@ -34,10 +39,15 @@ namespace Egl {
 
 		entt::entity mFirstEntity = entt::null;
 
-		// Entity.Find();
-		// 
-
 		friend class Entity;
 		friend class HierarchyPanel;
+
+	private:
+		inline void AddEntityChildsImp(Entity& createdEntity) {}
+		template<typename AddEntityChildParam, typename... AddEntityChildParamRest>
+		inline void AddEntityChildsImp(Entity& createdEntity, AddEntityChildParam first, AddEntityChildParamRest&&...rest) {
+			createdEntity.AddChild(first);
+			AddEntityChildsImp(createdEntity, rest...);
+		}
 	};
 }

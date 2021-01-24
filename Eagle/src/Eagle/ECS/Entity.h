@@ -6,6 +6,8 @@
 namespace Egl {
 	bool operator == (const Entity& e1, const Entity& e2);
 	struct Relation;
+	struct TagComponent;
+	struct TransformComponent;
 
 	class Entity {
 	public:
@@ -27,14 +29,13 @@ namespace Egl {
 		}
 		template<typename T> void RemoveComponent() const {
 			EAGLE_ENG_ASSERT(HasComponent<T>(), "Entity doesn't have the component");
-			EAGLE_ENG_ASSERT(constexpr T == TransformComponent, "Tried to remove TransformComponent");
-			EAGLE_ENG_ASSERT(constexpr T == Relation, "Tried to remove RelationComponent");
-			EAGLE_ENG_ASSERT(constexpr T == TagComponent, "Tried to remove TagComponent");
-
-			return mScene->mRegistry.remove<T>(entity);
+			return mScene->mRegistry.remove<T>(mEntity);
 		}
+		template<> void RemoveComponent<TransformComponent>() const = delete;
+		template<> void RemoveComponent<TagComponent>() const = delete;
+		template<> void RemoveComponent<Relation>() const = delete;
 
-		void SetParent(const Entity& parent) const;
+		void SetParent(const Entity& parent) const { parent.AddChild(*this); }
 		void AddChild(const Entity& child) const;
 		Entity GetParent() const;
 		Entity GetChild(uint8_t childIndex) const;

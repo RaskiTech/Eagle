@@ -23,15 +23,9 @@ namespace Egl {
 			mFirstEntity = createdEntityID;
 		}
 		else {
-			entt::entity lastEntity;
-			entt::entity tempEntity = mFirstEntity;
-			do {
-				lastEntity = tempEntity;
-				tempEntity = mRegistry.get<Relation>(tempEntity).nextSibling;
-			} while (tempEntity != entt::null);
-
-			mRegistry.get<Relation>(lastEntity).nextSibling = createdEntityID;
-			createdEntityRelation.previousSibling = lastEntity;
+			mRegistry.get<Relation>(mFirstEntity).previousSibling = createdEntityID;
+			createdEntityRelation.nextSibling = mFirstEntity;
+			mFirstEntity = createdEntityID;
 		}
 
 		return entity;

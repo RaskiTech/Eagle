@@ -8,9 +8,9 @@ class ExampleScene : public Scene {
 		Entity particle = AddEntity("ParticleSystem");
 		auto& particleSystem = particle.AddComponent<ParticleSystemComponent>(100000).particleSystem; // <-- The max amount of particles at a time
 
-		Ref<Particles::ParticleEmitter> emitter = CreateRef<Particles::ParticleEmitter>(4000.0f); // <-- The amount of particles spawned per second
+		Ref<Particles::ParticleEmitter> emitter = CreateRef<Particles::ParticleEmitter>(300.0f); // <-- The amount of particles spawned per second
 
-		emitter->AddSetter(CreateRef<Particles::BoxPosSetter>(glm::vec2{ 0, 0 }, glm::vec2{ 0.15f, 0 }));
+		emitter->AddSetter(CreateRef<Particles::BoxPosSetter>(glm::vec2{ 1, 0.25f }, glm::vec2{ 0.15f, 0 }));
 		auto colorSetter = CreateRef<Particles::ColorSetter>();
 		colorSetter->maxStartColor = { 0, 0.75f, 1, 1 };
 		colorSetter->minStartColor = { 0.75f, 0, 1, 1 };
@@ -53,8 +53,12 @@ class ExampleScene : public Scene {
 		Entity fireHydrant = AddEntity("Fire hydrant");
 		fireHydrant.AddComponent<SpriteRendererComponent>(Texture::Create("Assets/FireHydrant.png", false));
 		fireHydrant.GetComponent<TransformComponent>().scale = { 1, 2 };
-		fireHydrant.GetComponent<TransformComponent>().position = { 0, -1, 0 };
-		fireHydrant.AddChild(particleSystem);
+		fireHydrant.GetComponent<TransformComponent>().position = { 1, -0.75f, 0 };
+
+		Entity pedistal = AddEntity("Firehydrant stucture", fireHydrant, particleSystem);
+		pedistal.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.5f, 0.52f, 0.62f, 1 });
+		pedistal.GetComponent<TransformComponent>().scale = { 2, 0.25f };
+		pedistal.GetComponent<TransformComponent>().position = { 1, -1.875f, 0 };
 
 		// Camera controller
 		class CameraController : public Script {

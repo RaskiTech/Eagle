@@ -61,7 +61,7 @@ namespace Egl {
 			
 			while (current != entt::null) {
 				DrawEntityNode(current);
-				current = mScene->mRegistry.get<Relation>(e).nextSibling;
+				current = mScene->mRegistry.get<Relation>(current).nextSibling;
 			}
 
 			ImGui::TreePop();
