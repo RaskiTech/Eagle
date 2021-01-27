@@ -2,7 +2,7 @@
 
 ![Eagle](Eagle/Assets/EagleLogo.png?raw=true "Eagle")
 
-Eagle is a 2D graphics rendering engine that is currently only awailable for windows. Eagle can be used to make any sorts of desktop applications or games. Currently Eagle uses OpenGL to rended it's graphics.
+Eagle is a 2D graphics rendering engine that is currently only available for windows. Eagle can be used to make any sorts of desktop applications or games. Currently Eagle uses OpenGL to rended it's graphics.
 
 The goal for the Eagle engine is to have most of the things done through the code, while being easy and fast to deal with. You should easily be able to make a static scene or an interactive application. Eagle engine should be easy and fast to use. 
 
@@ -17,8 +17,6 @@ After the install go into the folder and inside Startup-folder. Then double clic
 - An interactive UI library
 - Several editor tools
 - Serialization
-- Collision detection
-- Physics
 - Support for Mac, Linux, Android and iOS
 - Support for other rendering APIs (DirectX, Vulkan)
 - Python for a scripting language
