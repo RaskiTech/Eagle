@@ -23,8 +23,6 @@ namespace Egl {
 		virtual void SceneBegin() = 0;
 		virtual void SceneEnd() = 0;
 
-
-
 	private:
 
 		void SetViewportAspectRatio(float aspectRatio);
@@ -41,6 +39,7 @@ namespace Egl {
 
 		friend class Entity;
 		friend class HierarchyPanel;
+		friend struct TransformComponent;
 
 	private:
 		inline void AddEntityChildsImp(Entity& createdEntity) {}

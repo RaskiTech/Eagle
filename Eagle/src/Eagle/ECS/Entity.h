@@ -40,13 +40,20 @@ namespace Egl {
 		Entity GetParent() const;
 		Entity GetChild(uint8_t childIndex) const;
 
+		template<typename Func>
+		void ForEachChild(Func function) const {
+			entt::entity entity = GetComponent<Relation>().firstChild;
+			while (entity != entt::null) {
+				function({ entity, mScene });
+				entity = mScene->mRegistry.get<Relation>(entity).nextSibling;
+			}
+		}
+
 		uint32_t GetID() const { return (uint32_t)mEntity; }
 		Scene* GetParentScene() const { return mScene; }
 
 		operator bool() const { return mEntity != entt::null; }
 	private:
-		void RemoveFromHierarchy(Relation& entityRelation) const;
-
 		entt::entity mEntity = entt::null;
 		Scene* mScene = nullptr;
 	};

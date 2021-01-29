@@ -15,7 +15,7 @@ namespace Egl {
 	Entity Scene::AddEntity(const std::string& name) {
 		entt::entity createdEntityID = mRegistry.create();
 		Entity entity = { createdEntityID, this };
-		entity.AddComponent<TransformComponent>();
+		entity.AddComponent<TransformComponent>(entity, glm::vec3{0, 0, 0});
 		entity.AddComponent<TagComponent>(name);
 		Relation& createdEntityRelation = entity.AddComponent<Relation>();
 

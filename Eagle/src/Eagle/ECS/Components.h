@@ -7,26 +7,57 @@
 #include "Eagle/Core/DoesExist.h"
 #include "Eagle/Components/ParticleComponents/ParticleSystem.h"
 #include "Eagle/Core/Events/Event.h"
+#include "Eagle/ECS/Entity.h"
 
 namespace Egl {
 
 	struct TransformComponent {
-		glm::vec3 position = { 0.0f, 0.0f, 0.0f };
-		float rotation = 0;
-		glm::vec2 scale = { 1.0f, 1.0f };
+		// Local position is always up to date. If the global position is needed, it should be checked if the position if up to date.
+		void SetPosition(const glm::vec3& position);
+		void SetRotation(float rotation);
+		void SetScale(const glm::vec2& scale);
 
-		TransformComponent() = default;
+		void SetLocalPosition(const glm::vec3& position);
+		void SetLocalRotation(float rotation);
+		void SetLocalScale(const glm::vec2& scale);
+
+		const glm::vec3& GetPosition();
+		float GetRotation();
+		const glm::vec2& GetScale();
+
+		const glm::vec3& GetLocalPosition() const { return localPosition; }
+		float GetLocalRotation() const { return localRotation; }
+		const glm::vec2& GetLocalScale() const { return localScale; }
+
 		TransformComponent(const TransformComponent&) = default;
-		TransformComponent(const glm::vec3& position) : position(position) {}
+		TransformComponent(Entity entity, const glm::vec3& position) : localPosition(position), thisEntity(entity) {}
 
-		glm::mat4 GetTransform() const {
-			return rotation == 0 ?
-				glm::translate(glm::mat4(1), position) *                                                    glm::scale(glm::mat4(1), glm::vec3(scale, 1)):
-				glm::translate(glm::mat4(1), position) * glm::rotate(glm::mat4(1), rotation, { 0, 0, 1 }) * glm::scale(glm::mat4(1), glm::vec3(scale, 1));
+		glm::mat4 GetTransform() {
+			return GetRotation() == 0 ?
+				glm::translate(glm::mat4(1), GetPosition()) *                                                         glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1)):
+				glm::translate(glm::mat4(1), GetPosition()) * glm::rotate(glm::mat4(1), GetRotation(), { 0, 0, 1 }) * glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1));
 		}
 
 		operator glm::mat4& () { return GetTransform(); }
-		operator const glm::mat4& () const { return GetTransform(); }
+		// operator const glm::mat4& () const { return GetTransform(); }
+
+	private:
+		Entity thisEntity;
+
+		glm::vec3 localPosition = { 0.0f, 0.0f, 0.0f };
+		float localRotation = 0;
+		glm::vec2 localScale = { 1.0f, 1.0f };
+
+		glm::vec3 worldPosition = { 0.0f, 0.0f, 0.0f };
+		float worldRotation = 0;
+		glm::vec2 worldScale = { 1.0f, 1.0f };
+
+		bool worldPosRight = false;
+		bool worldRotRight = false;
+		bool worldScaleRight = false;
+		void SetWorldPosFalse(Relation& thisRel);
+		void SetWorldRotFalse(Relation& thisRel);
+		void SetWorldScaleFalse(Relation& thisRel);
 	};
 
 	struct TagComponent {

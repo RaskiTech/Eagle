@@ -59,7 +59,12 @@ namespace Egl {
 			ImGui::NextColumn();
 
 			ImGui::PushItemWidth(ImGui::CalcItemWidth()*1.5f);
-			ImGui::DragFloat3("##Transform", glm::value_ptr(component.position), 0.1f, 0, 0, "%.2f");
+			auto pos = component.GetLocalPosition();
+			LOG("Position before is {0} {1} {2}", pos.x, pos.y, pos.x);
+			if (ImGui::DragFloat3("##Transform", glm::value_ptr(pos), 0.1f, 0, 0, "%.2f")) {
+				component.SetLocalPosition(pos);
+				LOG("Position changed to {0} {1} {2}", pos.x, pos.y, pos.x);
+			}
 			ImGui::PopItemWidth();
 
 			ImGui::Columns(1);
@@ -70,7 +75,9 @@ namespace Egl {
 			ImGui::NextColumn();
 
 			ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-			ImGui::DragFloat("##Rotation", &component.rotation, 0.1f, 0, 0, "%.2f");
+			float rotation = component.GetLocalRotation();
+			if (ImGui::DragFloat("##Rotation", &rotation, 0.1f, 0, 0, "%.2f"))
+				component.SetLocalRotation(rotation);
 			ImGui::PopItemWidth();
 
 			ImGui::Columns(1);
@@ -81,7 +88,9 @@ namespace Egl {
 			ImGui::NextColumn();
 
 			ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-			ImGui::DragFloat2("##Scale", glm::value_ptr(component.scale), 0.1f, 0, 0, "%.2f");
+			auto scale = component.GetLocalScale();
+			if (ImGui::DragFloat2("##Scale", glm::value_ptr(scale), 0.1f, 0, 0, "%.2f"))
+				component.SetScale(scale);
 			ImGui::PopItemWidth();
 
 			ImGui::Columns(1);
