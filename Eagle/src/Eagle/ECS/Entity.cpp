@@ -10,6 +10,10 @@ namespace Egl {
 
 		Relation& parentRelation = GetComponent<Relation>();
 		Relation& childRelation = mScene->mRegistry.get<Relation>(child.mEntity);
+		auto& childTransform = child.GetComponent<TransformComponent>();
+		childTransform.worldPosRight = false;
+		childTransform.worldRotRight = false;
+		childTransform.worldScaleRight = false;
 
 		// Remove the child from the hierarchy
 		if (mScene->mFirstEntity == child.mEntity)

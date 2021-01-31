@@ -52,8 +52,8 @@ class ExampleScene : public Scene {
 
 		Entity fireHydrant = AddEntity("Fire hydrant");
 		fireHydrant.AddComponent<SpriteRendererComponent>(Texture::Create("Assets/FireHydrant.png", false));
-		fireHydrant.GetComponent<TransformComponent>().SetScale({ 1, 2 });
-		fireHydrant.GetComponent<TransformComponent>().SetLocalPosition({ 0, 1.1f, 0 });
+		fireHydrant.GetComponent<TransformComponent>().SetScale({ 0.5f, 8 });
+		fireHydrant.GetComponent<TransformComponent>().SetLocalPosition({ 0, 4.5f, 0 });
 
 		Entity pedistal = AddEntity("Firehydrant stucture", fireHydrant, particleSystem);
 		pedistal.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.5f, 0.52f, 0.62f, 1 });
@@ -70,12 +70,12 @@ class ExampleScene : public Scene {
 				auto pos = transform.GetPosition();
 				float speed = 5;
 
-				if (Input::IsKeyPressed(EGL_KEY_A)) transform.SetPosition({pos.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f,0,0});
-				if (Input::IsKeyPressed(EGL_KEY_D)) transform.SetPosition({pos.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f,0,0});
-				if (Input::IsKeyPressed(EGL_KEY_S)) transform.SetPosition({0,pos.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f,0});
-				if (Input::IsKeyPressed(EGL_KEY_W)) transform.SetPosition({0,pos.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f,0});
+				if (Input::IsKeyPressed(EGL_KEY_A)) transform.SetPosition({pos.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f,pos.y,0});
+				if (Input::IsKeyPressed(EGL_KEY_D)) transform.SetPosition({pos.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f,pos.y,0});
+				if (Input::IsKeyPressed(EGL_KEY_S)) transform.SetPosition({pos.x,pos.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f,0});
+				if (Input::IsKeyPressed(EGL_KEY_W)) transform.SetPosition({pos.x,pos.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f,0});
 				int scroll = Input::MouseScrolledY();
-				if (scroll < 0 || zoomSize > 1) camera.SetSize(zoomSize+(-scroll * Time::GetFrameDelta() * 100));
+				if (scroll < 0 || zoomSize > 1) camera.SetSize(zoomSize - scroll);
 			}
 		};
 		camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
