@@ -76,7 +76,7 @@ namespace Egl {
 				for (auto entity : group) {
 					auto [particleSystem, transform] = group.get<ParticleSystemComponent, TransformComponent>(entity);
 					float delta = Time::GetFrameDelta();
-					particleSystem.particleSystem.Update(delta);
+					particleSystem.particleSystem.Update(delta, transform);
 					particleSystem.particleSystem.Render();
 				}
 			}

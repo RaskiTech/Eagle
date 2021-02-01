@@ -57,9 +57,9 @@ namespace Egl {
 		bool worldScaleRight = false;
 		friend class Entity;
 
-		void SetWorldPosFlagsFalse(Relation& thisRel);
-		void SetWorldRotFlagsFalse(Relation& thisRel);
-		void SetWorldScaleFlagsFalse(Relation& thisRel);
+		void SetWorldPosFlagsFalse(const Relation& thisRel);
+		void SetWorldRotFlagsFalse(const Relation& thisRel);
+		void SetWorldScaleFlagsFalse(const Relation& thisRel);
 	};
 
 	struct TagComponent {

@@ -1,30 +1,28 @@
-#include "EaglePCH.h"
+#include <EaglePCH.h>
+#include <glm/gtx/rotate_vector.hpp>
 #include "Components.h"
 #include "ComponentsInternal.h"
 #include "Entity.h"
 
 namespace Egl {
-	// TODO: Rewrite GetPosition(). This is just a temp solution and needs to be changed to something like this:
-	// https://github.com/skypjack/entt/issues/643
-
 	void TransformComponent::SetLocalPosition(const glm::vec3& position) {
 		localPosition = position;
-		SetWorldPosFlagsFalse(thisEntity.GetComponent<Relation>());
+		const Relation& rel = thisEntity.GetComponent<Relation>();
+		SetWorldPosFlagsFalse(rel);
 	}
 	void TransformComponent::SetLocalRotation(float rotation) {
 		localRotation = rotation;
-		Relation& rel = thisEntity.GetComponent<Relation>();
+		const Relation& rel = thisEntity.GetComponent<Relation>();
 		SetWorldRotFlagsFalse(rel);
 		SetWorldPosFlagsFalse(rel);
 	}
 	void TransformComponent::SetLocalScale(const glm::vec2& scale) {
 		localScale = scale;
-		Relation& rel = thisEntity.GetComponent<Relation>();
+		const Relation& rel = thisEntity.GetComponent<Relation>();
 		SetWorldScaleFlagsFalse(rel);
 		SetWorldPosFlagsFalse(rel);
 	}
-	// Private function
-	void TransformComponent::SetWorldPosFlagsFalse(Relation& thisRel) {
+	void TransformComponent::SetWorldPosFlagsFalse(const Relation& thisRel) {
 		entt::entity child = thisRel.firstChild;
 		worldPosRight = false;
 		while (child != entt::null) {
@@ -34,7 +32,7 @@ namespace Egl {
 			child = childRel.nextSibling;
 		}
 	}
-	void TransformComponent::SetWorldRotFlagsFalse(Relation& thisRel) {
+	void TransformComponent::SetWorldRotFlagsFalse(const Relation& thisRel) {
 		entt::entity child = thisRel.firstChild;
 		worldRotRight = false;
 		while (child != entt::null) {
@@ -44,7 +42,7 @@ namespace Egl {
 			child = childRel.nextSibling;
 		}
 	}
-	void TransformComponent::SetWorldScaleFlagsFalse(Relation& thisRel) {
+	void TransformComponent::SetWorldScaleFlagsFalse(const Relation& thisRel) {
 		entt::entity child = thisRel.firstChild;
 		worldScaleRight = false;
 		while (child != entt::null) {
@@ -59,12 +57,11 @@ namespace Egl {
 		if (worldPosRight)
 			return worldPosition;
 
-		entt::entity parent = thisEntity.GetComponent<Relation>().parent;
+		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		worldPosRight = true;
 		if (parent != entt::null) {
 			TransformComponent& parentTransform = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent);
-			glm::vec3 parent_relative_local = { parentTransform.GetScale().x * localPosition.x * glm::cos(parentTransform.GetRotation()) - parentTransform.GetScale().y * localPosition.y * glm::sin(parentTransform.GetRotation()),
-				parentTransform.GetScale().x * localPosition.x * glm::sin(parentTransform.GetRotation()) + parentTransform.GetScale().y * localPosition.y * glm::cos(parentTransform.GetRotation()), localPosition.z };
+			const glm::vec3 parent_relative_local = glm::rotateZ(glm::vec3{ parentTransform.GetScale().x, parentTransform.GetScale().y, 0 } * localPosition, parentTransform.GetRotation());
 			worldPosition = parentTransform.GetPosition() + parent_relative_local;
 		}
 		else
@@ -76,7 +73,7 @@ namespace Egl {
 		if (worldRotRight)
 			return worldRotation;
 
-		entt::entity parent = thisEntity.GetComponent<Relation>().parent;
+		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		worldRotRight = true;
 		if (parent != entt::null)
 			worldRotation = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetRotation() + localRotation;
@@ -90,7 +87,7 @@ namespace Egl {
 		if (worldScaleRight)
 			return worldScale;
 
-		entt::entity parent = thisEntity.GetComponent<Relation>().parent;
+		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		worldScaleRight = true;
 		if (parent != entt::null)
 			worldScale = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetScale() * localScale;
@@ -101,7 +98,7 @@ namespace Egl {
 	}
 
 	void TransformComponent::SetPosition(const glm::vec3& position) {
-		entt::entity parent = thisEntity.GetComponent<Relation>().parent;
+		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		if (parent != entt::null) {
 			const glm::vec3& parentWorldPosition = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetPosition();
 			localPosition = position - parentWorldPosition;
@@ -112,9 +109,9 @@ namespace Egl {
 		worldPosRight = true;
 	}
 	void TransformComponent::SetRotation(float rotation) {
-		entt::entity parent = thisEntity.GetComponent<Relation>().parent;
+		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		if (parent != entt::null) {
-			float parentWorldRotation = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetRotation();
+			const float parentWorldRotation = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetRotation();
 			localRotation = rotation - parentWorldRotation;
 		}
 		else localRotation = rotation;

@@ -4,13 +4,13 @@
 #include "ParticleData.h"
 #include "ParticleSetters.h"
 #include "Eagle/Rendering/Renderer.h"
+#include "Eagle/ECS/Components.h"
 
 namespace Egl {
 	namespace Particles {
 
 		///// Particle Emitter /////
-		void ParticleEmitter::Emit(float deltaTime, ParticleData* data)
-		{
+		void ParticleEmitter::Emit(float deltaTime, ParticleData* data, TransformComponent& tr) {
 			mEmitTime += deltaTime * mEmitsPerSecond;
 			const uint32_t maxNewParticles = (uint32_t)mEmitTime;
 			mEmitTime -= maxNewParticles;
@@ -19,7 +19,7 @@ namespace Egl {
 			const uint32_t endId = std::min(startId + maxNewParticles, data->mCount - 1);
 
 			for (auto& gen : mSetters)               // << gen loop
-				gen->Apply(deltaTime, data, startId, endId);
+				gen->Apply(deltaTime, data, tr, startId, endId);
 
 			for (uint32_t i = startId; i < endId; ++i)    // << wake loop
 				data->Wake(i);
@@ -31,15 +31,15 @@ namespace Egl {
 			mParticles.Generate(maxCount);
 		}
 
-		void ParticleSystem::Update(float dt) {
+		void ParticleSystem::Update(float deltaTime, TransformComponent& tr) {
 			for (auto& em : mEmitters)
-				em->Emit(dt, &mParticles);
+				em->Emit(deltaTime, &mParticles, tr);
 
 			for (uint32_t i = 0; i < mCount; ++i)
 				mParticles.acceleration[i] = glm::vec2(0.0f);
 
 			for (auto& up : mUpdaters)
-				up->Update(dt, &mParticles);
+				up->Update(deltaTime, &mParticles);
 		}
 		void ParticleSystem::Render() {
 			for (uint32_t i = 0; i < mParticles.mAliveCount; i++)

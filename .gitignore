@@ -2,6 +2,8 @@
 .vs/
 /bin/
 /bin-int/
+/Eagle/vendor/Glad/bin/
+/Eagle/vendor/Glad/bin-int/
 
 # Files
 *.user

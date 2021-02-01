@@ -6,11 +6,12 @@ using namespace Egl;
 class ExampleScene : public Scene {
 	Entity ParticleBegin() {
 		Entity particle = AddEntity("ParticleSystem");
+		particle.GetComponent<TransformComponent>().SetLocalPosition({ 0, 8.5f, 0 });
 		auto& particleSystem = particle.AddComponent<ParticleSystemComponent>(100000).particleSystem; // <-- The max amount of particles at a time
 
 		Ref<Particles::ParticleEmitter> emitter = CreateRef<Particles::ParticleEmitter>(300.0f); // <-- The amount of particles spawned per second
 
-		emitter->AddSetter(CreateRef<Particles::BoxPosSetter>(glm::vec2{ 1, 0.25f }, glm::vec2{ 0.15f, 0 }));
+		emitter->AddSetter(CreateRef<Particles::BoxPosSetter>(glm::vec2{ 0.15f, 0 }));
 		auto colorSetter = CreateRef<Particles::ColorSetter>();
 		colorSetter->maxStartColor = { 0, 0.75f, 1, 1 };
 		colorSetter->minStartColor = { 0.75f, 0, 1, 1 };
