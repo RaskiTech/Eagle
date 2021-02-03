@@ -62,18 +62,19 @@ namespace Egl {
 		void SetWorldScaleFlagsFalse(const Relation& thisRel);
 	};
 
-	struct TagComponent {
+	struct MetadataComponent {
 		std::string tag;
+		int8_t sortingLayer = 0;
 
-		TagComponent() = default;
-		TagComponent(const std::string& tag) : tag(tag) {};
+		MetadataComponent() = default;
+		MetadataComponent(const std::string& tag, uint8_t sortingLayer) : tag(tag), sortingLayer(sortingLayer) {};
 	};
 
 	struct SpriteRendererComponent {
 		glm::vec4 color = { 1, 1, 1, 1 };
 		Ref<SubTexture> texture = nullptr;
 		float tilingFactor = 1;
-		
+
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(Ref<Texture> texture, const glm::vec4& color = {1, 1, 1, 1}, float tilingFactor = 1) 
 			: color(color), tilingFactor(tilingFactor), texture(CreateRef<SubTexture>(texture, glm::vec2{ 0, 0 }, glm::vec2{ 1, 1 })) {}

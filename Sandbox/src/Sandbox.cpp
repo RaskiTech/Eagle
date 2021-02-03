@@ -1,15 +1,44 @@
 #pragma once
 #include <Eagle.h>
 #include <EagleApplicationStartup.h>
+
 using namespace Egl;
 
 class ExampleScene : public Scene {
+	Entity GUIWindow() {
+		Entity subtitle = AddEntity("subtitle");
+		subtitle.AddComponent<SpriteRendererComponent>(glm::vec4{0.8f, 0.2f, 0.3f, 1});
+		subtitle.GetComponent<TransformComponent>().SetLocalPosition({ -0.1575f, -1, 0.1f });
+		subtitle.GetComponent<TransformComponent>().SetLocalScale({ 0.685f, .7f });
+		Entity buttonText = AddEntity("buttonText");
+		buttonText.AddComponent<SpriteRendererComponent>(glm::vec4{0.4f, 0.4f, 0.4f, 1});
+		buttonText.GetComponent<TransformComponent>().SetLocalPosition({ 0, .35f, 0.1f });
+		buttonText.GetComponent<TransformComponent>().SetLocalScale({ 0.93f, .2f });
+		Entity image = AddEntity("Image");
+		image.AddComponent<SpriteRendererComponent>(glm::vec4{0.28f, -0.05f, 0.8f, 1});
+		image.GetComponent<TransformComponent>().SetLocalPosition({ 0.32f, -0.13f, 0.2f });
+		image.GetComponent<TransformComponent>().SetLocalScale({ 0.28f, .7f });
+		Entity title = AddEntity("Title", subtitle);
+		title.GetComponent<TransformComponent>().SetLocalPosition({ 0, .35f, 0.1f });
+		title.GetComponent<TransformComponent>().SetLocalScale({ 0.93f, .2f });
+		title.AddComponent<SpriteRendererComponent>(glm::vec4{0.8f, 0.3f, 0.2f, 1});
+		Entity button = AddEntity("button", buttonText);
+		button.GetComponent<TransformComponent>().SetLocalPosition({ -.15f, -.2f, 0.1f });
+		button.GetComponent<TransformComponent>().SetLocalScale({ -.63f, -.5f });
+		button.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.8f, 0.8f, 1 });
+
+		Entity window = AddEntity("UI", button, image, title);
+		window.GetComponent<TransformComponent>().SetPosition({ -6.2f, 3, 0 });
+		window.GetComponent<TransformComponent>().SetScale({ 4.5f, 3 });
+		window.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.2f, 0.2f, 0.2f, 1 });
+		return window;
+	}
 	Entity ParticleBegin() {
 		Entity particle = AddEntity("ParticleSystem");
 		particle.GetComponent<TransformComponent>().SetLocalPosition({ 0, 8.5f, 0 });
 		auto& particleSystem = particle.AddComponent<ParticleSystemComponent>(100000).particleSystem; // <-- The max amount of particles at a time
 
-		Ref<Particles::ParticleEmitter> emitter = CreateRef<Particles::ParticleEmitter>(300.0f); // <-- The amount of particles spawned per second
+		Ref<Particles::Emitter> emitter = CreateRef<Particles::Emitter>(300.0f); // <-- The amount of particles spawned per second
 
 		emitter->AddSetter(CreateRef<Particles::BoxPosSetter>(glm::vec2{ 0.15f, 0 }));
 		auto colorSetter = CreateRef<Particles::ColorSetter>();
@@ -33,6 +62,10 @@ class ExampleScene : public Scene {
 	}
 
 	void SceneBegin() override {
+		// Audio::PlayNote(Notes::C_4, 100);
+		// Audio::PlayWav(L"Assets/thisSongDoesntExist.wav");
+		// Audio::PlayLoopingWav(L"Assets/otherSongThatDoesntExist.wav");
+
 		Entity camera = AddEntity("Camera");
 		camera.AddComponent<CameraComponent>().camera.SetSize(8.85f);
 		camera.GetComponent<CameraComponent>().backgroundColor = { 0.19f, 0.32f, 0.45f, 1 };
@@ -50,6 +83,7 @@ class ExampleScene : public Scene {
 		ground.GetComponent<TransformComponent>().SetPosition({ 0, -6, 0 });
 
 		Entity particleSystem = ParticleBegin();
+		Entity UI = GUIWindow();
 
 		Entity fireHydrant = AddEntity("Fire hydrant");
 		fireHydrant.AddComponent<SpriteRendererComponent>(Texture::Create("Assets/FireHydrant.png", false));

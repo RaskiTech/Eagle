@@ -9,6 +9,8 @@
 #include "Eagle/Core/Keycodes.h"
 #include "Eagle/Core/Input.h"
 #include "Eagle/Core/Random.h"
+#include "Eagle/Core/Audio.h"
+#include "Eagle/Core/AudioSample.h"
 
 #include "Eagle/Debug/ImGui/ImGuiLayer.h"
 #include "Eagle/Components/ParticleComponents/ParticleSystem.h"

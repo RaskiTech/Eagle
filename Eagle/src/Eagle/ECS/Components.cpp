@@ -23,6 +23,10 @@ namespace Egl {
 		SetWorldPosFlagsFalse(rel);
 	}
 	void TransformComponent::SetWorldPosFlagsFalse(const Relation& thisRel) {
+		// If the flag is already false, all the ones below must be also
+		if (!worldPosRight)
+			return;
+
 		entt::entity child = thisRel.firstChild;
 		worldPosRight = false;
 		while (child != entt::null) {
@@ -33,6 +37,10 @@ namespace Egl {
 		}
 	}
 	void TransformComponent::SetWorldRotFlagsFalse(const Relation& thisRel) {
+		// If the flag is already false, all the ones below must be also
+		if (!worldRotRight)
+			return;
+
 		entt::entity child = thisRel.firstChild;
 		worldRotRight = false;
 		while (child != entt::null) {
@@ -43,6 +51,10 @@ namespace Egl {
 		}
 	}
 	void TransformComponent::SetWorldScaleFlagsFalse(const Relation& thisRel) {
+		// If the flag is already false, all the ones below must be also
+		if (!worldScaleRight)
+			return;
+
 		entt::entity child = thisRel.firstChild;
 		worldScaleRight = false;
 		while (child != entt::null) {
@@ -61,7 +73,7 @@ namespace Egl {
 		worldPosRight = true;
 		if (parent != entt::null) {
 			TransformComponent& parentTransform = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent);
-			const glm::vec3 parent_relative_local = glm::rotateZ(glm::vec3{ parentTransform.GetScale().x, parentTransform.GetScale().y, 0 } * localPosition, parentTransform.GetRotation());
+			const glm::vec3 parent_relative_local = glm::rotateZ(glm::vec3{ parentTransform.GetScale().x, parentTransform.GetScale().y, 1 } * localPosition, parentTransform.GetRotation());
 			worldPosition = parentTransform.GetPosition() + parent_relative_local;
 		}
 		else

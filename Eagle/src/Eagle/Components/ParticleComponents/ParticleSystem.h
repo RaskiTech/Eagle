@@ -7,10 +7,10 @@
 namespace Egl {
 	namespace Particles {
 		///// Particle Emitter /////
-		struct ParticleEmitter {
+		struct Emitter {
 		public:
-			ParticleEmitter(float emitsPerSecond = 0) : mEmitsPerSecond(emitsPerSecond) {}
-			virtual ~ParticleEmitter() = default;
+			Emitter(float emitsPerSecond = 0) : mEmitsPerSecond(emitsPerSecond) {}
+			virtual ~Emitter() = default;
 
 			// calls all the generators and at the end it activates (wakes) particle
 			virtual void Emit(float dt, ParticleData* data, TransformComponent& tr);
@@ -40,7 +40,7 @@ namespace Egl {
 			uint32_t AllParticlesCount() const { return mParticles.mCount; }
 			uint32_t AliveParticlesCount() const { return mParticles.mAliveCount; }
 
-			void AddEmitter(Ref<ParticleEmitter> em) { mEmitters.push_back(em); }
+			void AddEmitter(Ref<Emitter> em) { mEmitters.push_back(em); }
 			void AddUpdater(Ref<ParticleUpdater> up) { mUpdaters.push_back(up); }
 			auto& GetEmitters() const { return mEmitters; }
 			auto& GetUpdaters() const { return mUpdaters; }
@@ -51,7 +51,7 @@ namespace Egl {
 
 			uint32_t mCount;
 
-			std::vector<Ref<ParticleEmitter>> mEmitters;
+			std::vector<Ref<Emitter>> mEmitters;
 			std::vector<Ref<ParticleUpdater>> mUpdaters;
 		};
 	}

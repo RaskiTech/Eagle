@@ -43,12 +43,12 @@ namespace Egl {
 	}
 
 	void HierarchyPanel::DrawEntityNode(entt::entity e) {
-		TagComponent& tagComp = mScene->mRegistry.get<TagComponent>(e);
+		auto [ tagComp, RelationComp ] = mScene->mRegistry.get<MetadataComponent, Relation>(e);
 
 
-		ImGuiTreeNodeFlags flags = ((mSelectedEntity == e) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-		// ImGuiTreeNodeFlags_Leaf
-		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)e, flags, tagComp.tag.c_str());
+		ImGuiTreeNodeFlags parentFlags = ((mSelectedEntity == e) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+		ImGuiTreeNodeFlags leafFlags   = ((mSelectedEntity == e) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_Bullet      | ImGuiTreeNodeFlags_SpanAvailWidth;
+		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)e, RelationComp.childCount > 0 ? parentFlags : leafFlags, tagComp.tag.c_str());
 
 		if (ImGui::IsItemClicked()) {
 			mSelectedEntity = e;

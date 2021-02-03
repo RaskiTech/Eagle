@@ -34,8 +34,8 @@ namespace Egl {
 
 	void PropertiesPanel::DrawProperties() {
 		// This gives the oppurtunity to change the name, but there is really no reason, since currently no saving is planned
-		//if (e.HasComponent<TagComponent>()) {
-		//	auto& tag = e.GetComponent<TagComponent>().tag;
+		//if (e.HasComponent<MetadataComponent>()) {
+		//	auto& tag = e.GetComponent<MetadataComponent>().tag;
 		//	char buffer[256];
 		//	memset(buffer, 0, sizeof(buffer));
 		//	strcpy(buffer, tag.c_str());
@@ -46,7 +46,7 @@ namespace Egl {
 		ImGuiIO& io = ImGui::GetIO();
 		auto boldFont = io.Fonts->Fonts[0];
 		ImGui::PushFont(boldFont);
-		ImGui::Text(drawedEntity.GetComponent<TagComponent>().tag.c_str());
+		ImGui::Text(drawedEntity.GetComponent<MetadataComponent>().tag.c_str());
 		ImGui::PopFont();
 		ImGui::Spacing();
 

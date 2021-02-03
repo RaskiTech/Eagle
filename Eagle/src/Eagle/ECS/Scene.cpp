@@ -16,7 +16,7 @@ namespace Egl {
 		entt::entity createdEntityID = mRegistry.create();
 		Entity entity = { createdEntityID, this };
 		entity.AddComponent<TransformComponent>(entity, glm::vec3{0, 0, 0});
-		entity.AddComponent<TagComponent>(name);
+		entity.AddComponent<MetadataComponent>(name, 0);
 		Relation& createdEntityRelation = entity.AddComponent<Relation>();
 
 		if (mFirstEntity == entt::null) {
@@ -70,6 +70,8 @@ namespace Egl {
 
 			Renderer::BeginScene(camera.camera, transform.GetTransform());
 			
+			static auto texture = Texture::Create("Assets/FireHydrant.png", false);
+
 			{
 				/////// ParticleSystem ///////
 				auto group = mRegistry.group<ParticleSystemComponent>(entt::get<TransformComponent>);
@@ -92,6 +94,8 @@ namespace Egl {
 						Renderer::DrawTextureQuad(transform.GetTransform(), spriteRenderer.texture->GetTexture(), spriteRenderer.texture->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
 				}
 			}
+			Renderer::DrawTextureQuad({ -4, 4 }, { 1, 1 }, texture);
+			Renderer::DrawTextureQuad({ -4.5f, 4 }, { 1, 1 }, texture);
 
 			Renderer::EndScene();
 		}

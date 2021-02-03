@@ -6,7 +6,7 @@
 namespace Egl {
 	bool operator == (const Entity& e1, const Entity& e2);
 	struct Relation;
-	struct TagComponent;
+	struct MetadataComponent;
 	struct TransformComponent;
 
 	class Entity {
@@ -32,7 +32,7 @@ namespace Egl {
 			return mScene->mRegistry.remove<T>(mEntity);
 		}
 		template<> void RemoveComponent<TransformComponent>() const = delete;
-		template<> void RemoveComponent<TagComponent>() const = delete;
+		template<> void RemoveComponent<MetadataComponent>() const = delete;
 		template<> void RemoveComponent<Relation>() const = delete;
 
 		void SetParent(const Entity& parent) const { parent.AddChild(*this); }
