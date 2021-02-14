@@ -16,7 +16,7 @@
 namespace Egl {
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer") {
-
+		LOG("Making editorlayer");
 	}
 
 	///////////////////// On Attach //////////////////////

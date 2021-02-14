@@ -13,7 +13,6 @@ namespace Egl {
 
     void Audio::PlayNote(uint32_t pitch, uint32_t milliseconds) {
         std::thread thread(Beep, pitch, milliseconds);
-        Beep(5.3f, 10);
         thread.detach();
     }
     void Audio::PlayWav(wchar_t* path) {

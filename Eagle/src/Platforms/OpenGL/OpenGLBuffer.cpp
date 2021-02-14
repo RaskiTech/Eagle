@@ -8,8 +8,7 @@ namespace Egl {
 	/////////////////////////////////// Vertex buffers ////////////////////////////////////
 	///////////////////////////////////////////////////////////////////////////////////////
 
-	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size)
-	{
+	OpenGLVertexBuffer::OpenGLVertexBuffer(uint32_t size) {
 		EAGLE_PROFILE_FUNCTION();
 		glCreateBuffers(1, &mRendererID);
 		glBindBuffer(GL_ARRAY_BUFFER, mRendererID);

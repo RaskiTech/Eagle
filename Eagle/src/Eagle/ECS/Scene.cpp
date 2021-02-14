@@ -8,6 +8,11 @@
 #include "Eagle/Core/Time.h"
 
 namespace Egl {
+	template< typename T, typename Pred >
+	typename std::vector<T>::iterator Insert_sorted(std::vector<T>& vec, T const& item, Pred pred) {
+		return vec.insert(std::upper_bound(vec.begin(), vec.end(), item, pred), item);
+	}
+
 	Scene::Scene() {
 
 	}
@@ -27,6 +32,18 @@ namespace Egl {
 			createdEntityRelation.nextSibling = mFirstEntity;
 			mFirstEntity = createdEntityID;
 		}
+
+		if (areEntitiesInOrder)
+			Insert_sorted(entitiesInSortOrder, createdEntityID, [&](entt::entity e1, entt::entity e2) {
+				auto mc1 = mRegistry.get<MetadataComponent>(e1);
+				auto mc2 = mRegistry.get<MetadataComponent>(e2);
+				if (mc1.sortingLayer == mc2.sortingLayer)
+					return mc1.subSorting > mc2.subSorting;
+				else
+					return mc1.sortingLayer > mc2.sortingLayer;
+			});
+		else
+			entitiesInSortOrder.push_back(createdEntityID);
 
 		return entity;
 	}
@@ -74,28 +91,29 @@ namespace Egl {
 
 			{
 				/////// ParticleSystem ///////
-				auto group = mRegistry.group<ParticleSystemComponent>(entt::get<TransformComponent>);
+				auto group = mRegistry.group<ParticleSystemComponent>(entt::get<TransformComponent, MetadataComponent>);
 				for (auto entity : group) {
-					auto [particleSystem, transform] = group.get<ParticleSystemComponent, TransformComponent>(entity);
+					auto [particleSystem, transform, metadata] = group.get<ParticleSystemComponent, TransformComponent, MetadataComponent>(entity);
 					float delta = Time::GetFrameDelta();
 					particleSystem.particleSystem.Update(delta, transform);
-					particleSystem.particleSystem.Render();
+					uint16_t sorting = ((uint16_t)metadata.sortingLayer << 8) + (uint16_t)metadata.subSorting;
+					particleSystem.particleSystem.Render(sorting);
 				}
 			}
 
 			{
 				/////// Sprite ///////
-				auto group = mRegistry.group<SpriteRendererComponent>(entt::get<TransformComponent>);
+				auto group = mRegistry.group<SpriteRendererComponent>(entt::get<TransformComponent, MetadataComponent>);
 				for (auto entity : group) {
-					auto [spriteRenderer, transform] = group.get<SpriteRendererComponent, TransformComponent>(entity);
+					auto [spriteRenderer, transform, metadata] = group.get<SpriteRendererComponent, TransformComponent, MetadataComponent>(entity);
+					uint16_t sorting = ((uint16_t)metadata.sortingLayer << 8) + (uint16_t)metadata.subSorting;
+					//LOG("{0} ended up with sorting layer {1}", metadata.tag, sorting);
 					if (spriteRenderer.texture == nullptr)
-						Renderer::DrawColorQuad(transform.GetTransform(), spriteRenderer.color);
+						Renderer::DrawColorQuad(sorting, transform.GetTransform(), spriteRenderer.color);
 					else
-						Renderer::DrawTextureQuad(transform.GetTransform(), spriteRenderer.texture->GetTexture(), spriteRenderer.texture->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
+						Renderer::DrawTextureQuad(sorting, transform.GetTransform(), spriteRenderer.texture->GetTexture(), spriteRenderer.texture->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
 				}
 			}
-			Renderer::DrawTextureQuad({ -4, 4 }, { 1, 1 }, texture);
-			Renderer::DrawTextureQuad({ -4.5f, 4 }, { 1, 1 }, texture);
 
 			Renderer::EndScene();
 		}

@@ -5,6 +5,7 @@
 #include "PropertiesPanel.h"
 #include "Eagle/ECS/Components.h"
 #include "Eagle/Core/UniqueID.h"
+#include "Eagle/Core/Application.h"
 
 namespace Egl {
 	void PropertiesPanel::OnImGuiRender()
@@ -44,10 +45,29 @@ namespace Egl {
 		//	}
 		//}
 		ImGuiIO& io = ImGui::GetIO();
+		auto& metaComponent = drawedEntity.GetComponent<MetadataComponent>();
 		auto boldFont = io.Fonts->Fonts[0];
+
 		ImGui::PushFont(boldFont);
-		ImGui::Text(drawedEntity.GetComponent<MetadataComponent>().tag.c_str());
+		ImGui::Text(metaComponent.tag.c_str());
 		ImGui::PopFont();
+
+		ImGui::Columns(2);
+		ImGui::SetColumnWidth(0, 100);
+		ImGui::Text("Layer");
+		ImGui::NextColumn();
+
+		ImGui::PushItemWidth(ImGui::CalcItemWidth() * 0.745f);
+		int sorting = metaComponent.sortingLayer;
+		if (ImGui::DragInt("##mainL", &sorting, 1, 0, 127))
+			metaComponent.sortingLayer = sorting;
+		ImGui::SameLine();
+		sorting = metaComponent.subSorting;
+		if (ImGui::DragInt("##subL", &sorting, 1, 0, 127))
+			metaComponent.subSorting = sorting;
+		ImGui::Columns(1);
+		ImGui::PopItemWidth();
+
 		ImGui::Spacing();
 
 		DrawComponent<TransformComponent>("Transform", drawedEntity, [](TransformComponent& component) {
@@ -94,9 +114,10 @@ namespace Egl {
 			ImGui::PopID();
 		});
 
-		DrawComponent<CameraComponent>("Camera", drawedEntity, [](CameraComponent& component) {
+		DrawComponent<CameraComponent>("Camera", drawedEntity, [&](CameraComponent& component) {
 			if (ImGui::Button("Set primary camera")) {
-
+				auto scene = Application::Get().GetGameLayer()->GetActiveScene();
+				scene->SetPrimaryCamera(drawedEntity);
 			}
 
 			float size = component.camera.GetCameraSize();

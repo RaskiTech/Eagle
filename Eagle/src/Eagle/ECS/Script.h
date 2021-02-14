@@ -6,6 +6,7 @@ namespace Egl {
 
 	class Script {
 	public:
+		virtual ~Script() = default;
 
 		template<typename T>
 		T& GetComponent() const { return mEntity.GetComponent<T>(); }

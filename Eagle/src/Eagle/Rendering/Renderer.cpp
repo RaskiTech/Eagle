@@ -34,8 +34,11 @@ namespace Egl {
 		Ref<Texture> whiteTexture;
 
 		uint32_t quadIndexCount = 0;
-		QuadVertex* quadVertexBufferBase = nullptr;
-		QuadVertex* quadVertexBufferPtr = nullptr;
+
+		QuadData* quadDataBase = nullptr;
+		QuadData* quadDataPtr = nullptr;
+		QuadVertex* sortedQuadsBase = nullptr;
+
 
 		glm::vec4 sampleVertices[4] = {
 			{-0.5f, -0.5f, 0.0f, 1.0f},
@@ -66,8 +69,8 @@ namespace Egl {
 		});
 		sData.quadVA->AddVertexBuffer(sData.quadVB);
 
-		sData.quadVertexBufferBase = new QuadVertex[sData.maxVertices];
-
+		sData.sortedQuadsBase = new QuadVertex[sData.maxVertices];
+		sData.quadDataBase = new QuadData[sData.maxQuads];
 		uint32_t* quadIndices = new uint32_t[sData.maxIndices];
 
 		uint32_t offset = 0;
@@ -196,7 +199,7 @@ namespace Egl {
 		sData.quadShader->Bind();
 		sData.quadShader->SetMat4("uViewProjection", viewProj);
 
-		sData.quadVertexBufferPtr = sData.quadVertexBufferBase;
+		sData.quadDataPtr = sData.quadDataBase;
 		sData.quadIndexCount = 0; 
 		sData.textureSlotIndex = 1;
 	}
@@ -204,39 +207,39 @@ namespace Egl {
 	
 	void Renderer::StartNewBatch() {
 		EndScene();
+		sData.quadDataPtr = sData.quadDataBase;
 		sData.quadIndexCount = 0;
-		sData.quadVertexBufferPtr = sData.quadVertexBufferBase;
 		sData.textureSlotIndex = 1;
 	}
 
-	void Renderer::DrawColorQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
+	void Renderer::DrawColorQuad(uint16_t depth, const glm::vec3& position, const glm::vec2& size, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		DrawColorQuad(transform, color);
+		DrawColorQuad(depth, transform, color);
 	}
-	void Renderer::DrawRotatedColorQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const glm::vec4& color) {
+	void Renderer::DrawRotatedColorQuad(uint16_t depth, const glm::vec3& position, float radiants, const glm::vec2& size, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		DrawColorQuad(transform, color);
+		DrawColorQuad(depth, transform, color);
 	}
 
-	void Renderer::DrawTextureQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
+	void Renderer::DrawTextureQuad(uint16_t depth, const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 		glm::vec2 texCoords[4] = { {0, 0}, {1, 0}, {1, 1}, {0, 1} };
 
-		DrawTextureQuad(transform, texture, texCoords, tilingFactor, color);
+		DrawTextureQuad(depth, transform, texture, texCoords, tilingFactor, color);
 	}
-	void Renderer::DrawRotatedTextureQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
+	void Renderer::DrawRotatedTextureQuad(uint16_t depth, const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
@@ -244,19 +247,19 @@ namespace Egl {
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 		glm::vec2 texCoords[4] = { {0, 0}, {1, 0}, {1, 1}, {0, 1} };
 
-		DrawTextureQuad(transform, texture, texCoords, tilingFactor, color);
+		DrawTextureQuad(depth, transform, texture, texCoords, tilingFactor, color);
 	}
 
-	void Renderer::DrawTextureQuad(const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) {
+	void Renderer::DrawTextureQuad(uint16_t depth, const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 		EAGLE_ENG_ASSERT(subTexture != nullptr, "Texture cannot be null!");
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		DrawTextureQuad(transform, subTexture->GetTexture(), subTexture->GetTextureCoords(), tilingFactor, color);
+		DrawTextureQuad(depth, transform, subTexture->GetTexture(), subTexture->GetTextureCoords(), tilingFactor, color);
 	}
-	void Renderer::DrawRotatedTextureQuad(const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) {
+	void Renderer::DrawRotatedTextureQuad(uint16_t depth, const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 		EAGLE_ENG_ASSERT(subTexture != nullptr, "Texture cannot be null!");
 
@@ -264,10 +267,10 @@ namespace Egl {
 			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		DrawTextureQuad(transform, subTexture->GetTexture(), subTexture->GetTextureCoords(), tilingFactor, color);
+		DrawTextureQuad(depth, transform, subTexture->GetTexture(), subTexture->GetTextureCoords(), tilingFactor, color);
 	}
 
-	void Renderer::DrawTextureQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2 texCoords[4], float tilingFactor, const glm::vec4& color) {
+	void Renderer::DrawTextureQuad(uint16_t depth, const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2 texCoords[4], float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 		EAGLE_ENG_ASSERT(texture != nullptr, "Texture cannot be null!");
 
@@ -291,43 +294,84 @@ namespace Egl {
 		}
 
 		for (int i = 0; i < 4; i++) {
-			sData.quadVertexBufferPtr->position = transform * sData.sampleVertices[i];
-			sData.quadVertexBufferPtr->color = color;
-			sData.quadVertexBufferPtr->texCoord = texCoords[i];
-			sData.quadVertexBufferPtr->tilingFactor = tilingFactor;
-			sData.quadVertexBufferPtr->textureID = textureIndex;
-			sData.quadVertexBufferPtr++;
+			QuadVertex& vertex = sData.quadDataPtr->quadVertices[i];
+			vertex.position = transform * sData.sampleVertices[i];
+			vertex.color = color;
+			vertex.texCoord = texCoords[i];
+			vertex.tilingFactor = tilingFactor;
+			vertex.textureID = textureIndex;
 		}
+		sData.quadDataPtr->placeIndex = sData.quadIndexCount / 6;
+		sData.quadDataPtr->depth = depth;
+		sData.quadDataPtr++;
 
 		sData.quadIndexCount += 6;
 		sStats.quadCount++;
 	}
-	void Renderer::DrawColorQuad(const glm::mat4& transform, const glm::vec4& color)
-	{
+	void Renderer::DrawColorQuad(uint16_t depth, const glm::mat4& transform, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 
 		if (sData.quadIndexCount >= RendererData::maxIndices)
 			StartNewBatch();
 
 		for (int i = 0; i < 4; i++) {
-			sData.quadVertexBufferPtr->position = transform * sData.sampleVertices[i]; // Access violation here? Maybe didn't begin scene?
-			sData.quadVertexBufferPtr->color = color;
-			sData.quadVertexBufferPtr->texCoord = { 0, 0 }; // This could probably be removed
-			sData.quadVertexBufferPtr->tilingFactor = 0;   	// This could probably be removed
-			sData.quadVertexBufferPtr->textureID = 0;
-			sData.quadVertexBufferPtr++;
+			QuadVertex& vertex = sData.quadDataPtr->quadVertices[i];
+			vertex.position = transform * sData.sampleVertices[i]; // Access violation here? Maybe didn't begin scene?
+			vertex.color = color;
+			vertex.texCoord = { 0, 0 }; // This could probably be removed
+			vertex.tilingFactor = 0;   	// This could probably be removed
+			vertex.textureID = 0;
 		}
+		sData.quadDataPtr->placeIndex = sData.quadIndexCount / 6;
+		sData.quadDataPtr->depth = depth;
+		sData.quadDataPtr++;
 
 		sData.quadIndexCount += 6;
 		sStats.quadCount++;
 	}
 
-
 	void Renderer::EndScene() {
 		EAGLE_PROFILE_FUNCTION();
+		//// Sort the vertexbuffer ////
 
-		uint32_t size = (uint32_t)((uint8_t*)sData.quadVertexBufferPtr - (uint8_t*)sData.quadVertexBufferBase);
-		sData.quadVB->SetData(sData.quadVertexBufferBase, size);
+		const uint32_t quadAmount = (uint32_t)(sData.quadDataPtr - sData.quadDataBase);
+		const uint32_t vertexAmount = quadAmount * 4;
+		const uint32_t verticesSize = vertexAmount * sizeof(QuadVertex);
+
+		std::sort(sData.quadDataBase, sData.quadDataPtr, [](QuadData s1, QuadData s2) {
+			return s1.depth < s2.depth;
+		});
+
+
+		// placeIndex tells what index comes here
+		QuadVertex* sortedVertexPtr = sData.sortedQuadsBase;
+		for (uint32_t i = 0; i < quadAmount; i++) {
+			//QuadData& copyFromHere = sData.quadDataBase[sData.quadDataBase[i].placeIndex];
+
+			for (int j = 0; j < 4; j++) {
+				//*sortedVertexPtr = copyFromHere.quadVertices[j];
+				*sortedVertexPtr = sData.quadDataBase[i].quadVertices[j];
+				sortedVertexPtr++;
+			}
+
+
+		}
+
+		//static int v = 0;
+		//if (v > 50) {
+		//	LOG_WARN("---");
+		//	for (uint32_t i = 0; i < quadAmount; i++)
+		//		LOG("{0}      {1}", sData.quadDataBase[i].depth, sData.quadDataBase[i].placeIndex);
+		//	LOG_WARN("---\nSorted:");
+		//	for (uint32_t i = 0; i < quadAmount; i++) {
+		//		LOG("{0}, {1}", sData.sortedQuadsBase[i * 4].position.x, sData.sortedQuadsBase[i * 4].position.y);
+		//	}
+		//	v = 0;
+		//}
+		//else v++;
+
+		//// Do other stuff ////
+		sData.quadVB->SetData(sData.sortedQuadsBase, verticesSize);
 		Flush();
 	}
 

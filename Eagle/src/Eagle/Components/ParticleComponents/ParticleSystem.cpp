@@ -41,9 +41,9 @@ namespace Egl {
 			for (auto& up : mUpdaters)
 				up->Update(deltaTime, &mParticles);
 		}
-		void ParticleSystem::Render() {
+		void ParticleSystem::Render(uint16_t depth) {
 			for (uint32_t i = 0; i < mParticles.mAliveCount; i++)
-				Renderer::DrawColorQuad(mParticles.position[i], mParticles.size[i], mParticles.color[i]);
+				Renderer::DrawColorQuad(depth, mParticles.position[i], mParticles.size[i], mParticles.color[i]);
 		}
 		void ParticleSystem::Reset() {
 			mParticles.mAliveCount = 0;

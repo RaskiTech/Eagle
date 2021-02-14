@@ -6,6 +6,10 @@
 #include "Texture.h"
 #include "RenderAPI.h"
 
+// Issues with layers:
+// Event blocking
+// Batch order (maybe can use openGL)
+
 namespace Egl {
 	struct RendererStats {
 		uint32_t drawCallCount = 0;
@@ -20,13 +24,19 @@ namespace Egl {
 			quadCount = 0;
 		}
 	};
-
 	struct QuadVertex {
 		glm::vec3 position;
 		glm::vec4 color;
 		glm::vec2 texCoord;
 		float tilingFactor;
 		float textureID;
+	};
+	struct QuadData {
+		uint16_t depth;
+		uint32_t placeIndex;
+
+		// This is here because then the pointer doesn't need to jump when accessing this array
+		QuadVertex quadVertices[4];
 	};
 
 	class Renderer {
@@ -43,35 +53,35 @@ namespace Egl {
 		static void Flush();
 
 #pragma region DrawQuad Overloads
-		static        void DrawColorQuad(const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
-		static inline void DrawColorQuad(const glm::vec2& position, const glm::vec2& size, const glm::vec4& color) { DrawColorQuad(glm::vec3(position, 0), size, color); }
+		static        void DrawColorQuad(uint16_t depth, const glm::vec3& position, const glm::vec2& size, const glm::vec4& color);
+		static inline void DrawColorQuad(uint16_t depth, const glm::vec2& position, const glm::vec2& size, const glm::vec4& color) { DrawColorQuad(depth, glm::vec3(position, 0), size, color); }
 
-		static        void DrawRotatedColorQuad(const glm::vec3& position, float rotation, const glm::vec2& size, const glm::vec4& color);
-		static inline void DrawRotatedColorQuad(const glm::vec2& position, float rotation, const glm::vec2& size, const glm::vec4& color) { DrawRotatedColorQuad(glm::vec3(position, 0), rotation, size, color); }
+		static        void DrawRotatedColorQuad(uint16_t depth, const glm::vec3& position, float rotation, const glm::vec2& size, const glm::vec4& color);
+		static inline void DrawRotatedColorQuad(uint16_t depth, const glm::vec2& position, float rotation, const glm::vec2& size, const glm::vec4& color) { DrawRotatedColorQuad(depth, glm::vec3(position, 0), rotation, size, color); }
 
-		static        void DrawTextureQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color);
-		static inline void DrawTextureQuad(const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture)                                             { DrawTextureQuad(          position,     size, texture, 1, {1, 1, 1, 1}); }
-		static inline void DrawTextureQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) { DrawTextureQuad(glm::vec3(position, 0), size, texture, tilingFactor, color); }
-		static inline void DrawTextureQuad(const glm::vec2& position, const glm::vec2& size, const Ref<Texture>& texture)                                             { DrawTextureQuad(glm::vec3(position, 0), size, texture, 1, {1, 1, 1, 1}); }
+		static        void DrawTextureQuad(uint16_t depth, const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color);
+		static inline void DrawTextureQuad(uint16_t depth, const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture)                                             { DrawTextureQuad(depth, position,     size, texture, 1, {1, 1, 1, 1}); }
+		static inline void DrawTextureQuad(uint16_t depth, const glm::vec2& position, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) { DrawTextureQuad(depth, glm::vec3(position, 0), size, texture, tilingFactor, color); }
+		static inline void DrawTextureQuad(uint16_t depth, const glm::vec2& position, const glm::vec2& size, const Ref<Texture>& texture)                                             { DrawTextureQuad(depth, glm::vec3(position, 0), size, texture, 1, {1, 1, 1, 1}); }
 
-		static        void DrawRotatedTextureQuad(const glm::vec3& position, float rotation, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color);
-		static inline void DrawRotatedTextureQuad(const glm::vec3& position, float rotation, const glm::vec2& size, const Ref<Texture>& texture)                                             { DrawRotatedTextureQuad(position,               rotation, size, texture, 1, { 1, 1, 1, 1 }); }
-		static inline void DrawRotatedTextureQuad(const glm::vec2& position, float rotation, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) { DrawRotatedTextureQuad(glm::vec3(position, 0), rotation, size, texture, tilingFactor, color); }
-		static inline void DrawRotatedTextureQuad(const glm::vec2& position, float rotation, const glm::vec2& size, const Ref<Texture>& texture)                                             { DrawRotatedTextureQuad(glm::vec3(position, 0), rotation, size, texture, 1, { 1, 1, 1, 1 }); }
+		static        void DrawRotatedTextureQuad(uint16_t depth, const glm::vec3& position, float rotation, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color);
+		static inline void DrawRotatedTextureQuad(uint16_t depth, const glm::vec3& position, float rotation, const glm::vec2& size, const Ref<Texture>& texture)                                             { DrawRotatedTextureQuad(depth, position,               rotation, size, texture, 1, { 1, 1, 1, 1 }); }
+		static inline void DrawRotatedTextureQuad(uint16_t depth, const glm::vec2& position, float rotation, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) { DrawRotatedTextureQuad(depth, glm::vec3(position, 0), rotation, size, texture, tilingFactor, color); }
+		static inline void DrawRotatedTextureQuad(uint16_t depth, const glm::vec2& position, float rotation, const glm::vec2& size, const Ref<Texture>& texture)                                             { DrawRotatedTextureQuad(depth, glm::vec3(position, 0), rotation, size, texture, 1, { 1, 1, 1, 1 }); }
 
-		static        void DrawTextureQuad(const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color);
-		static inline void DrawTextureQuad(const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture>& subTexture)                                             { DrawTextureQuad(          position,     size, subTexture, 1, {1, 1, 1, 1}); }
-		static inline void DrawTextureQuad(const glm::vec2& position, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) { DrawTextureQuad(glm::vec3(position, 0), size, subTexture, tilingFactor, color); }
-		static inline void DrawTextureQuad(const glm::vec2& position, const glm::vec2& size, const Ref<SubTexture>& subTexture)                                             { DrawTextureQuad(glm::vec3(position, 0), size, subTexture, 1, {1, 1, 1, 1}); }
+		static        void DrawTextureQuad(uint16_t depth, const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color);
+		static inline void DrawTextureQuad(uint16_t depth, const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture>& subTexture)                                             { DrawTextureQuad(depth, position,     size, subTexture, 1, {1, 1, 1, 1}); }
+		static inline void DrawTextureQuad(uint16_t depth, const glm::vec2& position, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) { DrawTextureQuad(depth, glm::vec3(position, 0), size, subTexture, tilingFactor, color); }
+		static inline void DrawTextureQuad(uint16_t depth, const glm::vec2& position, const glm::vec2& size, const Ref<SubTexture>& subTexture)                                             { DrawTextureQuad(depth, glm::vec3(position, 0), size, subTexture, 1, {1, 1, 1, 1}); }
 
-		static        void DrawRotatedTextureQuad(const glm::vec3& position, float rotation, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color);
-		static inline void DrawRotatedTextureQuad(const glm::vec3& position, float rotation, const glm::vec2& size, const Ref<SubTexture>& subTexture)                                             { DrawRotatedTextureQuad(position,               rotation, size, subTexture, 1, { 1, 1, 1, 1 }); }
-		static inline void DrawRotatedTextureQuad(const glm::vec2& position, float rotation, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) { DrawRotatedTextureQuad(glm::vec3(position, 0), rotation, size, subTexture, tilingFactor, color); }
-		static inline void DrawRotatedTextureQuad(const glm::vec2& position, float rotation, const glm::vec2& size, const Ref<SubTexture>& subTexture)                                             { DrawRotatedTextureQuad(glm::vec3(position, 0), rotation, size, subTexture, 1, { 1, 1, 1, 1 }); }
+		static        void DrawRotatedTextureQuad(uint16_t depth, const glm::vec3& position, float rotation, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color);
+		static inline void DrawRotatedTextureQuad(uint16_t depth, const glm::vec3& position, float rotation, const glm::vec2& size, const Ref<SubTexture>& subTexture)                                             { DrawRotatedTextureQuad(depth, position,               rotation, size, subTexture, 1, { 1, 1, 1, 1 }); }
+		static inline void DrawRotatedTextureQuad(uint16_t depth, const glm::vec2& position, float rotation, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) { DrawRotatedTextureQuad(depth, glm::vec3(position, 0), rotation, size, subTexture, tilingFactor, color); }
+		static inline void DrawRotatedTextureQuad(uint16_t depth, const glm::vec2& position, float rotation, const glm::vec2& size, const Ref<SubTexture>& subTexture)                                             { DrawRotatedTextureQuad(depth, glm::vec3(position, 0), rotation, size, subTexture, 1, { 1, 1, 1, 1 }); }
 		
-		static inline void DrawTextureQuad(const glm::mat4& transform, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) { glm::vec2 c[4] = { {0, 0}, {1, 0}, {1, 1}, {0, 1} }; DrawTextureQuad(transform, texture, c, tilingFactor, color); }
-		static void DrawTextureQuad(const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2 texCoords[4], float tilingFactor, const glm::vec4& color);
-		static void DrawColorQuad(const glm::mat4& transform, const glm::vec4& color);
+		static inline void DrawTextureQuad(uint16_t depth, const glm::mat4& transform, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) { glm::vec2 c[4] = { {0, 0}, {1, 0}, {1, 1}, {0, 1} }; DrawTextureQuad(depth, transform, texture, c, tilingFactor, color); }
+		static void DrawTextureQuad(uint16_t depth, const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2 texCoords[4], float tilingFactor, const glm::vec4& color);
+		static void DrawColorQuad(uint16_t depth, const glm::mat4& transform, const glm::vec4& color);
 #pragma endregion
 
 	private:

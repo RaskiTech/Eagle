@@ -34,8 +34,8 @@ namespace Egl {
 
 		glm::mat4 GetTransform() {
 			return GetRotation() == 0 ?
-				glm::translate(glm::mat4(1), GetPosition()) *                                                         glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1)):
-				glm::translate(glm::mat4(1), GetPosition()) * glm::rotate(glm::mat4(1), GetRotation(), { 0, 0, 1 }) * glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1));
+				glm::translate(glm::mat4(1), { GetPosition().x, GetPosition().y, 0 }) *                                                         glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1)):
+				glm::translate(glm::mat4(1), { GetPosition().x, GetPosition().y, 0 }) * glm::rotate(glm::mat4(1), GetRotation(), { 0, 0, 1 }) * glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1));
 		}
 
 		operator glm::mat4& () { return GetTransform(); }
@@ -65,6 +65,7 @@ namespace Egl {
 	struct MetadataComponent {
 		std::string tag;
 		int8_t sortingLayer = 0;
+		uint8_t subSorting = 0;
 
 		MetadataComponent() = default;
 		MetadataComponent(const std::string& tag, uint8_t sortingLayer) : tag(tag), sortingLayer(sortingLayer) {};
@@ -101,8 +102,7 @@ namespace Egl {
 	struct NativeScriptComponent {
 		Script* baseInstance = nullptr;
 
-		std::function<void()> InstantiateFunc;
-		std::function<void()> DestroyFunc;
+		//std::function<void()> InstantiateFunc;
 
 		std::function<void(Script*)> OnCreateFunc;
 		std::function<void(Script*)> OnDestroyFunc;
@@ -110,10 +110,7 @@ namespace Egl {
 		
 		template<typename T>
 		void Bind() {
-			// Figure out how to call the functions
-			InstantiateFunc = [&]() {baseInstance = new T(); };
-			DestroyFunc = [&]() { delete (T*)baseInstance; };
-
+			baseInstance = new T();
 				
 			// COMPILE_IF_VALID is a macro from DoesExist.h
 			COMPILE_IF_VALID(T, OnCreate(),
@@ -125,7 +122,10 @@ namespace Egl {
 			COMPILE_IF_VALID(T, OnUpdate(),
 				OnUpdateFunc = [](Script* instance) { ((T*)instance)->OnUpdate(); }
 			);
-
+		}
+		void DeleteBase() {
+			EAGLE_ENG_ASSERT(baseInstance != nullptr, "baseInstance was null when trying to delete it. Scene unload interrupted previously?");
+			delete baseInstance;
 		}
 	};
 }

@@ -34,7 +34,7 @@ namespace Egl {
 			~ParticleSystem() {}
 
 			void Update(float deltaTime, TransformComponent& tr);
-			void Render();
+			void Render(uint16_t depth);
 			void Reset();
 
 			uint32_t AllParticlesCount() const { return mParticles.mCount; }

@@ -3,6 +3,7 @@
 
 // The client will inherit this scene and provide the functions.
 
+
 namespace Egl {
 
 	class Entity;
@@ -24,9 +25,11 @@ namespace Egl {
 		virtual void SceneEnd() = 0;
 
 	private:
-
 		void SetViewportAspectRatio(float aspectRatio);
 		void OnUpdate();
+
+		bool areEntitiesInOrder = false;
+		std::vector<entt::entity> entitiesInSortOrder;
 
 		friend class GameLayer;
 		friend class EditorLayer;
