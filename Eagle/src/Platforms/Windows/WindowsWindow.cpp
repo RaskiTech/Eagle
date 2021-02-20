@@ -6,6 +6,8 @@
 #include "Eagle/Core/Events/MouseEvent.h"
 #include "Platforms/OpenGL/OpenGLContext.h"
 
+#include "Eagle/Core/Application.h"
+
 namespace Egl {
 	static uint8_t sGLFWwindowCount = 0;
 	Scope<Window> Window::Create(const WindowProps& props) {
@@ -45,80 +47,89 @@ namespace Egl {
 			EAGLE_PROFILE_SCOPE("glfwCreateWindow");
 			mWindow = glfwCreateWindow((int)props.width, (int)props.height, mData.Title.c_str(), nullptr, nullptr);
 		}
-
+		int x, y;
+		glfwGetWindowPos(mWindow, &x, &y);
+		mData.posX = x;
+		mData.posY = y;
 
 		mContext = new OpenGLContext(mWindow);
 		mContext->Init();
 
 		glfwSetWindowUserPointer(mWindow, &mData);
-		SetVSync(false);
+		SetVSync(mData.VSync);
 
 		// Set events
 		glfwSetWindowSizeCallback(mWindow, [](GLFWwindow* window, int width, int height) {
-			WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
-			data.width = width;
-			data.height = height;
-
+			WindowData* data = (WindowData*)glfwGetWindowUserPointer(window);
+			data->width = width;
+			data->height = height;
 			WindowResizeEvent event(width, height);
-			data.EventCallback(event);
+			data->EventCallback(event);
 		});
 
 
 		glfwSetWindowCloseCallback(mWindow, [](GLFWwindow* window) {
-			WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
+			WindowData* data = (WindowData*)glfwGetWindowUserPointer(window);
 			WindowCloseEvent event;
-			data.EventCallback(event);
+			data->EventCallback(event);
 		});
+		// This shouldn't create an event. Eagle editor needs to queue the pos sometimes
+		glfwSetWindowPosCallback(mWindow, [](GLFWwindow* window, int posX, int posY) {
+			WindowData* dataPrt = (WindowData*)glfwGetWindowUserPointer(window);
+			dataPrt->posX = posX;
+			dataPrt->posY = posY;
+		});
+
 		glfwSetKeyCallback(mWindow, [](GLFWwindow* window, int key, int scanmode, int action, int mods) {
-			WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
+			WindowData* data = (WindowData*)glfwGetWindowUserPointer(window);
 			switch (action) {
 				case GLFW_PRESS: {
 					KeyPressedEvent event(key, 0);
-					data.EventCallback(event);
+					data->EventCallback(event);
 					break;
 				}
 				case GLFW_RELEASE: {
 					KeyReleasedEvent event(key);
-					data.EventCallback(event);
+					data->EventCallback(event);
 					break;
 				}
 				case GLFW_REPEAT: {
 					KeyPressedEvent event(key, 1);
-					data.EventCallback(event);
+					data->EventCallback(event);
 					break;
 				}
 			}
 		});
 		glfwSetCharCallback(mWindow, [](GLFWwindow* window, unsigned int character) {
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			WindowData* data = (WindowData*)glfwGetWindowUserPointer(window);
 			KeyTypedEvent event(character);
-			data.EventCallback(event);
+			data->EventCallback(event);
 		});
 		glfwSetMouseButtonCallback(mWindow, [](GLFWwindow* window, int button, int action, int mods) {
-			WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
+			WindowData* data = (WindowData*)glfwGetWindowUserPointer(window);
 			switch (action)
 			{
 				case GLFW_PRESS: {
 					MousePressedEvent event(button);
-					data.EventCallback(event);
+					data->EventCallback(event);
 					break;
 				}
 				case GLFW_RELEASE: {
 					MouseReleasedEvent event(button);
-					data.EventCallback(event);
+					data->EventCallback(event);
 					break;
 				}
 			}
 		});
 		glfwSetScrollCallback(mWindow, [](GLFWwindow* window, double scrollX, double scrollY) {
-			WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
+			WindowData* data = (WindowData*)glfwGetWindowUserPointer(window);
 			MouseScrolledEvent event((int)scrollX, (int)scrollY);
-			data.EventCallback(event);
+			data->EventCallback(event);
 		});
 		glfwSetCursorPosCallback(mWindow, [](GLFWwindow* window, double posX, double posY) {
-			WindowData data = *(WindowData*)glfwGetWindowUserPointer(window);
+			WindowData* data = (WindowData*)glfwGetWindowUserPointer(window);
 			MouseMovedEvent event((int)posX, (int)posY);
-			data.EventCallback(event);
+			data->EventCallback(event);
 		});
 	}
 

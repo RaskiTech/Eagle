@@ -16,6 +16,8 @@ namespace Egl {
 		inline uint32_t GetWidth() const override { return mData.width; }
 		inline uint32_t GetHeight() const override { return mData.height; }
 		inline float GetTime() const override { return (float)glfwGetTime(); }
+		virtual uint32_t GetPositionX() const { return mData.posX; }
+		virtual uint32_t GetPositionY() const { return mData.posY; }
 
 		inline void SetEventCallback(const EventCallbackFn& callback) override { mData.EventCallback = callback; }
 		bool IsVSync() const override;
@@ -26,7 +28,9 @@ namespace Egl {
 	private:
 		struct WindowData {
 			std::string Title;
+			unsigned int posX = 0, posY = 0;
 			unsigned int width = 0, height = 0;
+
 			bool VSync = true;
 			EventCallbackFn EventCallback;
 			inline std::string ToString() { return Title; }

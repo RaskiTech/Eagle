@@ -3,7 +3,7 @@
 #include "RenderCommand.h"
 #include <glm/gtc/matrix_transform.hpp>
 
-void UILibraryExampleUse() {
+// UI Library example usage
 	// x and y drivers will derive from baseClass called UIPosition and width and height drivers from UIArea
 	// Button might represent some parameters or a component like button
 	// Drviers like Left() and Right() are just to tell what there goes, not actual driveers
@@ -15,7 +15,6 @@ void UILibraryExampleUse() {
 
 	// DrawUI(Button).Drivers(UICenterAligment, UITopAligment(10.0f), UIStretch(0.5f), UIConstSize(100.0f))
 	// DrawUI(Button).Drivers(Top(), Bottom(200f), Left(), Right())
-}
 
 namespace Egl {
 

@@ -36,21 +36,6 @@ int main(int agrc, char** argv) {
 	Egl::Log::Init();
 	LOG_ENG_INFO("Engine starting...");
 
-	//LambdaTest l = LambdaTest();
-	//LambdaTest r = LambdaTest();
-	//l.init<LambdaDerived>();
-	//r.init<LambdaOther>();
-	//
-	//LOG("{0}, {1}", (void*)l.ptr, (void*)r.ptr);
-	//l.fn();
-	//
-	//LOG("{0}, {1}", (void*)l.ptr, (void*)r.ptr);
-	//r.fn();
-	//LOG("{0}, {1}", (void*)l.ptr, (void*)r.ptr);
-	//
-	//while(true);
-	//return 0;
-
 	EAGLE_PROFILE_BEGIN("Engine Startup", "Eagle-Profile-Startup.json");
 	auto app = new Egl::Application();
 	EAGLE_PROFILE_END();

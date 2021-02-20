@@ -24,6 +24,7 @@ namespace Egl {
 		LOG_ENG("	Renderer: {0}", glGetString(GL_RENDERER));
 		LOG_ENG("	Version: {0}", glGetString(GL_VERSION));
 	}
+
 	void OpenGLContext::SwapBuffers()
 	{
 		EAGLE_PROFILE_FUNCTION();

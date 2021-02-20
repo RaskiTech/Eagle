@@ -18,11 +18,11 @@ namespace Egl {
 		int key = glfwGetMouseButton((GLFWwindow*)window, mouseButton);
 		return key == GLFW_PRESS;
 	}
-	std::pair<float, float> Input::MousePos() {
+	glm::vec2 Input::MousePos() {
 		auto window = Application::Get().GetWindow().NativeWindow();
 		double xPos, yPos;
 		glfwGetCursorPos((GLFWwindow*)window, &xPos, &yPos);
-		return std::pair<float, float>((float)xPos, (float)yPos);
+		return Application::Get().WindowPixelToScenePixelSpace({ xPos, yPos });
 	}
 	void Input::OnEvent(Event& event) {
 		if (event.GetEventType() == MouseScrolledEvent::GetStaticType()) {

@@ -104,7 +104,7 @@ namespace Egl {
 			mWindow->OnUpdate();
 		}
 	}
-	
+
 	bool Application::OnWindowClose(WindowCloseEvent& e) {
 		Close();
 		return true;
@@ -148,5 +148,36 @@ namespace Egl {
 		EAGLE_PROFILE_FUNCTION();
 		layer->OnDetach();
 		mLayerStack.RemoveOverlay(layer);
+	}
+
+
+	const glm::vec2& Application::GetSceneWindowSize() const {
+#if EAGLE_EDITOR
+		return mScenePanelSize;
+#else
+		return mViewportSize;
+#endif
+	}
+	const glm::vec2& Application::GetSceneScreenOffset() const {
+#if EAGLE_EDITOR
+		return mScenePanelOffset;
+#else
+		return { 0, 0 }
+#endif
+	}
+	glm::vec2 Application::WindowPixelToScenePixelSpace(const glm::vec2& point) const {
+#if EAGLE_EDITOR
+		return point - mScenePanelOffset;
+#else
+		return point;
+#endif
+	}
+	glm::vec2 Application::ScenePixelToWindowPixelSpace(const glm::vec2& point) const {
+#if EAGLE_EDITOR
+		LOG("{0} {1}", mWindow->GetPositionX(), mWindow->GetPositionY());
+		return point + mScenePanelOffset;
+#else
+		return point;
+#endif
 	}
 }

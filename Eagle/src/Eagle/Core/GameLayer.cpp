@@ -19,6 +19,7 @@ namespace Egl {
 		{
 			EAGLE_PROFILE_SCOPE("Application - SceneBegin");
 			mActiveScene->SceneBegin();
+			// First don't put entities in order, since a lot of them are made there. Now sort them
 			mActiveScene->areEntitiesInOrder = true;
 			std::sort(mActiveScene->entitiesInSortOrder.begin(), mActiveScene->entitiesInSortOrder.end(), [&](entt::entity e1, entt::entity e2) {
 				auto& mc1 = mActiveScene->mRegistry.get<MetadataComponent>(e1);
@@ -28,17 +29,13 @@ namespace Egl {
 				else
 					return mc1.sortingLayer > mc2.sortingLayer;
 			});
-			//for (int i = 0; i < mActiveScene->entitiesInSortOrder.size(); i++) {
-			//	LOG("{0}", (uint32_t)mActiveScene->entitiesInSortOrder[i]);
-			//}
 		}
 		{
 			EAGLE_PROFILE_SCOPE("Application - Scripts: OnCreate");
 			mActiveScene->mRegistry.view<NativeScriptComponent>().each([&](auto entity, NativeScriptComponent& scriptComponent) {
-				// scriptComponent.baseInstance = scriptComponent.InstantiateFunc();
 				EAGLE_ENG_ASSERT(scriptComponent.baseInstance != nullptr, "Instance is a nullptr");
 
-				// LOG("Now that here, is base null? {0}", scriptComponent.baseInstance == nullptr);
+				LOG("Now that here, is base null? {0}", scriptComponent.baseInstance == nullptr);
 				#pragma warning( suppress: 6011 )
 				scriptComponent.baseInstance->mEntity = Entity{ entity, mActiveScene.get() };
 

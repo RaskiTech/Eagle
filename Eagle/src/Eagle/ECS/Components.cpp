@@ -5,7 +5,7 @@
 #include "Entity.h"
 
 namespace Egl {
-	void TransformComponent::SetLocalPosition(const glm::vec3& position) {
+	void TransformComponent::SetLocalPosition(const glm::vec2& position) {
 		localPosition = position;
 		const Relation& rel = thisEntity.GetComponent<Relation>();
 		SetWorldPosFlagsFalse(rel);
@@ -65,7 +65,7 @@ namespace Egl {
 		}
 	}
 
-	const glm::vec3& TransformComponent::GetPosition() {
+	const glm::vec2& TransformComponent::GetPosition() const {
 		if (worldPosRight)
 			return worldPosition;
 
@@ -73,7 +73,7 @@ namespace Egl {
 		worldPosRight = true;
 		if (parent != entt::null) {
 			TransformComponent& parentTransform = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent);
-			const glm::vec3 parent_relative_local = glm::rotateZ(glm::vec3{ parentTransform.GetScale().x, parentTransform.GetScale().y, 1 } * localPosition, parentTransform.GetRotation());
+			const glm::vec2 parent_relative_local = glm::rotateZ(glm::vec3{ parentTransform.GetScale() * localPosition, 0 }, parentTransform.GetRotation());
 			worldPosition = parentTransform.GetPosition() + parent_relative_local;
 		}
 		else
@@ -81,7 +81,7 @@ namespace Egl {
 
 		return worldPosition;
 	}
-	float TransformComponent::GetRotation() {
+	float TransformComponent::GetRotation() const {
 		if (worldRotRight)
 			return worldRotation;
 
@@ -95,7 +95,7 @@ namespace Egl {
 		return worldRotation;
 	}
 
-	const glm::vec2& TransformComponent::GetScale() {
+	const glm::vec2& TransformComponent::GetScale() const {
 		if (worldScaleRight)
 			return worldScale;
 
@@ -109,10 +109,10 @@ namespace Egl {
 		return worldScale;
 	}
 
-	void TransformComponent::SetPosition(const glm::vec3& position) {
+	void TransformComponent::SetPosition(const glm::vec2& position) {
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		if (parent != entt::null) {
-			const glm::vec3& parentWorldPosition = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetPosition();
+			const glm::vec2& parentWorldPosition = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetPosition();
 			localPosition = position - parentWorldPosition;
 		}
 		else localPosition = position;

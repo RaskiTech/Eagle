@@ -6,6 +6,7 @@
 #include "Eagle/Rendering/RenderCommand.h"
 #include "Entity.h"
 #include "Eagle/Core/Time.h"
+#include "Eagle/Core/Application.h"
 
 namespace Egl {
 	template< typename T, typename Pred >
@@ -63,6 +64,43 @@ namespace Egl {
 			return Entity(mPrimaryCamera, this);
 		else
 			return Entity();
+	}
+
+	glm::vec2 Scene::ScreenToWorldPos(const glm::vec2& pixelCoordinate) const {
+		const glm::vec2& camPos = mRegistry.get<TransformComponent>(mPrimaryCamera).GetPosition();
+		auto& camCam = mRegistry.get<CameraComponent>(mPrimaryCamera);
+		float screenSize = camCam.camera.GetSize();
+		const glm::vec2& viewSize = Application::Get().GetSceneWindowSize();
+		
+		// More readale version
+		// const glm::vec2 posInScreen01 = { (pixelCoordinate.x - sceneOffsetInPixel.x) / viewSize.x, -(pixelCoordinate.y - sceneOffsetInPixel.y) / viewSize.y };
+		// const glm::vec2 screenSizeInWorld = { screenSize * camCam.camera.GetAspectRatio(), screenSize };
+		// const glm::vec2 posInScreenWorld = posInScreen01 * screenSizeInWorld;
+		// const glm::vec2 topCornerInWorld = camPos + glm::vec2{ -screenSizeInWorld.x / 2, screenSizeInWorld.y / 2 };
+		// return posInScreenWorld + topCornerInWorld;
+
+		float screenSizeInWorld_X = screenSize * camCam.camera.GetAspectRatio();
+		float posX = pixelCoordinate.x / viewSize.x * screenSizeInWorld_X + camPos.x - screenSizeInWorld_X / 2;
+		float posY = -pixelCoordinate.y / viewSize.y * screenSize + camPos.y + screenSize / 2;
+		return { posX, posY };
+	}
+	glm::vec2 Scene::WorldToScreenPos(const glm::vec2& worldPos) const {
+		const glm::vec2& camPos = mRegistry.get<TransformComponent>(mPrimaryCamera).GetPosition();
+		auto& camCam = mRegistry.get<CameraComponent>(mPrimaryCamera);
+		float screenSize = camCam.camera.GetSize();
+		const glm::vec2& viewSize = Application::Get().GetSceneWindowSize();
+		const glm::vec2& sceneOffsetInPixel = Application::Get().GetSceneScreenOffset();
+
+		// More readale version
+		const glm::vec2 screenSizeInWorld = { screenSize * camCam.camera.GetAspectRatio(), screenSize };
+		const glm::vec2 topCornerInWorld = camPos + glm::vec2{ -screenSizeInWorld.x / 2, screenSizeInWorld.y / 2 };
+		const glm::vec2 posInScreen01 = { (worldPos.x - topCornerInWorld.x) / screenSizeInWorld.x, (worldPos.y - topCornerInWorld.y) / screenSizeInWorld.y };
+		return { posInScreen01.x * viewSize.x, -posInScreen01.y * viewSize.y };
+
+		float screenSizeInWorld_X = screenSize * camCam.camera.GetAspectRatio();
+		float posX = viewSize.x * ((worldPos.x - (camPos.x + -screenSizeInWorld_X / 2)) / screenSizeInWorld_X);
+		float posY = -((worldPos.y - (camPos.y + screenSize / 2)) / screenSize) * viewSize.x;
+		return { posX, posY };
 	}
 
 	void Scene::OnUpdate() {

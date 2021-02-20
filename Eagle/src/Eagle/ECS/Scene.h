@@ -19,6 +19,8 @@ namespace Egl {
 		void RemoveEntity(Entity& entity);
 		void SetPrimaryCamera(Entity& camera);
 		const Entity GetPrimaryCamera();
+		glm::vec2 Scene::ScreenToWorldPos(const glm::vec2& pixelCoordinate) const;
+		glm::vec2 Scene::WorldToScreenPos(const glm::vec2& worldPos) const;
 
 		// User-defined functions unique to each instance
 		virtual void SceneBegin() = 0;

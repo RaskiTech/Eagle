@@ -2,6 +2,7 @@
 
 #include <EaglePCH.h>
 #include "Eagle/Core/Events/Event.h"
+#include <glm/glm.hpp>
 
 namespace Egl {
 	struct WindowProps {
@@ -22,6 +23,9 @@ namespace Egl {
 		virtual void Render() = 0;
 		virtual uint32_t GetWidth() const = 0;
 		virtual uint32_t GetHeight() const = 0;
+		virtual uint32_t GetPositionY() const = 0;
+		virtual uint32_t GetPositionX() const = 0;
+
 		virtual float GetTime() const = 0;
 
 		virtual void* NativeWindow() const = 0;

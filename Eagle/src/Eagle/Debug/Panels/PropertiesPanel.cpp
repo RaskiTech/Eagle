@@ -112,7 +112,8 @@ namespace Egl {
 
 			ImGui::Columns(1);
 			ImGui::PopID();
-		});
+
+			});
 
 		DrawComponent<CameraComponent>("Camera", drawedEntity, [&](CameraComponent& component) {
 			if (ImGui::Button("Set primary camera")) {

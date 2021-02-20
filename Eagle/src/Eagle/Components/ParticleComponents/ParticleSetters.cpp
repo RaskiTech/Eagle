@@ -14,7 +14,7 @@ namespace Egl {
 		void BoxPosSetter::Apply(float deltaTime, ParticleData* data, TransformComponent& tr, uint32_t startId, uint32_t endId) {
 			//glm::vec2 posMin{ position.x - maxOffset.x, position.y - maxOffset.y };
 			//glm::vec2 posMax{ position.x + maxOffset.x, position.y + maxOffset.y };
-			const glm::vec3& pos = tr.GetPosition();
+			const glm::vec2& pos = tr.GetPosition();
 			const glm::vec2 maxOff = glm::rotate(maxOffset, tr.GetRotation());
 			float posMinX = -maxOff.x + pos.x;
 			float posMinY = -maxOff.y + pos.y;

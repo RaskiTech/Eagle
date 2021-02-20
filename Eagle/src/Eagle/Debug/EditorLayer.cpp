@@ -13,10 +13,11 @@
 #include "Eagle/Core/Input.h"
 #include "Eagle/Core/Keycodes.h"
 
+#include "Eagle/Core/Application.h"
 namespace Egl {
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer") {
-		LOG("Making editorlayer");
+
 	}
 
 	///////////////////// On Attach //////////////////////
@@ -64,7 +65,9 @@ namespace Egl {
 		auto& style = ImGui::GetStyle();
 		float originalWindowMinSize = style.WindowMinSize.x;
 		style.WindowMinSize.x = 300.0f; // 319.0f;
+
 		ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+
 		style.WindowMinSize.x = originalWindowMinSize;
 
 		///////// Renderer stats //////////
@@ -110,13 +113,17 @@ namespace Egl {
 
 		// The actual resizing happens in onUpdate. This is just a "notification"
 		ImVec2 scenePanelSize = ImGui::GetContentRegionAvail();
-		if (Application::Get().GetViewportSize() != *((glm::vec2*) &scenePanelSize))
+		if (Application::Get().GetViewportSize() != *((glm::vec2*)&scenePanelSize)) {
+			Application::Get().SetScenePanelSize({ scenePanelSize.x, scenePanelSize.y });
 			Application::Get().SetViewportSize({ scenePanelSize.x, scenePanelSize.y });
+		}
+		ImVec2 vMin = ImGui::GetWindowContentRegionMin(); // If the top bar isn't hidden
+		ImVec2 winPos = ImGui::GetWindowPos();
+		Application::Get().SetSceneScreenOffset({ vMin.x + winPos.x - Application::Get().GetWindow().GetPositionX(), vMin.y + winPos.y - Application::Get().GetWindow().GetPositionY() });
 
 		mScenePanelFocused = ImGui::IsWindowFocused();
 		mScenePanelHovered = ImGui::IsWindowHovered();
 		Application::Get().GetImGuiLayer()->LetEventsThrough(mScenePanelFocused && mScenePanelHovered);
-
 		uint32_t textureID = mFrameBuffer->GetColorAttachementsRendererID();
 		ImGui::Image((void*)(intptr_t)textureID, scenePanelSize, ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();

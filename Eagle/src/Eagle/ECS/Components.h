@@ -12,20 +12,24 @@
 namespace Egl {
 
 	struct TransformComponent {
-		// Local position is always up to date. If the global position is needed, it should be checked if the position if up to date.
-		void SetPosition(const glm::vec3& position);
+		// Local position is always up to date. If the global position is needed, should be checked if the position if up to date.
+		void SetPosition(const glm::vec2& position);
+		void SetPosition(float x, float y) { SetPosition({ x, y }); }
 		void SetRotation(float rotation);
 		void SetScale(const glm::vec2& scale);
+		void SetScale(float x, float y) { SetScale({ x, y }); }
 
-		void SetLocalPosition(const glm::vec3& position);
+		void SetLocalPosition(const glm::vec2& position);
+		void SetLocalPosition(float x, float y) { SetLocalPosition({ x, y }); };
 		void SetLocalRotation(float rotation);
 		void SetLocalScale(const glm::vec2& scale);
+		void SetLocalScale(float x, float y) { SetLocalScale({ x, y }); }
 
-		const glm::vec3& GetPosition();
-		float GetRotation();
-		const glm::vec2& GetScale();
+		const glm::vec2& GetPosition() const;
+		float GetRotation() const;
+		const glm::vec2& GetScale() const;
 
-		const glm::vec3& GetLocalPosition() const { return localPosition; }
+		const glm::vec2& GetLocalPosition() const { return localPosition; }
 		float GetLocalRotation() const { return localRotation; }
 		const glm::vec2& GetLocalScale() const { return localScale; }
 
@@ -39,22 +43,21 @@ namespace Egl {
 		}
 
 		operator glm::mat4& () { return GetTransform(); }
-		// operator const glm::mat4& () const { return GetTransform(); }
 
 	private:
 		Entity thisEntity;
 
-		glm::vec3 localPosition = { 0.0f, 0.0f, 0.0f };
+		glm::vec2 localPosition = { 0.0f, 0.0f };
 		float localRotation = 0;
 		glm::vec2 localScale = { 1.0f, 1.0f };
 
-		glm::vec3 worldPosition = { 0.0f, 0.0f, 0.0f };
-		float worldRotation = 0;
-		glm::vec2 worldScale = { 1.0f, 1.0f };
+		mutable glm::vec2 worldPosition = { 0.0f, 0.0f };
+		mutable float worldRotation = 0;
+		mutable glm::vec2 worldScale = { 1.0f, 1.0f };
 
-		bool worldPosRight = false;
-		bool worldRotRight = false;
-		bool worldScaleRight = false;
+		mutable bool worldPosRight = false;
+		mutable bool worldRotRight = false;
+		mutable bool worldScaleRight = false;
 		friend class Entity;
 
 		void SetWorldPosFlagsFalse(const Relation& thisRel);
@@ -111,8 +114,7 @@ namespace Egl {
 		template<typename T>
 		void Bind() {
 			baseInstance = new T();
-				
-			// COMPILE_IF_VALID is a macro from DoesExist.h
+			
 			COMPILE_IF_VALID(T, OnCreate(),
 				OnCreateFunc = [](Script* instance) { ((T*)instance)->OnCreate(); }
 			);

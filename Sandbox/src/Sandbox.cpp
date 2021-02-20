@@ -1,15 +1,18 @@
 #pragma once
 #include <Eagle.h>
 #include <EagleApplicationStartup.h>
-
 using namespace Egl;
+
+////
+// This is an example script designed to show the API. Everything inside
+// SceneBegin and SceneEnd can be removed as well as all the example_ functions.
+////
 
 class ExampleScene : public Scene {
 	Entity example_ParticleBegin() {
 		Entity particle = AddEntity("ParticleSystem");
-		particle.GetComponent<TransformComponent>().SetLocalPosition({ 0, 8.5f, 0 });
+		particle.GetComponent<TransformComponent>().SetLocalPosition(0, 8.5f);
 		auto& particleSystem = particle.AddComponent<ParticleSystemComponent>(100000).particleSystem; // <-- The max amount of particles at a time
-
 		Ref<Particles::Emitter> emitter = CreateRef<Particles::Emitter>(30.0f); // <-- The amount of particles spawned per second
 
 		emitter->AddSetter(CreateRef<Particles::BoxPosSetter>(glm::vec2{ 0.15f, 0 }));
@@ -41,31 +44,31 @@ class ExampleScene : public Scene {
 		Entity camera = AddEntity("Camera");
 		camera.AddComponent<CameraComponent>().camera.SetSize(8.85f);
 		camera.GetComponent<CameraComponent>().backgroundColor = { 0.19f, 0.32f, 0.45f, 1 };
-		camera.GetComponent<TransformComponent>().SetPosition({ 0, -0.6f, 0 });
+		camera.GetComponent<TransformComponent>().SetPosition(0, -0.6f);
 		SetPrimaryCamera(camera);
 		
 		auto& player = AddEntity("Player");
 		auto texture = Texture::Create("Assets/Player.png", false);
 		player.AddComponent<SpriteRendererComponent>(SubTexture::CreateFromIndexes(texture, { 0, 0 }, { 16, 16 }));
-		player.GetComponent<TransformComponent>().SetPosition({ -4.2f, -1.5f, -0.1f });
+		player.GetComponent<TransformComponent>().SetPosition(-4.2f, -1.5f);
 		
 		Entity ground = AddEntity("Ground");
 		ground.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.4f, 0.42f, 0.52f, 1 });
-		ground.GetComponent<TransformComponent>().SetScale({ 13, 8 });
-		ground.GetComponent<TransformComponent>().SetPosition({ 0, -6, 0 });
+		ground.GetComponent<TransformComponent>().SetScale(13, 8);
+		ground.GetComponent<TransformComponent>().SetPosition(0, -6);
 		
 		Entity particleSystem = example_ParticleBegin();
 		//Entity UI = example_GUIWindow();
 		
 		Entity fireHydrant = AddEntity("Fire hydrant");
 		fireHydrant.AddComponent<SpriteRendererComponent>(Texture::Create("Assets/FireHydrant.png", false));
-		fireHydrant.GetComponent<TransformComponent>().SetScale({ 0.5f, 8 });
-		fireHydrant.GetComponent<TransformComponent>().SetLocalPosition({ 0, 4.5f, 0 });
+		fireHydrant.GetComponent<TransformComponent>().SetScale(0.5f, 8);
+		fireHydrant.GetComponent<TransformComponent>().SetLocalPosition(0, 4.5f);
 		
 		Entity pedistal = AddEntity("Firehydrant stucture", fireHydrant, particleSystem);
 		pedistal.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.5f, 0.52f, 0.62f, 1 });
-		pedistal.GetComponent<TransformComponent>().SetScale({ 2, 0.25f });
-		pedistal.GetComponent<TransformComponent>().SetPosition({ 1, -1.875f, 0 });
+		pedistal.GetComponent<TransformComponent>().SetScale(2, 0.25f);
+		pedistal.GetComponent<TransformComponent>().SetPosition(1, -1.875f);
 		
 		// Camera controller
 		class CameraController : public Script {
@@ -77,15 +80,30 @@ class ExampleScene : public Scene {
 				auto pos = transform.GetPosition();
 				float speed = 5;
 		
-				if (Input::IsKeyPressed(EGL_KEY_A)) transform.SetPosition({pos.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f,pos.y,0});
-				if (Input::IsKeyPressed(EGL_KEY_D)) transform.SetPosition({pos.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f,pos.y,0});
-				if (Input::IsKeyPressed(EGL_KEY_S)) transform.SetPosition({pos.x,pos.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f,0});
-				if (Input::IsKeyPressed(EGL_KEY_W)) transform.SetPosition({pos.x,pos.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f,0});
+				if (Input::IsKeyPressed(EGL_KEY_A)) transform.SetPosition(pos.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f,pos.y);
+				if (Input::IsKeyPressed(EGL_KEY_D)) transform.SetPosition(pos.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f,pos.y);
+				if (Input::IsKeyPressed(EGL_KEY_S)) transform.SetPosition(pos.x,pos.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f);
+				if (Input::IsKeyPressed(EGL_KEY_W)) transform.SetPosition(pos.x,pos.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f);
 				int scroll = Input::MouseScrolledY();
 				if (scroll < 0 || zoomSize > 1) camera.SetSize(zoomSize - scroll);
 			}
 		};
 		camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+
+		class Mover : public Script {
+			TransformComponent* trans = nullptr;
+		public:
+			void OnCreate() {
+				trans = &GetComponent<TransformComponent>();
+			}
+			void OnUpdate() {
+				glm::vec2 pos = ScreenToWorldPos(Input::MousePos());
+				trans->SetPosition(pos);
+			}
+		};
+		Entity mover = AddEntity("Mover");
+		mover.AddComponent<SpriteRendererComponent>();
+		mover.AddComponent<NativeScriptComponent>().Bind<Mover>();
 	}
 	void SceneEnd() {
 
