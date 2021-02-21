@@ -33,10 +33,13 @@ namespace Egl {
 		float GetLocalRotation() const { return localRotation; }
 		const glm::vec2& GetLocalScale() const { return localScale; }
 
+		glm::vec2 LocalToWorldPos(const glm::vec2& point) const;
+		glm::vec2 WorldToLocalPos(const glm::vec2& point) const;
+
 		TransformComponent(const TransformComponent&) = default;
 		TransformComponent(Entity entity, const glm::vec3& position) : localPosition(position), thisEntity(entity) {}
 
-		glm::mat4 GetTransform() {
+		glm::mat4 GetTransform() const {
 			return GetRotation() == 0 ?
 				glm::translate(glm::mat4(1), { GetPosition().x, GetPosition().y, 0 }) *                                                         glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1)):
 				glm::translate(glm::mat4(1), { GetPosition().x, GetPosition().y, 0 }) * glm::rotate(glm::mat4(1), GetRotation(), { 0, 0, 1 }) * glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1));
@@ -111,9 +114,9 @@ namespace Egl {
 		std::function<void(Script*)> OnDestroyFunc;
 		std::function<void(Script*)> OnUpdateFunc;
 		
-		template<typename T>
-		void Bind() {
-			baseInstance = new T();
+		template<typename T, typename ... Args>
+		void Bind(Args&&... args) {
+			baseInstance = new T(args...);
 			
 			COMPILE_IF_VALID(T, OnCreate(),
 				OnCreateFunc = [](Script* instance) { ((T*)instance)->OnCreate(); }

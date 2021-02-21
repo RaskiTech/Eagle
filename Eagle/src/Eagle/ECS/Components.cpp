@@ -66,47 +66,55 @@ namespace Egl {
 	}
 
 	const glm::vec2& TransformComponent::GetPosition() const {
-		if (worldPosRight)
-			return worldPosition;
-
-		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
-		worldPosRight = true;
-		if (parent != entt::null) {
-			TransformComponent& parentTransform = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent);
-			const glm::vec2 parent_relative_local = glm::rotateZ(glm::vec3{ parentTransform.GetScale() * localPosition, 0 }, parentTransform.GetRotation());
-			worldPosition = parentTransform.GetPosition() + parent_relative_local;
+		if (!worldPosRight) {
+			const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
+			if (parent != entt::null) {
+				TransformComponent& parentTransform = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent);
+				const glm::vec2 parentAt00Pos = glm::rotateZ(glm::vec3{ parentTransform.GetScale() * localPosition, 0 }, parentTransform.GetRotation());
+				worldPosition = parentTransform.GetPosition() + parentAt00Pos;
+			}
+			else
+				worldPosition = localPosition;
+			worldPosRight = true;
 		}
-		else
-			worldPosition = localPosition;
 
 		return worldPosition;
 	}
 	float TransformComponent::GetRotation() const {
-		if (worldRotRight)
-			return worldRotation;
-
-		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
-		worldRotRight = true;
-		if (parent != entt::null)
-			worldRotation = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetRotation() + localRotation;
-		else
-			worldRotation = localRotation;
+		if (!worldRotRight) {
+			const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
+			if (parent != entt::null)
+				worldRotation = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetRotation() + localRotation;
+			else
+				worldRotation = localRotation;
+			worldRotRight = true;
+		}
 
 		return worldRotation;
 	}
 
 	const glm::vec2& TransformComponent::GetScale() const {
-		if (worldScaleRight)
-			return worldScale;
-
-		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
-		worldScaleRight = true;
-		if (parent != entt::null)
-			worldScale = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetScale() * localScale;
-		else
-			worldScale = localScale;
+		if (!worldScaleRight) {
+			const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
+			if (parent != entt::null)
+				worldScale = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetScale() * localScale;
+			else
+				worldScale = localScale;
+			worldScaleRight = true;
+		}
 
 		return worldScale;
+	}
+
+	glm::vec2 TransformComponent::LocalToWorldPos(const glm::vec2& point) const {
+		TransformComponent& relativeTrans = thisEntity.GetComponent<TransformComponent>();
+		const glm::vec2 relativeAt00Pos = glm::rotateZ(glm::vec3{ relativeTrans.GetScale() * point, 0 }, relativeTrans.GetRotation());
+		return relativeTrans.GetPosition() + relativeAt00Pos;
+	}
+	glm::vec2 TransformComponent::WorldToLocalPos(const glm::vec2& point) const {
+		TransformComponent& relativeTrans = thisEntity.GetComponent<TransformComponent>();
+		const glm::vec2 allDoneBackwards = (glm::vec2)glm::rotateZ(glm::vec3{ point - GetPosition(), 0 }, -relativeTrans.GetRotation()) / relativeTrans.GetScale();
+		return allDoneBackwards;
 	}
 
 	void TransformComponent::SetPosition(const glm::vec2& position) {

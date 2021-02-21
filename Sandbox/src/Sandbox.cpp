@@ -92,18 +92,23 @@ class ExampleScene : public Scene {
 
 		class Mover : public Script {
 			TransformComponent* trans = nullptr;
+			glm::vec2 offset = { 0, 0 };
+			Entity otherE;
 		public:
+			Mover(const glm::vec2& offset) : offset(offset) {}
+
 			void OnCreate() {
 				trans = &GetComponent<TransformComponent>();
 			}
 			void OnUpdate() {
-				glm::vec2 pos = ScreenToWorldPos(Input::MousePos());
+				glm::vec2 pos = ScreenToWorldPos(Input::MousePos()) + offset;
 				trans->SetPosition(pos);
 			}
 		};
 		Entity mover = AddEntity("Mover");
 		mover.AddComponent<SpriteRendererComponent>();
-		mover.AddComponent<NativeScriptComponent>().Bind<Mover>();
+		mover.AddComponent<NativeScriptComponent>().Bind<Mover>(glm::vec2{1, 1});
+		mover.GetComponent<TransformComponent>().SetScale(2, 1);
 	}
 	void SceneEnd() {
 

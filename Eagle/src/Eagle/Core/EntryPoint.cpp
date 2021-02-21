@@ -4,34 +4,6 @@
 
 #ifdef EAGLE_PLATFORM_WINDOWS
 
-//class LambdaBase {
-//public:
-//	LambdaBase() {};
-//	int variable;
-//};
-//class LambdaDerived : public LambdaBase {
-//public:
-//	LambdaDerived() {};
-//	int variable;
-//};
-//class LambdaOther : public LambdaBase {
-//public:
-//	LambdaOther() {};
-//	int variable;
-//};
-//
-//class LambdaTest {
-//public:
-//	std::function<void()> fn;
-//
-//	template<typename T>
-//	void init() {
-//		fn = [&]() { ptr = new T(); };
-//	}
-//
-//	LambdaBase* ptr;
-//};
-
 int main(int agrc, char** argv) {
 	Egl::Log::Init();
 	LOG_ENG_INFO("Engine starting...");

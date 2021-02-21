@@ -34,7 +34,7 @@ namespace Egl {
 	}
 
 	void PropertiesPanel::DrawProperties() {
-		// This gives the oppurtunity to change the name, but there is really no reason, since currently no saving is planned
+		// This gives the oppurtunity to change the name, but there is really no reason, since saving isn't in development yet
 		//if (e.HasComponent<MetadataComponent>()) {
 		//	auto& tag = e.GetComponent<MetadataComponent>().tag;
 		//	char buffer[256];
@@ -44,6 +44,7 @@ namespace Egl {
 		//		tag = std::string(buffer);
 		//	}
 		//}
+
 		ImGuiIO& io = ImGui::GetIO();
 		auto& metaComponent = drawedEntity.GetComponent<MetadataComponent>();
 		auto boldFont = io.Fonts->Fonts[0];
@@ -80,7 +81,7 @@ namespace Egl {
 
 			ImGui::PushItemWidth(ImGui::CalcItemWidth()*1.5f);
 			auto pos = component.GetLocalPosition();
-			if (ImGui::DragFloat3("##Transform", glm::value_ptr(pos), 0.1f, 0, 0, "%.2f"))
+			if (ImGui::DragFloat2("##Transform", glm::value_ptr(pos), 0.1f, 0, 0, "%.2f"))
 				component.SetLocalPosition(pos);
 			ImGui::PopItemWidth();
 
