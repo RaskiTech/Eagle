@@ -33,6 +33,29 @@ namespace Egl {
 			createdEntityRelation.nextSibling = mFirstEntity;
 			mFirstEntity = createdEntityID;
 		}
+		if (areEntitiesInOrder)
+			Insert_sorted(entitiesInSortOrder, createdEntityID, [&](entt::entity e1, entt::entity e2) {
+				auto mc1 = mRegistry.get<MetadataComponent>(e1);
+				auto mc2 = mRegistry.get<MetadataComponent>(e2);
+				if (mc1.sortingLayer == mc2.sortingLayer)
+					return mc1.subSorting > mc2.subSorting;
+				else
+					return mc1.sortingLayer > mc2.sortingLayer;
+			});
+		else
+			entitiesInSortOrder.push_back(createdEntityID);
+		return entity;
+	}
+
+	Entity Scene::AddUIEntity(const std::string& name, Entity UIParent) {
+		EAGLE_ENG_ASSERT(UIParent.HasComponent<UIAlignComponent>() || UIParent.HasComponent<CanvasComponent>(), "parent isn't a canvas or an UI entity");
+
+		entt::entity createdEntityID = mRegistry.create();
+		Entity entity = { createdEntityID, this };
+		entity.AddComponent<UIAlignComponent>();
+		entity.AddComponent<MetadataComponent>(name, 100);
+		Relation& createdEntityRelation = entity.AddComponent<Relation>();
+		entity.SetParent(UIParent);
 
 		if (areEntitiesInOrder)
 			Insert_sorted(entitiesInSortOrder, createdEntityID, [&](entt::entity e1, entt::entity e2) {
@@ -45,7 +68,6 @@ namespace Egl {
 			});
 		else
 			entitiesInSortOrder.push_back(createdEntityID);
-
 		return entity;
 	}
 
@@ -64,6 +86,76 @@ namespace Egl {
 			return Entity(mPrimaryCamera, this);
 		else
 			return Entity();
+	}
+
+
+	void Scene::OnUpdate() {
+		EAGLE_PROFILE_FUNCTION();
+		// This function handles rendering the objects in this scene and updating components.
+
+		{
+			EAGLE_PROFILE_SCOPE("Application - Scripts: OnUpdate");
+			mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
+				EAGLE_ASSERT(scriptComponent.baseInstance != nullptr, "The instance is null");
+				if (scriptComponent.OnUpdateFunc)
+					scriptComponent.OnUpdateFunc(scriptComponent.baseInstance);
+			});
+		}
+
+		if (mPrimaryCamera != entt::null) {
+			CameraComponent& camera = mRegistry.get<CameraComponent>(mPrimaryCamera);
+			TransformComponent& camTrans = mRegistry.get<TransformComponent>(mPrimaryCamera);
+
+			RenderCommand::SetColor(camera.backgroundColor);
+			RenderCommand::Clear();
+
+			Renderer::BeginScene(camera.camera, camTrans.GetTransform());
+			
+			static auto texture = Texture::Create("Assets/FireHydrant.png", false);
+
+			/////// View Scaler ///////
+			{
+				auto group = mRegistry.group<CanvasComponent>(entt::get<TransformComponent>);
+				for (auto entity : group) {
+					auto [viewScaler, transform] = group.get<CanvasComponent, TransformComponent>(entity);
+
+					const glm::vec2 size = { camera.camera.GetSize() * camera.camera.GetAspectRatio(), camera.camera.GetSize() };
+					transform.SetScale(size);
+					transform.SetPosition(camTrans.GetPosition());
+				}
+			}
+
+
+			////////////////////////////////////////////////// Rendering //////////////////////////////////////////////////
+
+			/////// ParticleSystem ///////
+			{
+				auto group = mRegistry.group<ParticleSystemComponent>(entt::get<TransformComponent, MetadataComponent>);
+				for (auto entity : group) {
+					auto [particleSystem, transform, metadata] = group.get<ParticleSystemComponent, TransformComponent, MetadataComponent>(entity);
+					float delta = Time::GetFrameDelta();
+					particleSystem.particleSystem.Update(delta, transform);
+					uint16_t sorting = ((uint16_t)metadata.sortingLayer << 8) + (uint16_t)metadata.subSorting;
+					particleSystem.particleSystem.Render(sorting);
+				}
+			}
+
+			/////// Sprite ///////
+			{
+				auto group = mRegistry.group<SpriteRendererComponent>(entt::get<TransformComponent, MetadataComponent>);
+				for (auto entity : group) {
+					auto [spriteRenderer, transform, metadata] = group.get<SpriteRendererComponent, TransformComponent, MetadataComponent>(entity);
+					uint16_t sorting = ((uint16_t)metadata.sortingLayer << 8) + (uint16_t)metadata.subSorting;
+					//LOG("{0} ended up with sorting layer {1}", metadata.tag, sorting);
+					if (spriteRenderer.texture == nullptr)
+						Renderer::DrawColorQuad(sorting, transform.GetTransform(), spriteRenderer.color);
+					else
+						Renderer::DrawTextureQuad(sorting, transform.GetTransform(), spriteRenderer.texture->GetTexture(), spriteRenderer.texture->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
+				}
+			}
+
+			Renderer::EndScene();
+		}
 	}
 
 	glm::vec2 Scene::ScreenToWorldPos(const glm::vec2& pixelCoordinate) const {
@@ -103,59 +195,6 @@ namespace Egl {
 		return { posX, posY };
 	}
 
-	void Scene::OnUpdate() {
-		EAGLE_PROFILE_FUNCTION();
-		// This function handles rendering the objects in this scene and updating components.
-
-		{
-			EAGLE_PROFILE_SCOPE("Application - Scripts: OnUpdate");
-			mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
-				EAGLE_ASSERT(scriptComponent.baseInstance != nullptr, "The instance is null");
-				if (scriptComponent.OnUpdateFunc)
-					scriptComponent.OnUpdateFunc(scriptComponent.baseInstance);
-			});
-		}
-
-		if (mPrimaryCamera != entt::null) {
-			CameraComponent& camera = mRegistry.get<CameraComponent>(mPrimaryCamera);
-			TransformComponent& transform = mRegistry.get<TransformComponent>(mPrimaryCamera);
-
-			RenderCommand::SetColor(camera.backgroundColor);
-			RenderCommand::Clear();
-
-			Renderer::BeginScene(camera.camera, transform.GetTransform());
-			
-			static auto texture = Texture::Create("Assets/FireHydrant.png", false);
-
-			{
-				/////// ParticleSystem ///////
-				auto group = mRegistry.group<ParticleSystemComponent>(entt::get<TransformComponent, MetadataComponent>);
-				for (auto entity : group) {
-					auto [particleSystem, transform, metadata] = group.get<ParticleSystemComponent, TransformComponent, MetadataComponent>(entity);
-					float delta = Time::GetFrameDelta();
-					particleSystem.particleSystem.Update(delta, transform);
-					uint16_t sorting = ((uint16_t)metadata.sortingLayer << 8) + (uint16_t)metadata.subSorting;
-					particleSystem.particleSystem.Render(sorting);
-				}
-			}
-
-			{
-				/////// Sprite ///////
-				auto group = mRegistry.group<SpriteRendererComponent>(entt::get<TransformComponent, MetadataComponent>);
-				for (auto entity : group) {
-					auto [spriteRenderer, transform, metadata] = group.get<SpriteRendererComponent, TransformComponent, MetadataComponent>(entity);
-					uint16_t sorting = ((uint16_t)metadata.sortingLayer << 8) + (uint16_t)metadata.subSorting;
-					//LOG("{0} ended up with sorting layer {1}", metadata.tag, sorting);
-					if (spriteRenderer.texture == nullptr)
-						Renderer::DrawColorQuad(sorting, transform.GetTransform(), spriteRenderer.color);
-					else
-						Renderer::DrawTextureQuad(sorting, transform.GetTransform(), spriteRenderer.texture->GetTexture(), spriteRenderer.texture->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
-				}
-			}
-
-			Renderer::EndScene();
-		}
-	}
 	void Scene::SetViewportAspectRatio(float aspectRatio) {
 		// Resize cameras that don't have a fixed aspect ratio
 		auto& view = mRegistry.view<CameraComponent>();

@@ -122,7 +122,7 @@ namespace Egl {
 				scene->SetPrimaryCamera(drawedEntity);
 			}
 
-			float size = component.camera.GetCameraSize();
+			float size = component.camera.GetSize();
 			if (ImGui::DragFloat("Size", &size, 0.05f)) {
 				component.camera.SetBounds(size);
 			}

@@ -7,13 +7,16 @@ namespace Egl {
 	Entity::Entity(entt::entity entity, Scene* scene) : mEntity(entity), mScene(scene) {}
 
 	void Entity::AddChild(const Entity& child) const {
-
 		Relation& parentRelation = GetComponent<Relation>();
 		Relation& childRelation = mScene->mRegistry.get<Relation>(child.mEntity);
-		auto& childTransform = child.GetComponent<TransformComponent>();
-		childTransform.worldPosRight = false;
-		childTransform.worldRotRight = false;
-		childTransform.worldScaleRight = false;
+		if (child.HasComponent<TransformComponent>()) {
+			auto& childTransform = child.GetComponent<TransformComponent>();
+			childTransform.worldPosRight = false;
+			childTransform.worldRotRight = false;
+			childTransform.worldScaleRight = false;
+		}
+
+		EAGLE_ENG_ASSERT(childRelation.parent == entt::null, "Entity already has a parent");
 
 		// Remove the child from the hierarchy
 		if (mScene->mFirstEntity == child.mEntity)
@@ -22,8 +25,6 @@ namespace Egl {
 			mScene->mRegistry.get<Relation>(childRelation.nextSibling).previousSibling = childRelation.previousSibling;
 		if (childRelation.previousSibling != entt::null)
 			mScene->mRegistry.get<Relation>(childRelation.previousSibling).nextSibling = childRelation.nextSibling;
-
-		EAGLE_ENG_ASSERT(childRelation.parent == entt::null, "Entity already has a parent");
 
 		if (parentRelation.childCount > 0) {
 			// Set the parentRelation.firstChild point to the new child and the new child point to the previous first child

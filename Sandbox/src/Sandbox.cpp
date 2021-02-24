@@ -9,6 +9,15 @@ using namespace Egl;
 ////
 
 class ExampleScene : public Scene {
+	void example_UI() {
+		Entity canvas = AddEntity("Canvas");
+		canvas.AddComponent<CanvasComponent>();
+
+		Entity exampleSquare = AddUIEntity("Square", canvas);
+		exampleSquare.AddComponent<SpriteRendererComponent>();
+		//uiTrans.xDriver();
+	}
+
 	Entity example_ParticleBegin() {
 		Entity particle = AddEntity("ParticleSystem");
 		particle.GetComponent<TransformComponent>().SetLocalPosition(0, 8.5f);
@@ -70,18 +79,20 @@ class ExampleScene : public Scene {
 		pedistal.GetComponent<TransformComponent>().SetScale(2, 0.25f);
 		pedistal.GetComponent<TransformComponent>().SetPosition(1, -1.875f);
 		
+		example_UI();
+
 		// Camera controller
 		class CameraController : public Script {
 		public:
 			void OnUpdate() {
 				auto& transform = GetComponent<TransformComponent>();
 				auto& camera = GetComponent<CameraComponent>().camera;
-				float zoomSize = camera.GetCameraSize();
+				float zoomSize = camera.GetSize();
 				auto pos = transform.GetPosition();
 				float speed = 5;
-		
-				if (Input::IsKeyPressed(EGL_KEY_A)) transform.SetPosition(pos.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f,pos.y);
-				if (Input::IsKeyPressed(EGL_KEY_D)) transform.SetPosition(pos.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f,pos.y);
+				
+				if (Input::IsKeyPressed(EGL_KEY_A)) transform.SetPosition(pos.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f, pos.y);
+				if (Input::IsKeyPressed(EGL_KEY_D)) transform.SetPosition(pos.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f, pos.y);
 				if (Input::IsKeyPressed(EGL_KEY_S)) transform.SetPosition(pos.x,pos.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f);
 				if (Input::IsKeyPressed(EGL_KEY_W)) transform.SetPosition(pos.x,pos.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f);
 				int scroll = Input::MouseScrolledY();
@@ -89,26 +100,6 @@ class ExampleScene : public Scene {
 			}
 		};
 		camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
-
-		class Mover : public Script {
-			TransformComponent* trans = nullptr;
-			glm::vec2 offset = { 0, 0 };
-			Entity otherE;
-		public:
-			Mover(const glm::vec2& offset) : offset(offset) {}
-
-			void OnCreate() {
-				trans = &GetComponent<TransformComponent>();
-			}
-			void OnUpdate() {
-				glm::vec2 pos = ScreenToWorldPos(Input::MousePos()) + offset;
-				trans->SetPosition(pos);
-			}
-		};
-		Entity mover = AddEntity("Mover");
-		mover.AddComponent<SpriteRendererComponent>();
-		mover.AddComponent<NativeScriptComponent>().Bind<Mover>(glm::vec2{1, 1});
-		mover.GetComponent<TransformComponent>().SetScale(2, 1);
 	}
 	void SceneEnd() {
 

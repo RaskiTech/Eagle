@@ -35,7 +35,6 @@ namespace Egl {
 			mActiveScene->mRegistry.view<NativeScriptComponent>().each([&](auto entity, NativeScriptComponent& scriptComponent) {
 				EAGLE_ENG_ASSERT(scriptComponent.baseInstance != nullptr, "Instance is a nullptr");
 
-				LOG("Now that here, is base null? {0}", scriptComponent.baseInstance == nullptr);
 				#pragma warning( suppress: 6011 )
 				scriptComponent.baseInstance->mEntity = Entity{ entity, mActiveScene.get() };
 

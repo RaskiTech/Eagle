@@ -44,7 +44,6 @@ namespace Egl {
 				glm::translate(glm::mat4(1), { GetPosition().x, GetPosition().y, 0 }) *                                                         glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1)):
 				glm::translate(glm::mat4(1), { GetPosition().x, GetPosition().y, 0 }) * glm::rotate(glm::mat4(1), GetRotation(), { 0, 0, 1 }) * glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1));
 		}
-
 		operator glm::mat4& () { return GetTransform(); }
 
 	private:
@@ -132,5 +131,68 @@ namespace Egl {
 			EAGLE_ENG_ASSERT(baseInstance != nullptr, "baseInstance was null when trying to delete it. Scene unload interrupted previously?");
 			delete baseInstance;
 		}
+	};
+
+	struct CanvasComponent {
+		CanvasComponent() {};
+
+	private:
+		// Can be removed if some data is added. Entt doesn't like if a component doesn't have any data.
+		char dummyDataForEntt;
+	};
+
+	struct UIAlignComponent {
+		enum class WidthDriver {
+			ConstantWidth,    // The object will always have the same width
+			RelativeWidth,    // The objects width will be a certain percent of the parents
+			AspectWidth       // The width will depend on the height. 1 is height
+		};
+		enum class HeightDriver {
+			ConstantHeight,   // The object will always have the same height
+			RelativeHeight,   // The objects height will be a certain percent of the parents
+			AspectHeight      // The height will depend on the width. 1 is width
+		};
+		enum class YDriver {
+			PixelsFromTop,    // The objects top will always be the same distance from the windows top
+			PixelsFromBottom, // The objects bottom will always be the same distance from the windows bottom
+			AlignCenterY,     // Have the objects center be at a certain percent vertically
+			AlignTopY,        // Have the objects top be at a certain percent vertically
+			AlignBottomY      // Have the objects bottom be at a certain percent vertically
+		};
+		enum class XDriver {
+			PixelsFromLeft,   // The objects left side will always be the same distance from the windows left side
+			PixelsFromRight,  // The objects right side will always be the same distance from the windows right side
+			AlignCenterX,	  // Have the objects center be at a certain percent horizontally
+			AlignLeftX,       // Have the objects top be at a certain percent horizontally
+			AlignRightX       // Have the objects right side be at a certain percent horizontally
+		};
+
+		UIAlignComponent() = default;
+		UIAlignComponent(XDriver xDriver, float xValue, YDriver yDriver, float yValue, WidthDriver widthDriver, float widthValue, HeightDriver heightDriver, float heightValue)
+			: xAligment((uint8_t)xDriver), xValue(xValue), yAligment((uint8_t)yDriver), yValue(yValue), width((uint8_t)widthDriver), widthValue(widthValue), height((uint8_t)heightDriver), heightValue(heightValue) {}
+
+		WidthDriver GetWidthDriver() const { return (WidthDriver)width; }
+		XDriver GetXDriver() const { return (XDriver)xAligment; }
+		HeightDriver GetHeightDriver() const { return (HeightDriver)height; }
+		YDriver GetYDriver() const { return (YDriver)yAligment; }
+		
+		const glm::vec2& GetPosition() const;
+		const glm::vec2& GetScale() const;
+
+		glm::mat4 GetTransform() const {
+			return glm::translate(glm::mat4(1), { GetPosition().x, GetPosition().y, 0 }) * glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1))
+		}
+		operator glm::mat4& () { return GetTransform(); }
+	private:
+		uint8_t xAligment   = (uint8_t)XDriver::AlignCenterX;
+		uint8_t yAligment   = (uint8_t)YDriver::AlignCenterY;
+		uint8_t width       = (uint8_t)WidthDriver::AspectWidth;
+		uint8_t height      = (uint8_t)HeightDriver::RelativeHeight;
+		float xValue = 0.5f, yValue = 0.5f, widthValue = 0.5f, heightValue = 0.5f;
+
+		mutable bool worldPosRight = false;
+		mutable bool worldScaleRight = false;
+		mutable glm::vec2 worldPosition;
+		mutable glm::vec2 worldScale;
 	};
 }
