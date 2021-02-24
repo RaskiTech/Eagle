@@ -76,11 +76,12 @@ namespace Egl {
 		ImGui::Text(name);
 		ImGui::NextColumn();
 
-		constexpr float height = 20;
+		constexpr float height = 17.5f;
 
 		for (int i = 0; i < optionAmount; i++) {
 			ImGui::PushID(UniqueID::GetUniqueFrameID());
 			if (i % numInSameLine != 0) ImGui::SameLine();
+			else ImGui::Spacing();
 
 			if (ImGui::Selectable(options[i], i == selectedIndex, 0, ImVec2((ImGui::CalcItemWidth() * 1.5f - 30) / numInSameLine, height)))
 				selectedIndex = i;
@@ -147,7 +148,7 @@ namespace Egl {
 				component.SetLocalScale(scale);
 		});
 
-		DrawComponent<UIAlignComponent>("UIAlign", drawedEntity, [](UIAlignComponent& component) {
+		DrawComponent<UIAlignComponent>("UI Align", drawedEntity, [](UIAlignComponent& component) {
 			component.xDriver = (UIAlignComponent::XDriver)SelectWidget("X Driver", std::array<const char*, 5>{"PixelsFromLeft", "PixelsFromRight", "AlignCenterX", "AlignLeft", "AlignRight"}, (uint8_t)component.xDriver, 5);
 			DrawFloat("X Position", &component.xPosValue);
 			ImGui::Spacing();
@@ -165,42 +166,24 @@ namespace Egl {
 			ImGui::Spacing();
 
 			if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), 0, "World Position")) {
-
 				ImGui::Columns(2);
-
 				ImGui::SetColumnWidth(0, 100);
 				ImGui::Text("Position");
 				ImGui::NextColumn();
-
 				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
 				ImGui::Text("%.3f  %.3f", component.GetWorldPosition().x, component.GetWorldPosition().y);
 				ImGui::PopItemWidth();
-
 				ImGui::Columns(1);
-				// ImGui::Columns(2);
-				// 
-				// ImGui::SetColumnWidth(0, 100);
-				// ImGui::Text("Rotation");
-				// ImGui::NextColumn();
-				// 
-				// ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				// float rotation = component.GetLocalRotation();
-				// if (ImGui::DragFloat("##Rotation", &rotation, 0.1f, 0, 0, "%.2f"))
-				// 	component.SetLocalRotation(rotation);
-				// ImGui::PopItemWidth();
-				// 
-				// ImGui::Columns(1);
-				ImGui::Columns(2);
 
+				ImGui::Columns(2);
 				ImGui::SetColumnWidth(0, 100);
 				ImGui::Text("Scale");
 				ImGui::NextColumn();
-
 				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
 				ImGui::Text("%.3f  %.3f", component.GetWorldScale().x, component.GetWorldScale().y);
 				ImGui::PopItemWidth();
-
 				ImGui::Columns(1);
+
 				ImGui::TreePop();
 			}
 		});

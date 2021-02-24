@@ -165,6 +165,8 @@ namespace Egl {
 						Renderer::DrawColorQuad(sorting, align.GetTransform(), spriteRenderer.color);
 					else
 						Renderer::DrawTextureQuad(sorting, align.GetTransform(), spriteRenderer.texture->GetTexture(), spriteRenderer.texture->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
+					// TODO: Set the need only if parent has changed scale. Remember canvas
+					align.SetNeedToCalculateDimensions();
 				}
 			}
 

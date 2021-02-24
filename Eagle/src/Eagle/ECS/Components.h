@@ -170,7 +170,7 @@ namespace Egl {
 		YDriver yDriver           = YDriver::AlignCenter;
 		WidthDriver widthDriver   = WidthDriver::AspectWidth;
 		HeightDriver heightDriver = HeightDriver::RelativeHeight;
-		float xPosValue = 0.5f, yPosValue = 0.5f, widthValue = 0.5f, heightValue = 0.5f;
+		float xPosValue = 0.5f, yPosValue = 0.5f, widthValue = 1, heightValue = 0.3f;
 
 		UIAlignComponent(Entity thisEntity) : thisEntity(thisEntity) {};
 		UIAlignComponent(Entity thisEntity, XDriver xDriver, float xValue, YDriver yDriver, float yValue, WidthDriver widthDriver, float widthValue, HeightDriver heightDriver, float heightValue)
@@ -184,12 +184,14 @@ namespace Egl {
 			return glm::translate(glm::mat4(1), { GetWorldPosition().x, GetWorldPosition().y, 0 }) * glm::scale(glm::mat4(1), glm::vec3(GetWorldScale(), 1));
 		}
 		operator glm::mat4& () { return GetTransform(); }
+	protected:
+		void SetNeedToCalculateDimensions() { dimensionsRight = false; }
+		friend class Scene;
 	private:
 		void CheckAreDimensionsCorrect() const;
 		void CalculateDimensions(const glm::vec2& parentPos, const glm::vec2& parentScale) const;
 
 		Entity thisEntity;
-
 
 		mutable bool dimensionsRight = false;
 		mutable glm::vec2 worldPosition = { 0, 0 };
