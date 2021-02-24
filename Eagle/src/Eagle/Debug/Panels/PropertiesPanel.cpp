@@ -19,6 +19,8 @@ namespace Egl {
 		ImGui::End();
 	}
 
+	#pragma region Custom Widgets
+
 	template<typename ComponentType, typename UIFunction>
 	static void DrawComponent(const std::string& name, Entity e, UIFunction function) {
 		const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -32,6 +34,66 @@ namespace Egl {
 			}
 		}
 	}
+
+	static bool DrawVec2(const char* name, float* value_ptr) {
+		ImGui::PushID(UniqueID::GetUniqueFrameID());
+		ImGui::Columns(2);
+
+		ImGui::SetColumnWidth(0, 100);
+		ImGui::Text(name);
+		ImGui::NextColumn();
+
+		ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
+		bool isTrue = ImGui::DragFloat2("##Transform", value_ptr, 0.1f, 0, 0, "%.2f");
+		ImGui::PopItemWidth();
+
+		ImGui::Columns(1);
+		ImGui::PopID();
+		return isTrue;
+	}
+	static bool DrawFloat(const char* name, float* value) {
+		ImGui::PushID(UniqueID::GetUniqueFrameID());
+		ImGui::Columns(2);
+
+		ImGui::SetColumnWidth(0, 100);
+		ImGui::Text(name);
+		ImGui::NextColumn();
+
+		ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
+		bool isTrue = ImGui::DragFloat("##Transform", value, 0.1f, 0, 0, "%.2f");
+		ImGui::PopItemWidth();
+
+		ImGui::Columns(1);
+		ImGui::PopID();
+		return isTrue;
+	}
+
+	template<uint8_t optionAmount>
+	static uint8_t SelectWidget(const char* name, std::array<const char*, optionAmount> options, uint8_t selectedIndex, int numInSameLine = 4) {
+		ImGui::Columns(2);
+
+		ImGui::SetColumnWidth(0, 100);
+		ImGui::Text(name);
+		ImGui::NextColumn();
+
+		constexpr float height = 20;
+
+		for (int i = 0; i < optionAmount; i++) {
+			ImGui::PushID(UniqueID::GetUniqueFrameID());
+			if (i % numInSameLine != 0) ImGui::SameLine();
+
+			if (ImGui::Selectable(options[i], i == selectedIndex, 0, ImVec2((ImGui::CalcItemWidth() * 1.5f - 30) / numInSameLine, height)))
+				selectedIndex = i;
+
+			ImGui::PopID();
+		}
+
+		ImGui::Columns(1);
+
+		return selectedIndex;
+	}
+
+	#pragma endregion
 
 	void PropertiesPanel::DrawProperties() {
 		// This gives the oppurtunity to change the name, but there is really no reason, since saving isn't in development yet
@@ -68,53 +130,80 @@ namespace Egl {
 			metaComponent.subSorting = sorting;
 		ImGui::Columns(1);
 		ImGui::PopItemWidth();
-
 		ImGui::Spacing();
 
+
 		DrawComponent<TransformComponent>("Transform", drawedEntity, [](TransformComponent& component) {
-			ImGui::PushID(UniqueID::GetUniqueFrameID());
-			ImGui::Columns(2);
-
-			ImGui::SetColumnWidth(0, 100);
-			ImGui::Text("Position");
-			ImGui::NextColumn();
-
-			ImGui::PushItemWidth(ImGui::CalcItemWidth()*1.5f);
 			auto pos = component.GetLocalPosition();
-			if (ImGui::DragFloat2("##Transform", glm::value_ptr(pos), 0.1f, 0, 0, "%.2f"))
+			if (DrawVec2("Position", glm::value_ptr(pos)))
 				component.SetLocalPosition(pos);
-			ImGui::PopItemWidth();
 
-			ImGui::Columns(1);
-			ImGui::Columns(2);
+			auto rot = component.GetLocalRotation();
+			if (DrawFloat("Rotation", &rot))
+				component.SetLocalRotation(rot);
 
-			ImGui::SetColumnWidth(0, 100);
-			ImGui::Text("Rotation");
-			ImGui::NextColumn();
-
-			ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-			float rotation = component.GetLocalRotation();
-			if (ImGui::DragFloat("##Rotation", &rotation, 0.1f, 0, 0, "%.2f"))
-				component.SetLocalRotation(rotation);
-			ImGui::PopItemWidth();
-
-			ImGui::Columns(1);
-			ImGui::Columns(2);
-
-			ImGui::SetColumnWidth(0, 100);
-			ImGui::Text("Scale");
-			ImGui::NextColumn();
-
-			ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
 			auto scale = component.GetLocalScale();
-			if (ImGui::DragFloat2("##Scale", glm::value_ptr(scale), 0.1f, 0, 0, "%.2f"))
+			if (DrawVec2("Scale", glm::value_ptr(scale)))
 				component.SetLocalScale(scale);
-			ImGui::PopItemWidth();
+		});
 
-			ImGui::Columns(1);
-			ImGui::PopID();
+		DrawComponent<UIAlignComponent>("UIAlign", drawedEntity, [](UIAlignComponent& component) {
+			component.xDriver = (UIAlignComponent::XDriver)SelectWidget("X Driver", std::array<const char*, 5>{"PixelsFromLeft", "PixelsFromRight", "AlignCenterX", "AlignLeft", "AlignRight"}, (uint8_t)component.xDriver, 5);
+			DrawFloat("X Position", &component.xPosValue);
+			ImGui::Spacing();
 
-			});
+			component.yDriver = (UIAlignComponent::YDriver)SelectWidget("Width Driver", std::array<const char*, 5>{"PixelsFromTop", "PixelsFromBottom", "AlignCenterY", "AlignTop", "AlignBottom"}, (uint8_t)component.yDriver, 5);
+			DrawFloat("Y Position", &component.yPosValue);
+			ImGui::Spacing();
+
+			component.widthDriver = (UIAlignComponent::WidthDriver)SelectWidget("Width Driver", std::array<const char*, 3>{"ConstantWidth", "RelativeWidth", "AspectWidth"}, (uint8_t)component.widthDriver, 3);
+			DrawFloat("Width Value", &component.widthValue);
+			ImGui::Spacing();
+
+			component.heightDriver = (UIAlignComponent::HeightDriver)SelectWidget("Width Driver", std::array<const char*, 3>{"ConstantHeight", "RelativeHeight", "AspectHeight"}, (uint8_t)component.heightDriver, 3);
+			DrawFloat("Height Value", &component.heightValue);
+			ImGui::Spacing();
+
+			if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), 0, "World Position")) {
+
+				ImGui::Columns(2);
+
+				ImGui::SetColumnWidth(0, 100);
+				ImGui::Text("Position");
+				ImGui::NextColumn();
+
+				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
+				ImGui::Text("%.3f  %.3f", component.GetWorldPosition().x, component.GetWorldPosition().y);
+				ImGui::PopItemWidth();
+
+				ImGui::Columns(1);
+				// ImGui::Columns(2);
+				// 
+				// ImGui::SetColumnWidth(0, 100);
+				// ImGui::Text("Rotation");
+				// ImGui::NextColumn();
+				// 
+				// ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
+				// float rotation = component.GetLocalRotation();
+				// if (ImGui::DragFloat("##Rotation", &rotation, 0.1f, 0, 0, "%.2f"))
+				// 	component.SetLocalRotation(rotation);
+				// ImGui::PopItemWidth();
+				// 
+				// ImGui::Columns(1);
+				ImGui::Columns(2);
+
+				ImGui::SetColumnWidth(0, 100);
+				ImGui::Text("Scale");
+				ImGui::NextColumn();
+
+				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
+				ImGui::Text("%.3f  %.3f", component.GetWorldScale().x, component.GetWorldScale().y);
+				ImGui::PopItemWidth();
+
+				ImGui::Columns(1);
+				ImGui::TreePop();
+			}
+		});
 
 		DrawComponent<CameraComponent>("Camera", drawedEntity, [&](CameraComponent& component) {
 			if (ImGui::Button("Set primary camera")) {

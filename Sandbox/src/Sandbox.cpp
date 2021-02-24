@@ -15,7 +15,6 @@ class ExampleScene : public Scene {
 
 		Entity exampleSquare = AddUIEntity("Square", canvas);
 		exampleSquare.AddComponent<SpriteRendererComponent>();
-		//uiTrans.xDriver();
 	}
 
 	Entity example_ParticleBegin() {

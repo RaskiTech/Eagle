@@ -155,44 +155,44 @@ namespace Egl {
 		enum class YDriver {
 			PixelsFromTop,    // The objects top will always be the same distance from the windows top
 			PixelsFromBottom, // The objects bottom will always be the same distance from the windows bottom
-			AlignCenterY,     // Have the objects center be at a certain percent vertically
-			AlignTopY,        // Have the objects top be at a certain percent vertically
-			AlignBottomY      // Have the objects bottom be at a certain percent vertically
+			AlignCenter,     // Have the objects center be at a certain percent vertically
+			AlignTop,        // Have the objects top be at a certain percent vertically
+			AlignBottom      // Have the objects bottom be at a certain percent vertically
 		};
 		enum class XDriver {
 			PixelsFromLeft,   // The objects left side will always be the same distance from the windows left side
 			PixelsFromRight,  // The objects right side will always be the same distance from the windows right side
-			AlignCenterX,	  // Have the objects center be at a certain percent horizontally
-			AlignLeftX,       // Have the objects top be at a certain percent horizontally
-			AlignRightX       // Have the objects right side be at a certain percent horizontally
+			AlignCenter,	  // Have the objects center be at a certain percent horizontally
+			AlignLeft,       // Have the objects top be at a certain percent horizontally
+			AlignRight       // Have the objects right side be at a certain percent horizontally
 		};
+		XDriver xDriver           = XDriver::AlignCenter;
+		YDriver yDriver           = YDriver::AlignCenter;
+		WidthDriver widthDriver   = WidthDriver::AspectWidth;
+		HeightDriver heightDriver = HeightDriver::RelativeHeight;
+		float xPosValue = 0.5f, yPosValue = 0.5f, widthValue = 0.5f, heightValue = 0.5f;
 
-		UIAlignComponent() = default;
-		UIAlignComponent(XDriver xDriver, float xValue, YDriver yDriver, float yValue, WidthDriver widthDriver, float widthValue, HeightDriver heightDriver, float heightValue)
-			: xAligment((uint8_t)xDriver), xValue(xValue), yAligment((uint8_t)yDriver), yValue(yValue), width((uint8_t)widthDriver), widthValue(widthValue), height((uint8_t)heightDriver), heightValue(heightValue) {}
+		UIAlignComponent(Entity thisEntity) : thisEntity(thisEntity) {};
+		UIAlignComponent(Entity thisEntity, XDriver xDriver, float xValue, YDriver yDriver, float yValue, WidthDriver widthDriver, float widthValue, HeightDriver heightDriver, float heightValue)
+			: thisEntity(thisEntity), xDriver(xDriver), xPosValue(xValue), yDriver(yDriver), yPosValue(yValue), 
+			  widthDriver(widthDriver), widthValue(widthValue), heightDriver(heightDriver), heightValue(heightValue) {}
 
-		WidthDriver GetWidthDriver() const { return (WidthDriver)width; }
-		XDriver GetXDriver() const { return (XDriver)xAligment; }
-		HeightDriver GetHeightDriver() const { return (HeightDriver)height; }
-		YDriver GetYDriver() const { return (YDriver)yAligment; }
-		
-		const glm::vec2& GetPosition() const;
-		const glm::vec2& GetScale() const;
+		const glm::vec2& GetWorldPosition() const;
+		const glm::vec2& GetWorldScale() const;
 
 		glm::mat4 GetTransform() const {
-			return glm::translate(glm::mat4(1), { GetPosition().x, GetPosition().y, 0 }) * glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1))
+			return glm::translate(glm::mat4(1), { GetWorldPosition().x, GetWorldPosition().y, 0 }) * glm::scale(glm::mat4(1), glm::vec3(GetWorldScale(), 1));
 		}
 		operator glm::mat4& () { return GetTransform(); }
 	private:
-		uint8_t xAligment   = (uint8_t)XDriver::AlignCenterX;
-		uint8_t yAligment   = (uint8_t)YDriver::AlignCenterY;
-		uint8_t width       = (uint8_t)WidthDriver::AspectWidth;
-		uint8_t height      = (uint8_t)HeightDriver::RelativeHeight;
-		float xValue = 0.5f, yValue = 0.5f, widthValue = 0.5f, heightValue = 0.5f;
+		void CheckAreDimensionsCorrect() const;
+		void CalculateDimensions(const glm::vec2& parentPos, const glm::vec2& parentScale) const;
 
-		mutable bool worldPosRight = false;
-		mutable bool worldScaleRight = false;
-		mutable glm::vec2 worldPosition;
-		mutable glm::vec2 worldScale;
+		Entity thisEntity;
+
+
+		mutable bool dimensionsRight = false;
+		mutable glm::vec2 worldPosition = { 0, 0 };
+		mutable glm::vec2 worldScale = { 1, 1 };
 	};
 }

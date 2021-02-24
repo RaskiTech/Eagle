@@ -48,6 +48,7 @@ namespace Egl {
 		friend class Entity;
 		friend class HierarchyPanel;
 		friend struct TransformComponent;
+		friend struct UIAlignComponent;
 
 	private:
 		inline void AddEntityChildsImp(Entity& createdEntity) {}

@@ -2,6 +2,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include "Components.h"
 #include "ComponentsInternal.h"
+#include "Eagle/Core/Application.h"
 #include "Entity.h"
 
 namespace Egl {
@@ -156,12 +157,124 @@ namespace Egl {
 
 	//// UIAlignComponent ////
 
-	const glm::vec2& UIAlignComponent::GetPosition() const {
-		// TODO: make the function
-		int i = 1 / 0;
+	const glm::vec2& UIAlignComponent::GetWorldPosition() const {
+		CheckAreDimensionsCorrect();
+		return worldPosition;
 	}
-	const glm::vec2& UIAlignComponent::GetScale() const {
-		// TODO: make the function
-		int i = 1 / 0;
+	const glm::vec2& UIAlignComponent::GetWorldScale() const {
+		CheckAreDimensionsCorrect();
+		return worldScale;
+	}
+
+	void UIAlignComponent::CheckAreDimensionsCorrect() const {
+		if (!dimensionsRight) {
+			const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
+			if (thisEntity.GetParentScene()->mRegistry.has<UIAlignComponent>(parent)) {
+				UIAlignComponent& parentComp = thisEntity.GetParentScene()->mRegistry.get<UIAlignComponent>(parent);
+				CalculateDimensions(parentComp.GetWorldPosition(), parentComp.GetWorldScale());
+			}
+			else {
+				TransformComponent& parentComp = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent);
+				CalculateDimensions(parentComp.GetPosition(), parentComp.GetScale());
+			}
+			dimensionsRight = true;
+		}
+	}
+	void UIAlignComponent::CalculateDimensions(const glm::vec2& parentPos, const glm::vec2& parentScale) const {
+
+		// TODO: Maybe multiply scale by parents scale so that the world size is relative to it's parent
+
+		/////// Scale ///////
+		switch ((WidthDriver)widthDriver) {
+			case WidthDriver::ConstantWidth: {
+				worldScale.x = widthValue;
+				break;
+			}
+			case WidthDriver::RelativeWidth: {
+				worldScale.x = Application::Get().GetSceneWindowSize().x * widthValue;
+				break;
+			}
+		}
+
+		switch ((HeightDriver)heightDriver) {
+			case HeightDriver::AspectHeight: {
+				worldScale.y = worldScale.x * heightValue;
+				break;
+			}
+			case HeightDriver::ConstantHeight: {
+				worldScale.y = heightValue;
+				break;
+			}
+			case HeightDriver::RelativeHeight: {
+				worldScale.y = Application::Get().GetSceneWindowSize().y * heightValue;
+				break;
+			}
+		}
+
+		if ((WidthDriver)widthDriver == WidthDriver::AspectWidth)
+			worldScale.x = worldScale.y * widthValue;
+
+		/////// Position ///////
+		// Note: values are likely in worldSpace and not screen space
+
+		switch ((XDriver)xDriver) {
+			case XDriver::AlignCenter: {
+				float screenLeftSide = parentPos.x - parentScale.x / 2;
+				worldPosition.x = Application::Get().GetSceneWindowSize().x * xPosValue + screenLeftSide;
+				break;
+			}
+			case XDriver::AlignLeft: {
+				float screenLeftSide = parentPos.x - parentScale.x / 2;
+				float leftSideOffset = worldScale.x / 2;
+				worldPosition.x = Application::Get().GetSceneWindowSize().x * xPosValue + screenLeftSide + leftSideOffset;
+				break;
+			}
+			case XDriver::AlignRight: {
+				float screenRightSide = parentPos.x + parentScale.x / 2;
+				float rightSideOffset = worldScale.x / 2;
+				worldPosition.x = Application::Get().GetSceneWindowSize().x * xPosValue + screenRightSide - rightSideOffset;
+				break;
+			}
+			case XDriver::PixelsFromLeft: {
+				float screenLeftSide = parentPos.x - parentScale.x / 2;
+				worldPosition.x = screenLeftSide + xPosValue;
+				break;
+			}
+			case XDriver::PixelsFromRight: {
+				float screenRightSide = parentPos.x + parentScale.x / 2;
+				worldPosition.x = screenRightSide - xPosValue;
+				break;
+			}
+		}
+
+		switch ((YDriver)yDriver) {
+			case YDriver::AlignCenter: {
+				float screenTopSide = parentPos.y + parentScale.y / 2;
+				worldPosition.y = Application::Get().GetSceneWindowSize().y * yPosValue + screenTopSide;
+				break;
+			}
+			case YDriver::AlignTop: {
+				float screenTopSide = parentPos.y + parentScale.y / 2;
+				float topSideOffset = worldScale.y / 2;
+				worldPosition.y = Application::Get().GetSceneWindowSize().y * yPosValue + screenTopSide - topSideOffset;
+				break;
+			}
+			case YDriver::AlignBottom: {
+				float screenBottomSide = parentPos.y - parentScale.y / 2;
+				float bottomSideOffset = worldScale.y / 2;
+				worldPosition.y = Application::Get().GetSceneWindowSize().y * yPosValue + screenBottomSide + bottomSideOffset;
+				break;
+			}
+			case YDriver::PixelsFromTop: {
+				float screenTopSide = parentPos.y + parentScale.y / 2;
+				worldPosition.y = screenTopSide + yPosValue;
+				break;
+			}
+			case YDriver::PixelsFromBottom: {
+				float screenBottomSide = parentPos.y - parentScale.y / 2;
+				worldPosition.y = screenBottomSide - yPosValue;
+				break;
+			}
+		}
 	}
 }

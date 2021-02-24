@@ -52,7 +52,7 @@ namespace Egl {
 
 		entt::entity createdEntityID = mRegistry.create();
 		Entity entity = { createdEntityID, this };
-		entity.AddComponent<UIAlignComponent>();
+		entity.AddComponent<UIAlignComponent>(entity);
 		entity.AddComponent<MetadataComponent>(name, 100);
 		Relation& createdEntityRelation = entity.AddComponent<Relation>();
 		entity.SetParent(UIParent);
@@ -151,6 +151,20 @@ namespace Egl {
 						Renderer::DrawColorQuad(sorting, transform.GetTransform(), spriteRenderer.color);
 					else
 						Renderer::DrawTextureQuad(sorting, transform.GetTransform(), spriteRenderer.texture->GetTexture(), spriteRenderer.texture->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
+				}
+			}
+
+			/////// UIAligment ///////
+			{
+				auto group = mRegistry.group<UIAlignComponent>(entt::get<SpriteRendererComponent, MetadataComponent>);
+				for (auto entity : group) {
+					auto [spriteRenderer, align, metadata] = group.get<SpriteRendererComponent, UIAlignComponent, MetadataComponent>(entity);
+					uint16_t sorting = ((uint16_t)metadata.sortingLayer << 8) + (uint16_t)metadata.subSorting;
+					//LOG("{0} ended up with sorting layer {1}", metadata.tag, sorting);
+					if (spriteRenderer.texture == nullptr)
+						Renderer::DrawColorQuad(sorting, align.GetTransform(), spriteRenderer.color);
+					else
+						Renderer::DrawTextureQuad(sorting, align.GetTransform(), spriteRenderer.texture->GetTexture(), spriteRenderer.texture->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
 				}
 			}
 

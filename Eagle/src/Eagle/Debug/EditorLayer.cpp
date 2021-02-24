@@ -61,6 +61,7 @@ namespace Egl {
 	
 
 	void EditorLayer::OnImGuiRender() {
+
 		EAGLE_PROFILE_FUNCTION();
 		auto& style = ImGui::GetStyle();
 		float originalWindowMinSize = style.WindowMinSize.x;
