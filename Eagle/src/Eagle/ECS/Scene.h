@@ -16,8 +16,8 @@ namespace Egl {
 		template<typename... EntityParam>
 		Entity AddEntity(const std::string& name, EntityParam...childs) { auto e = AddEntity(name); AddEntityChildsImp(e, childs...); return e; }
 		Entity AddEntity(const std::string& name = "New Entity");
-
-		Entity AddUIEntity(const std::string& name, Entity CanvasOrUIParent);
+		Entity AddCanvas();
+		Entity AddUIEntity(const std::string& name, Entity CanvasOrParent);
 
 		void RemoveEntity(Entity& entity);
 		void SetPrimaryCamera(Entity& camera);

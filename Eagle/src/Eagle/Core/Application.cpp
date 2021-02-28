@@ -9,6 +9,9 @@
 #include "Eagle/Core/Time.h"
 #include "UniqueID.h"
 
+// This Commit:
+// Now UI calculates its position only if it changes. Setting transform global position updates its parents. Code cleanup
+
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
 	std::mt19937 Random::sRandomizer;
@@ -18,8 +21,7 @@ namespace Egl {
 
 #define EAGLE_BIND_EVENT_FUNC(x) std::bind(&Application::x, this, std::placeholders::_1)
 
-	Application::Application(const std::string& name)
-	{
+	Application::Application(const std::string& name) {
 		EAGLE_PROFILE_FUNCTION();
 
 		mInstance = this;
@@ -41,7 +43,6 @@ namespace Egl {
 		AddLayer(mEditorLayer);
 #else
 		mViewportSize = { (float)mWindow->GetWidth(), (float)mWindow->GetHeight() };
-		mGameLayer->GetActiveScene()->SetViewportAspectRatio(mViewportSize.x / mViewportSize.y);
 #endif
 	}
 
@@ -150,19 +151,11 @@ namespace Egl {
 		mLayerStack.RemoveOverlay(layer);
 	}
 
-
-	const glm::vec2& Application::GetSceneWindowSize() const {
-#if EAGLE_EDITOR
-		return mScenePanelSize;
-#else
-		return mViewportSize;
-#endif
-	}
 	const glm::vec2& Application::GetSceneScreenOffset() const {
 #if EAGLE_EDITOR
 		return mScenePanelOffset;
 #else
-		return { 0, 0 }
+		return { 0, 0 };
 #endif
 	}
 	glm::vec2 Application::WindowPixelToScenePixelSpace(const glm::vec2& point) const {
@@ -174,7 +167,6 @@ namespace Egl {
 	}
 	glm::vec2 Application::ScenePixelToWindowPixelSpace(const glm::vec2& point) const {
 #if EAGLE_EDITOR
-		LOG("{0} {1}", mWindow->GetPositionX(), mWindow->GetPositionY());
 		return point + mScenePanelOffset;
 #else
 		return point;

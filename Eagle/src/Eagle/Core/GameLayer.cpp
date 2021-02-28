@@ -19,17 +19,19 @@ namespace Egl {
 		{
 			EAGLE_PROFILE_SCOPE("Application - SceneBegin");
 			mActiveScene->SceneBegin();
-			// First don't put entities in order, since a lot of them are made there. Now sort them
-			mActiveScene->areEntitiesInOrder = true;
-			std::sort(mActiveScene->entitiesInSortOrder.begin(), mActiveScene->entitiesInSortOrder.end(), [&](entt::entity e1, entt::entity e2) {
-				auto& mc1 = mActiveScene->mRegistry.get<MetadataComponent>(e1);
-				auto& mc2 = mActiveScene->mRegistry.get<MetadataComponent>(e2);
-				if (mc1.sortingLayer == mc2.sortingLayer)
-					return mc1.subSorting > mc2.subSorting;
-				else
-					return mc1.sortingLayer > mc2.sortingLayer;
-			});
 		}
+
+		// First don't put entities in order, since a lot of them are made there. Now sort them
+		std::sort(mActiveScene->entitiesInSortOrder.begin(), mActiveScene->entitiesInSortOrder.end(), [&](entt::entity e1, entt::entity e2) {
+			auto& mc1 = mActiveScene->mRegistry.get<MetadataComponent>(e1);
+			auto& mc2 = mActiveScene->mRegistry.get<MetadataComponent>(e2);
+			if (mc1.sortingLayer == mc2.sortingLayer)
+				return mc1.subSorting > mc2.subSorting;
+			else
+				return mc1.sortingLayer > mc2.sortingLayer;
+		});
+		mActiveScene->areEntitiesInOrder = true;
+
 		{
 			EAGLE_PROFILE_SCOPE("Application - Scripts: OnCreate");
 			mActiveScene->mRegistry.view<NativeScriptComponent>().each([&](auto entity, NativeScriptComponent& scriptComponent) {

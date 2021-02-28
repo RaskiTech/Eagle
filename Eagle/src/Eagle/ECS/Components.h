@@ -65,6 +65,7 @@ namespace Egl {
 		void SetWorldPosFlagsFalse(const Relation& thisRel);
 		void SetWorldRotFlagsFalse(const Relation& thisRel);
 		void SetWorldScaleFlagsFalse(const Relation& thisRel);
+		friend struct UIAlignComponent;
 	};
 
 	struct MetadataComponent {
@@ -166,30 +167,51 @@ namespace Egl {
 			AlignLeft,       // Have the objects top be at a certain percent horizontally
 			AlignRight       // Have the objects right side be at a certain percent horizontally
 		};
-		XDriver xDriver           = XDriver::AlignCenter;
-		YDriver yDriver           = YDriver::AlignCenter;
-		WidthDriver widthDriver   = WidthDriver::AspectWidth;
-		HeightDriver heightDriver = HeightDriver::RelativeHeight;
-		float xPosValue = 0.5f, yPosValue = 0.5f, widthValue = 1, heightValue = 0.3f;
 
 		UIAlignComponent(Entity thisEntity) : thisEntity(thisEntity) {};
 		UIAlignComponent(Entity thisEntity, XDriver xDriver, float xValue, YDriver yDriver, float yValue, WidthDriver widthDriver, float widthValue, HeightDriver heightDriver, float heightValue)
-			: thisEntity(thisEntity), xDriver(xDriver), xPosValue(xValue), yDriver(yDriver), yPosValue(yValue), 
-			  widthDriver(widthDriver), widthValue(widthValue), heightDriver(heightDriver), heightValue(heightValue) {}
+			: thisEntity(thisEntity), xDriver((uint8_t)xDriver), xPosValue(xValue), yDriver((uint8_t)yDriver), yPosValue(yValue),
+			  widthDriver((uint8_t)widthDriver), widthValue(widthValue), heightDriver((uint8_t)heightDriver), heightValue(heightValue) {}
 
 		const glm::vec2& GetWorldPosition() const;
 		const glm::vec2& GetWorldScale() const;
+
+		XDriver GetXDriver() const { return (XDriver)xDriver; }
+		YDriver GetYDriver() const { return (YDriver)yDriver; }
+		WidthDriver GetWidthDriver() const { return (WidthDriver)widthDriver; }
+		HeightDriver GetHeightDriver() const { return (HeightDriver)heightDriver; }
+
+		float GetXPosValue() const { return xPosValue; }
+		float GetYPosValue() const { return yPosValue; }
+		float GetWidthValue() const { return widthValue; }
+		float GetHeightValue() const { return heightValue; }
+
+		void SetXPosValue(float val);
+		void SetYPosValue(float val);
+		void SetWidthValue(float val);
+		void SetHeightValue(float val);
+
+		void SetXDriver(XDriver driver);
+		void SetYDriver(YDriver driver);
+		void SetWidthDriver(WidthDriver driver);
+		void SetHeightDriver(HeightDriver driver);
 
 		glm::mat4 GetTransform() const {
 			return glm::translate(glm::mat4(1), { GetWorldPosition().x, GetWorldPosition().y, 0 }) * glm::scale(glm::mat4(1), glm::vec3(GetWorldScale(), 1));
 		}
 		operator glm::mat4& () { return GetTransform(); }
 	protected:
-		void SetNeedToCalculateDimensions() { dimensionsRight = false; }
-		friend class Scene;
+		void SetDimensionFlagsFalse(const Relation& thisRel) const;
+		friend struct TransformComponent;
 	private:
 		void CheckAreDimensionsCorrect() const;
 		void CalculateDimensions(const glm::vec2& parentPos, const glm::vec2& parentScale) const;
+
+		uint8_t xDriver      = (uint8_t)XDriver::AlignCenter;
+		uint8_t yDriver      = (uint8_t)YDriver::AlignCenter;
+		uint8_t widthDriver  = (uint8_t)WidthDriver::RelativeWidth;
+		uint8_t heightDriver = (uint8_t)HeightDriver::RelativeHeight;
+		float xPosValue = 0, yPosValue = 0, widthValue = 0.8f, heightValue = 0.5f;
 
 		Entity thisEntity;
 

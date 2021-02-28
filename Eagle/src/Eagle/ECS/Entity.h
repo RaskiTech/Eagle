@@ -32,6 +32,7 @@ namespace Egl {
 			return mScene->mRegistry.remove<T>(mEntity);
 		}
 		template<> void RemoveComponent<TransformComponent>() const = delete;
+		template<> void RemoveComponent<UIAlignComponent>() const = delete;
 		template<> void RemoveComponent<MetadataComponent>() const = delete;
 		template<> void RemoveComponent<Relation>() const = delete;
 
@@ -41,10 +42,10 @@ namespace Egl {
 		Entity GetChild(uint8_t childIndex) const;
 
 		template<typename Func>
-		void ForEachChild(Func function) const {
+		void ForEachChild(Func functionThatTakesEntity) const {
 			entt::entity entity = GetComponent<Relation>().firstChild;
 			while (entity != entt::null) {
-				function({ entity, mScene });
+				functionThatTakesEntity({ entity, mScene });
 				entity = mScene->mRegistry.get<Relation>(entity).nextSibling;
 			}
 		}

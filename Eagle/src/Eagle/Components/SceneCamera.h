@@ -1,10 +1,14 @@
 #pragma once
+#include "Eagle/Core/Application.h"
 #include "Eagle/Rendering/Camera.h"
 
 namespace Egl {
 	class SceneCamera : public Camera {
 	public:
-		SceneCamera() { RecaulculateProjection(); }
+		SceneCamera() {
+			mAspectRatio = Application::Get().GetSceneWindowSize().x / Application::Get().GetSceneWindowSize().y;
+			RecaulculateProjection(); 
+		}
 		virtual ~SceneCamera() = default;
 
 

@@ -10,7 +10,7 @@
 
 namespace Egl {
 	template< typename T, typename Pred >
-	typename std::vector<T>::iterator Insert_sorted(std::vector<T>& vec, T const& item, Pred pred) {
+	static typename std::vector<T>::iterator Insert_sorted(std::vector<T>& vec, T const& item, Pred pred) {
 		return vec.insert(std::upper_bound(vec.begin(), vec.end(), item, pred), item);
 	}
 
@@ -46,7 +46,11 @@ namespace Egl {
 			entitiesInSortOrder.push_back(createdEntityID);
 		return entity;
 	}
-
+	Entity Scene::AddCanvas() { 
+		Entity e = AddEntity("Canvas"); 
+		e.AddComponent<CanvasComponent>(); 
+		return e; 
+	}
 	Entity Scene::AddUIEntity(const std::string& name, Entity UIParent) {
 		EAGLE_ENG_ASSERT(UIParent.HasComponent<UIAlignComponent>() || UIParent.HasComponent<CanvasComponent>(), "parent isn't a canvas or an UI entity");
 
@@ -117,11 +121,13 @@ namespace Egl {
 			{
 				auto group = mRegistry.group<CanvasComponent>(entt::get<TransformComponent>);
 				for (auto entity : group) {
-					auto [viewScaler, transform] = group.get<CanvasComponent, TransformComponent>(entity);
+					auto& transform = group.get<TransformComponent>(entity);
 
 					const glm::vec2 size = { camera.camera.GetSize() * camera.camera.GetAspectRatio(), camera.camera.GetSize() };
-					transform.SetScale(size);
-					transform.SetPosition(camTrans.GetPosition());
+					if (transform.GetScale() != size)
+						transform.SetScale(size);
+					if (camTrans.GetPosition() != transform.GetPosition())
+						transform.SetPosition(camTrans.GetPosition());
 				}
 			}
 
@@ -165,8 +171,6 @@ namespace Egl {
 						Renderer::DrawColorQuad(sorting, align.GetTransform(), spriteRenderer.color);
 					else
 						Renderer::DrawTextureQuad(sorting, align.GetTransform(), spriteRenderer.texture->GetTexture(), spriteRenderer.texture->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
-					// TODO: Set the need only if parent has changed scale. Remember canvas
-					align.SetNeedToCalculateDimensions();
 				}
 			}
 
@@ -180,17 +184,11 @@ namespace Egl {
 		float screenSize = camCam.camera.GetSize();
 		const glm::vec2& viewSize = Application::Get().GetSceneWindowSize();
 		
-		// More readale version
-		// const glm::vec2 posInScreen01 = { (pixelCoordinate.x - sceneOffsetInPixel.x) / viewSize.x, -(pixelCoordinate.y - sceneOffsetInPixel.y) / viewSize.y };
-		// const glm::vec2 screenSizeInWorld = { screenSize * camCam.camera.GetAspectRatio(), screenSize };
-		// const glm::vec2 posInScreenWorld = posInScreen01 * screenSizeInWorld;
-		// const glm::vec2 topCornerInWorld = camPos + glm::vec2{ -screenSizeInWorld.x / 2, screenSizeInWorld.y / 2 };
-		// return posInScreenWorld + topCornerInWorld;
-
-		float screenSizeInWorld_X = screenSize * camCam.camera.GetAspectRatio();
-		float posX = pixelCoordinate.x / viewSize.x * screenSizeInWorld_X + camPos.x - screenSizeInWorld_X / 2;
-		float posY = -pixelCoordinate.y / viewSize.y * screenSize + camPos.y + screenSize / 2;
-		return { posX, posY };
+		const glm::vec2 posInScreen01 = pixelCoordinate / glm::vec2{ viewSize.x, -viewSize.y };
+		const glm::vec2 screenSizeInWorld = { screenSize * camCam.camera.GetAspectRatio(), screenSize };
+		const glm::vec2 posInScreenWorld = posInScreen01 * screenSizeInWorld;
+		const glm::vec2 topCornerInWorld = camPos + glm::vec2{ -screenSizeInWorld.x / 2, screenSizeInWorld.y / 2 };
+		return posInScreenWorld + topCornerInWorld; 
 	}
 	glm::vec2 Scene::WorldToScreenPos(const glm::vec2& worldPos) const {
 		const glm::vec2& camPos = mRegistry.get<TransformComponent>(mPrimaryCamera).GetPosition();
@@ -199,16 +197,11 @@ namespace Egl {
 		const glm::vec2& viewSize = Application::Get().GetSceneWindowSize();
 		const glm::vec2& sceneOffsetInPixel = Application::Get().GetSceneScreenOffset();
 
-		// More readale version
 		const glm::vec2 screenSizeInWorld = { screenSize * camCam.camera.GetAspectRatio(), screenSize };
 		const glm::vec2 topCornerInWorld = camPos + glm::vec2{ -screenSizeInWorld.x / 2, screenSizeInWorld.y / 2 };
-		const glm::vec2 posInScreen01 = { (worldPos.x - topCornerInWorld.x) / screenSizeInWorld.x, (worldPos.y - topCornerInWorld.y) / screenSizeInWorld.y };
-		return { posInScreen01.x * viewSize.x, -posInScreen01.y * viewSize.y };
-
-		float screenSizeInWorld_X = screenSize * camCam.camera.GetAspectRatio();
-		float posX = viewSize.x * ((worldPos.x - (camPos.x + -screenSizeInWorld_X / 2)) / screenSizeInWorld_X);
-		float posY = -((worldPos.y - (camPos.y + screenSize / 2)) / screenSize) * viewSize.x;
-		return { posX, posY };
+		const glm::vec2 posInScreenWorld = worldPos - topCornerInWorld;
+		const glm::vec2 posInScreen01 = posInScreenWorld / screenSizeInWorld;
+		return { posInScreen01.x * viewSize.x, posInScreen01.y * -viewSize.y };
 	}
 
 	void Scene::SetViewportAspectRatio(float aspectRatio) {

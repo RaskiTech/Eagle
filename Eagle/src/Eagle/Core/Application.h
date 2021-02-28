@@ -29,8 +29,7 @@ namespace Egl {
 		GameLayer* GetGameLayer() const { return mGameLayer; }
 		inline Window& GetWindow() const { return *mWindow; }
 
-		const glm::vec2& GetViewportSize() const { return mViewportSize; }
-		const glm::vec2& GetSceneWindowSize() const;
+		const glm::vec2& GetSceneWindowSize() const { return mSceneWindowSize; }
 		const glm::vec2& GetSceneScreenOffset() const;
 
 		glm::vec2 WindowPixelToScenePixelSpace(const glm::vec2& point) const;
@@ -38,8 +37,7 @@ namespace Egl {
 
 		static inline Application& Get() { return *mInstance; }
 	protected:
-		void SetViewportSize(const glm::vec2& size) { mViewportSize = size; }
-		void SetScenePanelSize(const glm::vec2& size) { mScenePanelSize = size; }
+		void SetSceneWindowSize(const glm::vec2& size) { mSceneWindowSize = size; }
 		void SetSceneScreenOffset(const glm::vec2& offset) { mScenePanelOffset = offset; }
 		friend class EditorLayer;
 	private:
@@ -55,8 +53,7 @@ namespace Egl {
 		EditorLayer* mEditorLayer;
 		GameLayer* mGameLayer;
 
-		glm::vec2 mViewportSize = { 0, 0 };
-		glm::vec2 mScenePanelSize = { 0, 0 };   // Only in edit mode, can always call GetSceneWindowSize() though;
+		glm::vec2 mSceneWindowSize = { 0, 0 };  // Tells the window size
 		glm::vec2 mScenePanelOffset = { 0, 0 }; // Only in edit mode, can always call GetSceneWindowOffset() though;
 
 		bool mRunning = true;

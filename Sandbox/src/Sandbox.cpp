@@ -10,11 +10,16 @@ using namespace Egl;
 
 class ExampleScene : public Scene {
 	void example_UI() {
-		Entity canvas = AddEntity("Canvas");
-		canvas.AddComponent<CanvasComponent>();
+		Entity canvas = AddCanvas();
 
 		Entity exampleSquare = AddUIEntity("Square", canvas);
-		exampleSquare.AddComponent<SpriteRendererComponent>();
+		exampleSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.3f, 0.3f, 0.3f, 1 });
+
+		Entity exampleOtherSquare = AddUIEntity("OtherSquare", exampleSquare);
+		exampleOtherSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.3f, 0.2f, 1 });
+
+		Entity exampleAnotherSquare = AddUIEntity("AnotherSquare", exampleSquare);
+		exampleAnotherSquare.AddComponent<SpriteRendererComponent>(glm::vec4{0.2f, 0.3f, 0.8f, 1});
 	}
 
 	Entity example_ParticleBegin() {
@@ -66,7 +71,6 @@ class ExampleScene : public Scene {
 		ground.GetComponent<TransformComponent>().SetPosition(0, -6);
 		
 		Entity particleSystem = example_ParticleBegin();
-		//Entity UI = example_GUIWindow();
 		
 		Entity fireHydrant = AddEntity("Fire hydrant");
 		fireHydrant.AddComponent<SpriteRendererComponent>(Texture::Create("Assets/FireHydrant.png", false));

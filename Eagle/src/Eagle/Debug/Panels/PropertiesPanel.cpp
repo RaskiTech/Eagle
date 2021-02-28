@@ -149,23 +149,31 @@ namespace Egl {
 		});
 
 		DrawComponent<UIAlignComponent>("UI Align", drawedEntity, [](UIAlignComponent& component) {
-			component.xDriver = (UIAlignComponent::XDriver)SelectWidget("X Driver", std::array<const char*, 5>{"PixelsFromLeft", "PixelsFromRight", "AlignCenterX", "AlignLeft", "AlignRight"}, (uint8_t)component.xDriver, 5);
-			DrawFloat("X Position", &component.xPosValue);
+			component.SetXDriver((UIAlignComponent::XDriver)SelectWidget("X Driver", std::array<const char*, 5>{"PixelsFromLeft", "PixelsFromRight", "AlignCenterX", "AlignLeft", "AlignRight"}, (uint8_t)component.GetXDriver(), 5));
+			float val = component.GetXPosValue();
+			if (DrawFloat("X Position", &val))
+				component.SetXPosValue(val);
 			ImGui::Spacing();
 
-			component.yDriver = (UIAlignComponent::YDriver)SelectWidget("Width Driver", std::array<const char*, 5>{"PixelsFromTop", "PixelsFromBottom", "AlignCenterY", "AlignTop", "AlignBottom"}, (uint8_t)component.yDriver, 5);
-			DrawFloat("Y Position", &component.yPosValue);
+			component.SetYDriver((UIAlignComponent::YDriver)SelectWidget("Y Driver", std::array<const char*, 5>{"PixelsFromTop", "PixelsFromBottom", "AlignCenterY", "AlignTop", "AlignBottom"}, (uint8_t)component.GetYDriver(), 5));
+			val = component.GetYPosValue();
+			if (DrawFloat("Y Position", &val))
+				component.SetYPosValue(val);
 			ImGui::Spacing();
 
-			component.widthDriver = (UIAlignComponent::WidthDriver)SelectWidget("Width Driver", std::array<const char*, 3>{"ConstantWidth", "RelativeWidth", "AspectWidth"}, (uint8_t)component.widthDriver, 3);
-			DrawFloat("Width Value", &component.widthValue);
+			component.SetWidthDriver((UIAlignComponent::WidthDriver)SelectWidget("Width Driver", std::array<const char*, 3>{"ConstantWidth", "RelativeWidth", "AspectWidth"}, (uint8_t)component.GetWidthDriver(), 3));
+			val = component.GetWidthValue();
+			if (DrawFloat("Width Value", &val))
+				component.SetWidthValue(val);
 			ImGui::Spacing();
 
-			component.heightDriver = (UIAlignComponent::HeightDriver)SelectWidget("Width Driver", std::array<const char*, 3>{"ConstantHeight", "RelativeHeight", "AspectHeight"}, (uint8_t)component.heightDriver, 3);
-			DrawFloat("Height Value", &component.heightValue);
+			component.SetHeightDriver((UIAlignComponent::HeightDriver)SelectWidget("Height Driver", std::array<const char*, 3>{"ConstantHeight", "RelativeHeight", "AspectHeight"}, (uint8_t)component.GetHeightDriver(), 3));
+			val = component.GetHeightValue();
+			if (DrawFloat("Height Value", &val))
+				component.SetHeightValue(val);
 			ImGui::Spacing();
 
-			if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), 0, "World Position")) {
+			if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), ImGuiTreeNodeFlags_SpanAvailWidth, "World Position")) {
 				ImGui::Columns(2);
 				ImGui::SetColumnWidth(0, 100);
 				ImGui::Text("Position");

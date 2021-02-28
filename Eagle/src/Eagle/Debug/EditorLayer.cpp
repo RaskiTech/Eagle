@@ -13,7 +13,6 @@
 #include "Eagle/Core/Input.h"
 #include "Eagle/Core/Keycodes.h"
 
-#include "Eagle/Core/Application.h"
 namespace Egl {
 
 	EditorLayer::EditorLayer() : Layer("EditorLayer") {
@@ -40,10 +39,10 @@ namespace Egl {
 		Renderer::GetStats().ResetStats();
 
 		FrameBufferDefenition def = mFrameBuffer->GetDefenition();
-		const glm::vec2& size = Application::Get().GetViewportSize();
-		if (size.x > 0.0f && size.y > 0.0f && (size.x != def.width || size.y != def.height)) {
-			mFrameBuffer->Resize((uint32_t)size.x, (uint32_t)size.y);
-			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(size.x / size.y);
+		const glm::vec2& sceneSize = Application::Get().GetSceneWindowSize();
+		if (sceneSize.x > 0.0f && sceneSize.y > 0.0f && (sceneSize.x != def.width || sceneSize.y != def.height)) {
+			mFrameBuffer->Resize((uint32_t)sceneSize.x, (uint32_t)sceneSize.y);
+			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(sceneSize.x / sceneSize.y);
 		}
 
 		mFrameBuffer->Bind();
@@ -112,12 +111,10 @@ namespace Egl {
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0, 0));
 		ImGui::Begin("Scene");
 
-		// The actual resizing happens in onUpdate. This is just a "notification"
 		ImVec2 scenePanelSize = ImGui::GetContentRegionAvail();
-		if (Application::Get().GetViewportSize() != *((glm::vec2*)&scenePanelSize)) {
-			Application::Get().SetScenePanelSize({ scenePanelSize.x, scenePanelSize.y });
-			Application::Get().SetViewportSize({ scenePanelSize.x, scenePanelSize.y });
-		}
+		if (Application::Get().GetSceneWindowSize() != *((glm::vec2*)&scenePanelSize))
+			Application::Get().SetSceneWindowSize({ scenePanelSize.x, scenePanelSize.y });
+
 		ImVec2 vMin = ImGui::GetWindowContentRegionMin(); // If the top bar isn't hidden
 		ImVec2 winPos = ImGui::GetWindowPos();
 		Application::Get().SetSceneScreenOffset({ vMin.x + winPos.x - Application::Get().GetWindow().GetPositionX(), vMin.y + winPos.y - Application::Get().GetWindow().GetPositionY() });
@@ -138,7 +135,7 @@ namespace Egl {
 			Application::Get().GetGameLayer()->ResetApplication();
 			mHierarchyPanel.SetContext(Application::Get().GetGameLayer()->GetActiveScene());
 			mHierarchyPanel.ResetSelection();
-			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(Application::Get().GetViewportSize().x / Application::Get().GetViewportSize().y);
+			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(Application::Get().GetSceneWindowSize().x / Application::Get().GetSceneWindowSize().y);
 		}
 
 		ImGui::End();
