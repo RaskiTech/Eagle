@@ -17,9 +17,7 @@ class ExampleScene : public Scene {
 
 		Entity exampleOtherSquare = AddUIEntity("OtherSquare", exampleSquare);
 		exampleOtherSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.3f, 0.2f, 1 });
-
-		Entity exampleAnotherSquare = AddUIEntity("AnotherSquare", exampleSquare);
-		exampleAnotherSquare.AddComponent<SpriteRendererComponent>(glm::vec4{0.2f, 0.3f, 0.8f, 1});
+		exampleOtherSquare.GetComponent<MetadataComponent>().subSorting = 1;
 	}
 
 	Entity example_ParticleBegin() {

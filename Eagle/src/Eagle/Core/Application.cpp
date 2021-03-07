@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Now UI calculates its position only if it changes. Setting transform global position updates its parents. Code cleanup
+// Can now align sides to parent UI. The editor UI looks a bit better
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;

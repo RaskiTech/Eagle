@@ -13,16 +13,15 @@
 #endif
 
 
-#ifdef EAGLE_PLATFORM_WINDOWS
-
-#else
+#ifndef EAGLE_PLATFORM_WINDOWS
 	#error Eagle currently only supports windows
 #endif
 
 #define BIT(x) (1<<x)
 
-#if defined EAGLE_DEBUG // || defined EAGLE_RELEASE
+#if defined EAGLE_DEBUG
 	#define EAGLE_ENABLE_ASSERTS
+	#define EAGLE_ENABLE_WARNINGS
 #endif
 
 #ifdef EAGLE_ENABLE_ASSERTS
@@ -32,6 +31,15 @@
 	#define EAGLE_ASSERT(x, ...)
 	#define EAGLE_ENG_ASSERT(x, ...)
 #endif
+
+#ifdef EAGLE_ENABLE_WARNINGS
+	#define EAGLE_WARNING(x, ...) { if (!(x)) { LOG_WARN("Warning: {0}", __VA_ARGS__); } }
+	#define EAGLE_ENG_WARNING(x, ...) { if (!(x)) { LOG_ENG_WARN("Warning: {0}", __VA_ARGS__); } }
+#else
+	#define EAGLE_WARNING(x, ...)
+	#define EAGLE_ENG_WARNING(x, ...)
+#endif
+
 
 #define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
 

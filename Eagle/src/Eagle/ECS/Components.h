@@ -10,64 +10,6 @@
 #include "Eagle/ECS/Entity.h"
 
 namespace Egl {
-
-	struct TransformComponent {
-		// Local position is always up to date. If the global position is needed, should be checked if the position if up to date.
-		void SetPosition(const glm::vec2& position);
-		void SetPosition(float x, float y) { SetPosition({ x, y }); }
-		void SetRotation(float rotation);
-		void SetScale(const glm::vec2& scale);
-		void SetScale(float x, float y) { SetScale({ x, y }); }
-
-		void SetLocalPosition(const glm::vec2& position);
-		void SetLocalPosition(float x, float y) { SetLocalPosition({ x, y }); };
-		void SetLocalRotation(float rotation);
-		void SetLocalScale(const glm::vec2& scale);
-		void SetLocalScale(float x, float y) { SetLocalScale({ x, y }); }
-
-		const glm::vec2& GetPosition() const;
-		float GetRotation() const;
-		const glm::vec2& GetScale() const;
-
-		const glm::vec2& GetLocalPosition() const { return localPosition; }
-		float GetLocalRotation() const { return localRotation; }
-		const glm::vec2& GetLocalScale() const { return localScale; }
-
-		glm::vec2 LocalToWorldPos(const glm::vec2& point) const;
-		glm::vec2 WorldToLocalPos(const glm::vec2& point) const;
-
-		TransformComponent(const TransformComponent&) = default;
-		TransformComponent(Entity entity, const glm::vec3& position) : localPosition(position), thisEntity(entity) {}
-
-		glm::mat4 GetTransform() const {
-			return GetRotation() == 0 ?
-				glm::translate(glm::mat4(1), { GetPosition().x, GetPosition().y, 0 }) *                                                         glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1)):
-				glm::translate(glm::mat4(1), { GetPosition().x, GetPosition().y, 0 }) * glm::rotate(glm::mat4(1), GetRotation(), { 0, 0, 1 }) * glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1));
-		}
-		operator glm::mat4& () { return GetTransform(); }
-
-	private:
-		Entity thisEntity;
-
-		glm::vec2 localPosition = { 0.0f, 0.0f };
-		float localRotation = 0;
-		glm::vec2 localScale = { 1.0f, 1.0f };
-
-		mutable glm::vec2 worldPosition = { 0.0f, 0.0f };
-		mutable float worldRotation = 0;
-		mutable glm::vec2 worldScale = { 1.0f, 1.0f };
-
-		mutable bool worldPosRight = false;
-		mutable bool worldRotRight = false;
-		mutable bool worldScaleRight = false;
-		friend class Entity;
-
-		void SetWorldPosFlagsFalse(const Relation& thisRel);
-		void SetWorldRotFlagsFalse(const Relation& thisRel);
-		void SetWorldScaleFlagsFalse(const Relation& thisRel);
-		friend struct UIAlignComponent;
-	};
-
 	struct MetadataComponent {
 		std::string tag;
 		int8_t sortingLayer = 0;
@@ -142,63 +84,156 @@ namespace Egl {
 		char dummyDataForEntt;
 	};
 
+	struct TransformComponent {
+		// Local position is always up to date. If the global position is needed, should be checked if the position if up to date.
+		void SetPosition(const glm::vec2& position);
+		void SetPosition(float x, float y) { SetPosition({ x, y }); }
+		void SetRotation(float rotation);
+		void SetScale(const glm::vec2& scale);
+		void SetScale(float x, float y) { SetScale({ x, y }); }
+
+		void SetLocalPosition(const glm::vec2& position);
+		void SetLocalPosition(float x, float y) { SetLocalPosition({ x, y }); };
+		void SetLocalRotation(float rotation);
+		void SetLocalScale(const glm::vec2& scale);
+		void SetLocalScale(float x, float y) { SetLocalScale({ x, y }); }
+
+		const glm::vec2& GetPosition() const;
+		float GetRotation() const;
+		const glm::vec2& GetScale() const;
+
+		const glm::vec2& GetLocalPosition() const { return localPosition; }
+		float GetLocalRotation() const { return localRotation; }
+		const glm::vec2& GetLocalScale() const { return localScale; }
+
+		glm::vec2 LocalToWorldPos(const glm::vec2& point) const;
+		glm::vec2 WorldToLocalPos(const glm::vec2& point) const;
+
+		TransformComponent(const TransformComponent&) = default;
+		TransformComponent(Entity entity, const glm::vec3& position) : localPosition(position), thisEntity(entity) {}
+
+		glm::mat4 GetTransform() const {
+			return GetRotation() == 0 ?
+				glm::translate(glm::mat4(1), { GetPosition().x, GetPosition().y, 0 }) *                                                         glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1)):
+				glm::translate(glm::mat4(1), { GetPosition().x, GetPosition().y, 0 }) * glm::rotate(glm::mat4(1), GetRotation(), { 0, 0, 1 }) * glm::scale(glm::mat4(1), glm::vec3(GetScale(), 1));
+		}
+		operator glm::mat4& () { return GetTransform(); }
+
+	private:
+		Entity thisEntity;
+
+		glm::vec2 localPosition = { 0.0f, 0.0f };
+		float localRotation = 0;
+		glm::vec2 localScale = { 1.0f, 1.0f };
+
+		mutable glm::vec2 worldPosition = { 0.0f, 0.0f };
+		mutable float worldRotation = 0;
+		mutable glm::vec2 worldScale = { 1.0f, 1.0f };
+
+		mutable bool worldPosRight = false;
+		mutable bool worldRotRight = false;
+		mutable bool worldScaleRight = false;
+		friend class Entity;
+
+		void SetWorldPosFlagsFalse(const Relation& thisRel);
+		void SetWorldRotFlagsFalse(const Relation& thisRel);
+		void SetWorldScaleFlagsFalse(const Relation& thisRel);
+		friend struct UIAlignComponent;
+	};
+
+	enum class LeftSideDriver {
+		ConstantOffset = 0 << 0,   // The side will always have the same offset from the parent
+		RelativeOffset = 1 << 0    // The sides offset will be a certain percent of the parents
+	};
+	enum class RightSideDriver {
+		ConstantOffset = 0 << 4,
+		RelativeOffset = 1 << 4
+	};
+	enum class TopDriver {
+		ConstantOffset = 0 << 0,
+		RelativeOffset = 1 << 0
+	};
+	enum class BottomDriver {
+		ConstantOffset = 0 << 4,
+		RelativeOffset = 1 << 4
+	};
+
+	enum class XDriver {
+		PixelsFromLeft   = 0 << 0, // The objects left side will always be the same distance from the windows left side
+		PixelsFromRight  = 1 << 0, // The objects right side will always be the same distance from the windows right side
+		AlignCenter      = 2 << 0, // Have the objects center be at a certain percent horizontally
+		AlignLeft        = 3 << 0, // Have the objects top be at a certain percent horizontally
+		AlignRight       = 4 << 0  // Have the objects right side be at a certain percent horizontally
+	};
+	enum class WidthDriver {
+		ConstantWidth    = 0 << 4, // The object will always have the same width
+		RelativeWidth    = 1 << 4, // The objects width will be a certain percent of the parents
+		AspectWidth      = 2 << 4  // The width will depend on the height. 1 is height
+	};
+	enum class YDriver {
+		PixelsFromTop    = 0 << 0, // The objects top will always be the same distance from the windows top
+		PixelsFromBottom = 1 << 0, // The objects bottom will always be the same distance from the windows bottom
+		AlignCenter      = 2 << 0, // Have the objects center be at a certain percent vertically
+		AlignTop         = 3 << 0, // Have the objects top be at a certain percent vertically
+		AlignBottom      = 4 << 0  // Have the objects bottom be at a certain percent vertically
+	};
+	enum class HeightDriver {
+		ConstantHeight   = 0 << 4, // The object will always have the same height
+		RelativeHeight   = 1 << 4, // The objects height will be a certain percent of the parents
+		AspectHeight     = 2 << 4  // The height will depend on the width. 1 is width
+	};
 	struct UIAlignComponent {
-		enum class WidthDriver {
-			ConstantWidth,    // The object will always have the same width
-			RelativeWidth,    // The objects width will be a certain percent of the parents
-			AspectWidth       // The width will depend on the height. 1 is height
-		};
-		enum class HeightDriver {
-			ConstantHeight,   // The object will always have the same height
-			RelativeHeight,   // The objects height will be a certain percent of the parents
-			AspectHeight      // The height will depend on the width. 1 is width
-		};
-		enum class YDriver {
-			PixelsFromTop,    // The objects top will always be the same distance from the windows top
-			PixelsFromBottom, // The objects bottom will always be the same distance from the windows bottom
-			AlignCenter,     // Have the objects center be at a certain percent vertically
-			AlignTop,        // Have the objects top be at a certain percent vertically
-			AlignBottom      // Have the objects bottom be at a certain percent vertically
-		};
-		enum class XDriver {
-			PixelsFromLeft,   // The objects left side will always be the same distance from the windows left side
-			PixelsFromRight,  // The objects right side will always be the same distance from the windows right side
-			AlignCenter,	  // Have the objects center be at a certain percent horizontally
-			AlignLeft,       // Have the objects top be at a certain percent horizontally
-			AlignRight       // Have the objects right side be at a certain percent horizontally
-		};
 
 		UIAlignComponent(Entity thisEntity) : thisEntity(thisEntity) {};
 		UIAlignComponent(Entity thisEntity, XDriver xDriver, float xValue, YDriver yDriver, float yValue, WidthDriver widthDriver, float widthValue, HeightDriver heightDriver, float heightValue)
-			: thisEntity(thisEntity), xDriver((uint8_t)xDriver), xPosValue(xValue), yDriver((uint8_t)yDriver), yPosValue(yValue),
-			  widthDriver((uint8_t)widthDriver), widthValue(widthValue), heightDriver((uint8_t)heightDriver), heightValue(heightValue) {}
+			: thisEntity(thisEntity), xBitfield((uint8_t)xDriver | (uint8_t)widthDriver), yBitfield((uint8_t)yDriver | (uint8_t)heightDriver),
+			  xPrimaryValue(xValue), yPrimaryValue(yValue), xSecondaryValue(widthValue), ySecondaryValue(heightValue) {}
 
 		const glm::vec2& GetWorldPosition() const;
 		const glm::vec2& GetWorldScale() const;
 
-		XDriver GetXDriver() const { return (XDriver)xDriver; }
-		YDriver GetYDriver() const { return (YDriver)yDriver; }
-		WidthDriver GetWidthDriver() const { return (WidthDriver)widthDriver; }
-		HeightDriver GetHeightDriver() const { return (HeightDriver)heightDriver; }
+		XDriver         GetXDriver()         const { return (XDriver)        (xBitfield & 15 /*00001111*/); }
+		YDriver         GetYDriver()         const { return (YDriver)        (yBitfield & 15 /*00001111*/); }
+		WidthDriver     GetWidthDriver()     const { return (WidthDriver)    (xBitfield & 240/*11110000*/); }
+		HeightDriver    GetHeightDriver()    const { return (HeightDriver)   (yBitfield & 240/*11110000*/); }
+		RightSideDriver GetRightSideDriver() const { return (RightSideDriver)(xBitfield & 240/*11110000*/); }
+		LeftSideDriver  GetLeftSideDriver()  const { return (LeftSideDriver) (xBitfield & 15 /*00001111*/); }
+		TopDriver       GetTopDriver()       const { return (TopDriver)      (yBitfield & 15 /*00001111*/); }
+		BottomDriver    GetBottomDriver()    const { return (BottomDriver)   (yBitfield & 240/*11110000*/); }
 
-		float GetXPosValue() const { return xPosValue; }
-		float GetYPosValue() const { return yPosValue; }
-		float GetWidthValue() const { return widthValue; }
-		float GetHeightValue() const { return heightValue; }
+		float GetXPosValue()       const { return xPrimaryValue; }
+		float GetYPosValue()       const { return yPrimaryValue; }
+		float GetWidthValue()      const { return xSecondaryValue; }
+		float GetHeightValue()     const { return ySecondaryValue; }
+		float GetLeftSideValue()   const { return xPrimaryValue; }
+		float GetTopValue()        const { return yPrimaryValue; }
+		float GetRightSideValue()  const { return xSecondaryValue; }
+		float GetBottomValue()     const { return ySecondaryValue; }
 
 		void SetXPosValue(float val);
 		void SetYPosValue(float val);
 		void SetWidthValue(float val);
 		void SetHeightValue(float val);
+		inline void SetLeftSideValue(float val) { SetXPosValue(val); }
+		inline void SetTopValue(float val) { SetYPosValue(val); }
+		inline void SetRightSideValue(float val) { SetWidthValue(val); }
+		inline void SetBottomValue(float val) { SetHeightValue(val); }
 
 		void SetXDriver(XDriver driver);
 		void SetYDriver(YDriver driver);
 		void SetWidthDriver(WidthDriver driver);
 		void SetHeightDriver(HeightDriver driver);
+		void SetLeftSideDriver(LeftSideDriver driver);
+		void SetRightSideDriver(RightSideDriver driver);
+		void SetTopDriver(TopDriver driver);
+		void SetBottomDriver(BottomDriver driver);
 
-		glm::mat4 GetTransform() const {
-			return glm::translate(glm::mat4(1), { GetWorldPosition().x, GetWorldPosition().y, 0 }) * glm::scale(glm::mat4(1), glm::vec3(GetWorldScale(), 1));
-		}
+		void SetUseSidesHorizontal(bool sidesOverObjectTransform);
+		void SetUseSidesVertical(bool sidesOverObjectTransform);
+		bool GetUseSidesHorizontal() { return useSidesHorizontal; }
+		bool GetUseSidesVertical() { return useSidesVertical; }
+
+		glm::mat4 GetTransform() const { return glm::translate(glm::mat4(1), { GetWorldPosition().x, GetWorldPosition().y, 0 }) * glm::scale(glm::mat4(1), glm::vec3(GetWorldScale(), 1)); }
 		operator glm::mat4& () { return GetTransform(); }
 	protected:
 		void SetDimensionFlagsFalse(const Relation& thisRel) const;
@@ -207,13 +242,22 @@ namespace Egl {
 		void CheckAreDimensionsCorrect() const;
 		void CalculateDimensions(const glm::vec2& parentPos, const glm::vec2& parentScale) const;
 
-		uint8_t xDriver      = (uint8_t)XDriver::AlignCenter;
-		uint8_t yDriver      = (uint8_t)YDriver::AlignCenter;
-		uint8_t widthDriver  = (uint8_t)WidthDriver::RelativeWidth;
-		uint8_t heightDriver = (uint8_t)HeightDriver::RelativeHeight;
-		float xPosValue = 0, yPosValue = 0, widthValue = 0.8f, heightValue = 0.5f;
+		void CalculateSidesX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
+		void CalculateSidesY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
+		void CalculateScaleXNoAspectCheck(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
+		void CalculateScaleXAspectCheck(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
+		void CalculateScaleY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
+		void CalculatePosX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
+		void CalculatePosY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
 
 		Entity thisEntity;
+
+		// If the component uses pos and width, xBitField tells x position and width and same goes for y. Then primary value is pos and secondary scale value
+		// If the component uses sides, xBitfield tells left and right side and same goes for y. The primary values are left and top and secondary right and bottom.
+		bool useSidesHorizontal = false, useSidesVertical = false;
+		uint8_t xBitfield = (uint8_t)XDriver::AlignCenter | (uint8_t)WidthDriver::RelativeWidth;
+		uint8_t yBitfield = (uint8_t)YDriver::AlignCenter | (uint8_t)HeightDriver::RelativeHeight;
+		float xPrimaryValue = 0, yPrimaryValue = 0, xSecondaryValue = 0.8f, ySecondaryValue = 0.5f;
 
 		mutable bool dimensionsRight = false;
 		mutable glm::vec2 worldPosition = { 0, 0 };

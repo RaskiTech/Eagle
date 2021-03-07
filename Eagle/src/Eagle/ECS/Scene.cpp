@@ -152,7 +152,6 @@ namespace Egl {
 				for (auto entity : group) {
 					auto [spriteRenderer, transform, metadata] = group.get<SpriteRendererComponent, TransformComponent, MetadataComponent>(entity);
 					uint16_t sorting = ((uint16_t)metadata.sortingLayer << 8) + (uint16_t)metadata.subSorting;
-					//LOG("{0} ended up with sorting layer {1}", metadata.tag, sorting);
 					if (spriteRenderer.texture == nullptr)
 						Renderer::DrawColorQuad(sorting, transform.GetTransform(), spriteRenderer.color);
 					else
@@ -166,7 +165,6 @@ namespace Egl {
 				for (auto entity : group) {
 					auto [spriteRenderer, align, metadata] = group.get<SpriteRendererComponent, UIAlignComponent, MetadataComponent>(entity);
 					uint16_t sorting = ((uint16_t)metadata.sortingLayer << 8) + (uint16_t)metadata.subSorting;
-					//LOG("{0} ended up with sorting layer {1}", metadata.tag, sorting);
 					if (spriteRenderer.texture == nullptr)
 						Renderer::DrawColorQuad(sorting, align.GetTransform(), spriteRenderer.color);
 					else

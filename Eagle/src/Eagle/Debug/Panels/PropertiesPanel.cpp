@@ -93,6 +93,35 @@ namespace Egl {
 
 		return selectedIndex;
 	}
+	template<uint8_t optionAmount>
+	static uint8_t SelectWidget(std::array<const char*, optionAmount> options, uint8_t selectedIndex, int numInSameLine = 4) {
+		constexpr float height = 17.5f;
+		for (int i = 0; i < optionAmount; i++) {
+			ImGui::PushID(UniqueID::GetUniqueFrameID());
+			if (i % numInSameLine != 0) ImGui::SameLine();
+			else ImGui::Spacing();
+
+			if (ImGui::Selectable(options[i], i == selectedIndex, 0, ImVec2((ImGui::CalcItemWidth() * 1.5f - 30) / numInSameLine, height)))
+				selectedIndex = i;
+
+			ImGui::PopID();
+		}
+		return selectedIndex;
+	}
+	static bool SelectWidget(const char* first, const char* second, bool firstSelected, bool sameLine = true) {
+		constexpr float height = 17.5f;
+
+		ImGui::PushID(UniqueID::GetUniqueFrameID());
+		if (ImGui::Selectable(first, firstSelected, 0, ImVec2((ImGui::CalcItemWidth() * 1.5f - 30) / 2, height)))
+			firstSelected = true;
+		ImGui::PopID();
+		ImGui::PushID(UniqueID::GetUniqueFrameID());
+		ImGui::SameLine();
+		if (ImGui::Selectable(second, !firstSelected, 0, ImVec2((ImGui::CalcItemWidth() * 1.5f - 30) / 2, height)))
+			firstSelected = false;
+		ImGui::PopID();
+		return firstSelected;
+	}
 
 	#pragma endregion
 
@@ -149,31 +178,140 @@ namespace Egl {
 		});
 
 		DrawComponent<UIAlignComponent>("UI Align", drawedEntity, [](UIAlignComponent& component) {
-			component.SetXDriver((UIAlignComponent::XDriver)SelectWidget("X Driver", std::array<const char*, 5>{"PixelsFromLeft", "PixelsFromRight", "AlignCenterX", "AlignLeft", "AlignRight"}, (uint8_t)component.GetXDriver(), 5));
-			float val = component.GetXPosValue();
-			if (DrawFloat("X Position", &val))
-				component.SetXPosValue(val);
+			uint32_t worldTreeNodeUniqueID = UniqueID::GetUniqueFrameID(); // This because the options use ids so the tree could close when changing transform and sides
+
+			ImGuiIO& io = ImGui::GetIO();
+			auto& boldFont = io.Fonts->Fonts[0];
+
+			ImGui::PushFont(boldFont);
+			ImGui::Text("Horizontal");
+			ImGui::PopFont();
+			bool isTransformActive = !component.GetUseSidesHorizontal();
+			bool transformActive = SelectWidget("Transform", "Sides", isTransformActive);
+			if (transformActive != isTransformActive)
+				component.SetUseSidesHorizontal(!transformActive);
+			
+			ImGui::Columns(2);
+			ImGui::SetColumnWidth(0, 15);
+			ImGui::NextColumn();
+
+
+
+			if (transformActive) {
+				ImGui::Text("Position");
+				XDriver xDriver = component.GetXDriver();
+				XDriver newYDriver = (XDriver)SelectWidget(std::array<const char*, 5>{"ConstantLeft", "ConstantRight", "RelativeCenter", "RelativeLeft", "RelativeRight"}, (uint8_t)xDriver, 5);
+				if (xDriver != newYDriver)
+					component.SetXDriver(newYDriver);
+				float value = component.GetXPosValue();
+				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
+				if (ImGui::DragFloat("##Value1", &value))
+					component.SetXPosValue(value);
+				ImGui::PopItemWidth();
+				ImGui::Spacing();
+
+				ImGui::Text("Scale");
+				WidthDriver widthDriver = component.GetWidthDriver();
+				WidthDriver newSelectedWidth = (WidthDriver)(SelectWidget(std::array<const char*, 3>{"ConstantWidth", "RelativeWidth", "AspectWidth"}, (uint8_t)widthDriver >> 4, 3) << 4);
+				if (widthDriver != newSelectedWidth)
+					component.SetWidthDriver(newSelectedWidth);
+				value = component.GetWidthValue();
+				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
+				if (ImGui::DragFloat("##Value2", &value))
+					component.SetWidthValue(value);
+				ImGui::PopItemWidth();
+			}
+			else {
+				ImGui::Text("Left side");
+				LeftSideDriver leftDriver = component.GetLeftSideDriver();
+				LeftSideDriver newLeftDriver = (LeftSideDriver)SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)leftDriver, 2);
+				if (leftDriver != newLeftDriver)
+					component.SetLeftSideDriver(newLeftDriver);
+				float value = component.GetLeftSideValue();
+				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
+				if (ImGui::DragFloat("##Value3", &value))
+					component.SetLeftSideValue(value);
+				ImGui::PopItemWidth();
+				ImGui::Spacing();
+
+				ImGui::Text("Right side");
+				RightSideDriver rightDriver = component.GetRightSideDriver();
+				RightSideDriver newRightDriver = (RightSideDriver)SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)rightDriver, 2);
+				if (rightDriver != newRightDriver)
+					component.SetRightSideDriver(newRightDriver);
+				value = component.GetRightSideValue();
+				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
+				if (ImGui::DragFloat("##Value4", &value))
+					component.SetRightSideValue(value);
+				ImGui::PopItemWidth();
+			}
+			ImGui::Columns(1);
 			ImGui::Spacing();
 
-			component.SetYDriver((UIAlignComponent::YDriver)SelectWidget("Y Driver", std::array<const char*, 5>{"PixelsFromTop", "PixelsFromBottom", "AlignCenterY", "AlignTop", "AlignBottom"}, (uint8_t)component.GetYDriver(), 5));
-			val = component.GetYPosValue();
-			if (DrawFloat("Y Position", &val))
-				component.SetYPosValue(val);
+			ImGui::PushFont(boldFont);
+			ImGui::Text("Vertical");
+			ImGui::PopFont();
+			isTransformActive = !component.GetUseSidesVertical();
+			transformActive = SelectWidget("Transform", "Sides", isTransformActive);
+			if (isTransformActive != transformActive)
+				component.SetUseSidesVertical(!transformActive);
+
+			ImGui::Columns(2);
+			ImGui::SetColumnWidth(0, 15);
+			ImGui::NextColumn();
+
+			if (transformActive) {
+				ImGui::Text("Position");
+				YDriver yDriver = component.GetYDriver();
+				YDriver newYDriver = (YDriver)SelectWidget(std::array<const char*, 5>{"ConstantTop", "ConstantBottom", "Center", "RelativeTop", "RelativeBottom"}, (uint8_t)yDriver, 5);
+				if (yDriver != newYDriver)
+					component.SetYDriver(newYDriver);
+				float value = component.GetYPosValue();
+				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
+				if (ImGui::DragFloat("##Value5", &value))
+					component.SetYPosValue(value);
+				ImGui::PopItemWidth();
+				ImGui::Spacing();
+
+				ImGui::Text("Scale");
+				HeightDriver heightDriver = component.GetHeightDriver();
+				HeightDriver newHeightDriver = (HeightDriver)(SelectWidget(std::array<const char*, 3>{"ConstantHeight", "RelativeHeight", "AspectHeight"}, (uint8_t)heightDriver >> 4, 3) << 4);
+				if (heightDriver != newHeightDriver)
+					component.SetHeightDriver(newHeightDriver);
+				value = component.GetHeightValue();
+				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
+				if (ImGui::DragFloat("##Value6", &value))
+					component.SetHeightValue(value);
+				ImGui::PopItemWidth();
+			}
+			else {
+				ImGui::Text("Top");
+				TopDriver topDriver = component.GetTopDriver();
+				TopDriver newTopDriver = (TopDriver)SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)topDriver, 2);
+				if (topDriver != newTopDriver)
+					component.SetTopDriver(newTopDriver);
+				float value = component.GetTopValue();
+				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
+				if (ImGui::DragFloat("##Value7", &value))
+					component.SetTopValue(value);
+				ImGui::PopItemWidth();
+				ImGui::Spacing();
+
+				ImGui::Text("Bottom");
+				BottomDriver bottomDriver = component.GetBottomDriver();
+				BottomDriver newBottomDriver = (BottomDriver)SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)bottomDriver, 2);
+				if (bottomDriver != newBottomDriver)
+					component.SetBottomDriver(newBottomDriver);
+				value = component.GetBottomValue();
+				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
+				if (ImGui::DragFloat("##Value8", &value))
+					component.SetBottomValue(value);
+				ImGui::PopItemWidth();
+			}
+			ImGui::Columns(1);
 			ImGui::Spacing();
 
-			component.SetWidthDriver((UIAlignComponent::WidthDriver)SelectWidget("Width Driver", std::array<const char*, 3>{"ConstantWidth", "RelativeWidth", "AspectWidth"}, (uint8_t)component.GetWidthDriver(), 3));
-			val = component.GetWidthValue();
-			if (DrawFloat("Width Value", &val))
-				component.SetWidthValue(val);
-			ImGui::Spacing();
-
-			component.SetHeightDriver((UIAlignComponent::HeightDriver)SelectWidget("Height Driver", std::array<const char*, 3>{"ConstantHeight", "RelativeHeight", "AspectHeight"}, (uint8_t)component.GetHeightDriver(), 3));
-			val = component.GetHeightValue();
-			if (DrawFloat("Height Value", &val))
-				component.SetHeightValue(val);
-			ImGui::Spacing();
-
-			if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), ImGuiTreeNodeFlags_SpanAvailWidth, "World Position")) {
+			if (ImGui::TreeNodeEx((void*)(intptr_t)worldTreeNodeUniqueID, ImGuiTreeNodeFlags_SpanAvailWidth, "World Position")) {
 				ImGui::Columns(2);
 				ImGui::SetColumnWidth(0, 100);
 				ImGui::Text("Position");

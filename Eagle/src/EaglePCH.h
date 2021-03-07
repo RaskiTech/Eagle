@@ -18,9 +18,10 @@
 #include <Dependencies/Entt.h>
 #include <Dependencies/ImGui.h>
 
+#include "Eagle/Core/Core.h"
+#include "Eagle/Debug/Instrumentor.h"
 #include "Eagle/Core/Keycodes.h"
 #include "Eagle/Core/Log.h"
-#include "Eagle/Debug/Instrumentor.h"
 #include "Eagle/Core/Events/Event.h"
 #include "Eagle/Core/Events/ApplicationEvent.h"
 #include "Eagle/Core/Events/MouseEvent.h"

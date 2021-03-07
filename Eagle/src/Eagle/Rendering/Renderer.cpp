@@ -345,29 +345,11 @@ namespace Egl {
 		// placeIndex tells what index comes here
 		QuadVertex* sortedVertexPtr = sData.sortedQuadsBase;
 		for (uint32_t i = 0; i < quadAmount; i++) {
-			//QuadData& copyFromHere = sData.quadDataBase[sData.quadDataBase[i].placeIndex];
-
 			for (int j = 0; j < 4; j++) {
-				//*sortedVertexPtr = copyFromHere.quadVertices[j];
 				*sortedVertexPtr = sData.quadDataBase[i].quadVertices[j];
 				sortedVertexPtr++;
 			}
-
-
 		}
-
-		//static int v = 0;
-		//if (v > 50) {
-		//	LOG_WARN("---");
-		//	for (uint32_t i = 0; i < quadAmount; i++)
-		//		LOG("{0}      {1}", sData.quadDataBase[i].depth, sData.quadDataBase[i].placeIndex);
-		//	LOG_WARN("---\nSorted:");
-		//	for (uint32_t i = 0; i < quadAmount; i++) {
-		//		LOG("{0}, {1}", sData.sortedQuadsBase[i * 4].position.x, sData.sortedQuadsBase[i * 4].position.y);
-		//	}
-		//	v = 0;
-		//}
-		//else v++;
 
 		//// Do other stuff ////
 		sData.quadVB->SetData(sData.sortedQuadsBase, verticesSize);
