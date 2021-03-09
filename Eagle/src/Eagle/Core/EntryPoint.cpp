@@ -2,9 +2,15 @@
 #include "Application.h"
 #include "Eagle/Rendering/Texture.h"
 
+#include "EagleBuildSettings.h"
+
 #ifdef EAGLE_PLATFORM_WINDOWS
 
 int main(int agrc, char** argv) {
+#if !EAGLE_SHOW_CONSOLE
+	FreeConsole();
+#endif
+
 	Egl::Log::Init();
 	LOG_ENG_INFO("Engine starting...");
 
