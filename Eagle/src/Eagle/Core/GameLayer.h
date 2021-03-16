@@ -22,6 +22,9 @@ namespace Egl {
 		virtual void OnEvent(Event& event) override;
 		virtual void OnImGuiRender() override;
 
+		void DistributeEvent(Event& e);
+		void SubscribeToEvents(NativeScriptComponent* script);
+
 		void ResetApplication();
 		Ref<Scene> GetActiveScene() const { return mActiveScene; }
 	private:

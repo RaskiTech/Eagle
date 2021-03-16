@@ -8,6 +8,31 @@ using namespace Egl;
 // SceneBegin and SceneEnd can be removed as well as all the example_ functions.
 ////
 
+// Camera controller
+class CameraController : public Script {
+public:
+	void OnUpdate() {
+		auto& transform = GetComponent<TransformComponent>();
+		auto& camera = GetComponent<CameraComponent>().camera;
+		float zoomSize = camera.GetSize();
+		auto pos = transform.GetPosition();
+		float speed = 5;
+
+		if (Input::IsKeyPressed(EGL_KEY_A)) transform.SetPosition(pos.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f, pos.y);
+		if (Input::IsKeyPressed(EGL_KEY_D)) transform.SetPosition(pos.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f, pos.y);
+		if (Input::IsKeyPressed(EGL_KEY_S)) transform.SetPosition(pos.x, pos.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f);
+		if (Input::IsKeyPressed(EGL_KEY_W)) transform.SetPosition(pos.x, pos.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f);
+		int scroll = Input::MouseScrolledY();
+		if (scroll < 0 || zoomSize > 1) camera.SetSize(zoomSize - scroll);
+	}
+
+	bool OnEvent(Event& e) {
+
+		// return: Does this event function consume the event 
+		return false;
+	}
+};
+
 class ExampleScene : public Scene {
 	void example_UI() {
 		Entity canvas = AddCanvas();
@@ -82,31 +107,12 @@ class ExampleScene : public Scene {
 		
 		example_UI();
 
-		// Camera controller
-		class CameraController : public Script {
-		public:
-			void OnUpdate() {
-				auto& transform = GetComponent<TransformComponent>();
-				auto& camera = GetComponent<CameraComponent>().camera;
-				float zoomSize = camera.GetSize();
-				auto pos = transform.GetPosition();
-				float speed = 5;
-				
-				if (Input::IsKeyPressed(EGL_KEY_A)) transform.SetPosition(pos.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f, pos.y);
-				if (Input::IsKeyPressed(EGL_KEY_D)) transform.SetPosition(pos.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f, pos.y);
-				if (Input::IsKeyPressed(EGL_KEY_S)) transform.SetPosition(pos.x,pos.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f);
-				if (Input::IsKeyPressed(EGL_KEY_W)) transform.SetPosition(pos.x,pos.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f);
-				int scroll = Input::MouseScrolledY();
-				if (scroll < 0 || zoomSize > 1) camera.SetSize(zoomSize - scroll);
-			}
-		};
 		camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
 	}
 	void SceneEnd() {
 
 	}
 };
-
 
 Ref<Scene> Egl::ApplicationStartup() {
 	return CreateRef<ExampleScene>();

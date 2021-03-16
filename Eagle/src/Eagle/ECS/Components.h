@@ -50,24 +50,28 @@ namespace Egl {
 	struct NativeScriptComponent {
 		Script* baseInstance = nullptr;
 
-		//std::function<void()> InstantiateFunc;
-
 		std::function<void(Script*)> OnCreateFunc;
 		std::function<void(Script*)> OnDestroyFunc;
 		std::function<void(Script*)> OnUpdateFunc;
-		
+		std::function<bool(Script*, Event&)> OnEventFunc;
+
 		template<typename T, typename ... Args>
 		void Bind(Args&&... args) {
 			baseInstance = new T(args...);
 			
 			COMPILE_IF_VALID(T, OnCreate(),
-				OnCreateFunc = [](Script* instance) { ((T*)instance)->OnCreate(); }
+				OnCreateFunc = [](Script* instance) { ((T*)instance)->OnCreate(); };
 			);
 			COMPILE_IF_VALID(T, OnDestroy(),
-				OnDestroyFunc = [](Script* instance) { ((T*)instance)->OnDestroy(); }
+				OnDestroyFunc = [](Script* instance) { ((T*)instance)->OnDestroy(); };
 			);
 			COMPILE_IF_VALID(T, OnUpdate(),
-				OnUpdateFunc = [](Script* instance) { ((T*)instance)->OnUpdate(); }
+				OnUpdateFunc = [](Script* instance) { ((T*)instance)->OnUpdate(); };
+			);
+
+			COMPILE_IF_EVENTFUNC(T,
+				OnEventFunc = [](Script* instance, Event& e) { return ((T*)instance)->OnEvent(e); };
+				Application::Get().GetGameLayer()->SubscribeToEvents(this);
 			);
 		}
 		void DeleteBase() {

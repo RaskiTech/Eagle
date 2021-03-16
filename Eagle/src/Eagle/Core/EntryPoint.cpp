@@ -4,13 +4,7 @@
 
 #include "EagleBuildSettings.h"
 
-#ifdef EAGLE_PLATFORM_WINDOWS
-
-int main(int agrc, char** argv) {
-#if !EAGLE_SHOW_CONSOLE
-	FreeConsole();
-#endif
-
+inline void EagleMain() {
 	Egl::Log::Init();
 	LOG_ENG_INFO("Engine starting...");
 
@@ -29,5 +23,16 @@ int main(int agrc, char** argv) {
 	EAGLE_PROFILE_END();
 }
 
-#endif // EAGLE_PLATFORM_WINDOWS
+
+#ifdef EAGLE_PLATFORM_WINDOWS
+
+int main(int agrc, char** argv) {
+	#if !EAGLE_SHOW_CONSOLE
+	  FreeConsole();
+	#endif
+
+	EagleMain();
+}
+
+#endif
 

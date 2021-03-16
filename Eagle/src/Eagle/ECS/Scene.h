@@ -7,6 +7,7 @@
 namespace Egl {
 
 	class Entity;
+	struct NativeScriptComponent;
 
 	class Scene {
 	public:
@@ -33,9 +34,10 @@ namespace Egl {
 		void SetViewportAspectRatio(float aspectRatio);
 		void OnUpdate();
 
-		bool areEntitiesInOrder = false;
-		std::vector<entt::entity> entitiesInSortOrder;
+		bool sceneInitComplete = false;
+		std::vector<NativeScriptComponent*> eventScriptsInOrder;
 
+		friend struct NativeScriptComponent;
 		friend class GameLayer;
 		friend class EditorLayer;
 		friend class Application;
@@ -49,6 +51,7 @@ namespace Egl {
 		friend class HierarchyPanel;
 		friend struct TransformComponent;
 		friend struct UIAlignComponent;
+		friend struct NativeScriptComponent;
 
 	private:
 		inline void AddEntityChildsImp(Entity& createdEntity) {}

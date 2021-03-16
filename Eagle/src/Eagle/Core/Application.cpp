@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Can now align sides to parent UI. The editor UI looks a bit better
+// Client can now add events. They are sorted and called properly
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
@@ -56,14 +56,7 @@ namespace Egl {
 		dispacher.Dispatch<WindowCloseEvent>(EAGLE_BIND_EVENT_FUNC(OnWindowClose));
 		dispacher.Dispatch<WindowResizeEvent>(EAGLE_BIND_EVENT_FUNC(OnWindowResize));
 
-		for (auto layer = mLayerStack.end(); layer != mLayerStack.begin();) {
-			layer--;
-			if ((*layer)->IsActive()) {
-				(*layer)->OnEvent(e);
-				if (e.IsHandled())
-					break;
-			}
-		}
+		GetGameLayer()->DistributeEvent(e);
 	}
 
 	void Application::Run() {

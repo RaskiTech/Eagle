@@ -9,11 +9,6 @@
 #include "Eagle/Core/Application.h"
 
 namespace Egl {
-	template< typename T, typename Pred >
-	static typename std::vector<T>::iterator Insert_sorted(std::vector<T>& vec, T const& item, Pred pred) {
-		return vec.insert(std::upper_bound(vec.begin(), vec.end(), item, pred), item);
-	}
-
 	Scene::Scene() {
 
 	}
@@ -33,17 +28,6 @@ namespace Egl {
 			createdEntityRelation.nextSibling = mFirstEntity;
 			mFirstEntity = createdEntityID;
 		}
-		if (areEntitiesInOrder)
-			Insert_sorted(entitiesInSortOrder, createdEntityID, [&](entt::entity e1, entt::entity e2) {
-				auto mc1 = mRegistry.get<MetadataComponent>(e1);
-				auto mc2 = mRegistry.get<MetadataComponent>(e2);
-				if (mc1.sortingLayer == mc2.sortingLayer)
-					return mc1.subSorting > mc2.subSorting;
-				else
-					return mc1.sortingLayer > mc2.sortingLayer;
-			});
-		else
-			entitiesInSortOrder.push_back(createdEntityID);
 		return entity;
 	}
 	Entity Scene::AddCanvas() { 
@@ -60,18 +44,6 @@ namespace Egl {
 		entity.AddComponent<MetadataComponent>(name, 100);
 		Relation& createdEntityRelation = entity.AddComponent<Relation>();
 		entity.SetParent(UIParent);
-
-		if (areEntitiesInOrder)
-			Insert_sorted(entitiesInSortOrder, createdEntityID, [&](entt::entity e1, entt::entity e2) {
-				auto mc1 = mRegistry.get<MetadataComponent>(e1);
-				auto mc2 = mRegistry.get<MetadataComponent>(e2);
-				if (mc1.sortingLayer == mc2.sortingLayer)
-					return mc1.subSorting > mc2.subSorting;
-				else
-					return mc1.sortingLayer > mc2.sortingLayer;
-			});
-		else
-			entitiesInSortOrder.push_back(createdEntityID);
 		return entity;
 	}
 
