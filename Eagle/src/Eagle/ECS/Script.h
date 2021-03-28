@@ -9,7 +9,7 @@ namespace Egl {
 
 		glm::vec2               ScreenToWorldPos(const glm::vec2& screenPosition) const { return GetParentScene()->ScreenToWorldPos(screenPosition); }
 		glm::vec2               WorldToScreenPos(const glm::vec2& screenPosition) const { return GetParentScene()->WorldToScreenPos(screenPosition); }
-		Entity                  AddEntity(const std::string& name) const { return GetParentScene()->AddEntity(name); }
+		Entity                  AddEntity(const EntityParams& entity) const { return GetParentScene()->AddEntity(entity); }
 
 		void                    SetParent(const Entity& parent) const { mEntity.SetParent(parent); }
 		void                    AddChild(const Entity& child) const { mEntity.AddChild(child); }

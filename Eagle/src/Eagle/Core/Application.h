@@ -34,6 +34,8 @@ namespace Egl {
 
 		glm::vec2 WindowPixelToScenePixelSpace(const glm::vec2& point) const;
 		glm::vec2 ScenePixelToWindowPixelSpace(const glm::vec2& point) const;
+		int WindowPixelToScenePixelSpaceX(int point) const;
+		int WindowPixelToScenePixelSpaceY(int point) const;
 
 		static inline Application& Get() { return *mInstance; }
 	protected:

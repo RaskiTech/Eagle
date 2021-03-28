@@ -10,6 +10,8 @@ namespace Egl {
 	private:
 		void DrawProperties();
 
+		float value1Speed = 1, value2Speed = 1, value3Speed = 1, value4Speed = 1;
+
 		Entity drawedEntity;
 	};
 }

@@ -35,7 +35,6 @@ namespace Egl {
 					scriptComponent.OnCreateFunc(scriptComponent.baseInstance);
 			});
 
-			LOG("Now sorting the array of size {0}", mActiveScene->eventScriptsInOrder.size());
 			std::sort(mActiveScene->eventScriptsInOrder.begin(), mActiveScene->eventScriptsInOrder.end(), [&](NativeScriptComponent* e1, NativeScriptComponent* e2) {
 				auto& mc1 = mActiveScene->mRegistry.get<MetadataComponent>((entt::entity)e1->baseInstance->GetEntity().GetID());
 				auto& mc2 = mActiveScene->mRegistry.get<MetadataComponent>((entt::entity)e2->baseInstance->GetEntity().GetID());

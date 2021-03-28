@@ -13,12 +13,12 @@ namespace Egl {
 
 	}
 
-	Entity Scene::AddEntity(const std::string& name) {
+	Entity Scene::AddEntity(const EntityParams& entity) {
 		entt::entity createdEntityID = mRegistry.create();
-		Entity entity = { createdEntityID, this };
-		entity.AddComponent<TransformComponent>(entity, glm::vec3{0, 0, 0});
-		entity.AddComponent<MetadataComponent>(name, 0);
-		Relation& createdEntityRelation = entity.AddComponent<Relation>();
+		Entity newEntity = { createdEntityID, this };
+		newEntity.AddComponent<TransformComponent>(newEntity, entity.position, entity.rotation, entity.scale);
+		newEntity.AddComponent<MetadataComponent>(entity.name, entity.sortingLayer, entity.subSorting);
+		Relation& createdEntityRelation = newEntity.AddComponent<Relation>();
 
 		if (mFirstEntity == entt::null) {
 			mFirstEntity = createdEntityID;
@@ -28,23 +28,24 @@ namespace Egl {
 			createdEntityRelation.nextSibling = mFirstEntity;
 			mFirstEntity = createdEntityID;
 		}
-		return entity;
+		return newEntity;
 	}
 	Entity Scene::AddCanvas() { 
-		Entity e = AddEntity("Canvas"); 
+		Entity e = AddEntity(EntityParams("Canvas"));
 		e.AddComponent<CanvasComponent>(); 
 		return e; 
 	}
-	Entity Scene::AddUIEntity(const std::string& name, Entity UIParent) {
+	Entity Scene::AddUIEntity(const UIEntityParams& entity, Entity UIParent) {
 		EAGLE_ENG_ASSERT(UIParent.HasComponent<UIAlignComponent>() || UIParent.HasComponent<CanvasComponent>(), "parent isn't a canvas or an UI entity");
 
 		entt::entity createdEntityID = mRegistry.create();
-		Entity entity = { createdEntityID, this };
-		entity.AddComponent<UIAlignComponent>(entity);
-		entity.AddComponent<MetadataComponent>(name, 100);
-		Relation& createdEntityRelation = entity.AddComponent<Relation>();
-		entity.SetParent(UIParent);
-		return entity;
+		Entity newEntity = { createdEntityID, this };
+		newEntity.AddComponent<UIAlignComponent>(newEntity, entity.xDrivers, entity.yDrivers, entity.xPrimaryValue, entity.yPrimaryValue, 
+			entity.xSecondaryValue, entity.ySecondaryValue, entity.useSidesHorizontal, entity.useSidesVertical);
+		newEntity.AddComponent<MetadataComponent>(entity.name, entity.sortingLayer, entity.subSorting);
+		Relation& createdEntityRelation = newEntity.AddComponent<Relation>();
+		newEntity.SetParent(UIParent);
+		return newEntity;
 	}
 
 	void Scene::RemoveEntity(Entity& entity) {

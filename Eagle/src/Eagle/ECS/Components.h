@@ -10,13 +10,87 @@
 #include "Eagle/ECS/Entity.h"
 
 namespace Egl {
+#pragma region drivers
+	using Driver = uint8_t; 
+	enum class LeftSideDriver {
+		ConstantOffset = 0 << 0,   // The side will always have the same offset from the parent
+		RelativeOffset = 1 << 0    // The sides offset will be a certain percent of the parents
+	};
+	enum class RightSideDriver {
+		ConstantOffset = 0 << 4,
+		RelativeOffset = 1 << 4
+	};
+	enum class TopDriver {
+		ConstantOffset = 0 << 0,
+		RelativeOffset = 1 << 0
+	};
+	enum class BottomDriver {
+		ConstantOffset = 0 << 4,
+		RelativeOffset = 1 << 4
+	};
+
+	enum class XDriver {
+		PixelsFromLeft   = 0 << 0, // The objects left side will always be the same distance from the windows left side
+		PixelsFromRight  = 1 << 0, // The objects right side will always be the same distance from the windows right side
+		AlignCenter      = 2 << 0, // Have the objects center be at a certain percent horizontally
+		AlignLeft        = 3 << 0, // Have the objects top be at a certain percent horizontally
+		AlignRight       = 4 << 0  // Have the objects right side be at a certain percent horizontally
+	};
+	enum class WidthDriver {
+		ConstantWidth    = 0 << 4, // The object will always have the same width
+		RelativeWidth    = 1 << 4, // The objects width will be a certain percent of the parents
+		AspectWidth      = 2 << 4  // The width will depend on the height. 1 is height
+	};
+	enum class YDriver {
+		PixelsFromTop    = 0 << 0, // The objects top will always be the same distance from the windows top
+		PixelsFromBottom = 1 << 0, // The objects bottom will always be the same distance from the windows bottom
+		AlignCenter      = 2 << 0, // Have the objects center be at a certain percent vertically
+		AlignTop         = 3 << 0, // Have the objects top be at a certain percent vertically
+		AlignBottom      = 4 << 0  // Have the objects bottom be at a certain percent vertically
+	};
+	enum class HeightDriver {
+		ConstantHeight   = 0 << 4, // The object will always have the same height
+		RelativeHeight   = 1 << 4, // The objects height will be a certain percent of the parents
+		AspectHeight     = 2 << 4  // The height will depend on the width. 1 is width
+	};
+#pragma endregion
+
+	struct EntityParams {
+		glm::vec2 position = { 0, 0 };
+		float rotation = 0;
+		glm::vec2 scale = { 1, 1 };
+
+		std::string name = "New entity";
+		int8_t sortingLayer = 0;
+		uint8_t subSorting = 0;
+
+		EntityParams(const std::string& name = "New entity", int8_t sortingLayer = 0, uint8_t subSorting = 0) : name(name), sortingLayer(sortingLayer), subSorting(subSorting) {}
+		EntityParams(const std::string& name, const glm::vec2& position, float rotation, const glm::vec2& scale, int8_t sortingLayer = 0, uint8_t subSorting = 0)
+			: name(name), position(position), scale(scale), rotation(rotation), sortingLayer(sortingLayer), subSorting(subSorting) {};
+	};
+	struct UIEntityParams {
+		bool useSidesHorizontal = false, useSidesVertical = false;
+		Driver xDrivers = (Driver)XDriver::AlignCenter | (Driver)WidthDriver::RelativeWidth;
+		Driver yDrivers = (Driver)YDriver::AlignCenter | (Driver)HeightDriver::RelativeHeight;
+		float xPrimaryValue = 0, yPrimaryValue = 0, xSecondaryValue = 0.8f, ySecondaryValue = 0.5f;
+
+		std::string name = "New entity";
+		int8_t sortingLayer = 0;
+		uint8_t subSorting = 0;
+
+		UIEntityParams(const std::string& name = "New entity", int8_t sortingLayer = 0, uint8_t subSorting = 0) : name(name), sortingLayer(sortingLayer), subSorting(subSorting) {}
+		UIEntityParams(const std::string& name, Driver xDrivers, Driver yDrivers, float xPrimaryValue, float yPrimaryValue, float xSecondaryValue, float ySecondaryValue, bool useSidesHorizontal, bool useSidesVertical, int8_t sortingLayer = 0, uint8_t subSorting = 0)
+			: name(name), xDrivers(xDrivers), yDrivers(yDrivers), xPrimaryValue(xPrimaryValue), yPrimaryValue(yPrimaryValue), xSecondaryValue(xSecondaryValue), 
+			ySecondaryValue(ySecondaryValue), useSidesHorizontal(useSidesHorizontal), useSidesVertical(useSidesVertical), sortingLayer(sortingLayer), subSorting(subSorting) {};
+	};
+
 	struct MetadataComponent {
 		std::string tag;
 		int8_t sortingLayer = 0;
 		uint8_t subSorting = 0;
 
 		MetadataComponent() = default;
-		MetadataComponent(const std::string& tag, uint8_t sortingLayer) : tag(tag), sortingLayer(sortingLayer) {};
+		MetadataComponent(const std::string& tag, int8_t sortingLayer, uint8_t subSorting = 0) : tag(tag), sortingLayer(sortingLayer), subSorting(subSorting) {};
 	};
 
 	struct SpriteRendererComponent {
@@ -114,7 +188,8 @@ namespace Egl {
 		glm::vec2 WorldToLocalPos(const glm::vec2& point) const;
 
 		TransformComponent(const TransformComponent&) = default;
-		TransformComponent(Entity entity, const glm::vec3& position) : localPosition(position), thisEntity(entity) {}
+		TransformComponent(Entity entity, const glm::vec2& position) : localPosition(position), thisEntity(entity) {}
+		TransformComponent(Entity entity, const glm::vec2& position, float rotation, const glm::vec2& scale) : localPosition(position), localRotation(rotation), localScale(scale), thisEntity(entity) {}
 
 		glm::mat4 GetTransform() const {
 			return GetRotation() == 0 ?
@@ -145,53 +220,15 @@ namespace Egl {
 		friend struct UIAlignComponent;
 	};
 
-	enum class LeftSideDriver {
-		ConstantOffset = 0 << 0,   // The side will always have the same offset from the parent
-		RelativeOffset = 1 << 0    // The sides offset will be a certain percent of the parents
-	};
-	enum class RightSideDriver {
-		ConstantOffset = 0 << 4,
-		RelativeOffset = 1 << 4
-	};
-	enum class TopDriver {
-		ConstantOffset = 0 << 0,
-		RelativeOffset = 1 << 0
-	};
-	enum class BottomDriver {
-		ConstantOffset = 0 << 4,
-		RelativeOffset = 1 << 4
-	};
-
-	enum class XDriver {
-		PixelsFromLeft   = 0 << 0, // The objects left side will always be the same distance from the windows left side
-		PixelsFromRight  = 1 << 0, // The objects right side will always be the same distance from the windows right side
-		AlignCenter      = 2 << 0, // Have the objects center be at a certain percent horizontally
-		AlignLeft        = 3 << 0, // Have the objects top be at a certain percent horizontally
-		AlignRight       = 4 << 0  // Have the objects right side be at a certain percent horizontally
-	};
-	enum class WidthDriver {
-		ConstantWidth    = 0 << 4, // The object will always have the same width
-		RelativeWidth    = 1 << 4, // The objects width will be a certain percent of the parents
-		AspectWidth      = 2 << 4  // The width will depend on the height. 1 is height
-	};
-	enum class YDriver {
-		PixelsFromTop    = 0 << 0, // The objects top will always be the same distance from the windows top
-		PixelsFromBottom = 1 << 0, // The objects bottom will always be the same distance from the windows bottom
-		AlignCenter      = 2 << 0, // Have the objects center be at a certain percent vertically
-		AlignTop         = 3 << 0, // Have the objects top be at a certain percent vertically
-		AlignBottom      = 4 << 0  // Have the objects bottom be at a certain percent vertically
-	};
-	enum class HeightDriver {
-		ConstantHeight   = 0 << 4, // The object will always have the same height
-		RelativeHeight   = 1 << 4, // The objects height will be a certain percent of the parents
-		AspectHeight     = 2 << 4  // The height will depend on the width. 1 is width
-	};
 	struct UIAlignComponent {
 
 		UIAlignComponent(Entity thisEntity) : thisEntity(thisEntity) {};
 		UIAlignComponent(Entity thisEntity, XDriver xDriver, float xValue, YDriver yDriver, float yValue, WidthDriver widthDriver, float widthValue, HeightDriver heightDriver, float heightValue)
-			: thisEntity(thisEntity), xBitfield((uint8_t)xDriver | (uint8_t)widthDriver), yBitfield((uint8_t)yDriver | (uint8_t)heightDriver),
+			: thisEntity(thisEntity), xBitfield((Driver)xDriver | (Driver)widthDriver), yBitfield((Driver)yDriver | (Driver)heightDriver),
 			  xPrimaryValue(xValue), yPrimaryValue(yValue), xSecondaryValue(widthValue), ySecondaryValue(heightValue) {}
+		UIAlignComponent(Entity thisEntity, Driver xDrivers, Driver yDrivers, float xPrimaryValue, float yPrimaryValue, float xSecondaryValue, float ySecondaryValue, bool useSidesHorizontal, bool useSidesVertical)
+			: thisEntity(thisEntity), xBitfield(xDrivers), yBitfield(yDrivers), xPrimaryValue(xPrimaryValue), yPrimaryValue(yPrimaryValue), xSecondaryValue(xSecondaryValue), ySecondaryValue(ySecondaryValue),
+			useSidesHorizontal(useSidesHorizontal), useSidesVertical(useSidesVertical) {}
 
 		const glm::vec2& GetWorldPosition() const;
 		const glm::vec2& GetWorldScale() const;
@@ -234,8 +271,14 @@ namespace Egl {
 
 		void SetUseSidesHorizontal(bool sidesOverObjectTransform);
 		void SetUseSidesVertical(bool sidesOverObjectTransform);
-		bool GetUseSidesHorizontal() { return useSidesHorizontal; }
-		bool GetUseSidesVertical() { return useSidesVertical; }
+		bool GetUseSidesHorizontal() const { return useSidesHorizontal; }
+		bool GetUseSidesVertical() const { return useSidesVertical; }
+
+		float GetPrimaryXFromWorldPos(float xWorldPos) const;
+		float GetSecondaryXFromWorldScale(float xWorldScale) const;
+		float GetPrimaryYFromWorldPos(float yWorldPos) const;
+		float GetSecondaryYFromWorldScale(float yWorldScale) const;
+		std::pair<const glm::vec2&, const glm::vec2&> GetParentWorldCoords(entt::entity parent) const;
 
 		glm::mat4 GetTransform() const { return glm::translate(glm::mat4(1), { GetWorldPosition().x, GetWorldPosition().y, 0 }) * glm::scale(glm::mat4(1), glm::vec3(GetWorldScale(), 1)); }
 		operator glm::mat4& () { return GetTransform(); }
@@ -243,7 +286,7 @@ namespace Egl {
 		void SetDimensionFlagsFalse(const Relation& thisRel) const;
 		friend struct TransformComponent;
 	private:
-		void CheckAreDimensionsCorrect() const;
+		void CorrectWorldCoors() const;
 		void CalculateDimensions(const glm::vec2& parentPos, const glm::vec2& parentScale) const;
 
 		void CalculateSidesX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
@@ -259,8 +302,8 @@ namespace Egl {
 		// If the component uses pos and width, xBitField tells x position and width and same goes for y. Then primary value is pos and secondary scale value
 		// If the component uses sides, xBitfield tells left and right side and same goes for y. The primary values are left and top and secondary right and bottom.
 		bool useSidesHorizontal = false, useSidesVertical = false;
-		uint8_t xBitfield = (uint8_t)XDriver::AlignCenter | (uint8_t)WidthDriver::RelativeWidth;
-		uint8_t yBitfield = (uint8_t)YDriver::AlignCenter | (uint8_t)HeightDriver::RelativeHeight;
+		Driver xBitfield = (Driver)XDriver::AlignCenter | (Driver)WidthDriver::RelativeWidth;
+		Driver yBitfield = (Driver)YDriver::AlignCenter | (Driver)HeightDriver::RelativeHeight;
 		float xPrimaryValue = 0, yPrimaryValue = 0, xSecondaryValue = 0.8f, ySecondaryValue = 0.5f;
 
 		mutable bool dimensionsRight = false;

@@ -27,8 +27,9 @@ public:
 	}
 
 	bool OnEvent(Event& e) {
+		// LOG(e);
 
-		// return: Does this event function consume the event 
+		// return: Does this event function consume the event
 		return false;
 	}
 };
@@ -37,16 +38,16 @@ class ExampleScene : public Scene {
 	void example_UI() {
 		Entity canvas = AddCanvas();
 
-		Entity exampleSquare = AddUIEntity("Square", canvas);
+		Entity exampleSquare = AddUIEntity(UIEntityParams("Square"), canvas);
 		exampleSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.3f, 0.3f, 0.3f, 1 });
 
-		Entity exampleOtherSquare = AddUIEntity("OtherSquare", exampleSquare);
+		Entity exampleOtherSquare = AddUIEntity(UIEntityParams("OtherSquare"), exampleSquare);
 		exampleOtherSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.3f, 0.2f, 1 });
 		exampleOtherSquare.GetComponent<MetadataComponent>().subSorting = 1;
 	}
 
 	Entity example_ParticleBegin() {
-		Entity particle = AddEntity("ParticleSystem");
+		Entity particle = AddEntity(EntityParams("ParticleSystem"));
 		particle.GetComponent<TransformComponent>().SetLocalPosition(0, 8.5f);
 		auto& particleSystem = particle.AddComponent<ParticleSystemComponent>(100000).particleSystem; // <-- The max amount of particles at a time
 		Ref<Particles::Emitter> emitter = CreateRef<Particles::Emitter>(30.0f); // <-- The amount of particles spawned per second
@@ -73,34 +74,30 @@ class ExampleScene : public Scene {
 	}
 
 	void SceneBegin() override {
-		// Audio::PlayNote(Notes::C_4, 100);
-		// Audio::PlayWav(L"Assets/thisSongDoesntExist.wav");
-		// Audio::PlayLoopingWav(L"Assets/otherSongThatDoesntExist.wav");
-
-		Entity camera = AddEntity("Camera");
+		Entity camera = AddEntity(EntityParams("Camera"));
 		camera.AddComponent<CameraComponent>().camera.SetSize(8.85f);
 		camera.GetComponent<CameraComponent>().backgroundColor = { 0.19f, 0.32f, 0.45f, 1 };
 		camera.GetComponent<TransformComponent>().SetPosition(0, -0.6f);
 		SetPrimaryCamera(camera);
 		
-		auto& player = AddEntity("Player");
+		auto& player = AddEntity(EntityParams("Player"));
 		auto texture = Texture::Create("Assets/Player.png", false);
 		player.AddComponent<SpriteRendererComponent>(SubTexture::CreateFromIndexes(texture, { 0, 0 }, { 16, 16 }));
 		player.GetComponent<TransformComponent>().SetPosition(-4.2f, -1.5f);
 		
-		Entity ground = AddEntity("Ground");
+		Entity ground = AddEntity(EntityParams("Ground"));
 		ground.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.4f, 0.42f, 0.52f, 1 });
 		ground.GetComponent<TransformComponent>().SetScale(13, 8);
 		ground.GetComponent<TransformComponent>().SetPosition(0, -6);
 		
 		Entity particleSystem = example_ParticleBegin();
 		
-		Entity fireHydrant = AddEntity("Fire hydrant");
+		Entity fireHydrant = AddEntity(EntityParams("Fire hydrant"));
 		fireHydrant.AddComponent<SpriteRendererComponent>(Texture::Create("Assets/FireHydrant.png", false));
 		fireHydrant.GetComponent<TransformComponent>().SetScale(0.5f, 8);
 		fireHydrant.GetComponent<TransformComponent>().SetLocalPosition(0, 4.5f);
 		
-		Entity pedistal = AddEntity("Firehydrant stucture", fireHydrant, particleSystem);
+		Entity pedistal = AddEntity(EntityParams("Firehydrant stucture"), fireHydrant, particleSystem);
 		pedistal.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.5f, 0.52f, 0.62f, 1 });
 		pedistal.GetComponent<TransformComponent>().SetScale(2, 0.25f);
 		pedistal.GetComponent<TransformComponent>().SetPosition(1, -1.875f);

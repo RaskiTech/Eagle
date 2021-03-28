@@ -8,6 +8,8 @@ namespace Egl {
 
 	class Entity;
 	struct NativeScriptComponent;
+	struct EntityParams;
+	struct UIEntityParams;
 
 	class Scene {
 	public:
@@ -15,10 +17,10 @@ namespace Egl {
 		virtual ~Scene() = default;
 
 		template<typename... EntityParam>
-		Entity AddEntity(const std::string& name, EntityParam...childs) { auto e = AddEntity(name); AddEntityChildsImp(e, childs...); return e; }
-		Entity AddEntity(const std::string& name = "New Entity");
+		Entity AddEntity(const EntityParams& entity, EntityParam...childs) { auto e = AddEntity(entity); AddEntityChildsImp(e, childs...); return e; }
+		Entity AddEntity(const EntityParams& entity);
 		Entity AddCanvas();
-		Entity AddUIEntity(const std::string& name, Entity CanvasOrParent);
+		Entity AddUIEntity(const UIEntityParams& entity, Entity CanvasOrParent);
 
 		void RemoveEntity(Entity& entity);
 		void SetPrimaryCamera(Entity& camera);

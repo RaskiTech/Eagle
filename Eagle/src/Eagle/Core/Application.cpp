@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Client can now add events. They are sorted and called properly
+// Quality of life changes. UI objects now remain in the same place when changing anchors
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
@@ -161,6 +161,20 @@ namespace Egl {
 	glm::vec2 Application::ScenePixelToWindowPixelSpace(const glm::vec2& point) const {
 #if EAGLE_EDITOR
 		return point + mScenePanelOffset;
+#else
+		return point;
+#endif
+	}
+	int Application::WindowPixelToScenePixelSpaceX(int point) const {
+#if EAGLE_EDITOR
+		return point - (int)mScenePanelOffset.x;
+#else
+		return point;
+#endif
+	}
+	int Application::WindowPixelToScenePixelSpaceY(int point) const {
+#if EAGLE_EDITOR
+		return point - (int)mScenePanelOffset.y;
 #else
 		return point;
 #endif

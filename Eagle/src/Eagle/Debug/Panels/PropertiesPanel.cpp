@@ -177,7 +177,7 @@ namespace Egl {
 				component.SetLocalScale(scale);
 		});
 
-		DrawComponent<UIAlignComponent>("UI Align", drawedEntity, [](UIAlignComponent& component) {
+		DrawComponent<UIAlignComponent>("UI Align", drawedEntity, [&](UIAlignComponent& component) {
 			uint32_t worldTreeNodeUniqueID = UniqueID::GetUniqueFrameID(); // This because the options use ids so the tree could close when changing transform and sides
 
 			ImGuiIO& io = ImGui::GetIO();
@@ -196,16 +196,20 @@ namespace Egl {
 			ImGui::NextColumn();
 
 
-
 			if (transformActive) {
 				ImGui::Text("Position");
 				XDriver xDriver = component.GetXDriver();
-				XDriver newYDriver = (XDriver)SelectWidget(std::array<const char*, 5>{"ConstantLeft", "ConstantRight", "RelativeCenter", "RelativeLeft", "RelativeRight"}, (uint8_t)xDriver, 5);
-				if (xDriver != newYDriver)
-					component.SetXDriver(newYDriver);
+				XDriver newXDriver = (XDriver)SelectWidget(std::array<const char*, 5>{"ConstantLeft", "ConstantRight", "RelativeCenter", "RelativeLeft", "RelativeRight"}, (uint8_t)xDriver, 5);
+				if (xDriver != newXDriver) {
+					const glm::vec2& worldPos = component.GetWorldPosition();
+					component.SetXDriver(newXDriver);
+					float newValue = component.GetPrimaryXFromWorldPos(worldPos.x);
+					component.SetXPosValue(newValue);
+				}
+
 				float value = component.GetXPosValue();
 				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value1", &value))
+				if (ImGui::DragFloat("##Value1", &value, value1Speed))
 					component.SetXPosValue(value);
 				ImGui::PopItemWidth();
 				ImGui::Spacing();
@@ -213,11 +217,16 @@ namespace Egl {
 				ImGui::Text("Scale");
 				WidthDriver widthDriver = component.GetWidthDriver();
 				WidthDriver newSelectedWidth = (WidthDriver)(SelectWidget(std::array<const char*, 3>{"ConstantWidth", "RelativeWidth", "AspectWidth"}, (uint8_t)widthDriver >> 4, 3) << 4);
-				if (widthDriver != newSelectedWidth)
+				if (widthDriver != newSelectedWidth) {
+					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetWidthDriver(newSelectedWidth);
+					float newValue = component.GetSecondaryXFromWorldScale(worldScale.x);
+					component.SetWidthValue(newValue);
+				}
+
 				value = component.GetWidthValue();
 				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value2", &value))
+				if (ImGui::DragFloat("##Value2", &value, value2Speed))
 					component.SetWidthValue(value);
 				ImGui::PopItemWidth();
 			}
@@ -225,23 +234,32 @@ namespace Egl {
 				ImGui::Text("Left side");
 				LeftSideDriver leftDriver = component.GetLeftSideDriver();
 				LeftSideDriver newLeftDriver = (LeftSideDriver)SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)leftDriver, 2);
-				if (leftDriver != newLeftDriver)
+				if (leftDriver != newLeftDriver) {
+					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetLeftSideDriver(newLeftDriver);
+					float newValue = component.GetPrimaryXFromWorldPos(worldPos.x);
+					component.SetLeftSideValue(newValue);
+				}
+
 				float value = component.GetLeftSideValue();
 				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value3", &value))
+				if (ImGui::DragFloat("##Value3", &value, value1Speed))
 					component.SetLeftSideValue(value);
 				ImGui::PopItemWidth();
 				ImGui::Spacing();
 
 				ImGui::Text("Right side");
 				RightSideDriver rightDriver = component.GetRightSideDriver();
-				RightSideDriver newRightDriver = (RightSideDriver)SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)rightDriver, 2);
-				if (rightDriver != newRightDriver)
+				RightSideDriver newRightDriver = (RightSideDriver)(SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)rightDriver >> 4, 2) << 4);
+				if (rightDriver != newRightDriver) {
+					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetRightSideDriver(newRightDriver);
+					float newValue = component.GetSecondaryXFromWorldScale(worldScale.x);
+					component.SetRightSideValue(newValue);
+				}
 				value = component.GetRightSideValue();
 				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value4", &value))
+				if (ImGui::DragFloat("##Value4", &value, value2Speed))
 					component.SetRightSideValue(value);
 				ImGui::PopItemWidth();
 			}
@@ -264,11 +282,15 @@ namespace Egl {
 				ImGui::Text("Position");
 				YDriver yDriver = component.GetYDriver();
 				YDriver newYDriver = (YDriver)SelectWidget(std::array<const char*, 5>{"ConstantTop", "ConstantBottom", "Center", "RelativeTop", "RelativeBottom"}, (uint8_t)yDriver, 5);
-				if (yDriver != newYDriver)
+				if (yDriver != newYDriver) {
+					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetYDriver(newYDriver);
+					float newValue = component.GetPrimaryYFromWorldPos(worldPos.y);
+					component.SetYPosValue(newValue);
+				}
 				float value = component.GetYPosValue();
 				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value5", &value))
+				if (ImGui::DragFloat("##Value5", &value, value3Speed))
 					component.SetYPosValue(value);
 				ImGui::PopItemWidth();
 				ImGui::Spacing();
@@ -276,11 +298,15 @@ namespace Egl {
 				ImGui::Text("Scale");
 				HeightDriver heightDriver = component.GetHeightDriver();
 				HeightDriver newHeightDriver = (HeightDriver)(SelectWidget(std::array<const char*, 3>{"ConstantHeight", "RelativeHeight", "AspectHeight"}, (uint8_t)heightDriver >> 4, 3) << 4);
-				if (heightDriver != newHeightDriver)
+				if (heightDriver != newHeightDriver) {
+					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetHeightDriver(newHeightDriver);
+					float newValue = component.GetSecondaryYFromWorldScale(worldScale.y);
+					component.SetHeightValue(newValue);
+				}
 				value = component.GetHeightValue();
 				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value6", &value))
+				if (ImGui::DragFloat("##Value6", &value, value4Speed))
 					component.SetHeightValue(value);
 				ImGui::PopItemWidth();
 			}
@@ -288,29 +314,39 @@ namespace Egl {
 				ImGui::Text("Top");
 				TopDriver topDriver = component.GetTopDriver();
 				TopDriver newTopDriver = (TopDriver)SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)topDriver, 2);
-				if (topDriver != newTopDriver)
+				if (topDriver != newTopDriver) {
+					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetTopDriver(newTopDriver);
+					float newValue = component.GetPrimaryYFromWorldPos(worldPos.y);
+					component.SetTopValue(newValue);
+				}
+
 				float value = component.GetTopValue();
 				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value7", &value))
+				if (ImGui::DragFloat("##Value7", &value, value3Speed))
 					component.SetTopValue(value);
 				ImGui::PopItemWidth();
 				ImGui::Spacing();
 
 				ImGui::Text("Bottom");
 				BottomDriver bottomDriver = component.GetBottomDriver();
-				BottomDriver newBottomDriver = (BottomDriver)SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)bottomDriver, 2);
-				if (bottomDriver != newBottomDriver)
+				BottomDriver newBottomDriver = (BottomDriver)(SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)bottomDriver >> 4, 2) << 4);
+				if (bottomDriver != newBottomDriver) {
+					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetBottomDriver(newBottomDriver);
+					float newValue = component.GetSecondaryYFromWorldScale(worldScale.y);
+					component.SetBottomValue(newValue);
+				}
 				value = component.GetBottomValue();
 				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value8", &value))
+				if (ImGui::DragFloat("##Value8", &value, value4Speed))
 					component.SetBottomValue(value);
 				ImGui::PopItemWidth();
 			}
 			ImGui::Columns(1);
 			ImGui::Spacing();
 
+			// World position node
 			if (ImGui::TreeNodeEx((void*)(intptr_t)worldTreeNodeUniqueID, ImGuiTreeNodeFlags_SpanAvailWidth, "World Position")) {
 				ImGui::Columns(2);
 				ImGui::SetColumnWidth(0, 100);
