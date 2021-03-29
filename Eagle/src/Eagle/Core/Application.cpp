@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Quality of life changes. UI objects now remain in the same place when changing anchors
+// UI Sliders are now more responsive
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;

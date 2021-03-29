@@ -589,17 +589,17 @@ namespace Egl {
 	inline void UIAlignComponent::CalculatePosX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const {
 		switch (GetXDriver()) {
 			case XDriver::AlignCenter: {
-				worldPosition.x = ScreenToWorldPosX(WorldToScreenScaleX(parentScale.x, cam, camTrans) * xPrimaryValue + WorldToScreenPosX(parentPos.x, cam, camTrans), cam, camTrans);
+				worldPosition.x = xPrimaryValue * parentScale.x + parentPos.x;
 				break;
 			}
 			case XDriver::AlignLeft: {
 				float leftSideOffset = worldScale.x / 2;
-				worldPosition.x = ScreenToWorldPosX(WorldToScreenScaleX(parentScale.x, cam, camTrans) * xPrimaryValue + WorldToScreenPosX(parentPos.x, cam, camTrans), cam, camTrans) + leftSideOffset;
+				worldPosition.x = xPrimaryValue * parentScale.x + parentPos.x + leftSideOffset;
 				break;
 			}
 			case XDriver::AlignRight: {
 				float rightSideOffset = -worldScale.x / 2;
-				worldPosition.x = ScreenToWorldPosX(WorldToScreenScaleX(parentScale.x, cam, camTrans) * xPrimaryValue + WorldToScreenPosX(parentPos.x, cam, camTrans), cam, camTrans) + rightSideOffset;
+				worldPosition.x = xPrimaryValue * parentScale.x + parentPos.x + rightSideOffset;
 				break;
 			}
 			case XDriver::PixelsFromLeft: {
@@ -617,17 +617,20 @@ namespace Egl {
 	inline void UIAlignComponent::CalculatePosY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const {
 		switch (GetYDriver()) {
 			case YDriver::AlignCenter: {
-				worldPosition.y = ScreenToWorldPosY(WorldToScreenScaleY(parentScale.y, cam, camTrans) * yPrimaryValue + WorldToScreenPosY(parentPos.y, cam, camTrans), cam, camTrans);
+				//worldPosition.y = ScreenToWorldPosY(WorldToScreenScaleY(parentScale.y, cam, camTrans) * yPrimaryValue + WorldToScreenPosY(parentPos.y, cam, camTrans), cam, camTrans);
+				worldPosition.y = yPrimaryValue * parentScale.y + parentPos.y;
 				break;
 			}
 			case YDriver::AlignTop: {
 				float topSideOffset = -worldScale.y / 2;
-				worldPosition.y = ScreenToWorldPosY(WorldToScreenScaleY(parentScale.y, cam, camTrans) * yPrimaryValue + WorldToScreenPosY(parentPos.y, cam, camTrans), cam, camTrans) + topSideOffset;
+				//worldPosition.y = ScreenToWorldPosY(WorldToScreenScaleY(parentScale.y, cam, camTrans) * yPrimaryValue + WorldToScreenPosY(parentPos.y, cam, camTrans), cam, camTrans) + topSideOffset;
+				worldPosition.y = yPrimaryValue * parentScale.y + parentPos.y + topSideOffset;
 				break;
 			}
 			case YDriver::AlignBottom: {
 				float bottomSideOffset = worldScale.y / 2;
-				worldPosition.y = ScreenToWorldPosY(WorldToScreenScaleY(parentScale.y, cam, camTrans) * yPrimaryValue + WorldToScreenPosY(parentPos.y, cam, camTrans), cam, camTrans) + bottomSideOffset;
+				//worldPosition.y = ScreenToWorldPosY(WorldToScreenScaleY(parentScale.y, cam, camTrans) * yPrimaryValue + WorldToScreenPosY(parentPos.y, cam, camTrans), cam, camTrans) + bottomSideOffset;
+				worldPosition.y = yPrimaryValue * parentScale.y + parentPos.y + bottomSideOffset;
 				break;
 			}
 			case YDriver::PixelsFromTop: {
