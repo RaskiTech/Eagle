@@ -5,11 +5,11 @@ using namespace Egl;
 
 ////
 // This is an example script designed to show the API. Everything inside
-// SceneBegin and SceneEnd can be removed as well as all the example_ functions.
+// SceneBegin and SceneEnd can be removed as well as all the things with example_.
 ////
 
 // Camera controller
-class CameraController : public Script {
+class example_CameraController : public Script {
 public:
 	void OnUpdate() {
 		auto& transform = GetComponent<TransformComponent>();
@@ -27,8 +27,6 @@ public:
 	}
 
 	bool OnEvent(Event& e) {
-		// LOG(e);
-
 		// return: Does this event function consume the event
 		return false;
 	}
@@ -37,11 +35,13 @@ public:
 class ExampleScene : public Scene {
 	void example_UI() {
 		Entity canvas = AddCanvas();
+		UIEntityParams topCornerParams = UIEntityParams("Top corner square", (Driver)XDriver::ConstLeft | (Driver)WidthDriver::RelativeWidth, (Driver)YDriver::ConstTop | (Driver)HeightDriver::RelativeHeight, 25, 25, 0.15f, 0.1f, false, false);
+		UIEntityParams middleSquare = UIEntityParams("middleSquare", (Driver)LeftSideDriver::ConstOffset | (Driver)RightSideDriver::ConstOffset, (Driver)TopDriver::ConstOffset | (Driver)BottomDriver::ConstOffset, 25, 15, 25, 15, true, true);
 
-		Entity exampleSquare = AddUIEntity(UIEntityParams("Square"), canvas);
+		Entity exampleSquare = AddUIEntity(topCornerParams, canvas);
 		exampleSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.3f, 0.3f, 0.3f, 1 });
 
-		Entity exampleOtherSquare = AddUIEntity(UIEntityParams("OtherSquare"), exampleSquare);
+		Entity exampleOtherSquare = AddUIEntity(middleSquare, exampleSquare);
 		exampleOtherSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.3f, 0.2f, 1 });
 		exampleOtherSquare.GetComponent<MetadataComponent>().subSorting = 1;
 	}
@@ -104,7 +104,7 @@ class ExampleScene : public Scene {
 		
 		example_UI();
 
-		camera.AddComponent<NativeScriptComponent>().Bind<CameraController>();
+		camera.AddComponent<NativeScriptComponent>().Bind<example_CameraController>();
 	}
 	void SceneEnd() {
 

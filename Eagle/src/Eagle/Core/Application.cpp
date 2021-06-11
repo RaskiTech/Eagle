@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// UI Sliders are now more responsive
+// Engine sliders for UI now keep the UI at the same place when changing between sides and transform
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;

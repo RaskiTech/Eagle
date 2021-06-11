@@ -296,7 +296,7 @@ namespace Egl {
 			float leftSideWorldPos = xWorldPos - worldScale.x / 2;
 			float parentLeftSide = parentPos.x - parentScale.x / 2;
 			switch (GetLeftSideDriver()) {
-				case LeftSideDriver::ConstantOffset: return WorldToScreenScaleX(leftSideWorldPos - parentLeftSide, cam, camTrans);
+				case LeftSideDriver::ConstOffset: return WorldToScreenScaleX(leftSideWorldPos - parentLeftSide, cam, camTrans);
 				case LeftSideDriver::RelativeOffset: return (leftSideWorldPos - parentLeftSide) / parentScale.x;
 			}
 		}
@@ -305,8 +305,8 @@ namespace Egl {
 				case XDriver::AlignCenter:     return (WorldToScreenPosX(xWorldPos, cam, camTrans) - WorldToScreenPosX(parentPos.x, cam, camTrans)) / WorldToScreenScaleX(parentScale.x, cam, camTrans);
 				case XDriver::AlignLeft:       return (WorldToScreenPosX(xWorldPos - (worldScale.x / 2), cam, camTrans) - WorldToScreenPosX(parentPos.x, cam, camTrans)) / WorldToScreenScaleX(parentScale.x, cam, camTrans);
 				case XDriver::AlignRight:      return (WorldToScreenPosX(xWorldPos + (worldScale.x / 2), cam, camTrans) - WorldToScreenPosX(parentPos.x, cam, camTrans)) / WorldToScreenScaleX(parentScale.x, cam, camTrans);
-				case XDriver::PixelsFromLeft:  return WorldToScreenPosX(xWorldPos - (worldScale.x / 2), cam, camTrans) - WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans);
-				case XDriver::PixelsFromRight: return -(WorldToScreenPosX(xWorldPos + (worldScale.x / 2), cam, camTrans) - Application::Get().GetSceneWindowSize().x + WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans));
+				case XDriver::ConstLeft:  return WorldToScreenPosX(xWorldPos - (worldScale.x / 2), cam, camTrans) - WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans);
+				case XDriver::ConstRight: return -(WorldToScreenPosX(xWorldPos + (worldScale.x / 2), cam, camTrans) - Application::Get().GetSceneWindowSize().x + WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans));
 			}
 		}
 		return 0;
@@ -323,14 +323,14 @@ namespace Egl {
 			float rightSideWorldPos = xWorldScale + (worldPosition.x - worldScale.x / 2);
 			float parentRightSide = parentPos.x + parentScale.x / 2;
 			switch (GetRightSideDriver()) {
-				case RightSideDriver::ConstantOffset: return -WorldToScreenScaleX(rightSideWorldPos - parentRightSide, cam, camTrans);
+				case RightSideDriver::ConstOffset: return -WorldToScreenScaleX(rightSideWorldPos - parentRightSide, cam, camTrans);
 				case RightSideDriver::RelativeOffset: return -(rightSideWorldPos - parentRightSide) / parentScale.x;
 			}
 		}
 		else {
 			switch (GetWidthDriver()) {
 				case WidthDriver::AspectWidth:   return xWorldScale / worldScale.y;
-				case WidthDriver::ConstantWidth: return WorldToScreenScaleX(xWorldScale, cam, camTrans);
+				case WidthDriver::ConstWidth: return WorldToScreenScaleX(xWorldScale, cam, camTrans);
 				case WidthDriver::RelativeWidth: return xWorldScale / parentScale.x;
 			}
 		}
@@ -348,7 +348,7 @@ namespace Egl {
 			float topWorldPos = yWorldPos + worldScale.y / 2;
 			float parentTop = parentPos.y + parentScale.y / 2;
 			switch (GetTopDriver()) {
-				case TopDriver::ConstantOffset: return -WorldToScreenScaleY(topWorldPos - parentTop, cam, camTrans);
+				case TopDriver::ConstOffset: return -WorldToScreenScaleY(topWorldPos - parentTop, cam, camTrans);
 				case TopDriver::RelativeOffset: return -(topWorldPos - parentTop) / parentScale.y;
 			}
 		}
@@ -357,8 +357,8 @@ namespace Egl {
 				case YDriver::AlignCenter:      return (WorldToScreenPosY(yWorldPos, cam, camTrans) - WorldToScreenPosY(parentPos.y, cam, camTrans)) / WorldToScreenScaleY(parentScale.y, cam, camTrans);
 				case YDriver::AlignTop:         return (WorldToScreenPosY(yWorldPos + (worldScale.y / 2), cam, camTrans) - WorldToScreenPosY(parentPos.y, cam, camTrans)) / WorldToScreenScaleY(parentScale.y, cam, camTrans);
 				case YDriver::AlignBottom:      return (WorldToScreenPosY(yWorldPos - (worldScale.y / 2), cam, camTrans) - WorldToScreenPosY(parentPos.y, cam, camTrans)) / WorldToScreenScaleY(parentScale.y, cam, camTrans);
-				case YDriver::PixelsFromTop:    return -(WorldToScreenPosY(yWorldPos + (worldScale.y / 2), cam, camTrans) - Application::Get().GetSceneWindowSize().y + WorldToScreenPosY(parentPos.y - parentScale.y / 2, cam, camTrans));
-				case YDriver::PixelsFromBottom: return WorldToScreenPosY(yWorldPos - (worldScale.y / 2), cam, camTrans) - WorldToScreenPosY(parentPos.y - parentScale.y / 2, cam, camTrans);
+				case YDriver::ConstTop:    return -(WorldToScreenPosY(yWorldPos + (worldScale.y / 2), cam, camTrans) - Application::Get().GetSceneWindowSize().y + WorldToScreenPosY(parentPos.y - parentScale.y / 2, cam, camTrans));
+				case YDriver::ConstBottom: return WorldToScreenPosY(yWorldPos - (worldScale.y / 2), cam, camTrans) - WorldToScreenPosY(parentPos.y - parentScale.y / 2, cam, camTrans);
 			}
 		}
 		return 0;
@@ -375,14 +375,14 @@ namespace Egl {
 			float bottomWorldPos = worldPosition.y - yWorldScale / 2;
 			float parentBottom = parentPos.y - parentScale.y / 2;
 			switch (GetBottomDriver()) {
-				case BottomDriver::ConstantOffset: return WorldToScreenScaleY(bottomWorldPos - parentBottom, cam, camTrans);
+				case BottomDriver::ConstOffset: return WorldToScreenScaleY(bottomWorldPos - parentBottom, cam, camTrans);
 				case BottomDriver::RelativeOffset: return (bottomWorldPos - parentBottom) / parentScale.y;
 			}
 		}
 		else {
 			switch (GetHeightDriver()) {
 				case HeightDriver::AspectHeight:   return yWorldScale / worldScale.x;
-				case HeightDriver::ConstantHeight: return WorldToScreenScaleY(yWorldScale, cam, camTrans);
+				case HeightDriver::ConstHeight: return WorldToScreenScaleY(yWorldScale, cam, camTrans);
 				case HeightDriver::RelativeHeight: return yWorldScale / parentScale.y;
 			}
 		}
@@ -473,7 +473,7 @@ namespace Egl {
 	inline void UIAlignComponent::CalculateSidesX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const {
 		float leftSideWorldPos;
 		switch (GetLeftSideDriver()) {
-			case LeftSideDriver::ConstantOffset: {
+			case LeftSideDriver::ConstOffset: {
 				float parentLeftSide = parentPos.x - parentScale.x / 2;
 				leftSideWorldPos = parentLeftSide + ScreenToWorldScaleX(xPrimaryValue, cam, camTrans);
 				break;
@@ -492,7 +492,7 @@ namespace Egl {
 
 		float rightSideWorldPos;
 		switch (GetRightSideDriver()) {
-			case RightSideDriver::ConstantOffset: {
+			case RightSideDriver::ConstOffset: {
 				float parentRightSide = parentPos.x + parentScale.x / 2;
 				rightSideWorldPos = parentRightSide - ScreenToWorldScaleX(xSecondaryValue, cam, camTrans);
 				break;
@@ -515,7 +515,7 @@ namespace Egl {
 	inline void UIAlignComponent::CalculateSidesY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const {
 		float topWorldPos;
 		switch (GetTopDriver()) {
-			case TopDriver::ConstantOffset: {
+			case TopDriver::ConstOffset: {
 				float parentTop = parentPos.y + parentScale.y / 2;
 				topWorldPos = parentTop - ScreenToWorldScaleY(yPrimaryValue, cam, camTrans);
 				break;
@@ -534,7 +534,7 @@ namespace Egl {
 
 		float bottomWorldPos;
 		switch (GetBottomDriver()) {
-			case BottomDriver::ConstantOffset: {
+			case BottomDriver::ConstOffset: {
 				float parentBottom = parentPos.y - parentScale.y / 2;
 				bottomWorldPos = parentBottom + ScreenToWorldScaleY(ySecondaryValue, cam, camTrans);
 				break;
@@ -556,7 +556,7 @@ namespace Egl {
 	}
 	inline void UIAlignComponent::CalculateScaleXNoAspectCheck(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const {
 		switch (GetWidthDriver()) {
-			case WidthDriver::ConstantWidth: {
+			case WidthDriver::ConstWidth: {
 				worldScale.x = ScreenToWorldScaleX(xSecondaryValue, cam, camTrans);
 				break;
 			}
@@ -576,7 +576,7 @@ namespace Egl {
 				worldScale.y = worldScale.x * ySecondaryValue;
 				break;
 			}
-			case HeightDriver::ConstantHeight: {
+			case HeightDriver::ConstHeight: {
 				worldScale.y = ScreenToWorldScaleY(ySecondaryValue, cam, camTrans);
 				break;
 			}
@@ -602,12 +602,12 @@ namespace Egl {
 				worldPosition.x = xPrimaryValue * parentScale.x + parentPos.x + rightSideOffset;
 				break;
 			}
-			case XDriver::PixelsFromLeft: {
+			case XDriver::ConstLeft: {
 				float halfOfWidth = worldScale.x / 2;
 				worldPosition.x = ScreenToWorldPosX(xPrimaryValue + WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans), cam, camTrans) + halfOfWidth;
 				break;
 			}
-			case XDriver::PixelsFromRight: {
+			case XDriver::ConstRight: {
 				float halfOfWidth = worldScale.x / 2;
 				worldPosition.x = ScreenToWorldPosX(Application::Get().GetSceneWindowSize().x - (xPrimaryValue + WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans)), cam, camTrans) - halfOfWidth;
 				break;
@@ -633,12 +633,12 @@ namespace Egl {
 				worldPosition.y = yPrimaryValue * parentScale.y + parentPos.y + bottomSideOffset;
 				break;
 			}
-			case YDriver::PixelsFromTop: {
+			case YDriver::ConstTop: {
 				float halfOfHeight = worldScale.y / 2;
 				worldPosition.y = ScreenToWorldPosY(Application::Get().GetSceneWindowSize().y - (yPrimaryValue + WorldToScreenPosY(parentPos.y - parentScale.y / 2, cam, camTrans)), cam, camTrans) - halfOfHeight;
 				break;
 			}
-			case YDriver::PixelsFromBottom: {
+			case YDriver::ConstBottom: {
 				float halfOfHeight = worldScale.y / 2;
 				worldPosition.y = ScreenToWorldPosY(yPrimaryValue + WorldToScreenPosY(parentPos.y - parentScale.y / 2, cam, camTrans), cam, camTrans) + halfOfHeight;
 				break;

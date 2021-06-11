@@ -13,43 +13,43 @@ namespace Egl {
 #pragma region drivers
 	using Driver = uint8_t; 
 	enum class LeftSideDriver {
-		ConstantOffset = 0 << 0,   // The side will always have the same offset from the parent
+		ConstOffset = 0 << 0,   // The side will always have the same offset from the parent
 		RelativeOffset = 1 << 0    // The sides offset will be a certain percent of the parents
 	};
 	enum class RightSideDriver {
-		ConstantOffset = 0 << 4,
+		ConstOffset = 0 << 4,
 		RelativeOffset = 1 << 4
 	};
 	enum class TopDriver {
-		ConstantOffset = 0 << 0,
+		ConstOffset = 0 << 0,
 		RelativeOffset = 1 << 0
 	};
 	enum class BottomDriver {
-		ConstantOffset = 0 << 4,
+		ConstOffset = 0 << 4,
 		RelativeOffset = 1 << 4
 	};
 
 	enum class XDriver {
-		PixelsFromLeft   = 0 << 0, // The objects left side will always be the same distance from the windows left side
-		PixelsFromRight  = 1 << 0, // The objects right side will always be the same distance from the windows right side
+		ConstLeft   = 0 << 0, // The objects left side will always be the same distance from the windows left side
+		ConstRight  = 1 << 0, // The objects right side will always be the same distance from the windows right side
 		AlignCenter      = 2 << 0, // Have the objects center be at a certain percent horizontally
 		AlignLeft        = 3 << 0, // Have the objects top be at a certain percent horizontally
 		AlignRight       = 4 << 0  // Have the objects right side be at a certain percent horizontally
 	};
 	enum class WidthDriver {
-		ConstantWidth    = 0 << 4, // The object will always have the same width
+		ConstWidth    = 0 << 4, // The object will always have the same width
 		RelativeWidth    = 1 << 4, // The objects width will be a certain percent of the parents
 		AspectWidth      = 2 << 4  // The width will depend on the height. 1 is height
 	};
 	enum class YDriver {
-		PixelsFromTop    = 0 << 0, // The objects top will always be the same distance from the windows top
-		PixelsFromBottom = 1 << 0, // The objects bottom will always be the same distance from the windows bottom
+		ConstTop    = 0 << 0, // The objects top will always be the same distance from the windows top
+		ConstBottom = 1 << 0, // The objects bottom will always be the same distance from the windows bottom
 		AlignCenter      = 2 << 0, // Have the objects center be at a certain percent vertically
 		AlignTop         = 3 << 0, // Have the objects top be at a certain percent vertically
 		AlignBottom      = 4 << 0  // Have the objects bottom be at a certain percent vertically
 	};
 	enum class HeightDriver {
-		ConstantHeight   = 0 << 4, // The object will always have the same height
+		ConstHeight   = 0 << 4, // The object will always have the same height
 		RelativeHeight   = 1 << 4, // The objects height will be a certain percent of the parents
 		AspectHeight     = 2 << 4  // The height will depend on the width. 1 is width
 	};

@@ -208,10 +208,20 @@ namespace Egl {
 			bool isTransformActive = !component.GetUseSidesHorizontal();
 			bool transformActive = SelectWidget("Transform", "Sides", isTransformActive);
 			if (transformActive != isTransformActive) {
+				const glm::vec2& worldPos = component.GetWorldPosition();
+				const glm::vec2& worldScale = component.GetWorldScale();
+
 				component.SetUseSidesHorizontal(!transformActive);
 				float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
+
+				// Set slider speeds and values, so UI isn't awful to design
 				value1Speed = camSize * (component.GetPrimaryXFromWorldPos(1) - component.GetPrimaryXFromWorldPos(0)) / SLIDER_FRICTION;
 				value2Speed = camSize * (component.GetSecondaryXFromWorldScale(1) - component.GetSecondaryXFromWorldScale(0)) / SLIDER_FRICTION;
+
+				float newPrim = component.GetPrimaryXFromWorldPos(worldPos.x);
+				component.SetXPosValue(newPrim);
+				float newSec = component.GetSecondaryXFromWorldScale(worldScale.x);
+				component.SetWidthValue(newSec);
 			}
 			
 			ImGui::Columns(2);
@@ -222,7 +232,7 @@ namespace Egl {
 			if (transformActive) {
 				ImGui::Text("Position");
 				XDriver xDriver = component.GetXDriver();
-				XDriver newXDriver = (XDriver)SelectWidget(std::array<const char*, 5>{"ConstantLeft", "ConstantRight", "RelativeCenter", "RelativeLeft", "RelativeRight"}, (uint8_t)xDriver, 5);
+				XDriver newXDriver = (XDriver)SelectWidget(std::array<const char*, 5>{"ConstLeft", "ConstRight", "RelativeCenter", "RelativeLeft", "RelativeRight"}, (uint8_t)xDriver, 5);
 				if (xDriver != newXDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetXDriver(newXDriver);
@@ -241,7 +251,7 @@ namespace Egl {
 
 				ImGui::Text("Scale");
 				WidthDriver widthDriver = component.GetWidthDriver();
-				WidthDriver newSelectedWidth = (WidthDriver)(SelectWidget(std::array<const char*, 3>{"ConstantWidth", "RelativeWidth", "AspectWidth"}, (uint8_t)widthDriver >> 4, 3) << 4);
+				WidthDriver newSelectedWidth = (WidthDriver)(SelectWidget(std::array<const char*, 3>{"ConstWidth", "RelativeWidth", "AspectWidth"}, (uint8_t)widthDriver >> 4, 3) << 4);
 				if (widthDriver != newSelectedWidth) {
 					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetWidthDriver(newSelectedWidth);
@@ -260,7 +270,7 @@ namespace Egl {
 			else {
 				ImGui::Text("Left side");
 				LeftSideDriver leftDriver = component.GetLeftSideDriver();
-				LeftSideDriver newLeftDriver = (LeftSideDriver)SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)leftDriver, 2);
+				LeftSideDriver newLeftDriver = (LeftSideDriver)SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)leftDriver, 2);
 				if (leftDriver != newLeftDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetLeftSideDriver(newLeftDriver);
@@ -279,7 +289,7 @@ namespace Egl {
 
 				ImGui::Text("Right side");
 				RightSideDriver rightDriver = component.GetRightSideDriver();
-				RightSideDriver newRightDriver = (RightSideDriver)(SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)rightDriver >> 4, 2) << 4);
+				RightSideDriver newRightDriver = (RightSideDriver)(SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)rightDriver >> 4, 2) << 4);
 				if (rightDriver != newRightDriver) {
 					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetRightSideDriver(newRightDriver);
@@ -303,10 +313,20 @@ namespace Egl {
 			isTransformActive = !component.GetUseSidesVertical();
 			transformActive = SelectWidget("Transform", "Sides", isTransformActive);
 			if (isTransformActive != transformActive) {
+				const glm::vec2& worldPos = component.GetWorldPosition();
+				const glm::vec2& worldScale = component.GetWorldScale();
+
 				component.SetUseSidesVertical(!transformActive);
 				float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
-				value3Speed = camSize * (component.GetPrimaryXFromWorldPos(1) - component.GetPrimaryXFromWorldPos(0)) / SLIDER_FRICTION;
-				value4Speed = camSize * (component.GetSecondaryXFromWorldScale(1) - component.GetSecondaryXFromWorldScale(0)) / SLIDER_FRICTION;
+
+				// Set slider speeds and values, so UI isn't awful to design
+				value3Speed = camSize * (component.GetPrimaryYFromWorldPos(1) - component.GetPrimaryYFromWorldPos(0)) / SLIDER_FRICTION;
+				value4Speed = camSize * (component.GetSecondaryYFromWorldScale(1) - component.GetSecondaryYFromWorldScale(0)) / SLIDER_FRICTION;
+
+				float newPrim = component.GetPrimaryYFromWorldPos(worldPos.y);
+				component.SetYPosValue(newPrim);
+				float newSec = component.GetSecondaryYFromWorldScale(worldScale.y);
+				component.SetHeightValue(newSec);
 			}
 
 			ImGui::Columns(2);
@@ -316,7 +336,7 @@ namespace Egl {
 			if (transformActive) {
 				ImGui::Text("Position");
 				YDriver yDriver = component.GetYDriver();
-				YDriver newYDriver = (YDriver)SelectWidget(std::array<const char*, 5>{"ConstantTop", "ConstantBottom", "Center", "RelativeTop", "RelativeBottom"}, (uint8_t)yDriver, 5);
+				YDriver newYDriver = (YDriver)SelectWidget(std::array<const char*, 5>{"ConstTop", "ConstBottom", "Center", "RelativeTop", "RelativeBottom"}, (uint8_t)yDriver, 5);
 				if (yDriver != newYDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetYDriver(newYDriver);
@@ -334,7 +354,7 @@ namespace Egl {
 
 				ImGui::Text("Scale");
 				HeightDriver heightDriver = component.GetHeightDriver();
-				HeightDriver newHeightDriver = (HeightDriver)(SelectWidget(std::array<const char*, 3>{"ConstantHeight", "RelativeHeight", "AspectHeight"}, (uint8_t)heightDriver >> 4, 3) << 4);
+				HeightDriver newHeightDriver = (HeightDriver)(SelectWidget(std::array<const char*, 3>{"ConstHeight", "RelativeHeight", "AspectHeight"}, (uint8_t)heightDriver >> 4, 3) << 4);
 				if (heightDriver != newHeightDriver) {
 					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetHeightDriver(newHeightDriver);
@@ -352,7 +372,7 @@ namespace Egl {
 			else {
 				ImGui::Text("Top");
 				TopDriver topDriver = component.GetTopDriver();
-				TopDriver newTopDriver = (TopDriver)SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)topDriver, 2);
+				TopDriver newTopDriver = (TopDriver)SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)topDriver, 2);
 				if (topDriver != newTopDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetTopDriver(newTopDriver);
@@ -371,7 +391,7 @@ namespace Egl {
 
 				ImGui::Text("Bottom");
 				BottomDriver bottomDriver = component.GetBottomDriver();
-				BottomDriver newBottomDriver = (BottomDriver)(SelectWidget(std::array<const char*, 2>{"ConstantOffset", "RelativeOffset"}, (uint8_t)bottomDriver >> 4, 2) << 4);
+				BottomDriver newBottomDriver = (BottomDriver)(SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)bottomDriver >> 4, 2) << 4);
 				if (bottomDriver != newBottomDriver) {
 					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetBottomDriver(newBottomDriver);

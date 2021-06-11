@@ -128,7 +128,7 @@ namespace Egl {
 		});
 		glfwSetCursorPosCallback(mWindow, [](GLFWwindow* window, double posX, double posY) {
 			WindowData* data = (WindowData*)glfwGetWindowUserPointer(window);
-			MouseMovedEvent event(Application::Get().WindowPixelToScenePixelSpaceX(posX), Application::Get().WindowPixelToScenePixelSpaceY(posY));
+			MouseMovedEvent event(Application::Get().WindowPixelToScenePixelSpaceX((int)posX), Application::Get().WindowPixelToScenePixelSpaceY((int)posY));
 			data->EventCallback(event);
 		});
 	}
