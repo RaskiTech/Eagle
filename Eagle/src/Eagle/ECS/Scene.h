@@ -19,6 +19,7 @@ namespace Egl {
 		template<typename... EntityParam>
 		Entity AddEntity(const EntityParams& entity, EntityParam...childs) { auto e = AddEntity(entity); AddEntityChildsImp(e, childs...); return e; }
 		Entity AddEntity(const EntityParams& entity);
+		// Adds an entity with the CanvasComponent attached
 		Entity AddCanvas();
 		Entity AddUIEntity(const UIEntityParams& entity, Entity CanvasOrParent);
 

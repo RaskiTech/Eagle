@@ -37,6 +37,7 @@ namespace Egl {
 		template<> void RemoveComponent<Relation>() const = delete;
 
 		void SetParent(const Entity& parent) const { parent.AddChild(*this); }
+		bool IsValid() const { return mEntity != entt::null; }
 		void AddChild(const Entity& child) const;
 		Entity GetParent() const;
 		Entity GetChild(uint8_t childIndex) const;
