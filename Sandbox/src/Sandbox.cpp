@@ -35,8 +35,12 @@ public:
 class ExampleScene : public Scene {
 	void example_UI() {
 		Entity canvas = AddCanvas();
-		UIEntityParams topCornerParams = UIEntityParams("Top corner square", (Driver)XDriver::ConstLeft | (Driver)WidthDriver::RelativeWidth, (Driver)YDriver::ConstTop | (Driver)HeightDriver::RelativeHeight, 25, 25, 0.15f, 0.1f, false, false);
-		UIEntityParams middleSquare = UIEntityParams("middleSquare", (Driver)LeftSideDriver::ConstOffset | (Driver)RightSideDriver::ConstOffset, (Driver)TopDriver::ConstOffset | (Driver)BottomDriver::ConstOffset, 25, 15, 25, 15, true, true);
+		UIEntityParams topCornerParams = UIEntityParams("Top corner square", (UIAlignComponent::Driver)UIAlignComponent::XDriver::ConstLeft 
+			| (UIAlignComponent::Driver)UIAlignComponent::WidthDriver::RelativeWidth, (UIAlignComponent::Driver)UIAlignComponent::YDriver::ConstTop 
+			| (UIAlignComponent::Driver)UIAlignComponent::HeightDriver::RelativeHeight, 25, 25, 0.15f, 0.1f, false, false);
+		UIEntityParams middleSquare = UIEntityParams("middleSquare", (UIAlignComponent::Driver)UIAlignComponent::LeftSideDriver::ConstOffset 
+			| (UIAlignComponent::Driver)UIAlignComponent::RightSideDriver::ConstOffset, (UIAlignComponent::Driver)UIAlignComponent::TopDriver::ConstOffset 
+			| (UIAlignComponent::Driver)UIAlignComponent::BottomDriver::ConstOffset, 25, 15, 25, 15, true, true);
 
 		Entity exampleSquare = AddUIEntity(topCornerParams, canvas);
 		exampleSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.3f, 0.3f, 0.3f, 1 });
@@ -74,18 +78,18 @@ class ExampleScene : public Scene {
 	}
 
 	void SceneBegin() override {
-		Entity camera = AddEntity(EntityParams("Camera"));
+		Entity camera = AddEntity("Camera");
 		camera.AddComponent<CameraComponent>().camera.SetSize(8.85f);
 		camera.GetComponent<CameraComponent>().backgroundColor = { 0.19f, 0.32f, 0.45f, 1 };
 		camera.GetComponent<TransformComponent>().SetPosition(0, -0.6f);
 		SetPrimaryCamera(camera);
 		
-		auto& player = AddEntity(EntityParams("Player"));
+		auto& player = AddEntity("Player");
 		auto texture = Texture::Create("Assets/Player.png", false);
 		player.AddComponent<SpriteRendererComponent>(SubTexture::CreateFromIndexes(texture, { 0, 0 }, { 16, 16 }));
 		player.GetComponent<TransformComponent>().SetPosition(-4.2f, -1.5f);
 		
-		Entity ground = AddEntity(EntityParams("Ground"));
+		Entity ground = AddEntity("Ground");
 		ground.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.4f, 0.42f, 0.52f, 1 });
 		ground.GetComponent<TransformComponent>().SetScale(13, 8);
 		ground.GetComponent<TransformComponent>().SetPosition(0, -6);

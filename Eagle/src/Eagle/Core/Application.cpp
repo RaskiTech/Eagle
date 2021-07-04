@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Fixed bug where reseting a scene would crash the engine
+// Little bit of code cleanup and API refactoring
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;

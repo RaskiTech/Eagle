@@ -13,11 +13,11 @@ namespace Egl {
 
 	}
 
-	Entity Scene::AddEntity(const EntityParams& entity) {
+	Entity Scene::AddEntity(const EntityParams& params) {
 		entt::entity createdEntityID = mRegistry.create();
 		Entity newEntity = { createdEntityID, this };
-		newEntity.AddComponent<TransformComponent>(newEntity, entity.position, entity.rotation, entity.scale);
-		newEntity.AddComponent<MetadataComponent>(entity.name, entity.sortingLayer, entity.subSorting);
+		newEntity.AddComponent<TransformComponent>(newEntity, params.position, params.rotation, params.scale);
+		newEntity.AddComponent<MetadataComponent>(params.name, params.sortingLayer, params.subSorting);
 		Relation& createdEntityRelation = newEntity.AddComponent<Relation>();
 
 		if (mFirstEntity == entt::null) {
@@ -30,22 +30,28 @@ namespace Egl {
 		}
 		return newEntity;
 	}
+	Entity Scene::AddEntity(const std::string& name) {
+		return AddEntity(EntityParams(name));
+	}
 	Entity Scene::AddCanvas() { 
 		Entity e = AddEntity(EntityParams("Canvas"));
 		e.AddComponent<CanvasComponent>(); 
 		return e; 
 	}
-	Entity Scene::AddUIEntity(const UIEntityParams& entity, Entity UIParent) {
-		EAGLE_ENG_ASSERT(UIParent.HasComponent<UIAlignComponent>() || UIParent.HasComponent<CanvasComponent>(), "parent isn't a canvas or an UI entity");
+	Entity Scene::AddUIEntity(const UIEntityParams& params, Entity canvasOrParent) {
+		EAGLE_ENG_ASSERT(canvasOrParent.HasComponent<UIAlignComponent>() || canvasOrParent.HasComponent<CanvasComponent>(), "Parent isn't a canvas or an UI entity");
 
 		entt::entity createdEntityID = mRegistry.create();
 		Entity newEntity = { createdEntityID, this };
-		newEntity.AddComponent<UIAlignComponent>(newEntity, entity.xDrivers, entity.yDrivers, entity.xPrimaryValue, entity.yPrimaryValue, 
-			entity.xSecondaryValue, entity.ySecondaryValue, entity.useSidesHorizontal, entity.useSidesVertical);
-		newEntity.AddComponent<MetadataComponent>(entity.name, entity.sortingLayer, entity.subSorting);
+		newEntity.AddComponent<UIAlignComponent>(newEntity, params.xDrivers, params.yDrivers, params.xPrimaryValue, params.yPrimaryValue, 
+			params.xSecondaryValue, params.ySecondaryValue, params.useSidesHorizontal, params.useSidesVertical);
+		newEntity.AddComponent<MetadataComponent>(params.name, params.sortingLayer, params.subSorting);
 		Relation& createdEntityRelation = newEntity.AddComponent<Relation>();
-		newEntity.SetParent(UIParent);
+		newEntity.SetParent(canvasOrParent);
 		return newEntity;
+	}
+	Entity Scene::AddUIEntity(const std::string& name, Entity canvasOrParent) {
+		return AddUIEntity(UIEntityParams(name), canvasOrParent);
 	}
 
 	void Scene::RemoveEntity(Entity& entity) {

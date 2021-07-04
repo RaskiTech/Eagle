@@ -17,11 +17,17 @@ namespace Egl {
 		virtual ~Scene() = default;
 
 		template<typename... EntityParam>
-		Entity AddEntity(const EntityParams& entity, EntityParam...childs) { auto e = AddEntity(entity); AddEntityChildsImp(e, childs...); return e; }
-		Entity AddEntity(const EntityParams& entity);
+		Entity AddEntity(const EntityParams& params, EntityParam...childs) { auto e = AddEntity(params); AddEntityChildsImp(e, childs...); return e; }
+		template<typename... EntityParam>
+		Entity AddEntity(const std::string& name, EntityParam...childs)    { auto e = AddEntity(name  ); AddEntityChildsImp(e, childs...); return e; }
+		Entity AddEntity(const EntityParams& params);
+		Entity AddEntity(const std::string& name);
+
+		Entity AddUIEntity(const UIEntityParams& params, Entity canvasOrParent);
+		Entity AddUIEntity(const std::string& name, Entity canvasOrParent);
+
 		// Adds an entity with the CanvasComponent attached
 		Entity AddCanvas();
-		Entity AddUIEntity(const UIEntityParams& entity, Entity CanvasOrParent);
 
 		void RemoveEntity(Entity& entity);
 		void SetPrimaryCamera(Entity& camera);
@@ -56,7 +62,6 @@ namespace Egl {
 		friend struct UIAlignComponent;
 		friend struct NativeScriptComponent;
 
-	private:
 		inline void AddEntityChildsImp(Entity& createdEntity) {}
 		template<typename AddEntityChildParam, typename... AddEntityChildParamRest>
 		inline void AddEntityChildsImp(Entity& createdEntity, AddEntityChildParam first, AddEntityChildParamRest&&...rest) {

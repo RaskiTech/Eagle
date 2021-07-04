@@ -23,6 +23,8 @@ namespace Egl {
 			EAGLE_ENG_ASSERT(mEntity != entt::null, "The entity doesn't exist, it's null");
 			return mScene->mRegistry.has<T>(mEntity);
 		}
+		// Shouldn't be stored for too long since the reference can become
+		// invalid if components of the same type are added or removed.
 		template<typename T> T& GetComponent() const {
 			EAGLE_ENG_ASSERT(HasComponent<T>(), "Entity doesn't have the component");
 			return mScene->mRegistry.get<T>(mEntity);
