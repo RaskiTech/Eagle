@@ -73,7 +73,7 @@ namespace Egl {
 			WindowCloseEvent event;
 			data->EventCallback(event);
 		});
-		// This shouldn't create an event. Eagle editor needs to queue the pos sometimes
+		// This event should only be engine side. Eagle editor needs to queue the pos sometimes
 		glfwSetWindowPosCallback(mWindow, [](GLFWwindow* window, int posX, int posY) {
 			WindowData* dataPrt = (WindowData*)glfwGetWindowUserPointer(window);
 			dataPrt->posX = posX;
@@ -90,11 +90,6 @@ namespace Egl {
 				}
 				case GLFW_RELEASE: {
 					KeyReleasedEvent event(key);
-					data->EventCallback(event);
-					break;
-				}
-				case GLFW_REPEAT: {
-					KeyPressedEvent event(key, 1);
 					data->EventCallback(event);
 					break;
 				}

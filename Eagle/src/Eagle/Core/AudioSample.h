@@ -1,5 +1,7 @@
 #pragma once
-#include <string>
+
+// The sound object. Properties like looping and volume, and functions like stop
+
 /*
 namespace Egl {
 	class AudioSample {

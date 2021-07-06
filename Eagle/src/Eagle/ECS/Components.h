@@ -284,7 +284,6 @@ namespace Egl {
 		template<typename T, typename ... Args>
 		void Bind(Args&&... args) {
 			baseInstance = new T(args...);
-			
 			COMPILE_IF_VALID(T, OnCreate(),
 				OnCreateFunc = [](Script* instance) { ((T*)instance)->OnCreate(); };
 			);

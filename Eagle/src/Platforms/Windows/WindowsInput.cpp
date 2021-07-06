@@ -6,16 +6,16 @@
 namespace Egl {
 	int Input::mMouseScrollX, Input::mMouseScrollY;
 
-	bool Input::IsKeyPressed(int keycode) {
+	bool Input::IsKeyPressed(int EGL_KEY) {
 		auto window = Application::Get().GetWindow().NativeWindow();
 
-		int key = glfwGetKey((GLFWwindow*)window, keycode);
+		int key = glfwGetKey((GLFWwindow*)window, EGL_KEY);
 		return key == GLFW_PRESS || key == GLFW_REPEAT;
 	}
-	bool Input::IsMousePressed(int mouseButton) {
+	bool Input::IsMousePressed(int EGL_MOUSE_BUTTON) {
 		auto window = Application::Get().GetWindow().NativeWindow();
 
-		int key = glfwGetMouseButton((GLFWwindow*)window, mouseButton);
+		int key = glfwGetMouseButton((GLFWwindow*)window, EGL_MOUSE_BUTTON);
 		return key == GLFW_PRESS;
 	}
 	glm::vec2 Input::MousePos() {

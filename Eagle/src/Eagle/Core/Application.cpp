@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Little bit of code cleanup and API refactoring
+// Fix: Holding down a key was also making KeyPressedEvents
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;

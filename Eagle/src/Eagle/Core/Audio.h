@@ -69,10 +69,17 @@ namespace Egl {
             B_7 = 3951
         };
     }
+    
+    // Example of what the API could look like. Use portAudio
+    //
+    // AudioSample audio = Audio::LoadWav(path);
+    // audio.Play();
+    // if (audio.isLooping)
+    //     audio.Stop();
+
 
     class Audio {
     public:
-        static void PlayNote(uint32_t pitch, uint32_t milliseconds);
         static void PlayWav(wchar_t* path);
         static void PlayLoopingWav(wchar_t* path);
     //  static DWORD PlayMidi(HWND hWndNotify, LPCWSTR lpszMIDIFileName);
