@@ -5,7 +5,7 @@
 #include "Eagle/Core/Events/Event.h"
 
 #include "Eagle/ECS/Scene.h"
-#include "Eagle/Rendering/FrameBuffer.h"
+#include "Eagle/Rendering/Framebuffer.h"
 #include "Panels/HierarchyPanel.h"
 
 
@@ -28,7 +28,7 @@ namespace Egl {
 
 	private:
 		// Actual Editor fields
-		Ref<FrameBuffer> mFrameBuffer;
+		Ref<Framebuffer> mFramebuffer;
 		bool mScenePanelFocused = false, mScenePanelHovered = false;
 		HierarchyPanel mHierarchyPanel;
 	};

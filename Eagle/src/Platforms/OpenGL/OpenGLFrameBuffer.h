@@ -1,27 +1,29 @@
 #pragma once
-
-#include "Eagle/Rendering/FrameBuffer.h"
+#include "Eagle/Core/Core.h";
+#include "Eagle/Rendering/Framebuffer.h"
 
 namespace Egl {
-	class OpenGLFrameBuffer : public FrameBuffer {
+	class OpenGLFramebuffer : public Framebuffer {
 	public:
-		OpenGLFrameBuffer(const FrameBufferDefenition& defenition);
-		virtual ~OpenGLFrameBuffer();
+		OpenGLFramebuffer(const FramebufferDefenition& defenition);
+		virtual ~OpenGLFramebuffer();
 
-		virtual const FrameBufferDefenition& GetDefenition() const override { return mDefenition; }
+		virtual const FramebufferDefenition& GetDefenition() const override { return mDefenition; }
 
 		void Invalidate();
 		virtual void Resize(uint32_t width, uint32_t height) override;
 
 		virtual void Bind() override;
 		virtual void Unbind() override;
-		virtual uint32_t GetColorAttachementsRendererID() const override { return mColorAttachment; }
+		virtual uint32_t GetColorAttachementsRendererID(uint32_t index = 0) const override { EAGLE_ENG_ASSERT(index < mColorAttachments.size(), "Index bigger than size"); return mColorAttachments[index]; }
 	private:
 		uint32_t mRendererID = 0;
-		uint32_t mColorAttachment, mDepthAttatchment;
-		FrameBufferDefenition mDefenition;
+		FramebufferDefenition mDefenition;
 
+		std::vector<FramebufferTextureSpecification> mColorAttachmentSpecifications;
+		FramebufferTextureSpecification mDepthAttachmentSpecification = FramebufferTextureFormat::None;
 
-
+		std::vector<uint32_t> mColorAttachments;
+		uint32_t mDepthAttachment;
 	};
 }

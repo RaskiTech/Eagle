@@ -28,7 +28,7 @@
 #include "Eagle/Core/Events/KeyEvent.h"
 
 #include "Eagle/Rendering/Buffer.h"
-#include "Eagle/Rendering/FrameBuffer.h"
+#include "Eagle/Rendering/Framebuffer.h"
 #include "Eagle/Rendering/RenderAPI.h"
 #include "Eagle/Rendering/Shader.h"
 #include "Eagle/Rendering/Texture.h"

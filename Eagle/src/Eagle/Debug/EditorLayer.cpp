@@ -22,10 +22,11 @@ namespace Egl {
 	///////////////////// On Attach //////////////////////
 	void EditorLayer::OnAttach() {
 		EAGLE_PROFILE_FUNCTION();
-		FrameBufferDefenition defenition;
+		FramebufferDefenition defenition;
+		defenition.attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
 		defenition.width = 1280;
 		defenition.height = 720;
-		mFrameBuffer = FrameBuffer::Create(defenition);
+		mFramebuffer = Framebuffer::Create(defenition);
 
 		mHierarchyPanel.SetContext(Application::Get().GetGameLayer()->GetActiveScene());
 	}
@@ -38,18 +39,18 @@ namespace Egl {
 		EAGLE_PROFILE_FUNCTION();
 		Renderer::GetStats().ResetStats();
 
-		FrameBufferDefenition def = mFrameBuffer->GetDefenition();
+		FramebufferDefenition def = mFramebuffer->GetDefenition();
 		const glm::vec2& sceneSize = Application::Get().GetSceneWindowSize();
 		if (sceneSize.x > 0.0f && sceneSize.y > 0.0f && (sceneSize.x != def.width || sceneSize.y != def.height)) {
-			mFrameBuffer->Resize((uint32_t)sceneSize.x, (uint32_t)sceneSize.y);
+			mFramebuffer->Resize((uint32_t)sceneSize.x, (uint32_t)sceneSize.y);
 			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(sceneSize.x / sceneSize.y);
 		}
 
-		mFrameBuffer->Bind();
+		mFramebuffer->Bind();
 	}
 	void EditorLayer::PostUpdate() {
 		EAGLE_PROFILE_FUNCTION();
-		mFrameBuffer->Unbind();
+		mFramebuffer->Unbind();
 	}
 
 	///////////////////// On Update //////////////////////
@@ -122,7 +123,7 @@ namespace Egl {
 		mScenePanelFocused = ImGui::IsWindowFocused();
 		mScenePanelHovered = ImGui::IsWindowHovered();
 		Application::Get().GetImGuiLayer()->LetEventsThrough(mScenePanelFocused && mScenePanelHovered);
-		uint32_t textureID = mFrameBuffer->GetColorAttachementsRendererID();
+		uint32_t textureID = mFramebuffer->GetColorAttachementsRendererID();
 		ImGui::Image((void*)(intptr_t)textureID, scenePanelSize, ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
 		ImGui::PopStyleVar();

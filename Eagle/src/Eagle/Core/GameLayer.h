@@ -4,7 +4,7 @@
 #include "Eagle/Core/Events/Event.h"
 
 #include "Eagle/ECS/Scene.h"
-#include "Eagle/Rendering/FrameBuffer.h"
+#include "Eagle/Rendering/Framebuffer.h"
 
 
 namespace Egl {

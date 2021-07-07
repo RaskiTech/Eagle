@@ -27,9 +27,15 @@
 #ifdef EAGLE_ENABLE_ASSERTS
 	#define EAGLE_ASSERT(x, ...) { if (!(x)) { LOG_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
 	#define EAGLE_ENG_ASSERT(x, ...) { if (!(x)) { LOG_ENG_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+
+	//#define EAGLE_ASSERT(x) { if (!(x)) { __debugbreak(); }}
+	//#define EAGLE_ENG_ASSERT(x) { if (!(x)) { __debugbreak(); }}
 #else
 	#define EAGLE_ASSERT(x, ...)
 	#define EAGLE_ENG_ASSERT(x, ...)
+
+	//#define EAGLE_ASSERT(x)
+	//#define EAGLE_ENG_ASSERT(x)
 #endif
 
 #ifdef EAGLE_ENABLE_WARNINGS
