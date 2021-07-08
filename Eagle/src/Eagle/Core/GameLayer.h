@@ -27,7 +27,11 @@ namespace Egl {
 
 		void ResetApplication();
 		Ref<Scene> GetActiveScene() const { return mActiveScene; }
+		void ActivateScene(Ref<Scene> scene);
+
+		Ref<Framebuffer> ReadFramebuffer() const { return mFramebuffer; }
 	private:
+		Ref<Framebuffer> mFramebuffer;
 		Ref<Scene> mActiveScene;
 	};
 }

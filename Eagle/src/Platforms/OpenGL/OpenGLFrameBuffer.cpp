@@ -15,12 +15,12 @@ namespace Egl {
 	static void BindTexture(bool hasMultipleSamples, uint32_t id) {
 		glBindTexture(TextureTarget(hasMultipleSamples), id);
 	}
-	static void AttachColorTexture(uint32_t id, int samples, GLenum format, uint32_t width, uint32_t height, int index) {
+	static void AttachColorTexture(uint32_t id, int samples, GLenum internalFormat, GLenum format, uint32_t width, uint32_t height, int index) {
 		bool hasMultipleSamples = samples > 1;
 		if (hasMultipleSamples)
-			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, format, width, height, GL_FALSE);
+			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, samples, internalFormat, width, height, GL_FALSE);
 		else {
-			glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+			glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, nullptr);
 
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -44,6 +44,16 @@ namespace Egl {
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
 		glFramebufferTexture2D(GL_FRAMEBUFFER, attachmentType, TextureTarget(hasMultipleSamples), id, 0);
+	}
+	static GLenum FramebufferSpecFormatToGL(FramebufferTextureFormat format) {
+		switch (format) {
+		case FramebufferTextureFormat::RED_INT:         return GL_RED_INTEGER;
+		case FramebufferTextureFormat::RGBA8:           return GL_RGBA8;
+		case FramebufferTextureFormat::DEPTH24STENCIL8: return GL_DEPTH24_STENCIL8;
+		}
+
+		EAGLE_ENG_ASSERT(false, "FramebufferSpecFormatToGL doesn't have a return type for the used format");
+		return 0;
 	}
 
 	OpenGLFramebuffer::OpenGLFramebuffer(const FramebufferDefenition& defenition) : mDefenition(defenition)
@@ -90,7 +100,10 @@ namespace Egl {
 				BindTexture(hasMultipleSamples, mColorAttachments[i]);
 				switch (mColorAttachmentSpecifications[i].format) {
 				case FramebufferTextureFormat::RGBA8:
-					AttachColorTexture(mColorAttachments[i], mDefenition.samples, GL_RGBA8, mDefenition.width, mDefenition.height, i);
+					AttachColorTexture(mColorAttachments[i], mDefenition.samples, GL_RGBA8, GL_RGBA, mDefenition.width, mDefenition.height, i);
+					break;
+				case FramebufferTextureFormat::RED_INT:
+					AttachColorTexture(mColorAttachments[i], mDefenition.samples, GL_R32UI, GL_RED_INTEGER, mDefenition.width, mDefenition.height, i);
 					break;
 				}
 			}
@@ -136,5 +149,18 @@ namespace Egl {
 		mDefenition.width = width;
 		mDefenition.height = height;
 		Invalidate();
+	}
+	uint32_t OpenGLFramebuffer::ReadPixel(uint32_t attachmentIndex, int x, int y) {
+		EAGLE_ENG_ASSERT(attachmentIndex < mColorAttachments.size(), "");
+		glReadBuffer(GL_COLOR_ATTACHMENT0 + attachmentIndex);
+		uint32_t pixelData;
+		glReadPixels(x, y, 1, 1, GL_RED_INTEGER, GL_UNSIGNED_INT, &pixelData);
+		return pixelData;
+	}
+	void OpenGLFramebuffer::ClearAttachment(uint32_t attachmentIndex, uint32_t value) {
+		EAGLE_ENG_ASSERT(attachmentIndex < mColorAttachments.size(), "");
+		auto& specification = mColorAttachmentSpecifications[attachmentIndex];
+		
+		glClearTexImage(mColorAttachments[attachmentIndex], 0, FramebufferSpecFormatToGL(specification.format), GL_UNSIGNED_INT, &value);
 	}
 }

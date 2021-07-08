@@ -7,21 +7,16 @@
 // Handles calling input and client functions.
 
 namespace Egl {
-	GameLayer::GameLayer() {
-		
-	}
-	void GameLayer::OnAttach() {
-		// Might need to move some of this stuff when scenes can be changed
+	GameLayer::GameLayer() {}
+
+	void GameLayer::ActivateScene(Ref<Scene> scene) {
+		mActiveScene = scene;
 		{
-			EAGLE_PROFILE_SCOPE("Application - ApplicationStartup");
-			mActiveScene = ApplicationStartup();
-		}
-		{
-			EAGLE_PROFILE_SCOPE("Application - SceneBegin");
+			EAGLE_PROFILE_SCOPE("Client - SceneBegin");
 			mActiveScene->SceneBegin();
 		}
 		{
-			EAGLE_PROFILE_SCOPE("Application - Scripts: OnCreate");
+			EAGLE_PROFILE_SCOPE("Client - Scripts: OnCreate");
 			mActiveScene->mRegistry.view<NativeScriptComponent>().each([&](auto entity, NativeScriptComponent& scriptComponent) {
 				EAGLE_ENG_ASSERT(scriptComponent.baseInstance != nullptr, "Instance is a nullptr");
 
@@ -34,18 +29,31 @@ namespace Egl {
 				if (scriptComponent.OnCreateFunc)
 					scriptComponent.OnCreateFunc(scriptComponent.baseInstance);
 			});
-
-			std::sort(mActiveScene->eventScriptsInOrder.begin(), mActiveScene->eventScriptsInOrder.end(), [&](NativeScriptComponent* e1, NativeScriptComponent* e2) {
-				auto& mc1 = mActiveScene->mRegistry.get<MetadataComponent>((entt::entity)e1->baseInstance->GetEntity().GetID());
-				auto& mc2 = mActiveScene->mRegistry.get<MetadataComponent>((entt::entity)e2->baseInstance->GetEntity().GetID());
-				if (mc1.sortingLayer == mc2.sortingLayer)
-					return mc1.subSorting > mc2.subSorting;
-				else
-					return mc1.sortingLayer > mc2.sortingLayer;
-			});
 		}
 
+		std::sort(mActiveScene->eventScriptsInOrder.begin(), mActiveScene->eventScriptsInOrder.end(), [&](NativeScriptComponent* e1, NativeScriptComponent* e2) {
+			auto& mc1 = mActiveScene->mRegistry.get<MetadataComponent>((entt::entity)e1->baseInstance->GetEntity().GetID());
+			auto& mc2 = mActiveScene->mRegistry.get<MetadataComponent>((entt::entity)e2->baseInstance->GetEntity().GetID());
+			if (mc1.sortingLayer == mc2.sortingLayer)
+				return mc1.subSorting > mc2.subSorting;
+			else
+				return mc1.sortingLayer > mc2.sortingLayer;
+		});
 		mActiveScene->sceneInitComplete = true;
+	}
+
+	void GameLayer::OnAttach() {
+		FramebufferDefenition defenition;
+		defenition.attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INT, FramebufferTextureFormat::Depth };
+		defenition.width = 1280;
+		defenition.height = 720;
+		mFramebuffer = Framebuffer::Create(defenition);
+
+		{
+			EAGLE_PROFILE_SCOPE("Client - ApplicationStartup");
+			Ref<Scene> scene = ApplicationStartup();
+			ActivateScene(scene);
+		}
 	}
 	void GameLayer::OnDetach() {
 		{
@@ -62,8 +70,29 @@ namespace Egl {
 		}
 	}
 	void GameLayer::OnUpdate() {
+		FramebufferDefenition def = mFramebuffer->GetDefenition();
+		const glm::vec2& sceneSize = Application::Get().GetSceneWindowSize();
+		if (sceneSize.x > 0.0f && sceneSize.y > 0.0f && (sceneSize.x != def.width || sceneSize.y != def.height)) {
+			mFramebuffer->Resize((uint32_t)sceneSize.x, (uint32_t)sceneSize.y);
+			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(sceneSize.x / sceneSize.y);
+		}
+		
+		mFramebuffer->Bind();
+
+		//mFramebuffer->ClearAttachment();
 		mActiveScene->OnUpdate();
+
+		// Testing code
+		//glm::ivec2 mouse = (glm::ivec2)Input::MousePos();
+		//glm::ivec2 sceneSizeInt = (glm::ivec2)Application::Get().GetSceneWindowSize();
+		//mouse.y = sceneSize.y - mouse.y;
+		//if (mouse.x >= 0 && mouse.y >= 0 && mouse.x < sceneSizeInt.x && mouse.y < sceneSizeInt.y) {
+		//	uint32_t pixelData = mFramebuffer->ReadPixel(1, mouse.x, mouse.y);
+		//	LOG("Pixel data = {0}", pixelData);
+		//}
+
 		Input::ResetInputState();
+		mFramebuffer->Unbind();
 	}
 
 	void GameLayer::DistributeEvent(Event& e) {

@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Refactoring framebuffers to make a nicer api
+// Moved framebuffer reference to GameLayer and refactored Application class
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
@@ -32,17 +32,17 @@ namespace Egl {
 		Renderer::Init();
 		Random::Init();
 
+		mGameLayer = new GameLayer();
+		mGameLayer->OnAttach();
+
 #if EAGLE_EDITOR
 		mImGuiLayer = new ImGuiLayer();
-		AddOverlay(mImGuiLayer);
-#endif
-		mGameLayer = new GameLayer();
-		AddLayer(mGameLayer);
-#if EAGLE_EDITOR
+		mImGuiLayer->OnAttach();
+
 		mEditorLayer = new EditorLayer();
-		AddLayer(mEditorLayer);
+		mEditorLayer->OnAttach();
 #else
-		mViewportSize = { (float)mWindow->GetWidth(), (float)mWindow->GetHeight() };
+		mSceneWindowSize = { (float)mWindow->GetWidth(), (float)mWindow->GetHeight() };
 #endif
 	}
 
@@ -64,34 +64,38 @@ namespace Egl {
 		while (mRunning) {
 			EAGLE_PROFILE_SCOPE("RunLoop");
 
-			float time = mWindow->GetTime();
-			Time::SetTime(time, time - mLastFrameTime);
-			mLastFrameTime = time;
+			// Utility handling
+			{
+				float time = mWindow->GetTime();
+				Time::SetTime(time, time - mLastFrameTime);
+				mLastFrameTime = time;
 
-			UniqueID::ResetFrameIDs();
+				UniqueID::ResetFrameIDs();
+			}
 
 			if (!mMinimized) {
+
 				{
-					EAGLE_PROFILE_SCOPE("Layer OnUpdates");
-#if EAGLE_EDITOR
-					mEditorLayer->PreUpdate();
-#endif
-					for (Layer* layer : mLayerStack)
-						if (layer->IsActive()) {
-							EAGLE_PROFILE_SCOPE(layer->GetName().c_str());
-							layer->OnUpdate();
-						}
-#if EAGLE_EDITOR
-					mEditorLayer->PostUpdate();
-				}
-				{
-					EAGLE_PROFILE_SCOPE("ImGui update");
-					mImGuiLayer->Begin();
-					for (Layer* layer : mLayerStack)
-						if (layer->IsActive())
-							layer->OnImGuiRender();
-					mImGuiLayer->End();
-#endif
+					EAGLE_PROFILE_SCOPE("Updating layers");
+
+	#if EAGLE_EDITOR
+					mEditorLayer->OnUpdate();
+					mGameLayer->OnUpdate();
+
+					{
+						EAGLE_PROFILE_SCOPE("ImGui update");
+						mImGuiLayer->Begin();
+
+						mEditorLayer->OnImGuiRender();
+						mGameLayer->OnImGuiRender();
+
+						mImGuiLayer->End();
+					}
+	#else // EAGLE_EDITOR
+					// for rendering it onto the screen use glBlitFramebuffer https://docs.gl/gl4/glBlitFramebuffer
+					mGameLayer->OnUpdate();
+	#endif // EAGLE_EDITOR
+
 				}
 			}
 
@@ -113,10 +117,12 @@ namespace Egl {
 		mMinimized = false;
 
 		Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+
 #if !EAGLE_EDITOR
-		mViewportSize = { (float)e.GetWidth(), (float)e.GetHeight() };
-		mGameLayer->GetActiveScene()->SetViewportAspectRatio(mViewportSize.x / mViewportSize.y);
+		mSceneWindowSize = { (float)e.GetWidth(), (float)e.GetHeight() };
+		mGameLayer->GetActiveScene()->SetViewportAspectRatio(mSceneWindowSize.x / mSceneWindowSize.y);
 #endif
+
 		return false;
 	}
 
@@ -145,11 +151,7 @@ namespace Egl {
 	}
 
 	const glm::vec2& Application::GetSceneScreenOffset() const {
-#if EAGLE_EDITOR
 		return mScenePanelOffset;
-#else
-		return { 0, 0 };
-#endif
 	}
 	glm::vec2 Application::WindowPixelToScenePixelSpace(const glm::vec2& point) const {
 #if EAGLE_EDITOR

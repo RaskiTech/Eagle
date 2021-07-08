@@ -19,16 +19,12 @@ namespace Egl {
 		virtual void OnAttach() override;
 		virtual void OnDetach() override;
 
-		void PreUpdate();
 		virtual void OnUpdate() override;
-		void PostUpdate();
 
 		virtual void OnEvent(Event& event) override;
 		virtual void OnImGuiRender() override;
 
 	private:
-		// Actual Editor fields
-		Ref<Framebuffer> mFramebuffer;
 		bool mScenePanelFocused = false, mScenePanelHovered = false;
 		HierarchyPanel mHierarchyPanel;
 	};

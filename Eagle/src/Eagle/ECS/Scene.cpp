@@ -74,7 +74,7 @@ namespace Egl {
 
 	void Scene::OnUpdate() {
 		EAGLE_PROFILE_FUNCTION();
-		// This function handles rendering the objects in this scene and updating components.
+		// This function handles updating components and submitting everything to the renderer
 
 		{
 			EAGLE_PROFILE_SCOPE("Application - Scripts: OnUpdate");
@@ -91,6 +91,8 @@ namespace Egl {
 
 			RenderCommand::SetColor(camera.backgroundColor);
 			RenderCommand::Clear();
+
+
 
 			Renderer::BeginScene(camera.camera, camTrans.GetTransform());
 			

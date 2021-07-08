@@ -22,11 +22,6 @@ namespace Egl {
 	///////////////////// On Attach //////////////////////
 	void EditorLayer::OnAttach() {
 		EAGLE_PROFILE_FUNCTION();
-		FramebufferDefenition defenition;
-		defenition.attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
-		defenition.width = 1280;
-		defenition.height = 720;
-		mFramebuffer = Framebuffer::Create(defenition);
 
 		mHierarchyPanel.SetContext(Application::Get().GetGameLayer()->GetActiveScene());
 	}
@@ -35,29 +30,11 @@ namespace Egl {
 		EAGLE_PROFILE_FUNCTION();
 	}
 
-	void EditorLayer::PreUpdate() {
-		EAGLE_PROFILE_FUNCTION();
-		Renderer::GetStats().ResetStats();
-
-		FramebufferDefenition def = mFramebuffer->GetDefenition();
-		const glm::vec2& sceneSize = Application::Get().GetSceneWindowSize();
-		if (sceneSize.x > 0.0f && sceneSize.y > 0.0f && (sceneSize.x != def.width || sceneSize.y != def.height)) {
-			mFramebuffer->Resize((uint32_t)sceneSize.x, (uint32_t)sceneSize.y);
-			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(sceneSize.x / sceneSize.y);
-		}
-
-		mFramebuffer->Bind();
-	}
-	void EditorLayer::PostUpdate() {
-		EAGLE_PROFILE_FUNCTION();
-		mFramebuffer->Unbind();
-	}
-
-	///////////////////// On Update //////////////////////
+	// This function runs just before GameLayer::Update()
 	void EditorLayer::OnUpdate() {
 		EAGLE_PROFILE_FUNCTION();
+		Renderer::GetStats().ResetStats();
 	}
-
 	
 
 	void EditorLayer::OnImGuiRender() {
@@ -118,12 +95,13 @@ namespace Egl {
 
 		ImVec2 vMin = ImGui::GetWindowContentRegionMin(); // If the top bar isn't hidden
 		ImVec2 winPos = ImGui::GetWindowPos();
-		Application::Get().SetSceneScreenOffset({ vMin.x + winPos.x - Application::Get().GetWindow().GetPositionX(), vMin.y + winPos.y - Application::Get().GetWindow().GetPositionY() });
+		Application::Get().SetSceneScreenOffset({ vMin.x + winPos.x - Application::Get().GetWindow().GetPositionX(), 
+			vMin.y + winPos.y - Application::Get().GetWindow().GetPositionY() });
 
 		mScenePanelFocused = ImGui::IsWindowFocused();
 		mScenePanelHovered = ImGui::IsWindowHovered();
 		Application::Get().GetImGuiLayer()->LetEventsThrough(mScenePanelFocused && mScenePanelHovered);
-		uint32_t textureID = mFramebuffer->GetColorAttachementsRendererID();
+		uint32_t textureID = Application::Get().GetGameLayer()->ReadFramebuffer()->GetColorAttachementsRendererID();
 		ImGui::Image((void*)(intptr_t)textureID, scenePanelSize, ImVec2(0, 1), ImVec2(1, 0));
 		ImGui::End();
 		ImGui::PopStyleVar();
