@@ -1,16 +1,14 @@
 #pragma once
 
-#include "Eagle/Core/Layers/Layer.h"
-
 namespace Egl {
-	class ImGuiLayer : public Layer {
+	class ImGuiLayer {
 	public:
 		ImGuiLayer();
 		~ImGuiLayer();
 
-		virtual void OnAttach() override;
-		virtual void OnDetach() override;
-		virtual void OnEvent(Event& event) override;
+		virtual void OnAttach();
+		virtual void OnDetach();
+		virtual void OnEvent(Event& event);
 
 		void Begin();
 		void End();

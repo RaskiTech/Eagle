@@ -20,11 +20,6 @@ namespace Egl {
 		void Close();
 		void OnEvent(Event& e);
 
-		void AddLayer(Layer* layer);
-		void AddOverlay(Layer* layer);
-		void RemoveLayer(Layer* layer);
-		void RemoveOverlay(Layer* layer);
-
 		ImGuiLayer* GetImGuiLayer() const { return mImGuiLayer; }
 		GameLayer* GetGameLayer() const { return mGameLayer; }
 		inline Window& GetWindow() const { return *mWindow; }
@@ -48,8 +43,6 @@ namespace Egl {
 
 		// Keep this at top because it has the glfw context
 		Scope<Window> mWindow;
-
-		LayerStack mLayerStack;
 
 		ImGuiLayer* mImGuiLayer;
 		EditorLayer* mEditorLayer;

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Eagle/Core/Layers/Layer.h"
 #include "Eagle/Core/Events/Event.h"
 
 #include "Eagle/ECS/Scene.h"
@@ -9,18 +8,18 @@
 
 namespace Egl {
 
-	class GameLayer : public Layer {
+	class GameLayer {
 	public:
 		GameLayer();
 		~GameLayer() = default;
 
-		virtual void OnAttach() override;
-		virtual void OnDetach() override;
+		void OnAttach();
+		void OnDetach();
 
-		virtual void OnUpdate() override;
+		void OnUpdate(bool needToDrawToScreen);
 
-		virtual void OnEvent(Event& event) override;
-		virtual void OnImGuiRender() override;
+		void OnEvent(Event& event);
+		void OnImGuiRender();
 
 		void DistributeEvent(Event& e);
 		void SubscribeToEvents(NativeScriptComponent* script);

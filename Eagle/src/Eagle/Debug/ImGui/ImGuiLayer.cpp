@@ -11,7 +11,7 @@
 #include <glad/glad.h>
 
 namespace Egl {
-    ImGuiLayer::ImGuiLayer() : Layer("ImGuiLayer", true) {
+    ImGuiLayer::ImGuiLayer() {
 
     }
     ImGuiLayer::~ImGuiLayer() {

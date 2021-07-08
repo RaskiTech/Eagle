@@ -3,11 +3,18 @@
 #include "Eagle/ECS/Components.h"
 #include "GameLayer.h"
 #include "Input.h"
+#include "Eagle/Rendering/RenderCommand.h"
 
 // Handles calling input and client functions.
 
 namespace Egl {
-	GameLayer::GameLayer() {}
+	GameLayer::GameLayer() {
+		FramebufferDefenition defenition;
+		defenition.attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+		defenition.width = 1280;
+		defenition.height = 720;
+		mFramebuffer = Framebuffer::Create(defenition);
+	}
 
 	void GameLayer::ActivateScene(Ref<Scene> scene) {
 		mActiveScene = scene;
@@ -43,12 +50,6 @@ namespace Egl {
 	}
 
 	void GameLayer::OnAttach() {
-		FramebufferDefenition defenition;
-		defenition.attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INT, FramebufferTextureFormat::Depth };
-		defenition.width = 1280;
-		defenition.height = 720;
-		mFramebuffer = Framebuffer::Create(defenition);
-
 		{
 			EAGLE_PROFILE_SCOPE("Client - ApplicationStartup");
 			Ref<Scene> scene = ApplicationStartup();
@@ -69,7 +70,7 @@ namespace Egl {
 			mActiveScene->SceneEnd();
 		}
 	}
-	void GameLayer::OnUpdate() {
+	void GameLayer::OnUpdate(bool needToDrawToScreen) {
 		FramebufferDefenition def = mFramebuffer->GetDefenition();
 		const glm::vec2& sceneSize = Application::Get().GetSceneWindowSize();
 		if (sceneSize.x > 0.0f && sceneSize.y > 0.0f && (sceneSize.x != def.width || sceneSize.y != def.height)) {
@@ -79,20 +80,18 @@ namespace Egl {
 		
 		mFramebuffer->Bind();
 
-		//mFramebuffer->ClearAttachment();
 		mActiveScene->OnUpdate();
 
-		// Testing code
-		//glm::ivec2 mouse = (glm::ivec2)Input::MousePos();
-		//glm::ivec2 sceneSizeInt = (glm::ivec2)Application::Get().GetSceneWindowSize();
-		//mouse.y = sceneSize.y - mouse.y;
-		//if (mouse.x >= 0 && mouse.y >= 0 && mouse.x < sceneSizeInt.x && mouse.y < sceneSizeInt.y) {
-		//	uint32_t pixelData = mFramebuffer->ReadPixel(1, mouse.x, mouse.y);
-		//	LOG("Pixel data = {0}", pixelData);
-		//}
-
 		Input::ResetInputState();
-		mFramebuffer->Unbind();
+
+		// If running in the editor or not
+		if (needToDrawToScreen) {
+			const glm::vec2& size = Application::Get().GetSceneWindowSize();
+			mFramebuffer->DrawToScreenAndUnbind(size.x, size.y);
+		}
+		else {
+			mFramebuffer->Unbind();
+		}
 	}
 
 	void GameLayer::DistributeEvent(Event& e) {

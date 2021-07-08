@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Moved framebuffer reference to GameLayer and refactored Application class
+// Now using framebuffers even if the game isn't run in the editor
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
@@ -80,7 +80,7 @@ namespace Egl {
 
 	#if EAGLE_EDITOR
 					mEditorLayer->OnUpdate();
-					mGameLayer->OnUpdate();
+					mGameLayer->OnUpdate(false);
 
 					{
 						EAGLE_PROFILE_SCOPE("ImGui update");
@@ -92,10 +92,9 @@ namespace Egl {
 						mImGuiLayer->End();
 					}
 	#else // EAGLE_EDITOR
-					// for rendering it onto the screen use glBlitFramebuffer https://docs.gl/gl4/glBlitFramebuffer
-					mGameLayer->OnUpdate();
+					mGameLayer->OnUpdate(true);
 	#endif // EAGLE_EDITOR
-
+					
 				}
 			}
 
@@ -128,26 +127,6 @@ namespace Egl {
 
 	void Application::Close() {
 		mRunning = false;
-	}
-	void Application::AddLayer(Layer* layer) {
-		EAGLE_PROFILE_FUNCTION();
-		mLayerStack.AddLayer(layer);
-		layer->OnAttach();
-	}
-	void Application::AddOverlay(Layer* layer) {
-		EAGLE_PROFILE_FUNCTION();
-		mLayerStack.AddOverlay(layer);
-		layer->OnAttach();
-	}
-	void Application::RemoveLayer(Layer* layer) {
-		EAGLE_PROFILE_FUNCTION();
-		layer->OnDetach();
-		mLayerStack.RemoveLayer(layer);
-	}
-	void Application::RemoveOverlay(Layer* layer) {
-		EAGLE_PROFILE_FUNCTION();
-		layer->OnDetach();
-		mLayerStack.RemoveOverlay(layer);
 	}
 
 	const glm::vec2& Application::GetSceneScreenOffset() const {

@@ -11,18 +11,18 @@
 
 namespace Egl {
 
-	class EditorLayer : public Layer {
+	class EditorLayer {
 	public:
 		EditorLayer();
 		~EditorLayer() = default;
 
-		virtual void OnAttach() override;
-		virtual void OnDetach() override;
+		virtual void OnAttach();
+		virtual void OnDetach();
 
-		virtual void OnUpdate() override;
+		virtual void OnUpdate();
 
-		virtual void OnEvent(Event& event) override;
-		virtual void OnImGuiRender() override;
+		virtual void OnEvent(Event& event);
+		virtual void OnImGuiRender();
 
 	private:
 		bool mScenePanelFocused = false, mScenePanelHovered = false;

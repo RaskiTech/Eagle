@@ -141,6 +141,13 @@ namespace Egl {
 	{
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	}
+	void OpenGLFramebuffer::DrawToScreenAndUnbind(uint32_t screenWidth, uint32_t screenHeight) {
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, mRendererID);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBlitFramebuffer(0, 0, screenWidth, screenHeight, 0, 0, screenWidth, screenHeight,
+			GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	}
 	void OpenGLFramebuffer::Resize(uint32_t width, uint32_t height)
 	{
 		EAGLE_ENG_ASSERT(width > 0 && height > 0,

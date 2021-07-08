@@ -17,6 +17,7 @@ namespace Egl {
 
 		virtual void Bind() override;
 		virtual void Unbind() override;
+		virtual void DrawToScreenAndUnbind(uint32_t screenWidth, uint32_t screenHeight) override;
 		virtual uint32_t GetColorAttachementsRendererID(uint32_t index = 0) const override { EAGLE_ENG_ASSERT(index < mColorAttachments.size(), "Index bigger than size"); return mColorAttachments[index]; }
 	private:
 		uint32_t mRendererID = 0;

@@ -92,8 +92,6 @@ namespace Egl {
 			RenderCommand::SetColor(camera.backgroundColor);
 			RenderCommand::Clear();
 
-
-
 			Renderer::BeginScene(camera.camera, camTrans.GetTransform());
 			
 			static auto texture = Texture::Create("Assets/FireHydrant.png", false);
