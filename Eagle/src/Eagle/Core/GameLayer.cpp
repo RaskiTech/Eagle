@@ -94,14 +94,33 @@ namespace Egl {
 		}
 	}
 
+	#define IS_UNDER_MOUSE(mouseX, mouseY, objX, objY, objXRad, objYRad) (glm::abs(mouseX-objX) < objXRad && glm::abs(mouseY-objY) < objYRad)
 	void GameLayer::DistributeEvent(Event& e) {
 		EAGLE_ENG_ASSERT(mActiveScene->sceneInitComplete, "The init isn't complete yet but there was an event");
+		glm::vec2 mousePos = mActiveScene->ScreenToWorldPos(Input::MousePos());
+		std::vector<NativeScriptComponent*> listenersUnderMouse;
 
+		// TODO: Use binary search to find the objects
+
+		// Iterate through and check what listeners are under the mouse
 		for (NativeScriptComponent* comp : mActiveScene->eventScriptsInOrder) {
 			EAGLE_ENG_ASSERT(comp->OnEventFunc, "The script doesn't have an event function but it is in the list");
+			const Entity& entity = comp->baseInstance->GetEntity();
+			if (entity.HasComponent<TransformComponent>()) {
+				auto& tComp = entity.GetComponent<TransformComponent>();
+				if (IS_UNDER_MOUSE(mousePos.x, mousePos.y, tComp.GetPosition().x, tComp.GetPosition().y, tComp.GetScale().x/2, tComp.GetScale().y/2))
+					listenersUnderMouse.push_back(comp);
+			}
+			else {
+				auto& tComp = entity.GetComponent<UIAlignComponent>();
+				//LOG("{0} {1} {2} {3}", glm::abs(mouseX - objX), objSizeX, glm::abs(mouseY-objY), objSizeY);
+				if (IS_UNDER_MOUSE(mousePos.x, mousePos.y, tComp.GetWorldPosition().x, tComp.GetWorldPosition().y, tComp.GetWorldScale().x/2, tComp.GetWorldScale().y/2))
+					listenersUnderMouse.push_back(comp);
+			}
+		}
+		for (NativeScriptComponent* comp : listenersUnderMouse)
 			if (comp->OnEventFunc(comp->baseInstance, e))
 				break;
-		}
 	}
 	template< typename T, typename Pred >
 	static typename std::vector<T>::iterator Insert_sorted(std::vector<T>& vec, T const& item, Pred pred) {

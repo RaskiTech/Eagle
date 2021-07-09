@@ -5,7 +5,6 @@
 #include "Eagle/Core/Events/Event.h"
 #include "Eagle/Core/Events/ApplicationEvent.h"
 #include "Eagle/Core/Events/Event.h"
-#include "Eagle/Core/Layers/LayerStack.h"
 #include "Eagle/Debug/ImGui/ImGuiLayer.h"
 #include "Eagle/Core/GameLayer.h"
 

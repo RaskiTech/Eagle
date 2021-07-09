@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Eagle/Core/Application.h"
-#include "Eagle/Core/Layers/Layer.h"
 #include "Eagle/Core/Events/Event.h"
 
 #include "Eagle/ECS/Scene.h"

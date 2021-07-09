@@ -5,7 +5,6 @@
 #include "Eagle/Core/Application.h"
 #include "Eagle/Core/Time.h"
 #include "Eagle/Core/Log.h"
-#include "Eagle/Core/Layers/Layer.h"
 #include "Eagle/Core/Keycodes.h"
 #include "Eagle/Core/Input.h"
 #include "Eagle/Core/Random.h"

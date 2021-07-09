@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Now using framebuffers even if the game isn't run in the editor
+// Now OnEvent triggers only if mouse is over that object
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
@@ -56,7 +56,7 @@ namespace Egl {
 		dispacher.Dispatch<WindowCloseEvent>(EAGLE_BIND_EVENT_FUNC(OnWindowClose));
 		dispacher.Dispatch<WindowResizeEvent>(EAGLE_BIND_EVENT_FUNC(OnWindowResize));
 
-		GetGameLayer()->DistributeEvent(e);
+		mGameLayer->DistributeEvent(e);
 	}
 
 	void Application::Run() {

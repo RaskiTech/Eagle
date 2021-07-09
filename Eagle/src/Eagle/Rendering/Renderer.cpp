@@ -124,7 +124,6 @@ namespace Egl {
 		std::string fragmentSource = R"(
 			#version 330 core
 			layout(location = 0) out vec4 color;
-			layout(location = 1) out uint entityID;
 			
 			in vec2 vTexCoord;
 			in vec4 vColor;
@@ -173,7 +172,6 @@ namespace Egl {
 					case 31: texColor *= texture(uTextures[31], vTexCoord * vTilingFactor); break;
 				}
 				color = texColor;
-				entityID = 10;
 			}
 		)";
 		#pragma endregion
