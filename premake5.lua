@@ -17,6 +17,7 @@ workspace "Eagle"
 	Includes["stb_image"] = "Eagle/vendor/stb_image"
 	Includes["entt"] = "Eagle/vendor/entt/include"
 	Includes["spdlog"] = "Eagle/vendor/spdlog/include"
+	Includes["FreeType"] = "Eagle/vendor/FreeType/include"
 
 	outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -50,7 +51,8 @@ project "Eagle"
 		"%{Includes.glm}",
 		"%{Includes.stb_image}",
 		"%{Includes.ImGui}",
-		"%{Includes.entt}"
+		"%{Includes.entt}",
+		"%{Includes.FreeType}"
 	}
 
 	defines {
@@ -62,7 +64,11 @@ project "Eagle"
 		"Glad",
 		"ImGui",
 		"opengl32.lib",
+		"freetype.lib",
 		"Sandbox"
+	}
+	libdirs {
+		"Eagle/vendor/FreeType/lib"
 	}
 
 	filter "system:windows"

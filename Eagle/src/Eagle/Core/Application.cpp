@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Now OnEvent triggers only if mouse is over that object
+// Added FreeType to load fonts
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;

@@ -14,7 +14,6 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/constants.hpp>
 #include <glm/gtc/type_ptr.hpp>
-
 #include <Dependencies/Entt.h>
 #include <Dependencies/ImGui.h>
 

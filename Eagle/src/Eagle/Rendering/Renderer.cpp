@@ -1,7 +1,8 @@
 #include <EaglePCH.h>
+#include <glm/gtc/matrix_transform.hpp>
 #include "Renderer.h"
 #include "RenderCommand.h"
-#include <glm/gtc/matrix_transform.hpp>
+#include "Text/TextRenderer.h"
 
 // UI Library example usage
 	// x and y drivers will derive from baseClass called UIPosition and width and height drivers from UIArea
@@ -56,6 +57,9 @@ namespace Egl {
 		EAGLE_PROFILE_FUNCTION();
 
 		RenderCommand::Init();
+		TextRenderer tr;
+		tr.Init();
+
 		sData.quadVA = VertexArray::Create();
 
 		sData.quadVB = VertexBuffer::Create(sData.maxVertices * sizeof(QuadVertex));
