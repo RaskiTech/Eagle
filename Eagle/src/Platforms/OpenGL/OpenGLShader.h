@@ -1,6 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
+#include <glad/glad.h>
 #include "Eagle/Rendering/Shader.h"
 
 namespace Egl {
@@ -8,8 +9,11 @@ namespace Egl {
 	class OpenGLShader : public Shader
 	{
 	public:
-		OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);
+		OpenGLShader(const std::string& filepath);
+		OpenGLShader(const std::string& name, const std::string& vertexSrc, const std::string& fragmentSrc);
 		virtual ~OpenGLShader();
+
+		const std::string& GetName() const override { return mName; }
 
 		virtual void Bind() const override;
 		virtual void Unbind() const override;
@@ -23,7 +27,12 @@ namespace Egl {
 		virtual void SetMat4(const std::string& name, const glm::mat4& value) override;
 
 	private:
+		std::string ReadFile(const std::string& filepath);
+		std::unordered_map<GLenum, std::string> ProcessShaderFileText(const std::string& source);
+		void Compile(const std::unordered_map<GLenum, std::string>& shaders);
+
 		uint32_t mRendererID;
+		std::string mName;
 	};
 
 }

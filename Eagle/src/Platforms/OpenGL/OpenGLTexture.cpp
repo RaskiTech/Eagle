@@ -6,9 +6,27 @@
 #include <stb_image.h>
 
 namespace Egl {
-	OpenGLTexture::OpenGLTexture(uint32_t width, uint32_t height, bool scaleUpBlur) : mWidth(width), mHeight(height) {
-		mInternalFormat = GL_RGBA8;
-		mDataFormat = GL_RGBA;
+	static GLenum EagleTextureFormatToGL(TextureFormat format) {
+		switch (format) {
+			case TextureFormat::Grayscale: return GL_RED;
+			case TextureFormat::RGB:       return GL_RGB;
+			case TextureFormat::RGBA:      return GL_RGBA;
+		}
+	}
+	static GLenum EagleTextureFormatToGLInternal(TextureFormat format) {
+		switch (format) {
+			case TextureFormat::Grayscale: return GL_RED;
+			case TextureFormat::RGB:       return GL_RGB8;
+			case TextureFormat::RGBA:      return GL_RGBA8;
+		}
+	}
+
+	OpenGLTexture::OpenGLTexture(uint32_t width, uint32_t height, bool scaleUpBlur, bool tile, TextureFormat format) : mWidth(width), mHeight(height) {
+		mInternalFormat = EagleTextureFormatToGLInternal(format);
+		mDataFormat =     EagleTextureFormatToGL(format);
+
+		if (format == TextureFormat::Grayscale)
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &mRendererID);
 		glTextureStorage2D(mRendererID, 1, mInternalFormat, mWidth, mHeight);
@@ -16,10 +34,20 @@ namespace Egl {
 		glTextureParameteri(mRendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		if (scaleUpBlur) glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		else			 glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		if (tile) {
+			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
+		else {
+			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
+
+		// Restore it afterwards
+		//if (format == TextureFormat::Grayscale)
+		//	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 	}
-	OpenGLTexture::OpenGLTexture(const std::string& path, bool scaleUpBlur) : mPath(path), mDataFormat(0), mInternalFormat(0) {
+	OpenGLTexture::OpenGLTexture(const std::string& path, bool scaleUpBlur, bool tile) : mPath(path), mDataFormat(0), mInternalFormat(0) {
 		EAGLE_PROFILE_FUNCTION();
 
 		int width, height, channels;
@@ -50,10 +78,16 @@ namespace Egl {
 		glTextureParameteri(mRendererID, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		if (scaleUpBlur) glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		else			 glTextureParameteri(mRendererID, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		if (tile) {
+			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		}
+		else {
+			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		}
 
-		// GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, const void* pixels
+		//                                                                      Data in one color?
 		glTextureSubImage2D(mRendererID, 0, 0, 0, mWidth, mHeight, mDataFormat, GL_UNSIGNED_BYTE, data);
 
 		stbi_image_free(data);

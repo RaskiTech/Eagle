@@ -93,7 +93,7 @@ namespace Egl {
 			RenderCommand::Clear();
 
 			Renderer::BeginScene(camera.camera, camTrans.GetTransform());
-			
+
 			static auto texture = Texture::Create("Assets/FireHydrant.png", false);
 
 			/////// View Scaler ///////

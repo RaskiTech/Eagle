@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Added FreeType to load fonts
+// Worked on the shader api, and added a shader library
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
