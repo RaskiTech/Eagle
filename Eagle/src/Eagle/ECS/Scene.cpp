@@ -10,7 +10,7 @@
 
 namespace Egl {
 	Scene::Scene() {
-
+		
 	}
 
 	Entity Scene::AddEntity(const EntityParams& params) {
@@ -43,8 +43,8 @@ namespace Egl {
 
 		entt::entity createdEntityID = mRegistry.create();
 		Entity newEntity = { createdEntityID, this };
-		newEntity.AddComponent<UIAlignComponent>(newEntity, params.xDrivers, params.yDrivers, params.xPrimaryValue, params.yPrimaryValue, 
-			params.xSecondaryValue, params.ySecondaryValue, params.useSidesHorizontal, params.useSidesVertical);
+		UIAlignComponent& align = newEntity.AddComponent<UIAlignComponent>(newEntity, params.xDrivers, params.yDrivers, params.xPrimaryValue, 
+			params.yPrimaryValue, params.xSecondaryValue, params.ySecondaryValue, params.useSidesHorizontal, params.useSidesVertical);
 		newEntity.AddComponent<MetadataComponent>(params.name, params.sortingLayer, params.subSorting);
 		Relation& createdEntityRelation = newEntity.AddComponent<Relation>();
 		newEntity.SetParent(canvasOrParent);
@@ -130,7 +130,7 @@ namespace Egl {
 				auto group = mRegistry.group<SpriteRendererComponent>(entt::get<TransformComponent, MetadataComponent>);
 				for (auto entity : group) {
 					auto [spriteRenderer, transform, metadata] = group.get<SpriteRendererComponent, TransformComponent, MetadataComponent>(entity);
-					uint16_t sorting = ((uint16_t)metadata.sortingLayer << 8) + (uint16_t)metadata.subSorting;
+					uint16_t sorting = metadata.CalculateSorting();
 					if (spriteRenderer.texture == nullptr)
 						Renderer::DrawColorQuad(sorting, transform.GetTransform(), spriteRenderer.color);
 					else
@@ -138,16 +138,28 @@ namespace Egl {
 				}
 			}
 
-			/////// UIAligment ///////
+			/////// UIAligment && Sprite ///////
 			{
 				auto group = mRegistry.group<UIAlignComponent>(entt::get<SpriteRendererComponent, MetadataComponent>);
 				for (auto entity : group) {
 					auto [spriteRenderer, align, metadata] = group.get<SpriteRendererComponent, UIAlignComponent, MetadataComponent>(entity);
-					uint16_t sorting = ((uint16_t)metadata.sortingLayer << 8) + (uint16_t)metadata.subSorting;
+					uint16_t sorting = metadata.CalculateSorting();
 					if (spriteRenderer.texture == nullptr)
 						Renderer::DrawColorQuad(sorting, align.GetTransform(), spriteRenderer.color);
 					else
 						Renderer::DrawTextureQuad(sorting, align.GetTransform(), spriteRenderer.texture->GetTexture(), spriteRenderer.texture->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
+				}
+			}
+
+			LOG_ENG_WARN("Should add TextRenderer with normal transform also");
+			/////// Text ///////
+			{
+				auto group = mRegistry.group<TextComponent>(entt::get<UIAlignComponent, MetadataComponent>);
+				for (auto entity : group) {
+					auto [textRenderer, align, metadata] = group.get<TextComponent, UIAlignComponent, MetadataComponent>(entity);
+					uint16_t sorting = metadata.CalculateSorting();
+					const glm::vec2& scale = align.GetWorldScale();
+					textRenderer.renderer.RenderText(sorting, textRenderer.data, align.GetWorldPosition(), scale, camera.camera.GetSize());
 				}
 			}
 

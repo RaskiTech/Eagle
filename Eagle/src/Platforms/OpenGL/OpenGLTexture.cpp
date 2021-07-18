@@ -6,27 +6,24 @@
 #include <stb_image.h>
 
 namespace Egl {
-	static GLenum EagleTextureFormatToGL(TextureFormat format) {
-		switch (format) {
-			case TextureFormat::Grayscale: return GL_RED;
-			case TextureFormat::RGB:       return GL_RGB;
-			case TextureFormat::RGBA:      return GL_RGBA;
-		}
-	}
-	static GLenum EagleTextureFormatToGLInternal(TextureFormat format) {
-		switch (format) {
-			case TextureFormat::Grayscale: return GL_RED;
-			case TextureFormat::RGB:       return GL_RGB8;
-			case TextureFormat::RGBA:      return GL_RGBA8;
-		}
-	}
+	//static GLenum EagleTextureFormatToGL(TextureFormat format) {
+	//	switch (format) {
+	//		case TextureFormat::Grayscale: return GL_RED;
+	//		case TextureFormat::RGB:       return GL_RGB;
+	//		case TextureFormat::RGBA:      return GL_RGBA;
+	//	}
+	//}
+	//static GLenum EagleTextureFormatToGLInternal(TextureFormat format) {
+	//	switch (format) {
+	//		case TextureFormat::Grayscale: return GL_RED;
+	//		case TextureFormat::RGB:       return GL_RGB8;
+	//		case TextureFormat::RGBA:      return GL_RGBA8;
+	//	}
+	//}
 
-	OpenGLTexture::OpenGLTexture(uint32_t width, uint32_t height, bool scaleUpBlur, bool tile, TextureFormat format) : mWidth(width), mHeight(height) {
-		mInternalFormat = EagleTextureFormatToGLInternal(format);
-		mDataFormat =     EagleTextureFormatToGL(format);
-
-		if (format == TextureFormat::Grayscale)
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	OpenGLTexture::OpenGLTexture(uint32_t width, uint32_t height, bool scaleUpBlur, bool tile) : mWidth(width), mHeight(height) {
+		mInternalFormat = GL_RGBA8;
+		mDataFormat = GL_RGBA;
 
 		glCreateTextures(GL_TEXTURE_2D, 1, &mRendererID);
 		glTextureStorage2D(mRendererID, 1, mInternalFormat, mWidth, mHeight);
@@ -42,16 +39,12 @@ namespace Egl {
 			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 			glTextureParameteri(mRendererID, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		}
-
-		// Restore it afterwards
-		//if (format == TextureFormat::Grayscale)
-		//	glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 	}
 	OpenGLTexture::OpenGLTexture(const std::string& path, bool scaleUpBlur, bool tile) : mPath(path), mDataFormat(0), mInternalFormat(0) {
 		EAGLE_PROFILE_FUNCTION();
 
 		int width, height, channels;
-		stbi_set_flip_vertically_on_load(1);
+
 		stbi_uc* data = nullptr;
 		{
 			EAGLE_PROFILE_SCOPE("stri_load - Texture::Texture(const std::string& path, bool scaleUpBlur)");

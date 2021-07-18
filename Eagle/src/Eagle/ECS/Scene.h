@@ -1,8 +1,8 @@
 #pragma once
 #include <Dependencies/Entt.h>
-#include "Eagle/Rendering/Text/TextRenderer.h"
-// The client will inherit this scene and provide the functions.
+#include <Eagle/Rendering/Text/TextRenderer.h>
 
+// The client will inherit this scene and provide the functions.
 
 namespace Egl {
 

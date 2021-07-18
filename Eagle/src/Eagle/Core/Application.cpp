@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Worked on the shader api, and added a shader library
+// The core functionality of text rendering is now in place
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
@@ -32,6 +32,9 @@ namespace Egl {
 		Renderer::Init();
 		Random::Init();
 
+		// On editor this will be overwritten on the next frame
+		mSceneWindowSize = { (float)mWindow->GetWidth(), (float)mWindow->GetHeight() };
+
 		mGameLayer = new GameLayer();
 		mGameLayer->OnAttach();
 
@@ -42,7 +45,6 @@ namespace Egl {
 		mEditorLayer = new EditorLayer();
 		mEditorLayer->OnAttach();
 #else
-		mSceneWindowSize = { (float)mWindow->GetWidth(), (float)mWindow->GetHeight() };
 #endif
 	}
 

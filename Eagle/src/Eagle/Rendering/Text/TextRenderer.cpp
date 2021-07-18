@@ -12,16 +12,16 @@
 // Make text rendering use an atlas
 
 namespace Egl {
-	void TextRenderer::Init() {
+	void TextRenderer::LoadFont(const std::string& fontPath) {
 		FT_Library ft;
 		if (FT_Init_FreeType(&ft)) {
 			EAGLE_ENG_ASSERT(false, "Couldn't initialize FreeType");
 			return;
 		}
+
 		FT_Face font;
-		const char* path = "D:/Eagle/Eagle/Assets/Fonts/Roboto/Roboto-Regular.ttf";
-		if (FT_New_Face(ft, path, 0, &font)) {
-			LOG_ENG_ERROR("Couldn't load font from path {0}", path);
+		if (FT_New_Face(ft, fontPath.c_str(), 0, &font)) {
+			LOG_ENG_ERROR("Couldn't load font from path {0}", fontPath);
 			return;
 		}
 
@@ -38,12 +38,14 @@ namespace Egl {
 
 			uint32_t width = font->glyph->bitmap.width;
 			uint32_t height = font->glyph->bitmap.rows;
-			Ref<Texture> tex = Texture::Create(width, height, true, false, TextureFormat::RGBA);
+			Ref<Texture> tex = Texture::Create(width, height, true, false);
+			fontHeight = (float)(font->height >> 6);
+			fontDescend = (float)(-font->descender >> 6);
 
-			// Convert 
-			void* ptr = alloca(width * height * 4);
+			// Convert from R to RGBA
+			void* ptr = malloc((size_t)width * height * 4);
 			uint8_t* currPtr = (uint8_t*)ptr;
-			for (int i = 0; i < width * height; i++) {
+			for (uint32_t i = 0; i < width * height; i++) {
 				*currPtr = 255;
 				currPtr++;
 				*currPtr = 255;
@@ -55,10 +57,12 @@ namespace Egl {
 			}
 
 			tex->SetData(ptr, width*height*4);
+			free(ptr);
+
 			Character ch(tex, 
 				glm::ivec2{ width, height }, 
 				glm::ivec2{ font->glyph->bitmap_left, font->glyph->bitmap_top }, 
-				font->glyph->advance.x);
+				font->glyph->advance.x >> 6);
 			characters[c] = ch;
 		}
 
@@ -66,20 +70,92 @@ namespace Egl {
 		FT_Done_FreeType(ft);
 	}
 
-	void TextRenderer::RenderChars(const std::string& text) {
-		float scale = 0.03f;
+	void TextRenderer::ChangeRenderedText(const std::string& unprocessedText) {
+		originalText = unprocessedText;
+		lastMaxWidth = 0; // Dirty flag in disguise
+	}
 
-		float x = 0;
-		for (auto c = text.begin(); c != text.end(); c++) {
-			Character charData = characters[*c];
+	// TODO:
+	// leftSideWallPos
+	// align V & H
+	void TextRenderer::RenderText(const uint16_t& sorting, const TextProperties& data, const glm::vec2& containerMiddle, const glm::vec2& containerSize, float cameraSize) {
+		EAGLE_PROFILE_FUNCTION();
 
-			float xPos = x + charData.bearing.x * scale;
-			float yPos = 0 - (charData.size.y - charData.bearing.y) * scale;
+		// Relative font size. Multiply by a small number to get the font size to more reasonable values
+		float relativeFontSize = data.fontSize * cameraSize * 0.0001f;
 
-			x += (charData.advance >> 6) * scale;
-
-			Renderer::DrawTextureQuad(0, glm::vec2{ xPos, yPos }, glm::vec2{ charData.size.x * scale, charData.size.y * scale }, charData.texture, 1.0f, glm::vec4{1.0f, 1.0f, 1.0f, 1.0f});
+		// Is text textWrap width up to date
+		float thisMaxWidth = containerSize.x / relativeFontSize * 0.75f;
+		if (lastMaxWidth != thisMaxWidth) {
+			lastMaxWidth = thisMaxWidth;
+			processedTest = AddLineBreaks(originalText, thisMaxWidth);
 		}
 
+		float charPosX;
+		float charPosY;
+		//switch (data.alignVertical) {
+		//	case TextAlignVertical::Top: charPosY = containerMiddle.y + containerSize.y / 2 - fontHeight * relativeFontSize;
+		//}
+		//switch (data.alignHorizontal) {
+		//	case TextAlignHorizontal::Left: charPosX = containerMiddle.x - containerSize.x / 2;
+		//}
+		charPosX = containerMiddle.x - containerSize.x / 2;
+		charPosY = containerMiddle.y + containerSize.y / 2 - fontHeight * relativeFontSize;
+
+		float remainingChars = data.charsVisible;
+		for (const auto& c : processedTest) {
+			if (c == '\n') {
+				charPosY -= (fontHeight + fontDescend) * relativeFontSize;
+				charPosX = containerMiddle.x - containerSize.x / 2;
+				continue;
+			}
+
+			if (--remainingChars < 0)
+				break;
+
+			const Character& charData = characters[c];
+
+			float xPos = charPosX + charData.bearing.x * relativeFontSize;
+			float yPos = charPosY - (charData.size.y - charData.bearing.y) * relativeFontSize;
+			glm::vec2 scale = { charData.size.x * relativeFontSize, charData.size.y * relativeFontSize };
+
+			charPosX += charData.advance * relativeFontSize;
+
+			Renderer::DrawTextureQuad(sorting, glm::vec2{ xPos+scale.x/2, yPos+scale.y/2 }, scale, charData.texture, 1.0f, data.color);
+		}
+	}
+
+	float TextRenderer::GetWordSize(const std::string& word) {
+		float size = 0;
+		for (auto& c : word) {
+			size += characters[c].size.x;
+		}
+		return size;
+	}
+	std::string TextRenderer::AddLineBreaks(const std::string& original, uint32_t maxPixelWidth) {
+		std::istringstream words(original);
+		std::ostringstream wrapped;
+
+		std::string word;
+
+		linePixelWidths.resize(0);
+
+		if (words >> word) {
+			wrapped << word;
+			size_t spaceLeft = maxPixelWidth - GetWordSize(word);
+			while (words >> word) {
+				float wordSize = GetWordSize(word);
+				if (spaceLeft < wordSize) {
+					wrapped << "\n" << word;
+					linePixelWidths.push_back(maxPixelWidth - spaceLeft);
+					spaceLeft = maxPixelWidth - wordSize;
+				}
+				else {
+					wrapped << ' ' << word;
+					spaceLeft -= wordSize;
+				}
+			}
+		}
+		return wrapped.str();
 	}
 }

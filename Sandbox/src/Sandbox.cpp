@@ -1,6 +1,8 @@
 #pragma once
 #include <Eagle.h>
 #include <EagleApplicationStartup.h>
+
+#include <Eagle/Rendering/Text/TextRenderer.h>
 using namespace Egl;
 
 ////
@@ -48,6 +50,14 @@ class ExampleScene : public Scene {
 		Entity exampleOtherSquare = AddUIEntity(middleSquare, exampleSquare);
 		exampleOtherSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.3f, 0.2f, 1 });
 		exampleOtherSquare.GetComponent<MetadataComponent>().subSorting = 1;
+
+		Entity text = AddUIEntity("Text", canvas);
+
+		auto& textComp = text.AddComponent<TextComponent>();
+		textComp.SetText("Example scene");
+		textComp.data.fontSize = 10;
+		textComp.data.alignVertical = TextAlignVertical::Top;
+		textComp.data.alignHorizontal = TextAlignHorizontal::Left;
 	}
 
 	Entity example_ParticleBegin() {
@@ -79,9 +89,10 @@ class ExampleScene : public Scene {
 
 	void SceneBegin() override {
 		Entity camera = AddEntity("Camera");
-		camera.AddComponent<CameraComponent>().camera.SetSize(8.85f);
-		camera.GetComponent<CameraComponent>().backgroundColor = { 0.19f, 0.32f, 0.45f, 1 };
-		camera.GetComponent<TransformComponent>().SetPosition(0, -0.6f);
+		auto& cameraComp = camera.AddComponent<CameraComponent>();
+		cameraComp.camera.SetSize(8.85f);
+		cameraComp.backgroundColor = { 0.19f, 0.32f, 0.45f, 1.0f };
+		camera.GetComponent<TransformComponent>().SetPosition(0.0f, -0.6f);
 		SetPrimaryCamera(camera);
 		
 		auto& player = AddEntity("Player");

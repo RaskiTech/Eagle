@@ -8,6 +8,7 @@
 #include "Eagle/Components/ParticleComponents/ParticleSystem.h"
 #include "Eagle/Core/Events/Event.h"
 #include "Eagle/ECS/Entity.h"
+#include "Eagle/Rendering/Text/TextRenderer.h"
 
 namespace Egl {
 	struct CameraComponent {
@@ -211,6 +212,7 @@ namespace Egl {
 		void SetWorldScaleFlagsFalse(const Relation& thisRel);
 		friend struct UIAlignComponent;
 	};
+
 	struct EntityParams {
 		glm::vec2 position = { 0, 0 };
 		float rotation = 0;
@@ -224,7 +226,6 @@ namespace Egl {
 		EntityParams(const std::string& name, const glm::vec2& position, float rotation, const glm::vec2& scale, int8_t sortingLayer = 0, uint8_t subSorting = 0)
 			: name(name), position(position), scale(scale), rotation(rotation), sortingLayer(sortingLayer), subSorting(subSorting) {};
 	};
-
 	struct UIEntityParams {
 
 		bool useSidesHorizontal = false, useSidesVertical = false;
@@ -249,6 +250,8 @@ namespace Egl {
 		int8_t sortingLayer = 0;
 		uint8_t subSorting = 0;
 
+		inline uint16_t CalculateSorting() { return ((uint16_t)sortingLayer << 8) + (uint16_t)subSorting; }
+
 		MetadataComponent() = default;
 		MetadataComponent(const std::string& tag, int8_t sortingLayer, uint8_t subSorting = 0) : tag(tag), sortingLayer(sortingLayer), subSorting(subSorting) {};
 	};
@@ -265,6 +268,17 @@ namespace Egl {
 		SpriteRendererComponent(const glm::vec4& color) : color(color) {  }
 	};
 
+	struct TextComponent {
+		TextRenderer renderer;
+		TextProperties data;
+
+		void SetText(const std::string& str) { renderer.ChangeRenderedText(str); }
+		const std::string& GetText() const { return renderer.GetOriginalText(); }
+
+		TextComponent(const std::string& fontPath) : renderer(fontPath) {}
+		TextComponent() : renderer("Assets/Fonts/Roboto/Roboto-Regular.ttf") {}
+		// Add to trello: remove warnings, add app name to build settings
+	};
 
 	struct ParticleSystemComponent {
 		Particles::ParticleSystem particleSystem;

@@ -6,10 +6,10 @@
 
 namespace Egl {
 
-	Ref<Texture> Texture::Create(uint32_t width, uint32_t height, bool scaleUpBlur, bool tile, TextureFormat format) {
+	Ref<Texture> Texture::Create(uint32_t width, uint32_t height, bool scaleUpBlur, bool tile) {
 		switch (Renderer::GetAPI()) {
 			case RenderAPI::API::None:    EAGLE_ENG_ASSERT(false, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RenderAPI::API::OpenGL:  return CreateRef<OpenGLTexture>(width, height, scaleUpBlur, tile, format);
+			case RenderAPI::API::OpenGL:  return CreateRef<OpenGLTexture>(width, height, scaleUpBlur, tile);
 		}
 
 		EAGLE_ENG_ASSERT(false, "Unknown RendererAPI!");

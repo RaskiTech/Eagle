@@ -452,6 +452,10 @@ namespace Egl {
 			ImGui::Checkbox("Fixed Aspectratio", &component.fixedAspectRatio);
 		});
 
+		DrawComponent<TextComponent>("Text component", drawedEntity, [](TextComponent& comp) {
+			ImGui::DragFloat("Font size", &comp.data.fontSize);
+		});
+
 		DrawComponent<SpriteRendererComponent>("Sprite Renderer", drawedEntity, [](SpriteRendererComponent& component) {
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
 		});

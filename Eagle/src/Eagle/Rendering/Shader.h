@@ -25,6 +25,7 @@ namespace Egl {
 		virtual void SetMat4(const std::string& name, const glm::mat4& matrix) = 0;
 	};
 
+	// Currently not used, but this exists
 	class ShaderLibrary {
 	public:
 		void Add(const std::string& name, const Ref<Shader>& shader);

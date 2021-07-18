@@ -6,7 +6,7 @@
 namespace Egl {
 	class OpenGLTexture : public Texture {
 	public:
-		OpenGLTexture(uint32_t width, uint32_t height, bool scaleUpBlur, bool tile, TextureFormat format);
+		OpenGLTexture(uint32_t width, uint32_t height, bool scaleUpBlur, bool tile);
 		OpenGLTexture(const std::string& path, bool scaleUpBlur, bool tile);
 		virtual ~OpenGLTexture();
 
