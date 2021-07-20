@@ -211,6 +211,9 @@ namespace Egl {
 
 		if (textureIndex == 0) {
 			// Not bound
+			if (sData.textureSlotIndex == sData.maxTextureSlots)
+				StartNewBatch();
+
 			textureIndex = (float)sData.textureSlotIndex;
 			sData.textureSlots[sData.textureSlotIndex] = texture; // Should be replaced when switching to using assets
 			sData.textureSlotIndex++;

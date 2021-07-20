@@ -6,11 +6,10 @@
 using namespace Egl;
 
 ////
-// This is an example script designed to show the API. Everything inside
-// SceneBegin and SceneEnd can be removed as well as all the things with example_.
+// This is an example script designed to show the API. Everything exept the
+// SceneBegin() and SceneEnd() functions can be removed.
 ////
 
-// Camera controller
 class example_CameraController : public Script {
 public:
 	void OnUpdate() {
@@ -51,13 +50,11 @@ class ExampleScene : public Scene {
 		exampleOtherSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.3f, 0.2f, 1 });
 		exampleOtherSquare.GetComponent<MetadataComponent>().subSorting = 1;
 
-		Entity text = AddUIEntity("Text", canvas);
-
-		auto& textComp = text.AddComponent<TextComponent>();
+		auto& textComp = AddUIEntity("Text", canvas).AddComponent<TextComponent>();
 		textComp.SetText("Example scene");
 		textComp.data.fontSize = 10;
-		textComp.data.alignVertical = TextAlignVertical::Top;
-		textComp.data.alignHorizontal = TextAlignHorizontal::Left;
+		textComp.data.alignVertical = TextAlignVertical::Middle;
+		textComp.data.alignHorizontal = TextAlignHorizontal::Middle;
 	}
 
 	Entity example_ParticleBegin() {

@@ -453,7 +453,19 @@ namespace Egl {
 		});
 
 		DrawComponent<TextComponent>("Text component", drawedEntity, [](TextComponent& comp) {
-			ImGui::DragFloat("Font size", &comp.data.fontSize);
+			char buffer[256];
+			memset(buffer, 0, sizeof(buffer));
+			strcpy(buffer, comp.GetText().c_str());
+			if (ImGui::InputText("tag", buffer, sizeof(buffer))) {
+				comp.SetText(std::string(buffer));
+			}
+			comp.data.alignHorizontal = (TextAlignHorizontal)SelectWidget("Horizontal", std::array<const char*, 3>{"Left", "Middle", "Right"}, (uint8_t)comp.data.alignHorizontal);
+			comp.data.alignVertical = (TextAlignVertical)SelectWidget("Vertical", std::array<const char*, 3>{"Top", "Middle", "Bottom"}, (uint8_t)comp.data.alignVertical);
+
+			ImGui::DragFloat("Font size", &comp.data.fontSize, 0.02f, 0, 100);
+
+			ImGui::ColorEdit4("Color", glm::value_ptr(comp.data.color));
+			ImGui::DragInt("Chars visible", (int*)&comp.data.charsVisible, 1, -1);
 		});
 
 		DrawComponent<SpriteRendererComponent>("Sprite Renderer", drawedEntity, [](SpriteRendererComponent& component) {

@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// The core functionality of text rendering is now in place
+// Text options now work & editor panel for textComponent
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;

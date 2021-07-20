@@ -151,7 +151,6 @@ namespace Egl {
 				}
 			}
 
-			LOG_ENG_WARN("Should add TextRenderer with normal transform also");
 			/////// Text ///////
 			{
 				auto group = mRegistry.group<TextComponent>(entt::get<UIAlignComponent, MetadataComponent>);

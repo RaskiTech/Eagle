@@ -80,46 +80,43 @@ namespace Egl {
 	// align V & H
 	void TextRenderer::RenderText(const uint16_t& sorting, const TextProperties& data, const glm::vec2& containerMiddle, const glm::vec2& containerSize, float cameraSize) {
 		EAGLE_PROFILE_FUNCTION();
+		if (originalText.size() == 0)
+			return;
 
 		// Relative font size. Multiply by a small number to get the font size to more reasonable values
 		float relativeFontSize = data.fontSize * cameraSize * 0.0001f;
 
 		// Is text textWrap width up to date
-		float thisMaxWidth = containerSize.x / relativeFontSize * 0.75f;
+		float thisMaxWidth = containerSize.x / relativeFontSize;
+		//LOG("MaxWidth {0}", thisMaxWidth);
 		if (lastMaxWidth != thisMaxWidth) {
 			lastMaxWidth = thisMaxWidth;
 			processedTest = AddLineBreaks(originalText, thisMaxWidth);
 		}
 
-		float charPosX;
-		float charPosY;
-		//switch (data.alignVertical) {
-		//	case TextAlignVertical::Top: charPosY = containerMiddle.y + containerSize.y / 2 - fontHeight * relativeFontSize;
-		//}
-		//switch (data.alignHorizontal) {
-		//	case TextAlignHorizontal::Left: charPosX = containerMiddle.x - containerSize.x / 2;
-		//}
-		charPosX = containerMiddle.x - containerSize.x / 2;
-		charPosY = containerMiddle.y + containerSize.y / 2 - fontHeight * relativeFontSize;
-
-		float remainingChars = data.charsVisible;
+		float lineNum = 0;
+		glm::vec2 charPos;
+		PlaceToNewLine(charPos, containerMiddle, containerSize, data.alignHorizontal, data.alignVertical, lineNum, relativeFontSize);
+		uint32_t remainingChars = (uint32_t)data.charsVisible;
 		for (const auto& c : processedTest) {
 			if (c == '\n') {
-				charPosY -= (fontHeight + fontDescend) * relativeFontSize;
-				charPosX = containerMiddle.x - containerSize.x / 2;
+				lineNum++;
+				PlaceToNewLine(charPos, containerMiddle, containerSize, data.alignHorizontal, data.alignVertical, lineNum, relativeFontSize);
 				continue;
 			}
 
 			if (--remainingChars < 0)
 				break;
 
+			EAGLE_ENG_ASSERT(0 <= c && c <= 128, "Character is out of range.");
+
 			const Character& charData = characters[c];
 
-			float xPos = charPosX + charData.bearing.x * relativeFontSize;
-			float yPos = charPosY - (charData.size.y - charData.bearing.y) * relativeFontSize;
+			float xPos = charPos.x + charData.bearing.x * relativeFontSize;
+			float yPos = charPos.y - (charData.size.y - charData.bearing.y) * relativeFontSize;
 			glm::vec2 scale = { charData.size.x * relativeFontSize, charData.size.y * relativeFontSize };
 
-			charPosX += charData.advance * relativeFontSize;
+			charPos.x += charData.advance * relativeFontSize;
 
 			Renderer::DrawTextureQuad(sorting, glm::vec2{ xPos+scale.x/2, yPos+scale.y/2 }, scale, charData.texture, 1.0f, data.color);
 		}
@@ -127,12 +124,15 @@ namespace Egl {
 
 	float TextRenderer::GetWordSize(const std::string& word) {
 		float size = 0;
-		for (auto& c : word) {
-			size += characters[c].size.x;
-		}
+		for (auto& c : word)
+			size += characters[c].advance;
+
+		// Also include the space before this word.
+		size += characters[' '].advance;
 		return size;
 	}
-	std::string TextRenderer::AddLineBreaks(const std::string& original, uint32_t maxPixelWidth) {
+	std::string TextRenderer::AddLineBreaks(const std::string& original, float maxPixelWidth) {
+		EAGLE_PROFILE_FUNCTION();
 		std::istringstream words(original);
 		std::ostringstream wrapped;
 
@@ -142,7 +142,7 @@ namespace Egl {
 
 		if (words >> word) {
 			wrapped << word;
-			size_t spaceLeft = maxPixelWidth - GetWordSize(word);
+			float spaceLeft = maxPixelWidth - GetWordSize(word);
 			while (words >> word) {
 				float wordSize = GetWordSize(word);
 				if (spaceLeft < wordSize) {
@@ -155,7 +155,35 @@ namespace Egl {
 					spaceLeft -= wordSize;
 				}
 			}
+			linePixelWidths.push_back(maxPixelWidth - spaceLeft);
 		}
 		return wrapped.str();
+	}
+
+	inline void TextRenderer::PlaceToNewLine(glm::vec2& pos, const glm::vec2& containerMiddle, 
+		const glm::vec2& containerSize, TextAlignHorizontal hor, TextAlignVertical ver, int lineIndex, float relativeFontSize) 
+	{
+		switch (hor) {
+			case TextAlignHorizontal::Left:
+				pos.x = containerMiddle.x - containerSize.x / 2; 
+				break;
+			case TextAlignHorizontal::Middle:
+				pos.x = containerMiddle.x - linePixelWidths[lineIndex] / 2 * relativeFontSize;
+				break;
+			case TextAlignHorizontal::Right:
+				pos.x = containerMiddle.x + containerSize.x / 2 - linePixelWidths[lineIndex] * relativeFontSize;
+				break;
+		}
+		switch (ver) {
+			case TextAlignVertical::Top:
+				pos.y = containerMiddle.y + containerSize.y / 2 - (fontHeight + fontDescend) * lineIndex * relativeFontSize - fontHeight * relativeFontSize;
+				break;
+			case TextAlignVertical::Middle:
+				pos.y = containerMiddle.y + (fontHeight + fontDescend) * ((float)(linePixelWidths.size()-1) / 2 - lineIndex) * relativeFontSize;
+				break;
+			case TextAlignVertical::Bottom:
+				pos.y = containerMiddle.y - containerSize.y / 2 + (fontHeight + fontDescend) * (linePixelWidths.size()-1-lineIndex) * relativeFontSize + fontDescend * relativeFontSize;
+				break;
+		}
 	}
 }

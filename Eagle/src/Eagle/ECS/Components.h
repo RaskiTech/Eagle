@@ -277,7 +277,6 @@ namespace Egl {
 
 		TextComponent(const std::string& fontPath) : renderer(fontPath) {}
 		TextComponent() : renderer("Assets/Fonts/Roboto/Roboto-Regular.ttf") {}
-		// Add to trello: remove warnings, add app name to build settings
 	};
 
 	struct ParticleSystemComponent {
