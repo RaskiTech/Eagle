@@ -1,12 +1,12 @@
-[submodule "Eagle/vendor/spdlog"]
-	path = Eagle/vendor/spdlog
+[submodule "Engine/vendor/spdlog"]
+	path = Engine/vendor/spdlog
 	url = https://github.com/gabime/spdlog
-[submodule "Eagle/vendor/GLFW"]
-	path = Eagle/vendor/GLFW
+[submodule "Engine/vendor/GLFW"]
+	path = Engine/vendor/GLFW
 	url = https://github.com/RaskiTech/glfw
-[submodule "Eagle/vendor/ImGui"]
-	path = Eagle/vendor/ImGui
+[submodule "Engine/vendor/ImGui"]
+	path = Engine/vendor/ImGui
 	url = https://github.com/RaskiTech/imgui
-[submodule "Eagle/vendor/glm"]
-	path = Eagle/vendor/glm
+[submodule "Engine/vendor/glm"]
+	path = Engine/vendor/glm
 	url = https://github.com/g-truc/glm

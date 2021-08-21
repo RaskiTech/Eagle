@@ -2,8 +2,9 @@
 .vs/
 /bin/
 /bin-int/
-/Eagle/vendor/Glad/bin/
-/Eagle/vendor/Glad/bin-int/
+/Engine/vendor/Glad/bin/
+/Engine/vendor/Glad/bin-int/
+/Build/Engine.exe
 
 # Files
 *.user

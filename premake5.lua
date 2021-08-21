@@ -1,6 +1,6 @@
 workspace "Eagle"
 	architecture "x64"
-	startproject "Eagle"
+	startproject "Engine"
 
 	configurations {
 		"Debug",
@@ -10,19 +10,19 @@ workspace "Eagle"
 
 	-- Includedirs relative to the solution dir --
 	Includes = {}
-	Includes["GLFW"] = "Eagle/vendor/GLFW/include"
-	Includes["Glad"] = "Eagle/vendor/Glad/include"
-	Includes["glm"] = "Eagle/vendor/glm"
-	Includes["ImGui"] = "Eagle/vendor/ImGui"
-	Includes["stb_image"] = "Eagle/vendor/stb_image"
-	Includes["entt"] = "Eagle/vendor/entt/include"
-	Includes["spdlog"] = "Eagle/vendor/spdlog/include"
-	Includes["FreeType"] = "Eagle/vendor/FreeType/include"
+	Includes["GLFW"] = "Engine/vendor/GLFW/include"
+	Includes["Glad"] = "Engine/vendor/Glad/include"
+	Includes["glm"] = "Engine/vendor/glm"
+	Includes["ImGui"] = "Engine/vendor/ImGui"
+	Includes["stb_image"] = "Engine/vendor/stb_image"
+	Includes["entt"] = "Engine/vendor/entt/include"
+	Includes["spdlog"] = "Engine/vendor/spdlog/include"
+	Includes["FreeType"] = "Engine/vendor/FreeType/include"
 
 	outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
-project "Eagle"
-	location "Eagle"
+project "Engine"
+	location "Engine"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -31,8 +31,12 @@ project "Eagle"
 	targetdir ("bin/" .. outputDir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputDir .. "/%{prj.name}")
 
+	postbuildcommands {
+		"{copy} ../bin/" .. outputDir .. "/%{prj.name}/%{prj.name}.exe ../Build"
+	}
+
 	pchheader "EaglePCH.h"
-	pchsource "Eagle/src/EaglePCH.cpp"
+	pchsource "Engine/src/EaglePCH.cpp"
 
 	files {
 		"%{prj.name}/src/**.h",
@@ -55,20 +59,16 @@ project "Eagle"
 		"%{Includes.FreeType}"
 	}
 
-	defines {
-		"_CRT_SECURE_NO_WARNINGS"
-	}
-
 	links {
 		"GLFW",
 		"Glad",
 		"ImGui",
-		"opengl32.lib",
 		"freetype.lib",
-		"Sandbox"
+		"opengl32.lib",
+		"Application"
 	}
 	libdirs {
-		"Eagle/vendor/FreeType/lib"
+		"%{prj.name}/vendor/FreeType/lib"
 	}
 
 	filter "system:windows"
@@ -94,8 +94,8 @@ project "Eagle"
 		buildoptions "/MD"
 		optimize "on"
 
-project "Sandbox"
-	location "Sandbox"
+project "Application"
+	location "Application"
 	kind "StaticLib"
 	language "C++"
 	cppdialect "C++17"
@@ -114,7 +114,7 @@ project "Sandbox"
 		"%{Includes.glm}",
 		"%{Includes.entt}",
 		"%{Includes.ImGui}",
-		"Eagle/src"
+		"Engine/src"
 	}
 
 	filter "system:windows"
@@ -139,6 +139,6 @@ project "Sandbox"
 		optimize "on"
 
 group "Dependencies"
-	include "Eagle/vendor/GLFW"
-	include "Eagle/vendor/Glad"
-	include "Eagle/vendor/ImGui"
+	include "Engine/vendor/GLFW"
+	include "Engine/vendor/Glad"
+	include "Engine/vendor/ImGui"

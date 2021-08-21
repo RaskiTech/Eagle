@@ -1,4 +1,0 @@
-﻿     Creating library ..\bin-int\Debug-windows-x86_64\Eagle\Eagle.lib and object ..\bin-int\Debug-windows-x86_64\Eagle\Eagle.exp
-  Eagle.vcxproj -> C:\Dev\Eagle\bin-int\Debug-windows-x86_64\Eagle\Eagle.dll
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppCommon.targets(153,5): error MSB3073: The command "IF EXIST ..\bin-int\Debug-windows-x86_64\Eagle\Eagle.dll\ (xcopy /Q /E /Y /I ..\bin-int\Debug-windows-x86_64\Eagle\Eagle.dll ..\bin\Debug-windows-x86_64\Sandbox > nul) ELSE (xcopy /Q /Y /I ..\bin-int\Debug-windows-x86_64\Eagle\Eagle.dll ..\bin\Debug-windows-x86_64\Sandbox > nul)
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppCommon.targets(153,5): error MSB3073: :VCEnd" exited with code 2.
