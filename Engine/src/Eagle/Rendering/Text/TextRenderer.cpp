@@ -88,7 +88,6 @@ namespace Egl {
 
 		// Is text textWrap width up to date
 		float thisMaxWidth = containerSize.x / relativeFontSize;
-		//LOG("MaxWidth {0}", thisMaxWidth);
 		if (lastMaxWidth != thisMaxWidth) {
 			lastMaxWidth = thisMaxWidth;
 			processedTest = AddLineBreaks(originalText, thisMaxWidth);

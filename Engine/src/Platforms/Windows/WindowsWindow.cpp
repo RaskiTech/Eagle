@@ -22,7 +22,7 @@ namespace Egl {
 	WindowsWindow::~WindowsWindow() { Shutdown(); }
 
 	static void GLFWErrorCallback(int error, const char* description) {
-		LOG_ENG_ERROR("GLFW ERROR! {0}: {1}", error, description);
+		LOG_ENG_ERROR("GLFW ERROR! ", error, ":", description);
 	}
 
 	void WindowsWindow::Init(const WindowProps& props) {

@@ -10,7 +10,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Text options now work & editor panel for textComponent
+// Switched logging library to a custom one
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;

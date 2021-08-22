@@ -16,7 +16,6 @@ workspace "Eagle"
 	Includes["ImGui"] = "Engine/vendor/ImGui"
 	Includes["stb_image"] = "Engine/vendor/stb_image"
 	Includes["entt"] = "Engine/vendor/entt/include"
-	Includes["spdlog"] = "Engine/vendor/spdlog/include"
 	Includes["FreeType"] = "Engine/vendor/FreeType/include"
 
 	outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
@@ -50,7 +49,6 @@ project "Engine"
 
 	includedirs {
 		"%{prj.name}/src",
-		"%{Includes.spdlog}",
 		"%{Includes.GLFW}",
 		"%{Includes.Glad}",
 		"%{Includes.glm}",
@@ -111,7 +109,6 @@ project "Application"
 	}
 
 	includedirs {
-		"%{Includes.spdlog}",
 		"%{Includes.glm}",
 		"%{Includes.entt}",
 		"%{Includes.ImGui}",

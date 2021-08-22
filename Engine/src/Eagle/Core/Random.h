@@ -4,7 +4,7 @@
 namespace Egl {
 	class Random {
 	public:
-		/// <summary>The engine calls this, you don't have to.</summary>
+		/// <summary>Return a float between 0 and 1.</summary>
 		static float Float01() { return (float)sDistribution(sRandomizer) / (float)std::numeric_limits<uint32_t>::max(); }
 
 		/// <summary>Returns a float between 0 and the max value.</summary>

@@ -5,6 +5,8 @@
 #include <utility>
 #include <functional>
 #include <sstream>
+#include <algorithm>
+#include <limits>
 
 #include <string>
 #include <vector>
@@ -35,5 +37,7 @@
 #include "Eagle/Rendering/VertexArray.h"
 
 #ifdef EAGLE_PLATFORM_WINDOWS
-	#include <Windows.h>
+#    define NOMINMAX // Don't confuse min and max with other defenitions
+#    include <windows.h>
+#    undef NOMINMAX
 #endif

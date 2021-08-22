@@ -115,7 +115,7 @@ namespace Egl {
 			}
 			else {
 				auto& tComp = entity.GetComponent<UIAlignComponent>();
-				//LOG("{0} {1} {2} {3}", glm::abs(mouseX - objX), objSizeX, glm::abs(mouseY-objY), objSizeY);
+				//LOG(glm::abs(mouseX - objX), objSizeX, glm::abs(mouseY-objY), objSizeY);
 				if (IS_UNDER_MOUSE(mousePos.x, mousePos.y, tComp.GetWorldPosition().x, tComp.GetWorldPosition().y, tComp.GetWorldScale().x/2, tComp.GetWorldScale().y/2))
 					listenersUnderMouse.push_back(comp);
 			}

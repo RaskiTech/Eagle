@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include "Eagle/Core/Core.h"
+#include "Eagle/Core/Log.h"
 
 namespace Egl {
 	//////////////////////////////////// Buffer Layout ////////////////////////////////////

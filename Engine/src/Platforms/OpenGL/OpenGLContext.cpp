@@ -20,9 +20,9 @@ namespace Egl {
 		EAGLE_ASSERT(status, "Failed to initialize glad");
 
 		LOG_ENG("OpenGL Renderer: ");
-		LOG_ENG("	Vendor: {0}", glGetString(GL_VENDOR));
-		LOG_ENG("	Renderer: {0}", glGetString(GL_RENDERER));
-		LOG_ENG("	Version: {0}", glGetString(GL_VERSION));
+		LOG_ENG("	Vendor:", glGetString(GL_VENDOR));
+		LOG_ENG("	Renderer:", glGetString(GL_RENDERER));
+		LOG_ENG("	Version:", glGetString(GL_VERSION));
 	}
 
 	void OpenGLContext::SwapBuffers()

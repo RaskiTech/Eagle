@@ -8,3 +8,5 @@
 
 # Files
 *.user
+*.vcproj
+*.vcproj.filters

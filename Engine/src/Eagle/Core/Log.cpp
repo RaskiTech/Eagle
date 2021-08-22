@@ -1,15 +1,19 @@
-#include "EaglePCH.h"
+#include <EaglePCH.h>
 
 namespace Egl {
-
-	std::shared_ptr<spdlog::logger> Log::s_EngineLogger;
-	std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
-
+	LogR::Logger Log::engineLogger;
+	LogR::Logger Log::clientLogger;
+	
 	void Log::Init() {
-		spdlog::set_pattern("[%n - %T] %^%v%$");
-		s_EngineLogger = spdlog::stdout_color_mt("Eagle");
-		s_EngineLogger->set_level(spdlog::level::trace);
-		s_ClientLogger = spdlog::stdout_color_mt("App");
-		s_ClientLogger->set_level(spdlog::level::trace);
+		engineLogger.SetPrefix("[Eagle]");
+		clientLogger.SetPrefix("[App]");
+
+		engineLogger.Log("This is logging and", 4 - 1, "is a number."); // This is logging and 3 is a number.
+
+		const char* amount = "many";
+		engineLogger.Warning("There are", amount, "warnings."); // There are many warnings.
+		
+		engineLogger.Error( LogR::Format("%.2f", 3.14159), "is pi with 2 decimals." ); // 3.14 is pi with 2 decimals.
 	}
+
 }
