@@ -30,7 +30,7 @@ project "Engine"
 
 	targetdir ("bin/" .. outputDir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputDir .. "/%{prj.name}")
-	debugdir "../Build"
+	debugdir "Build"
 
 	postbuildcommands {
 		"{copy} ../bin/" .. outputDir .. "/%{prj.name}/%{prj.name}.exe ../Build"
