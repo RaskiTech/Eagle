@@ -17,6 +17,7 @@ workspace "Eagle"
 	Includes["stb_image"] = "Engine/vendor/stb_image"
 	Includes["entt"] = "Engine/vendor/entt/include"
 	Includes["FreeType"] = "Engine/vendor/FreeType/include"
+	Includes["LogR"] = "Engine/vendor/LogR"
 
 	outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -55,7 +56,8 @@ project "Engine"
 		"%{Includes.stb_image}",
 		"%{Includes.ImGui}",
 		"%{Includes.entt}",
-		"%{Includes.FreeType}"
+		"%{Includes.FreeType}",
+		"%{Includes.LogR}"
 	}
 
 	links {
@@ -112,6 +114,7 @@ project "Application"
 		"%{Includes.glm}",
 		"%{Includes.entt}",
 		"%{Includes.ImGui}",
+		"%{Includes.LogR}",
 		"Engine/src"
 	}
 

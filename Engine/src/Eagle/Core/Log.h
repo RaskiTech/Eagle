@@ -1,7 +1,7 @@
 #pragma once
 
 #define LOGR_INCLUDE_GLM_TYPES
-#include "LogR.h"
+#include <LogR.h>
 
 namespace Egl {
 	class Log {

@@ -1,4 +1,6 @@
 #include <EaglePCH.h>
+#include <stb_image.h>
+#include <filesystem>
 #include "Eagle/Core/Input.h"
 #include "Eagle/Core/Events/ApplicationEvent.h"
 #include "Eagle/Core/Events/KeyEvent.h"
@@ -54,6 +56,20 @@ namespace Egl {
 
 		mContext = new OpenGLContext(mWindow);
 		mContext->Init();
+
+		const char* iconPath = "Assets/Icon.png";
+		if (std::filesystem::exists(iconPath)) {
+			int width, height, channels;
+			void* data = stbi_load(iconPath, &width, &height, &channels, 4);
+			GLFWimage im;
+			im.height = height;
+			im.width = width;
+			im.pixels = (unsigned char*)data;
+			glfwSetWindowIcon(mWindow, 1, &im);
+		}
+		else {
+			LOG_WARN("No file found in", iconPath, ". The window won't have an icon.");
+		}
 
 		glfwSetWindowUserPointer(mWindow, &mData);
 		SetVSync(mData.VSync);
