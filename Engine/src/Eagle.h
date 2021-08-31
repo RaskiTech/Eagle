@@ -10,6 +10,7 @@
 #include "Eagle/Core/Random.h"
 #include "Eagle/Core/Audio.h"
 #include "Eagle/Core/AudioSample.h"
+#include "Eagle/Core/Serialize.h"
 
 #include "Eagle/Debug/ImGui/ImGuiLayer.h"
 #include "Eagle/Components/ParticleComponents/ParticleSystem.h"

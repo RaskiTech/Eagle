@@ -117,6 +117,7 @@ class ExampleScene : public Scene {
 		example_UI();
 
 		camera.AddComponent<NativeScriptComponent>().Bind<example_CameraController>();
+		Serialize::Save("file.bin", WindowProps("Show", 10, 10));
 	}
 	void SceneEnd() {
 

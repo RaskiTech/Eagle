@@ -144,6 +144,9 @@
     <ClInclude Include="src\Eagle\Core\Random.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eagle\Core\Serialize.h">
+      <Filter>src\Eagle\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Eagle\Core\Time.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
@@ -1491,7 +1494,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\ParticleComponents\ParticleData.cpp">
@@ -1611,11 +1613,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Engine.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\Build\Assets\Icon.ico" />
   </ItemGroup>
 </Project>

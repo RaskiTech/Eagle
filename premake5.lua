@@ -71,6 +71,7 @@ project "Engine"
 	libdirs {
 		"%{prj.name}/vendor/FreeType/lib"
 	}
+	linkoptions { "/ignore:4099","/ignore:4098" }
 
 	filter "system:windows"
 		systemversion "latest"

@@ -5,6 +5,7 @@
 #include "Eagle/Rendering/RenderCommand.h"
 #include "Eagle/Core/Random.h"
 #include "Eagle/Core/GameLayer.h"
+#include "Eagle/Core/Serialize.h"
 #include "Eagle/Debug/EditorLayer.h"
 #include "Eagle/Core/Time.h"
 #include "UniqueID.h"
@@ -16,6 +17,7 @@ namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
 	std::mt19937 Random::sRandomizer;
 	uint32_t UniqueID::mCurrentFrameID;
+	std::string Serialize::persistantDataPath;
 
 	Application* Application::mInstance = nullptr;
 
@@ -29,8 +31,12 @@ namespace Egl {
 		mWindow = Window::Create(WindowProps(APPLICATION_NAME, SCREEN_WIDTH, SCREEN_HEIGHT));
 		mWindow->SetEventCallback(EAGLE_BIND_EVENT_FUNC(OnEvent));
 
-		Renderer::Init();
-		Random::Init();
+		{
+			EAGLE_PROFILE_SCOPE("Miscellaneous inits");
+			Renderer::Init();
+			Random::Init();
+			Serialize::Init();
+		}
 
 		// On editor this will be overwritten on the next frame
 		mSceneWindowSize = { (float)mWindow->GetWidth(), (float)mWindow->GetHeight() };
