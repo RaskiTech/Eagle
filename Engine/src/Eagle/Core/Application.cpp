@@ -5,19 +5,19 @@
 #include "Eagle/Rendering/RenderCommand.h"
 #include "Eagle/Core/Random.h"
 #include "Eagle/Core/GameLayer.h"
-#include "Eagle/Core/Serialize.h"
+#include "Eagle/Core/AppData.h"
 #include "Eagle/Debug/EditorLayer.h"
 #include "Eagle/Core/Time.h"
 #include "UniqueID.h"
 
 // This Commit:
-// Switched logging library to a custom one
+// Added serializing
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
 	std::mt19937 Random::sRandomizer;
 	uint32_t UniqueID::mCurrentFrameID;
-	std::string Serialize::persistantDataPath;
+	std::string SaveData::persistantDataPath;
 
 	Application* Application::mInstance = nullptr;
 
@@ -35,7 +35,7 @@ namespace Egl {
 			EAGLE_PROFILE_SCOPE("Miscellaneous inits");
 			Renderer::Init();
 			Random::Init();
-			Serialize::Init();
+			SaveData::Init();
 		}
 
 		// On editor this will be overwritten on the next frame
