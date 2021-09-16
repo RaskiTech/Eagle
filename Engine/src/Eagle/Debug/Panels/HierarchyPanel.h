@@ -12,6 +12,8 @@ namespace Egl {
 
 		void SetContext(const Ref<Scene>& scene);
 		void ResetSelection();
+		entt::entity GetSelectedEntity() { return mSelectedEntity; }
+		Ref<Scene> GetScene() { return mScene; }
 
 		void OnImGuiRender();
 	private:

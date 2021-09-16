@@ -1,5 +1,8 @@
 #include <EaglePCH.h>
+#include <EagleBuildSettings.h>
 #include "Scene.h"
+#include "Eagle/Core/Application.h"
+#include "Eagle/Debug/EditorLayer.h"
 #include "Components.h"
 #include "ComponentsInternal.h"
 #include "Eagle/Rendering/Renderer.h"
@@ -39,11 +42,11 @@ namespace Egl {
 		return e; 
 	}
 	Entity Scene::AddUIEntity(const UIEntityParams& params, Entity canvasOrParent) {
-		EAGLE_ENG_ASSERT(canvasOrParent.HasComponent<UIAlignComponent>() || canvasOrParent.HasComponent<CanvasComponent>(), "Parent isn't a canvas or an UI entity");
+		EAGLE_ENG_ASSERT(canvasOrParent.HasComponent<UITransformComponent>() || canvasOrParent.HasComponent<CanvasComponent>(), "Parent isn't a canvas or an UI entity");
 
 		entt::entity createdEntityID = mRegistry.create();
 		Entity newEntity = { createdEntityID, this };
-		UIAlignComponent& align = newEntity.AddComponent<UIAlignComponent>(newEntity, params.xDrivers, params.yDrivers, params.xPrimaryValue, 
+		UITransformComponent& align = newEntity.AddComponent<UITransformComponent>(newEntity, params.xDrivers, params.yDrivers, params.xPrimaryValue, 
 			params.yPrimaryValue, params.xSecondaryValue, params.ySecondaryValue, params.useSidesHorizontal, params.useSidesVertical);
 		newEntity.AddComponent<MetadataComponent>(params.name, params.sortingLayer, params.subSorting);
 		Relation& createdEntityRelation = newEntity.AddComponent<Relation>();
@@ -138,9 +141,9 @@ namespace Egl {
 
 			/////// UIAligment && Sprite ///////
 			{
-				auto group = mRegistry.group<UIAlignComponent>(entt::get<SpriteRendererComponent, MetadataComponent>);
+				auto group = mRegistry.group<UITransformComponent>(entt::get<SpriteRendererComponent, MetadataComponent>);
 				for (auto entity : group) {
-					auto [spriteRenderer, align, metadata] = group.get<SpriteRendererComponent, UIAlignComponent, MetadataComponent>(entity);
+					auto [spriteRenderer, align, metadata] = group.get<SpriteRendererComponent, UITransformComponent, MetadataComponent>(entity);
 					uint16_t sorting = metadata.CalculateSorting();
 					if (spriteRenderer.texture == nullptr)
 						Renderer::DrawColorQuad(sorting, align.GetTransform(), spriteRenderer.color);
@@ -151,15 +154,18 @@ namespace Egl {
 
 			/////// Text ///////
 			{
-				auto group = mRegistry.group<TextComponent>(entt::get<UIAlignComponent, MetadataComponent>);
+				auto group = mRegistry.group<TextComponent>(entt::get<UITransformComponent, MetadataComponent>);
 				for (auto entity : group) {
-					auto [textRenderer, align, metadata] = group.get<TextComponent, UIAlignComponent, MetadataComponent>(entity);
+					auto [textRenderer, align, metadata] = group.get<TextComponent, UITransformComponent, MetadataComponent>(entity);
 					uint16_t sorting = metadata.CalculateSorting();
 					const glm::vec2& scale = align.GetWorldScale();
 					textRenderer.renderer.RenderText(sorting, textRenderer.data, align.GetWorldPosition(), scale, camera.camera.GetSize());
 				}
 			}
 
+	#if EAGLE_EDITOR
+			Application::Get().GetEditorLayer()->DrawSelectedEntityOutline(camera);
+	#endif
 			Renderer::EndScene();
 		}
 	}

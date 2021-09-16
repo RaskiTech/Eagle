@@ -136,7 +136,7 @@ namespace Egl {
 		drawedEntity = e;
 
 		if (e.IsValid()) // Check that the entity isn't null
-			ComponentEditorInit<UIAlignComponent>(e, [&](UIAlignComponent& component) {
+			ComponentEditorInit<UITransformComponent>(e, [&](UITransformComponent& component) {
 				float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
 				value1Speed = camSize * (component.GetPrimaryXFromWorldPos(1) - component.GetPrimaryXFromWorldPos(0)) / SLIDER_FRICTION;
 				value2Speed = camSize * (component.GetSecondaryXFromWorldScale(1) - component.GetSecondaryXFromWorldScale(0)) / SLIDER_FRICTION;
@@ -197,7 +197,7 @@ namespace Egl {
 				component.SetLocalScale(scale);
 		});
 
-		DrawComponent<UIAlignComponent>("UI Align", drawedEntity, [&](UIAlignComponent& component) {
+		DrawComponent<UITransformComponent>("UI Align", drawedEntity, [&](UITransformComponent& component) {
 			uint32_t worldTreeNodeUniqueID = UniqueID::GetUniqueFrameID(); // This because the options use ids so the tree could close when changing transform and sides
 
 			ImGuiIO& io = ImGui::GetIO();
@@ -232,8 +232,8 @@ namespace Egl {
 
 			if (transformActive) {
 				ImGui::Text("Position");
-				UIAlignComponent::XDriver xDriver = component.GetXDriver();
-				UIAlignComponent::XDriver newXDriver = (UIAlignComponent::XDriver)
+				UITransformComponent::XDriver xDriver = component.GetXDriver();
+				UITransformComponent::XDriver newXDriver = (UITransformComponent::XDriver)
 					SelectWidget(std::array<const char*, 5>{"ConstLeft", "ConstRight", "RelativeCenter", "RelativeLeft", "RelativeRight"}, (uint8_t)xDriver, 5);
 				if (xDriver != newXDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
@@ -252,8 +252,8 @@ namespace Egl {
 				ImGui::Spacing();
 
 				ImGui::Text("Scale");
-				UIAlignComponent::WidthDriver widthDriver = component.GetWidthDriver();
-				UIAlignComponent::WidthDriver newSelectedWidth = (UIAlignComponent::WidthDriver)
+				UITransformComponent::WidthDriver widthDriver = component.GetWidthDriver();
+				UITransformComponent::WidthDriver newSelectedWidth = (UITransformComponent::WidthDriver)
 					(SelectWidget(std::array<const char*, 3>{"ConstWidth", "RelativeWidth", "AspectWidth"}, (uint8_t)widthDriver >> 4, 3) << 4);
 				if (widthDriver != newSelectedWidth) {
 					const glm::vec2& worldScale = component.GetWorldScale();
@@ -272,8 +272,8 @@ namespace Egl {
 			}
 			else {
 				ImGui::Text("Left side");
-				UIAlignComponent::LeftSideDriver leftDriver = component.GetLeftSideDriver();
-				UIAlignComponent::LeftSideDriver newLeftDriver = (UIAlignComponent::LeftSideDriver)
+				UITransformComponent::LeftSideDriver leftDriver = component.GetLeftSideDriver();
+				UITransformComponent::LeftSideDriver newLeftDriver = (UITransformComponent::LeftSideDriver)
 					SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)leftDriver, 2);
 				if (leftDriver != newLeftDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
@@ -292,8 +292,8 @@ namespace Egl {
 				ImGui::Spacing();
 
 				ImGui::Text("Right side");
-				UIAlignComponent::RightSideDriver rightDriver = component.GetRightSideDriver();
-				UIAlignComponent::RightSideDriver newRightDriver = (UIAlignComponent::RightSideDriver)
+				UITransformComponent::RightSideDriver rightDriver = component.GetRightSideDriver();
+				UITransformComponent::RightSideDriver newRightDriver = (UITransformComponent::RightSideDriver)
 					(SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)rightDriver >> 4, 2) << 4);
 				if (rightDriver != newRightDriver) {
 					const glm::vec2& worldScale = component.GetWorldScale();
@@ -340,8 +340,8 @@ namespace Egl {
 
 			if (transformActive) {
 				ImGui::Text("Position");
-				UIAlignComponent::YDriver yDriver = component.GetYDriver();
-				UIAlignComponent::YDriver newYDriver = (UIAlignComponent::YDriver)SelectWidget(std::array<const char*, 5>{"ConstTop", "ConstBottom", "Center", "RelativeTop", "RelativeBottom"}, (uint8_t)yDriver, 5);
+				UITransformComponent::YDriver yDriver = component.GetYDriver();
+				UITransformComponent::YDriver newYDriver = (UITransformComponent::YDriver)SelectWidget(std::array<const char*, 5>{"ConstTop", "ConstBottom", "Center", "RelativeTop", "RelativeBottom"}, (uint8_t)yDriver, 5);
 				if (yDriver != newYDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetYDriver(newYDriver);
@@ -358,8 +358,8 @@ namespace Egl {
 				ImGui::Spacing();
 
 				ImGui::Text("Scale");
-				UIAlignComponent::HeightDriver heightDriver = component.GetHeightDriver();
-				UIAlignComponent::HeightDriver newHeightDriver = (UIAlignComponent::HeightDriver)(SelectWidget(std::array<const char*, 3>{"ConstHeight", "RelativeHeight", "AspectHeight"}, (uint8_t)heightDriver >> 4, 3) << 4);
+				UITransformComponent::HeightDriver heightDriver = component.GetHeightDriver();
+				UITransformComponent::HeightDriver newHeightDriver = (UITransformComponent::HeightDriver)(SelectWidget(std::array<const char*, 3>{"ConstHeight", "RelativeHeight", "AspectHeight"}, (uint8_t)heightDriver >> 4, 3) << 4);
 				if (heightDriver != newHeightDriver) {
 					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetHeightDriver(newHeightDriver);
@@ -376,8 +376,8 @@ namespace Egl {
 			}
 			else {
 				ImGui::Text("Top");
-				UIAlignComponent::TopDriver topDriver = component.GetTopDriver();
-				UIAlignComponent::TopDriver newTopDriver = (UIAlignComponent::TopDriver)SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)topDriver, 2);
+				UITransformComponent::TopDriver topDriver = component.GetTopDriver();
+				UITransformComponent::TopDriver newTopDriver = (UITransformComponent::TopDriver)SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)topDriver, 2);
 				if (topDriver != newTopDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetTopDriver(newTopDriver);
@@ -395,8 +395,8 @@ namespace Egl {
 				ImGui::Spacing();
 
 				ImGui::Text("Bottom");
-				UIAlignComponent::BottomDriver bottomDriver = component.GetBottomDriver();
-				UIAlignComponent::BottomDriver newBottomDriver = (UIAlignComponent::BottomDriver)(SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)bottomDriver >> 4, 2) << 4);
+				UITransformComponent::BottomDriver bottomDriver = component.GetBottomDriver();
+				UITransformComponent::BottomDriver newBottomDriver = (UITransformComponent::BottomDriver)(SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)bottomDriver >> 4, 2) << 4);
 				if (bottomDriver != newBottomDriver) {
 					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetBottomDriver(newBottomDriver);

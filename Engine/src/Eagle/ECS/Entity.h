@@ -34,7 +34,7 @@ namespace Egl {
 			return mScene->mRegistry.remove<T>(mEntity);
 		}
 		template<> void RemoveComponent<TransformComponent>() const = delete;
-		template<> void RemoveComponent<UIAlignComponent>() const = delete;
+		template<> void RemoveComponent<UITransformComponent>() const = delete;
 		template<> void RemoveComponent<MetadataComponent>() const = delete;
 		template<> void RemoveComponent<Relation>() const = delete;
 

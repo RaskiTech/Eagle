@@ -1,6 +1,7 @@
 #pragma once
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include "Eagle/Components/SceneCamera.h"
 #include "Eagle/Rendering/Texture.h"
 #include "Eagle/ECS/Script.h"
 #include "Eagle/Components/SceneCamera.h"
@@ -20,7 +21,7 @@ namespace Egl {
 		CameraComponent(const glm::vec4& backgroundColor, bool fixedAspectRatio = false) : backgroundColor(backgroundColor), fixedAspectRatio(fixedAspectRatio) {}
 	};
 
-	struct UIAlignComponent {
+	struct UITransformComponent {
 	#pragma region drivers
 		using Driver = uint8_t;
 		enum class LeftSideDriver {
@@ -66,12 +67,12 @@ namespace Egl {
 		};
 #pragma endregion
 
-		UIAlignComponent(Entity thisEntity) : thisEntity(thisEntity) {};
-		UIAlignComponent(Entity thisEntity, UIAlignComponent::XDriver xDriver, float xValue, UIAlignComponent::YDriver yDriver, float yValue, 
-			UIAlignComponent::WidthDriver widthDriver, float widthValue, UIAlignComponent::HeightDriver heightDriver, float heightValue)
+		UITransformComponent(Entity thisEntity) : thisEntity(thisEntity) {};
+		UITransformComponent(Entity thisEntity, UITransformComponent::XDriver xDriver, float xValue, UITransformComponent::YDriver yDriver, float yValue, 
+			UITransformComponent::WidthDriver widthDriver, float widthValue, UITransformComponent::HeightDriver heightDriver, float heightValue)
 			: thisEntity(thisEntity), xBitfield((Driver)xDriver | (Driver)widthDriver), yBitfield((Driver)yDriver | (Driver)heightDriver),
 			  xPrimaryValue(xValue), yPrimaryValue(yValue), xSecondaryValue(widthValue), ySecondaryValue(heightValue) {}
-		UIAlignComponent(Entity thisEntity, Driver xDrivers, Driver yDrivers, float xPrimaryValue, float yPrimaryValue, float xSecondaryValue, float ySecondaryValue, bool useSidesHorizontal, bool useSidesVertical)
+		UITransformComponent(Entity thisEntity, Driver xDrivers, Driver yDrivers, float xPrimaryValue, float yPrimaryValue, float xSecondaryValue, float ySecondaryValue, bool useSidesHorizontal, bool useSidesVertical)
 			: thisEntity(thisEntity), xBitfield(xDrivers), yBitfield(yDrivers), xPrimaryValue(xPrimaryValue), yPrimaryValue(yPrimaryValue), xSecondaryValue(xSecondaryValue), ySecondaryValue(ySecondaryValue),
 			useSidesHorizontal(useSidesHorizontal), useSidesVertical(useSidesVertical) {}
 
@@ -210,7 +211,7 @@ namespace Egl {
 		void SetWorldPosFlagsFalse(const Relation& thisRel);
 		void SetWorldRotFlagsFalse(const Relation& thisRel);
 		void SetWorldScaleFlagsFalse(const Relation& thisRel);
-		friend struct UIAlignComponent;
+		friend struct UITransformComponent;
 	};
 
 	struct EntityParams {
@@ -229,10 +230,10 @@ namespace Egl {
 	struct UIEntityParams {
 
 		bool useSidesHorizontal = false, useSidesVertical = false;
-		UIAlignComponent::Driver xDrivers = (UIAlignComponent::Driver)UIAlignComponent::XDriver::AlignCenter 
-			| (UIAlignComponent::Driver)UIAlignComponent::WidthDriver::RelativeWidth;
-		UIAlignComponent::Driver yDrivers = (UIAlignComponent::Driver)UIAlignComponent::YDriver::AlignCenter 
-			| (UIAlignComponent::Driver)UIAlignComponent::HeightDriver::RelativeHeight;
+		UITransformComponent::Driver xDrivers = (UITransformComponent::Driver)UITransformComponent::XDriver::AlignCenter 
+			| (UITransformComponent::Driver)UITransformComponent::WidthDriver::RelativeWidth;
+		UITransformComponent::Driver yDrivers = (UITransformComponent::Driver)UITransformComponent::YDriver::AlignCenter 
+			| (UITransformComponent::Driver)UITransformComponent::HeightDriver::RelativeHeight;
 		float xPrimaryValue = 0, yPrimaryValue = 0, xSecondaryValue = 0.8f, ySecondaryValue = 0.5f;
 
 		std::string name = "New entity";
@@ -240,7 +241,7 @@ namespace Egl {
 		uint8_t subSorting = 0;
 
 		UIEntityParams(const std::string& name = "New entity", int8_t sortingLayer = 0, uint8_t subSorting = 0) : name(name), sortingLayer(sortingLayer), subSorting(subSorting) {}
-		UIEntityParams(const std::string& name, UIAlignComponent::Driver xDrivers, UIAlignComponent::Driver yDrivers, float xPrimaryValue, float yPrimaryValue, float xSecondaryValue, float ySecondaryValue, bool useSidesHorizontal, bool useSidesVertical, int8_t sortingLayer = 0, uint8_t subSorting = 0)
+		UIEntityParams(const std::string& name, UITransformComponent::Driver xDrivers, UITransformComponent::Driver yDrivers, float xPrimaryValue, float yPrimaryValue, float xSecondaryValue, float ySecondaryValue, bool useSidesHorizontal, bool useSidesVertical, int8_t sortingLayer = 0, uint8_t subSorting = 0)
 			: name(name), xDrivers(xDrivers), yDrivers(yDrivers), xPrimaryValue(xPrimaryValue), yPrimaryValue(yPrimaryValue), xSecondaryValue(xSecondaryValue), 
 			ySecondaryValue(ySecondaryValue), useSidesHorizontal(useSidesHorizontal), useSidesVertical(useSidesVertical), sortingLayer(sortingLayer), subSorting(subSorting) {};
 	};

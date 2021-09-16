@@ -2,11 +2,11 @@
 #include <glm/glm.hpp>
 #include "Core.h"
 #include "Window.h"
+#include "Eagle/Core/GameLayer.h"
+#include "Eagle/Debug/ImGui/ImGuiLayer.h"
 #include "Eagle/Core/Events/Event.h"
 #include "Eagle/Core/Events/ApplicationEvent.h"
 #include "Eagle/Core/Events/Event.h"
-#include "Eagle/Debug/ImGui/ImGuiLayer.h"
-#include "Eagle/Core/GameLayer.h"
 
 namespace Egl {
 
@@ -21,6 +21,7 @@ namespace Egl {
 
 		ImGuiLayer* GetImGuiLayer() const { return mImGuiLayer; }
 		GameLayer* GetGameLayer() const { return mGameLayer; }
+		EditorLayer* GetEditorLayer() const { return mEditorLayer; }
 		inline Window& GetWindow() const { return *mWindow; }
 
 		const glm::vec2& GetSceneWindowSize() const { return mSceneWindowSize; }

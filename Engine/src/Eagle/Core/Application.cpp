@@ -11,7 +11,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// Added serializing
+// Outline on the selected entity
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
@@ -50,7 +50,6 @@ namespace Egl {
 
 		mEditorLayer = new EditorLayer();
 		mEditorLayer->OnAttach();
-#else
 #endif
 	}
 
@@ -87,6 +86,7 @@ namespace Egl {
 					EAGLE_PROFILE_SCOPE("Updating layers");
 
 	#if EAGLE_EDITOR
+
 					mEditorLayer->OnUpdate();
 					mGameLayer->OnUpdate(false);
 
@@ -94,8 +94,8 @@ namespace Egl {
 						EAGLE_PROFILE_SCOPE("ImGui update");
 						mImGuiLayer->Begin();
 
-						mEditorLayer->OnImGuiRender();
 						mGameLayer->OnImGuiRender();
+						mEditorLayer->OnImGuiRender();
 
 						mImGuiLayer->End();
 					}

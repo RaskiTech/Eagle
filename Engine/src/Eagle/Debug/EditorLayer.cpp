@@ -2,6 +2,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <Dependencies/ImGui.h>
+#include <Dependencies/Entt.h>
 #include "EditorLayer.h"
 #include "Eagle/ECS/Components.h"
 #include "Eagle/ECS/Scene.h"
@@ -28,12 +29,40 @@ namespace Egl {
 		EAGLE_PROFILE_FUNCTION();
 	}
 
-	// This function runs just before GameLayer::Update()
 	void EditorLayer::OnUpdate() {
-		EAGLE_PROFILE_FUNCTION();
 		Renderer::GetStats().ResetStats();
 	}
-	
+
+	void EditorLayer::DrawSelectedEntityOutline(const CameraComponent& camera) {
+		const glm::vec4 outlineColor = { 1.0f, 1.0f, 0.0f, 1.0f }; // Violet1
+		const float width = 5 // <-- Width multiplier
+			/ Application::Get().GetSceneWindowSize().x * camera.camera.GetSize() * camera.camera.GetAspectRatio();
+
+		entt::entity e = mHierarchyPanel.GetSelectedEntity();
+		glm::vec2 pos;
+		glm::vec2 radius;
+
+		if (e == entt::null)
+			return;
+
+		if (mHierarchyPanel.GetScene()->mRegistry.has<TransformComponent>(e)) {
+			TransformComponent& t = mHierarchyPanel.GetScene()->mRegistry.get<TransformComponent>(e);
+			pos = t.GetPosition();
+			radius = { t.GetScale().x / 2, t.GetScale().y / 2 };
+		}
+		else {
+			UITransformComponent& t = mHierarchyPanel.GetScene()->mRegistry.get<UITransformComponent>(e);
+			pos = t.GetWorldPosition();
+			radius = { t.GetWorldScale().x / 2, t.GetWorldScale().y / 2 };
+		}
+
+		
+
+		Renderer::DrawColorQuad(0, glm::vec2{ pos.x + radius.x + width / 2, pos.y }, { width, radius.y * 2 + width * 2 }, outlineColor);
+		Renderer::DrawColorQuad(0, glm::vec2{ pos.x - radius.x - width / 2, pos.y }, { width, radius.y * 2 + width * 2 }, outlineColor);
+		Renderer::DrawColorQuad(0, glm::vec2{ pos.x, pos.y + radius.y + width / 2 }, { radius.x * 2 + width * 2, width }, outlineColor);
+		Renderer::DrawColorQuad(0, glm::vec2{ pos.x, pos.y - radius.y - width / 2 }, { radius.x * 2 + width * 2, width }, outlineColor);
+	}
 
 	void EditorLayer::OnImGuiRender() {
 

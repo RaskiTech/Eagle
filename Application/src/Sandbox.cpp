@@ -36,12 +36,12 @@ public:
 class ExampleScene : public Scene {
 	void example_UI() {
 		Entity canvas = AddCanvas();
-		UIEntityParams topCornerParams = UIEntityParams("Top corner square", (UIAlignComponent::Driver)UIAlignComponent::XDriver::ConstLeft 
-			| (UIAlignComponent::Driver)UIAlignComponent::WidthDriver::RelativeWidth, (UIAlignComponent::Driver)UIAlignComponent::YDriver::ConstTop 
-			| (UIAlignComponent::Driver)UIAlignComponent::HeightDriver::RelativeHeight, 25, 25, 0.15f, 0.1f, false, false);
-		UIEntityParams middleSquare = UIEntityParams("middleSquare", (UIAlignComponent::Driver)UIAlignComponent::LeftSideDriver::ConstOffset 
-			| (UIAlignComponent::Driver)UIAlignComponent::RightSideDriver::ConstOffset, (UIAlignComponent::Driver)UIAlignComponent::TopDriver::ConstOffset 
-			| (UIAlignComponent::Driver)UIAlignComponent::BottomDriver::ConstOffset, 25, 15, 25, 15, true, true);
+		UIEntityParams topCornerParams = UIEntityParams("Top corner square", (UITransformComponent::Driver)UITransformComponent::XDriver::ConstLeft 
+			| (UITransformComponent::Driver)UITransformComponent::WidthDriver::RelativeWidth, (UITransformComponent::Driver)UITransformComponent::YDriver::ConstTop 
+			| (UITransformComponent::Driver)UITransformComponent::HeightDriver::RelativeHeight, 25, 25, 0.15f, 0.1f, false, false);
+		UIEntityParams middleSquare = UIEntityParams("middleSquare", (UITransformComponent::Driver)UITransformComponent::LeftSideDriver::ConstOffset 
+			| (UITransformComponent::Driver)UITransformComponent::RightSideDriver::ConstOffset, (UITransformComponent::Driver)UITransformComponent::TopDriver::ConstOffset 
+			| (UITransformComponent::Driver)UITransformComponent::BottomDriver::ConstOffset, 25, 15, 25, 15, true, true);
 
 		Entity exampleSquare = AddUIEntity(topCornerParams, canvas);
 		exampleSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.3f, 0.3f, 0.3f, 1 });

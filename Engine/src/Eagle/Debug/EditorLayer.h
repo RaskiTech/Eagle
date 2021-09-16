@@ -1,8 +1,7 @@
 #pragma once
-
 #include "Eagle/Core/Application.h"
 #include "Eagle/Core/Events/Event.h"
-
+#include "Eagle/ECS/Components.h"
 #include "Eagle/ECS/Scene.h"
 #include "Eagle/Rendering/Framebuffer.h"
 #include "Panels/HierarchyPanel.h"
@@ -15,13 +14,14 @@ namespace Egl {
 		EditorLayer();
 		~EditorLayer() = default;
 
-		virtual void OnAttach();
-		virtual void OnDetach();
+		void OnAttach();
+		void OnDetach();
 
-		virtual void OnUpdate();
+		void OnUpdate();
+		void DrawSelectedEntityOutline(const CameraComponent& camera);
 
-		virtual void OnEvent(Event& event);
-		virtual void OnImGuiRender();
+		void OnEvent(Event& event);
+		void OnImGuiRender();
 
 	private:
 		bool mScenePanelFocused = false, mScenePanelHovered = false;

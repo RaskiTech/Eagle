@@ -1,6 +1,7 @@
 #include <EaglePCH.h>
 #include <EagleApplicationStartup.h>
 #include "Eagle/ECS/Components.h"
+#include "Eagle/Debug/EditorLayer.h"
 #include "GameLayer.h"
 #include "Input.h"
 #include "Eagle/Rendering/RenderCommand.h"
@@ -114,7 +115,7 @@ namespace Egl {
 					listenersUnderMouse.push_back(comp);
 			}
 			else {
-				auto& tComp = entity.GetComponent<UIAlignComponent>();
+				auto& tComp = entity.GetComponent<UITransformComponent>();
 				//LOG(glm::abs(mouseX - objX), objSizeX, glm::abs(mouseY-objY), objSizeY);
 				if (IS_UNDER_MOUSE(mousePos.x, mousePos.y, tComp.GetWorldPosition().x, tComp.GetWorldPosition().y, tComp.GetWorldScale().x/2, tComp.GetWorldScale().y/2))
 					listenersUnderMouse.push_back(comp);
