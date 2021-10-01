@@ -52,6 +52,9 @@
     <Filter Include="vendor">
       <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vendor\AudioFile">
+      <UniqueIdentifier>{74C54D37-60BE-6C89-89F0-510E75484C95}</UniqueIdentifier>
+    </Filter>
     <Filter Include="vendor\glm">
       <UniqueIdentifier>{829FC5A8-6E57-07F6-D75E-E051C335A2E6}</UniqueIdentifier>
     </Filter>
@@ -102,13 +105,13 @@
     <ClInclude Include="src\Eagle\Components\SceneCamera.h">
       <Filter>src\Eagle\Components</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eagle\Core\AppData.h">
+      <Filter>src\Eagle\Core</Filter>
+    </ClInclude>
     <ClInclude Include="src\Eagle\Core\Application.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Core\Audio.h">
-      <Filter>src\Eagle\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Eagle\Core\AudioSample.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Core\Core.h">
@@ -248,6 +251,9 @@
     </ClInclude>
     <ClInclude Include="src\Platforms\Windows\WindowsWindow.h">
       <Filter>src\Platforms\Windows</Filter>
+    </ClInclude>
+    <ClInclude Include="vendor\AudioFile\AudioFile.h">
+      <Filter>vendor\AudioFile</Filter>
     </ClInclude>
     <ClInclude Include="vendor\glm\glm\common.hpp">
       <Filter>vendor\glm\glm</Filter>
@@ -1491,9 +1497,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Eagle\Core\AppData.h">
-      <Filter>src\Eagle\Core</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\ParticleComponents\ParticleData.cpp">
@@ -1511,7 +1514,13 @@
     <ClCompile Include="src\Eagle\Components\SceneCamera.cpp">
       <Filter>src\Eagle\Components</Filter>
     </ClCompile>
+    <ClCompile Include="src\Eagle\Core\AppData.cpp">
+      <Filter>src\Eagle\Core</Filter>
+    </ClCompile>
     <ClCompile Include="src\Eagle\Core\Application.cpp">
+      <Filter>src\Eagle\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\Core\Audio.cpp">
       <Filter>src\Eagle\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\Core\EntryPoint.cpp">
@@ -1601,9 +1610,6 @@
     <ClCompile Include="src\Platforms\OpenGL\OpenGLVertexArray.cpp">
       <Filter>src\Platforms\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platforms\Windows\WindowsAudio.cpp">
-      <Filter>src\Platforms\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\Platforms\Windows\WindowsInput.cpp">
       <Filter>src\Platforms\Windows</Filter>
     </ClCompile>
@@ -1613,6 +1619,5 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Eagle\Core\AppData.cpp" />
   </ItemGroup>
 </Project>

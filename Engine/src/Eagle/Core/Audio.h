@@ -1,9 +1,37 @@
 #pragma once
-#include <string>
+#include <AudioFile.h>
 #include "Core.h"
-#include "AudioSample.h"
+#define MAX_PLAYING_CLIP_COUNT 16
 
 namespace Egl {
+    struct AudioClip {
+        std::atomic<bool> playing = true;
+        std::atomic<float> volume = 0.5f;
+        std::atomic<bool> loop = false;
+        std::atomic<int> samplePosition = 0;
+
+        // Note: This is loaded and NEVER modified again
+        AudioFile<float> audio;
+
+        AudioClip(const std::string& audioFilePath);
+    private:
+        int sampleRateStep; // Sync up different sample rates;
+    };
+
+    class Audio {
+    public:
+        static void AddClip(AudioClip* clip);
+    protected:
+        static void Init();
+        static void Close();
+        friend class Application;
+
+    private:
+        static void* stream;
+        static std::array<std::atomic<AudioClip*>, MAX_PLAYING_CLIP_COUNT> playingClips;
+    };
+
+
     namespace Notes {
         using Note = uint32_t;
         enum : Note {
@@ -69,31 +97,4 @@ namespace Egl {
             B_7 = 3951
         };
     }
-    
-    // Example of what the API could look like. Use portAudio
-    //
-    // AudioSample audio = Audio::LoadWav(path);
-    // audio.Play();
-    // if (audio.isLooping)
-    //     audio.Stop();
-
-
-    class Audio {
-    public:
-        static void PlayWav(wchar_t* path);
-        static void PlayLoopingWav(wchar_t* path);
-    //  static DWORD PlayMidi(HWND hWndNotify, LPCWSTR lpszMIDIFileName);
-    //
-    //  void    SetActiveMP3(Ref<AudioSample> sample);
-    //  void   PlayActiveMP3();
-    //  void   PlayActiveMP3ToEnd();
-    //  void    SetActiveMP3ToStart();
-    //  void   PlayActiveMPLoop3();
-    //  void  PauseActiveMP3();
-    //  void ResumeActiveMP3();
-    //  void   StopActiveMP3();
-    //  void  CloseActiveMP3();
-    //private:
-    //    static Ref<AudioSample> activeMP3;
-    };
 }

@@ -18,6 +18,8 @@ workspace "Eagle"
 	Includes["entt"] = "Engine/vendor/entt/include"
 	Includes["FreeType"] = "Engine/vendor/FreeType/include"
 	Includes["LogR"] = "Engine/vendor/LogR"
+	Includes["PortAudio"] = "Engine/vendor/PortAudio/include"
+	Includes["AudioFile"] = "Engine/vendor/AudioFile"
 
 	outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -46,6 +48,7 @@ project "Engine"
 		"%{prj.name}/vendor/stb_image/**.h",
 		"%{prj.name}/vendor/glm/glm/**.hpp",
 		"%{prj.name}/vendor/glm/glm/**.inl",
+		"%{prj.name}/vendor/AudioFile/AudioFile.h"
 	}
 
 	includedirs {
@@ -57,11 +60,14 @@ project "Engine"
 		"%{Includes.ImGui}",
 		"%{Includes.entt}",
 		"%{Includes.FreeType}",
-		"%{Includes.LogR}"
+		"%{Includes.LogR}",
+		"%{Includes.PortAudio}",
+		"%{Includes.AudioFile}"
 	}
 
 	links {
 		"GLFW",
+		"PortAudio",
 		"Glad",
 		"ImGui",
 		"freetype.lib",
@@ -116,6 +122,7 @@ project "Application"
 		"%{Includes.entt}",
 		"%{Includes.ImGui}",
 		"%{Includes.LogR}",
+		"%{Includes.AudioFile}",
 		"Engine/src"
 	}
 
@@ -144,3 +151,4 @@ group "Dependencies"
 	include "Engine/vendor/GLFW"
 	include "Engine/vendor/Glad"
 	include "Engine/vendor/ImGui"
+	include "Engine/vendor/PortAudio"

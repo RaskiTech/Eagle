@@ -80,7 +80,7 @@
       <PrecompiledHeaderFile>EaglePCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>EAGLE_PLATFORM_WINDOWS;EAGLE_RENDERER_OPENGL;GLFW_INCLUDE_NONE;EAGLE_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\GLFW\include;vendor\Glad\include;vendor\glm;vendor\stb_image;vendor\ImGui;vendor\entt\include;vendor\FreeType\include;vendor\LogR;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\GLFW\include;vendor\Glad\include;vendor\glm;vendor\stb_image;vendor\ImGui;vendor\entt\include;vendor\FreeType\include;vendor\LogR;vendor\PortAudio\include;vendor\AudioFile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -103,7 +103,7 @@
       <PrecompiledHeaderFile>EaglePCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>EAGLE_PLATFORM_WINDOWS;EAGLE_RENDERER_OPENGL;GLFW_INCLUDE_NONE;EAGLE_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\GLFW\include;vendor\Glad\include;vendor\glm;vendor\stb_image;vendor\ImGui;vendor\entt\include;vendor\FreeType\include;vendor\LogR;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\GLFW\include;vendor\Glad\include;vendor\glm;vendor\stb_image;vendor\ImGui;vendor\entt\include;vendor\FreeType\include;vendor\LogR;vendor\PortAudio\include;vendor\AudioFile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -130,7 +130,7 @@
       <PrecompiledHeaderFile>EaglePCH.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>EAGLE_PLATFORM_WINDOWS;EAGLE_RENDERER_OPENGL;GLFW_INCLUDE_NONE;EAGLE_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor\GLFW\include;vendor\Glad\include;vendor\glm;vendor\stb_image;vendor\ImGui;vendor\entt\include;vendor\FreeType\include;vendor\LogR;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor\GLFW\include;vendor\Glad\include;vendor\glm;vendor\stb_image;vendor\ImGui;vendor\entt\include;vendor\FreeType\include;vendor\LogR;vendor\PortAudio\include;vendor\AudioFile;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -162,9 +162,9 @@
     <ClInclude Include="src\Eagle\Components\ParticleComponents\ParticleSystem.h" />
     <ClInclude Include="src\Eagle\Components\ParticleComponents\ParticleUpdater.h" />
     <ClInclude Include="src\Eagle\Components\SceneCamera.h" />
+    <ClInclude Include="src\Eagle\Core\AppData.h" />
     <ClInclude Include="src\Eagle\Core\Application.h" />
     <ClInclude Include="src\Eagle\Core\Audio.h" />
-    <ClInclude Include="src\Eagle\Core\AudioSample.h" />
     <ClInclude Include="src\Eagle\Core\Core.h" />
     <ClInclude Include="src\Eagle\Core\DoesExist.h" />
     <ClInclude Include="src\Eagle\Core\Events\ApplicationEvent.h" />
@@ -176,7 +176,6 @@
     <ClInclude Include="src\Eagle\Core\Keycodes.h" />
     <ClInclude Include="src\Eagle\Core\Log.h" />
     <ClInclude Include="src\Eagle\Core\Random.h" />
-    <ClInclude Include="src\Eagle\Core\AppData.h" />
     <ClInclude Include="src\Eagle\Core\Time.h" />
     <ClInclude Include="src\Eagle\Core\UniqueID.h" />
     <ClInclude Include="src\Eagle\Core\Window.h" />
@@ -212,6 +211,7 @@
     <ClInclude Include="src\Platforms\OpenGL\OpenGLTexture.h" />
     <ClInclude Include="src\Platforms\OpenGL\OpenGLVertexArray.h" />
     <ClInclude Include="src\Platforms\Windows\WindowsWindow.h" />
+    <ClInclude Include="vendor\AudioFile\AudioFile.h" />
     <ClInclude Include="vendor\glm\glm\common.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_features.hpp" />
     <ClInclude Include="vendor\glm\glm\detail\_fixes.hpp" />
@@ -635,6 +635,7 @@
     <ClCompile Include="src\Eagle\Components\SceneCamera.cpp" />
     <ClCompile Include="src\Eagle\Core\AppData.cpp" />
     <ClCompile Include="src\Eagle\Core\Application.cpp" />
+    <ClCompile Include="src\Eagle\Core\Audio.cpp" />
     <ClCompile Include="src\Eagle\Core\EntryPoint.cpp" />
     <ClCompile Include="src\Eagle\Core\GameLayer.cpp" />
     <ClCompile Include="src\Eagle\Core\Log.cpp" />
@@ -666,7 +667,6 @@
     <ClCompile Include="src\Platforms\OpenGL\OpenGLShader.cpp" />
     <ClCompile Include="src\Platforms\OpenGL\OpenGLTexture.cpp" />
     <ClCompile Include="src\Platforms\OpenGL\OpenGLVertexArray.cpp" />
-    <ClCompile Include="src\Platforms\Windows\WindowsAudio.cpp" />
     <ClCompile Include="src\Platforms\Windows\WindowsInput.cpp" />
     <ClCompile Include="src\Platforms\Windows\WindowsWindow.cpp" />
     <ClCompile Include="vendor\stb_image\stb_image.cpp" />
@@ -674,6 +674,9 @@
   <ItemGroup>
     <ProjectReference Include="vendor\GLFW\GLFW.vcxproj">
       <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="vendor\PortAudio\PortAudio.vcxproj">
+      <Project>{DCB76A24-4822-1F9B-9160-D040FD09FDEF}</Project>
     </ProjectReference>
     <ProjectReference Include="vendor\Glad\Glad.vcxproj">
       <Project>{BDD6857C-A90D-870D-52FA-6C103E10030F}</Project>

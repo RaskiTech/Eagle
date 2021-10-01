@@ -4,9 +4,14 @@
 /bin-int/
 /Engine/vendor/Glad/bin/
 /Engine/vendor/Glad/bin-int/
+/Engine/vendor/PortAudio/bin/
+/Engine/vendor/PortAudio/bin-int/
 /Build/Engine.exe
 
 # Files
 *.user
+*.sln
 *.vcproj
 *.vcproj.filters
+*.vcxproj
+*.vcxproj.filters

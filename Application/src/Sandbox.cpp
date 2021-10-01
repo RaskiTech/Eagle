@@ -117,6 +117,9 @@ class ExampleScene : public Scene {
 		example_UI();
 
 		camera.AddComponent<NativeScriptComponent>().Bind<example_CameraController>();
+
+		AudioClip* clip = new AudioClip("Assets/Ring09.wav");
+		Audio::AddClip(clip);
 	}
 	void SceneEnd() {
 

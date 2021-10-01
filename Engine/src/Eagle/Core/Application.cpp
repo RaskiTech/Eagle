@@ -8,10 +8,11 @@
 #include "Eagle/Core/AppData.h"
 #include "Eagle/Debug/EditorLayer.h"
 #include "Eagle/Core/Time.h"
+#include "Eagle/Core/Audio.h"
 #include "UniqueID.h"
 
 // This Commit:
-// Outline on the selected entity
+// First steps to audio
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
@@ -36,6 +37,7 @@ namespace Egl {
 			Renderer::Init();
 			Random::Init();
 			SaveData::Init();
+			Audio::Init();
 		}
 
 		// On editor this will be overwritten on the next frame
@@ -54,6 +56,7 @@ namespace Egl {
 	}
 
 	Application::~Application() {
+		Audio::Close();
 		Renderer::Shutdown();
 	}
 

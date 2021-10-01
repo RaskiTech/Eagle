@@ -7,7 +7,6 @@
 
 namespace Egl {
 
-	//// TransformComponent ////
 	#pragma region TransformComponent
 	void TransformComponent::SetPosition(const glm::vec2& position) {
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
@@ -185,8 +184,7 @@ namespace Egl {
 	}
 #pragma endregion
 
-	//// UIAlignComponent ////
-	#pragma region UIAlignComponent
+	#pragma region UITransformComponent
 
 	// For better ScreenToWorldPos, use Scenes function. These are optimized just for UIAlign
 	static float ScreenToWorldPosX(float coor, CameraComponent& camCam, TransformComponent& camTrans) {
@@ -646,4 +644,14 @@ namespace Egl {
 		}
 	}
 	#pragma endregion
+
+	//void AudioSource::ChangeClip(const std::string& path) {
+	//
+	//}
+	AudioSource::AudioSource(const std::string& loadPath) {
+		clip = new AudioClip(loadPath);
+	}
+	AudioSource::~AudioSource() {
+		delete clip;
+	}
 }

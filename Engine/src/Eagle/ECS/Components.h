@@ -10,6 +10,7 @@
 #include "Eagle/Core/Events/Event.h"
 #include "Eagle/ECS/Entity.h"
 #include "Eagle/Rendering/Text/TextRenderer.h"
+#include "Eagle/Core/Audio.h"
 
 namespace Egl {
 	struct CameraComponent {
@@ -332,5 +333,13 @@ namespace Egl {
 		#pragma warning( pop )
 	};
 
+	struct AudioSource {
+		AudioClip* clip;
 
+		//void ChangeClip(const std::string& path);
+		//void ChangeClip(Ref<AudioClip> clip) { this->clip = clip; };
+		//AudioSource(Ref<AudioClip> clip) { ChangeClip(clip); };
+		AudioSource(const std::string& loadPath);
+		~AudioSource();
+	};
 }
