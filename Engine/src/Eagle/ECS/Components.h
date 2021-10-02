@@ -334,12 +334,12 @@ namespace Egl {
 	};
 
 	struct AudioSource {
-		AudioClip* clip;
+		void Play(bool play);
 
-		//void ChangeClip(const std::string& path);
-		//void ChangeClip(Ref<AudioClip> clip) { this->clip = clip; };
-		//AudioSource(Ref<AudioClip> clip) { ChangeClip(clip); };
-		AudioSource(const std::string& loadPath);
+		AudioSource(AudioClip* clip);
 		~AudioSource();
+
+	private:
+		AudioSample* sample;
 	};
 }

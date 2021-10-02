@@ -648,10 +648,16 @@ namespace Egl {
 	//void AudioSource::ChangeClip(const std::string& path) {
 	//
 	//}
-	AudioSource::AudioSource(const std::string& loadPath) {
-		clip = new AudioClip(loadPath);
+	AudioSource::AudioSource(AudioClip* clip) {
+		sample = new AudioSample(clip);
+		std::atomic<bool>& samp = sample->loop;
 	}
 	AudioSource::~AudioSource() {
-		delete clip;
+		delete sample;
+	}
+	void AudioSource::Play(bool play) {
+		sample->playing = play;
+		if (play)
+			Audio::AddSample(sample);
 	}
 }

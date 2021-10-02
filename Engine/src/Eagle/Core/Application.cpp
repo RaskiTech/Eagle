@@ -12,7 +12,7 @@
 #include "UniqueID.h"
 
 // This Commit:
-// First steps to audio
+// Multiple audio files can be played at the same time
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;

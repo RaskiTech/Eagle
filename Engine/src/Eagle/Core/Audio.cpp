@@ -8,21 +8,21 @@
 
 namespace Egl {
     void* Audio::stream;
-    std::array<std::atomic<AudioClip*>, MAX_PLAYING_CLIP_COUNT> Audio::playingClips;
+    std::array<std::atomic<AudioSample*>, MAX_PLAYING_CLIP_COUNT> Audio::playingSamples;
 
     AudioClip::AudioClip(const std::string& audioFilePath) {
-        audio.shouldLogErrorsToConsole(false);
-        bool loaded = audio.load(audioFilePath);
+        data.shouldLogErrorsToConsole(false);
+        bool loaded = data.load(audioFilePath);
         if (!loaded)
             LOG_ENG_ERROR("Couldn't load the file at", audioFilePath);
     }
 
-    void Audio::AddClip(AudioClip* clip) {
+    void Audio::AddSample(AudioSample* clip) {
         for (int i = 0; i < MAX_PLAYING_CLIP_COUNT; i++) {
-            if (playingClips[i] != nullptr)
+            if (playingSamples[i] != nullptr)
                 continue;
 
-            playingClips[i] = clip;
+            playingSamples[i] = clip;
 
             /*
             LOG_ENG("Info about the clip:");
@@ -46,45 +46,68 @@ namespace Egl {
     }
 
     static std::array<int, MAX_PLAYING_CLIP_COUNT> sampleRateRemainder;
+    template<bool SetDontAdd>
+    static inline void PlayClipToBuffer(const int clipIndex, AudioSamplePrecision* out, const unsigned long framesPerBuffer,
+        std::atomic<AudioSample*>& clip) {
+        //AudioClip* clipPtr = clip;
+        
+        if (!(*clip).playing) {
+            clip = nullptr;
+            return;
+        }
+
+
+        for (int i = 0; i < framesPerBuffer; i++) {
+            auto& data = (*(*clip).clip).data;
+            if constexpr (SetDontAdd) {
+                *out++ = (*clip).volume * data.samples[0][(*clip).samplePosition];
+                *out++ = (*clip).volume * data.samples[data.getNumChannels() > 1 ? 1 : 0][(*clip).samplePosition];
+            }
+            else {
+                *out++ += (*clip).volume * data.samples[0][(*clip).samplePosition];
+                *out++ += (*clip).volume * data.samples[data.getNumChannels() > 1 ? 1 : 0][(*clip).samplePosition];
+            }
+
+            // Sync different sample rates
+            sampleRateRemainder[clipIndex] += data.getSampleRate();
+            while (sampleRateRemainder[clipIndex] > SAMPLE_RATE - 1) {
+                sampleRateRemainder[clipIndex] -= SAMPLE_RATE;
+                (*clip).samplePosition++;
+            }
+
+            if ((*clip).samplePosition >= data.getNumSamplesPerChannel()) {
+                (*clip).playing = false;
+                clip = nullptr;
+                return;
+            }
+        }
+    }
     static int paCallback(const void* inputBuffer, void* outputBuffer, unsigned long framesPerBuffer,
         const PaStreamCallbackTimeInfo* timeInfo, PaStreamCallbackFlags statusFlags, void* userData)
     {
-        float* out = (float*)outputBuffer;
-        auto& playingClips = *(std::array<std::atomic<AudioClip*>, MAX_PLAYING_CLIP_COUNT>*)userData;
+        AudioSamplePrecision* outStart = (AudioSamplePrecision*)outputBuffer;
+        auto& playingClips = *(std::array<std::atomic<AudioSample*>, MAX_PLAYING_CLIP_COUNT>*)userData;
 
+        bool firstPlay = true;
         for (int clipIndex = 0; clipIndex < MAX_PLAYING_CLIP_COUNT; clipIndex++) {
-            AudioClip* clip = playingClips[clipIndex];
+            auto& clip = playingClips[clipIndex];
             if (clip == nullptr)
                 continue;
-            if (!clip->playing) {
-                playingClips[clipIndex] = nullptr;
-                continue;
-            }
-            
 
-            for (int i = 0; i < framesPerBuffer; i++) {
-                *out++ = clip->volume * clip->audio.samples[0][clip->samplePosition];
-                *out++ = clip->volume * clip->audio.samples[clip->audio.getNumChannels() > 1 ? 1 : 0][clip->samplePosition];
+            if (firstPlay) PlayClipToBuffer<true >(clipIndex, outStart, framesPerBuffer, clip);
+            else           PlayClipToBuffer<false>(clipIndex, outStart, framesPerBuffer, clip);
 
-                // Sync different sample rates
-                sampleRateRemainder[clipIndex] += clip->audio.getSampleRate();
-                while (sampleRateRemainder[clipIndex] > SAMPLE_RATE - 1) {
-                    sampleRateRemainder[clipIndex] -= SAMPLE_RATE;
-                    clip->samplePosition++;
-                }
+            firstPlay = false;
+        }
 
-                if (clip->samplePosition >= clip->audio.getNumSamplesPerChannel()) {
-                    clip->playing = false;
-                    playingClips[clipIndex] = nullptr;
-                    break;
-                }
-            }
+        if (firstPlay) {
+            for (int i = 0; i < framesPerBuffer; i++)
+                *outStart++ = 0;
         }
 
         return 0;
     }
 
-    static AudioClip* tempTestClip;
     void Audio::Init() {
         PaError err;
 
@@ -101,7 +124,7 @@ namespace Egl {
             SAMPLE_RATE,
             256,        // frames per buffer 
             paCallback,
-            &playingClips);
+            &playingSamples);
         if (err != paNoError) {
             ErrorCall(err);
             return;
