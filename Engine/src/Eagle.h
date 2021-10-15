@@ -9,7 +9,8 @@
 #include "Eagle/Core/Input.h"
 #include "Eagle/Core/Random.h"
 #include "Eagle/Core/Audio.h"
-#include "Eagle/Core/AppData.h"
+#include "Eagle/Core/Serialization.h"
+#include "Eagle/Core/AssetManager.h"
 
 #include "Eagle/Debug/ImGui/ImGuiLayer.h"
 #include "Eagle/Components/ParticleComponents/ParticleSystem.h"

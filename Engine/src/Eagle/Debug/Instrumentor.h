@@ -4,43 +4,39 @@
 #include <chrono>
 #include <algorithm>
 #include <fstream>
-
 #include <thread>
 
+// Instructions:
+// Once EAGLE_PROFILE is set to 1, start the game and close is when you are done
+// Results are saved at the build folder in the Eagle dir.
+// drop a file to chrome://tracing/
+
 namespace Egl {
-    struct ProfileResult
-    {
+    struct ProfileResult {
         std::string Name;
         long long Start, End;
         uint32_t ThreadID;
     };
 
-    struct InstrumentationSession
-    {
+    struct InstrumentationSession {
         std::string Name;
     };
 
-    class Instrumentor
-    {
+    class Instrumentor {
     private:
         InstrumentationSession* m_CurrentSession;
         std::ofstream m_OutputStream;
         int m_ProfileCount;
     public:
-        Instrumentor()
-            : m_CurrentSession(nullptr), m_ProfileCount(0)
-        {
-        }
+        Instrumentor() : m_CurrentSession(nullptr), m_ProfileCount(0) {}
 
-        void BeginSession(const std::string& name, const std::string& filepath = "results.json")
-        {
+        void BeginSession(const std::string& name, const std::string& filepath = "results.json") {
             m_OutputStream.open(filepath);
             WriteHeader();
             m_CurrentSession = new InstrumentationSession{ name };
         }
 
-        void EndSession()
-        {
+        void EndSession() {
             WriteFooter();
             m_OutputStream.close();
             delete m_CurrentSession;
@@ -48,8 +44,7 @@ namespace Egl {
             m_ProfileCount = 0;
         }
 
-        void WriteProfile(const ProfileResult& result)
-        {
+        void WriteProfile(const ProfileResult& result) {
             if (m_ProfileCount++ > 0)
                 m_OutputStream << ",";
 
@@ -69,27 +64,23 @@ namespace Egl {
             m_OutputStream.flush();
         }
 
-        void WriteHeader()
-        {
+        void WriteHeader() {
             m_OutputStream << "{\"otherData\": {},\"traceEvents\":[";
             m_OutputStream.flush();
         }
 
-        void WriteFooter()
-        {
+        void WriteFooter() {
             m_OutputStream << "]}";
             m_OutputStream.flush();
         }
 
-        static Instrumentor& Get()
-        {
+        static Instrumentor& Get() {
             static Instrumentor instance;
             return instance;
         }
     };
 
-    class InstrumentationTimer
-    {
+    class InstrumentationTimer {
     public:
         InstrumentationTimer(const char* name)
             : m_Name(name), m_Stopped(false)
@@ -97,14 +88,12 @@ namespace Egl {
             m_StartTimepoint = std::chrono::high_resolution_clock::now();
         }
 
-        ~InstrumentationTimer()
-        {
+        ~InstrumentationTimer() {
             if (!m_Stopped)
                 Stop();
         }
 
-        void Stop()
-        {
+        void Stop() {
             auto endTimepoint = std::chrono::high_resolution_clock::now();
 
             long long start = std::chrono::time_point_cast<std::chrono::microseconds>(m_StartTimepoint).time_since_epoch().count();

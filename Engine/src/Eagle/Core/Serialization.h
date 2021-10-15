@@ -34,6 +34,7 @@ namespace Egl {
 	
 	protected:
 		static void Init() {
+			EAGLE_PROFILE_FUNCTION();
 			persistantDataPath = SetPersistantPath();
 		}
 		static std::string persistantDataPath;
@@ -89,7 +90,6 @@ namespace Egl {
 
 		std::stringstream ss;
 		ss << path.string() << '\\' << APPLICATION_NAME << '\\';
-		LOG("Save path:", ss.str());
 		return ss.str();
 	}
 #endif

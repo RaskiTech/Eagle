@@ -11,13 +11,18 @@ namespace Egl {
     std::array<std::atomic<AudioSample*>, MAX_PLAYING_CLIP_COUNT> Audio::playingSamples;
 
     AudioClip::AudioClip(const std::string& audioFilePath) {
+        EAGLE_PROFILE_SCOPE("AudioFile: load audioClip");
         data.shouldLogErrorsToConsole(false);
         bool loaded = data.load(audioFilePath);
         if (!loaded)
             LOG_ENG_ERROR("Couldn't load the file at", audioFilePath);
     }
+    AudioSample::AudioSample(AudioClipID id) : id(id), clip(Assets::GetClip(id)) {
+
+    }
 
     void Audio::AddSample(AudioSample* clip) {
+        EAGLE_PROFILE_FUNCTION();
         for (int i = 0; i < MAX_PLAYING_CLIP_COUNT; i++) {
             if (playingSamples[i] != nullptr)
                 continue;
@@ -36,6 +41,18 @@ namespace Egl {
         }
 
         LOG_ENG_WARN("Already playing the max amount of audio clips.");
+    }
+    void Audio::RemoveSample(AudioSample* sample) {
+        EAGLE_PROFILE_FUNCTION();
+        for (int i = 0; i < MAX_PLAYING_CLIP_COUNT; i++) {
+            if (playingSamples[i] != sample)
+                continue;
+
+            playingSamples[i] = nullptr;
+            return;
+        }
+
+        LOG_ENG_WARN("Didn't find a sample that was meant to be removed.");
     }
 
     static void ErrorCall(PaError error) {
@@ -109,35 +126,45 @@ namespace Egl {
     }
 
     void Audio::Init() {
+        EAGLE_PROFILE_FUNCTION();
         PaError err;
 
-        err = Pa_Initialize();
-        if (err != paNoError) {
-            ErrorCall(err);
-            return;
+        {
+            EAGLE_PROFILE_SCOPE("Initialize PortAudio");
+            err = Pa_Initialize();
+            if (err != paNoError) {
+                ErrorCall(err);
+                return;
+            }
         }
 
-        err = Pa_OpenDefaultStream(&stream,
-            0,          // no input channels 
-            2,          // stereo output 
-            paFloat32,  // 32 bit floating point output 
-            SAMPLE_RATE,
-            256,        // frames per buffer 
-            paCallback,
-            &playingSamples);
-        if (err != paNoError) {
-            ErrorCall(err);
-            return;
+        {
+            EAGLE_PROFILE_SCOPE("Open PortAudio Stream");
+            err = Pa_OpenDefaultStream(&stream,
+                0,          // no input channels 
+                2,          // stereo output 
+                paFloat32,  // 32 bit floating point output 
+                SAMPLE_RATE,
+                256,        // frames per buffer 
+                paCallback,
+                &playingSamples);
+            if (err != paNoError) {
+                ErrorCall(err);
+                return;
+            }
         }
-
-        err = Pa_StartStream(stream);
-        if (err != paNoError) {
-            ErrorCall(err);
-            return;
+        {
+            EAGLE_PROFILE_SCOPE("Start PortAudio Stream");
+            err = Pa_StartStream(stream);
+            if (err != paNoError) {
+                ErrorCall(err);
+                return;
+            }
         }
     }
 
     void Audio::Close() {
+        EAGLE_PROFILE_FUNCTION();
         PaError err = Pa_StopStream(stream);
         if (err != paNoError) {
             ErrorCall(err);

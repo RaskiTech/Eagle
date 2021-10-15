@@ -1,6 +1,6 @@
 #include <EaglePCH.h>
 #include <filesystem>
-#include "AppData.h"
+#include "Serialization.h"
 
 namespace Egl {
 	SaveData::SaveData(const std::string& relativeLoadPath) {

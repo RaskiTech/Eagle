@@ -335,11 +335,19 @@ namespace Egl {
 
 	struct AudioSource {
 		void Play(bool play);
+		void SetVolume(float volume) { sample->volume = glm::clamp(volume, 0.0f, 1.0f); }
+		float GetDuration() { return (float)(*sample->clip).data.getLengthInSeconds(); }
+		float GetTime() { return (float)sample->samplePosition / (*sample->clip).data.getSampleRate(); }
+		void SetTime(float time) { sample->samplePosition = glm::clamp((int)(time * (*sample->clip).data.getSampleRate()), 0, (*sample->clip).data.getNumSamplesPerChannel()); }
 
-		AudioSource(AudioClip* clip);
+		AudioSource(AudioClipID clip);
+		AudioSource(AudioSource& source);
+		AudioSource(AudioSource&& source);
+		AudioSource& operator=(const AudioSource& other);
 		~AudioSource();
 
 	private:
+		void PossibleSampleDelete();
 		AudioSample* sample;
 	};
 }

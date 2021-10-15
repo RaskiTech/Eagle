@@ -118,13 +118,8 @@ class ExampleScene : public Scene {
 
 		camera.AddComponent<NativeScriptComponent>().Bind<example_CameraController>();
 		
-		AudioClip* clip = new AudioClip("Assets/Ring09.wav");
-		AudioClip* clip2 = new AudioClip("Assets/Ring08.wav");
-
-		AudioSample* sample = new AudioSample(clip);
-		AudioSample* sample2 = new AudioSample(clip2);
-		Audio::AddSample(sample);
-		Audio::AddSample(sample2);
+		AudioClipID clip2 = Assets::CreateClip("Assets/Ring09.wav");
+		pedistal.AddComponent<AudioSource>(clip2).Play(true);
 	}
 	void SceneEnd() {
 

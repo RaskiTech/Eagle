@@ -3,6 +3,7 @@
 #include "Components.h"
 #include "ComponentsInternal.h"
 #include "Eagle/Core/Application.h"
+#include "Eagle/Core/AssetManager.h"
 #include "Entity.h"
 
 namespace Egl {
@@ -645,16 +646,43 @@ namespace Egl {
 	}
 	#pragma endregion
 
-	//void AudioSource::ChangeClip(const std::string& path) {
-	//
-	//}
-	AudioSource::AudioSource(AudioClip* clip) {
+	AudioSource::AudioSource(AudioClipID clip) {
 		sample = new AudioSample(clip);
-		std::atomic<bool>& samp = sample->loop;
 	}
+	AudioSource::AudioSource(AudioSource& other) : sample(other.sample) {
+		sample->referencesHere++;
+	}
+
+	AudioSource::AudioSource(AudioSource&& source) : sample(source.sample) {
+		// No reference management. It only moves
+		source.sample = nullptr;
+	}
+	AudioSource& AudioSource::operator=(const AudioSource& other) {
+		sample = other.sample;
+		sample->referencesHere++;
+		return *this;
+	}
+
 	AudioSource::~AudioSource() {
+		PossibleSampleDelete();
+	}
+
+	void AudioSource::PossibleSampleDelete() {
+		if (sample == nullptr)
+			return;
+
+		sample->referencesHere--;
+		if (sample->referencesHere > 0)
+			return;
+
+		if (sample->playing) {
+			sample->playing = false;
+			Audio::RemoveSample(sample);
+		}
+
 		delete sample;
 	}
+
 	void AudioSource::Play(bool play) {
 		sample->playing = play;
 		if (play)
