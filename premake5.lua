@@ -20,6 +20,7 @@ workspace "Eagle"
 	Includes["LogR"] = "Engine/vendor/LogR"
 	Includes["PortAudio"] = "Engine/vendor/PortAudio/include"
 	Includes["AudioFile"] = "Engine/vendor/AudioFile"
+	Includes["Python"] = "Engine/vendor/Python310/include"
 
 	outputDir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
@@ -62,7 +63,8 @@ project "Engine"
 		"%{Includes.FreeType}",
 		"%{Includes.LogR}",
 		"%{Includes.PortAudio}",
-		"%{Includes.AudioFile}"
+		"%{Includes.AudioFile}",
+		"%{Includes.Python}"
 	}
 
 	links {
@@ -72,10 +74,12 @@ project "Engine"
 		"ImGui",
 		"freetype.lib",
 		"opengl32.lib",
+		"python310.lib",
 		"Application"
 	}
 	libdirs {
-		"%{prj.name}/vendor/FreeType/lib"
+		"%{prj.name}/vendor/FreeType/lib",
+		"%{prj.name}/vendor/Python310/libs"
 	}
 	linkoptions { "/ignore:4099","/ignore:4098" }
 

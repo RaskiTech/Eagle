@@ -6,8 +6,8 @@
 using namespace Egl;
 
 ////
-// This is an example script designed to show the API. Everything exept the
-// SceneBegin() and SceneEnd() functions can be removed.
+// This is an example script designed to show most
+// common API functionalities.
 ////
 
 class example_CameraController : public Script {
@@ -118,13 +118,14 @@ class ExampleScene : public Scene {
 
 		camera.AddComponent<NativeScriptComponent>().Bind<example_CameraController>();
 		
-		AudioClip* clip = new AudioClip("Assets/Ring09.wav");
-		AudioClip* clip2 = new AudioClip("Assets/Ring08.wav");
 
+		// Audio
+		AudioClip* clip = new AudioClip("Assets/Ring09.wav");
 		AudioSample* sample = new AudioSample(clip);
-		AudioSample* sample2 = new AudioSample(clip2);
+		sample->volume = 0.25f;
 		Audio::AddSample(sample);
-		Audio::AddSample(sample2);
+
+		Python::PythonTest();
 	}
 	void SceneEnd() {
 

@@ -14,6 +14,9 @@ inline void EagleMain() {
 
 	LOG_ENG_INFO("Inizialization complete");
 
+	
+
+
 	EAGLE_PROFILE_BEGIN("Engine Runtime", "Eagle-Profile-Runtime.json");
 	app->Run();
 	EAGLE_PROFILE_END();

@@ -1,5 +1,6 @@
 #pragma once
 #include <AudioFile.h>
+#include <atomic>
 #include "Core.h"
 #define MAX_PLAYING_CLIP_COUNT 16
 
