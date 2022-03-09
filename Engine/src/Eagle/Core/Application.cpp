@@ -5,14 +5,14 @@
 #include "Eagle/Rendering/RenderCommand.h"
 #include "Eagle/Core/Random.h"
 #include "Eagle/Core/GameLayer.h"
-#include "Eagle/Core/AppData.h"
+#include "Eagle/Core/Serialization.h"
 #include "Eagle/Debug/EditorLayer.h"
 #include "Eagle/Core/Time.h"
 #include "Eagle/Core/Audio.h"
 #include "UniqueID.h"
 
 // This Commit:
-// Multiple audio files can be played at the same time
+// Stability for playing audio
 
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;

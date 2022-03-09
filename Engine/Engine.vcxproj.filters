@@ -105,9 +105,6 @@
     <ClInclude Include="src\Eagle\Components\SceneCamera.h">
       <Filter>src\Eagle\Components</Filter>
     </ClInclude>
-    <ClInclude Include="src\Eagle\Core\AppData.h">
-      <Filter>src\Eagle\Core</Filter>
-    </ClInclude>
     <ClInclude Include="src\Eagle\Core\Application.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
@@ -1500,6 +1497,12 @@
     <ClInclude Include="src\Eagle\Core\PythonEmbedding.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
+    <ClInclude Include="src\Eagle\Core\Serialization.h">
+      <Filter>src\Eagle\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\Core\AssetManager.h">
+      <Filter>src\Eagle\Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\ParticleComponents\ParticleData.cpp">
@@ -1516,9 +1519,6 @@
     </ClCompile>
     <ClCompile Include="src\Eagle\Components\SceneCamera.cpp">
       <Filter>src\Eagle\Components</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Eagle\Core\AppData.cpp">
-      <Filter>src\Eagle\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\Core\Application.cpp">
       <Filter>src\Eagle\Core</Filter>
@@ -1623,5 +1623,11 @@
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\Core\PythonEmbedding.cpp" />
+      <Filter>src\Eagle\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\Core\Serialization.cpp">
+      <Filter>src\Eagle\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\Core\AssetManager.cpp" />
   </ItemGroup>
 </Project>

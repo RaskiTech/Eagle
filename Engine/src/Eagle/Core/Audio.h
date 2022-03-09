@@ -1,6 +1,7 @@
 #pragma once
 #include <AudioFile.h>
 #include <atomic>
+#include "AssetManager.h"
 #include "Core.h"
 #define MAX_PLAYING_CLIP_COUNT 16
 
@@ -9,11 +10,6 @@
 
 // AudioSample owns AudioClip and some settings
 // AudioClip owns music data
-
-
-// Needed Improvement for file loader:
-// Constructor that takes filepath and error callback
-// ability to check whether there is a proper file
 
 
 // TODO: Recourse manager because entt is likely moving AudioSource and that deletes 
@@ -40,13 +36,18 @@ namespace Egl {
         std::atomic<AudioClip*> clip;
 
         float GetPlayTime() const { return (float)samplePosition / ((AudioClip*)clip)->data.getSampleRate(); }
-        AudioSample(AudioClip* audioClip) : clip(audioClip) {}
+        AudioSample(AudioClipID audioClip);
+    private:
+        AudioClipID id; // Assets should be stored in raw pointers, so keep the ID to get the reference count right
+        uint8_t referencesHere = 1; // Reference counting in AudioSample
+        friend struct AudioSource;
     };
 
     // Audio playing manager
     class Audio {
     public:
-        static void AddSample(AudioSample* clip);
+        static void AddSample(AudioSample* sample);
+        static void RemoveSample(AudioSample* sample);
     protected:
         static void Init();
         static void Close();

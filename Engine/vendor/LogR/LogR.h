@@ -1,3 +1,9 @@
+/*
+LogR by RaskiTech
+Released under the MIT license.
+https://github.com/RaskiTech/LogR
+*/
+
 #include <iostream>
 #include <sstream>
 
@@ -12,6 +18,7 @@
 #endif
 
 namespace LogR {
+	// Use printf formatting to get the wanted format.
 	template<typename T>
 	struct Format {
 		Format(const std::string& format, const T& value) : fmt(format.c_str()), value(value) {}

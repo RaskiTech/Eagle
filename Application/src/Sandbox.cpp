@@ -118,13 +118,9 @@ class ExampleScene : public Scene {
 
 		camera.AddComponent<NativeScriptComponent>().Bind<example_CameraController>();
 		
-
-		// Audio
-		AudioClip* clip = new AudioClip("Assets/Ring09.wav");
-		AudioSample* sample = new AudioSample(clip);
-		sample->volume = 0.25f;
-		Audio::AddSample(sample);
-
+		AudioClipID clip2 = Assets::CreateClip("Assets/Ring09.wav");
+		pedistal.AddComponent<AudioSource>(clip2).Play(true);
+		
 		Python::PythonTest();
 	}
 	void SceneEnd() {

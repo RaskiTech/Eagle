@@ -13,7 +13,7 @@ namespace Egl {
 		static float Float(float min, float max) { return Float01() * (max-min) + min; }
 	protected:
 		friend class Application;
-		static void Init() { sRandomizer.seed(std::random_device()()); }
+		static void Init() { EAGLE_PROFILE_FUNCTION(); sRandomizer.seed(std::random_device()()); }
 	private:
 		static std::mt19937 sRandomizer;
 		static std::uniform_int_distribution<std::mt19937::result_type> sDistribution;
