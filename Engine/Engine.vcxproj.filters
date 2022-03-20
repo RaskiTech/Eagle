@@ -76,6 +76,9 @@
     <Filter Include="vendor\stb_image">
       <UniqueIdentifier>{0DA0BA59-F998-D9AB-22CB-BE300E23B9B7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Eagle\Core\Python">
+      <UniqueIdentifier>{0af76a8a-911c-4790-b4ad-195b32f27e8d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Dependencies\Entt.h">
@@ -106,6 +109,9 @@
       <Filter>src\Eagle\Components</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Core\Application.h">
+      <Filter>src\Eagle\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\Core\AssetManager.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Core\Audio.h">
@@ -142,6 +148,9 @@
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Core\Random.h">
+      <Filter>src\Eagle\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\Core\Serialization.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Core\Time.h">
@@ -1494,15 +1503,10 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Eagle\Core\PythonEmbedding.h">
+    <ClInclude Include="src\Eagle\Core\Python\PythonEmbedding.h">
       <Filter>src\Eagle\Core</Filter>
     </ClInclude>
-    <ClInclude Include="src\Eagle\Core\Serialization.h">
-      <Filter>src\Eagle\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Eagle\Core\AssetManager.h">
-      <Filter>src\Eagle\Core</Filter>
-    </ClInclude>
+    <ClInclude Include="src\Eagle\Core\Python\PythonWrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\ParticleComponents\ParticleData.cpp">
@@ -1523,6 +1527,9 @@
     <ClCompile Include="src\Eagle\Core\Application.cpp">
       <Filter>src\Eagle\Core</Filter>
     </ClCompile>
+    <ClCompile Include="src\Eagle\Core\AssetManager.cpp">
+      <Filter>src\Eagle\Core</Filter>
+    </ClCompile>
     <ClCompile Include="src\Eagle\Core\Audio.cpp">
       <Filter>src\Eagle\Core</Filter>
     </ClCompile>
@@ -1533,6 +1540,9 @@
       <Filter>src\Eagle\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\Core\Log.cpp">
+      <Filter>src\Eagle\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\Core\Serialization.cpp">
       <Filter>src\Eagle\Core</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\Debug\EditorLayer.cpp">
@@ -1622,12 +1632,8 @@
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
     </ClCompile>
-    <ClCompile Include="src\Eagle\Core\PythonEmbedding.cpp" />
+    <ClCompile Include="src\Eagle\Core\Python\PythonEmbedding.cpp">
       <Filter>src\Eagle\Core</Filter>
     </ClCompile>
-    <ClCompile Include="src\Eagle\Core\Serialization.cpp">
-      <Filter>src\Eagle\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Eagle\Core\AssetManager.cpp" />
   </ItemGroup>
 </Project>

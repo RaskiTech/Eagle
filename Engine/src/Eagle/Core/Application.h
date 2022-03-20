@@ -7,6 +7,7 @@
 #include "Eagle/Core/Events/Event.h"
 #include "Eagle/Core/Events/ApplicationEvent.h"
 #include "Eagle/Core/Events/Event.h"
+#include "Eagle/Core/Python/PythonEmbedding.h"
 
 namespace Egl {
 
@@ -19,10 +20,11 @@ namespace Egl {
 		void Close();
 		void OnEvent(Event& e);
 
-		ImGuiLayer* GetImGuiLayer() const { return mImGuiLayer; }
-		GameLayer* GetGameLayer() const { return mGameLayer; }
-		EditorLayer* GetEditorLayer() const { return mEditorLayer; }
+		inline ImGuiLayer* GetImGuiLayer() const { return mImGuiLayer; }
+		inline GameLayer* GetGameLayer() const { return mGameLayer; }
+		inline EditorLayer* GetEditorLayer() const { return mEditorLayer; }
 		inline Window& GetWindow() const { return *mWindow; }
+		inline const PythonEmbedding& GetPython() const { return pythonEmbedding; }
 
 		const glm::vec2& GetSceneWindowSize() const { return mSceneWindowSize; }
 		const glm::vec2& GetSceneScreenOffset() const;
@@ -41,8 +43,9 @@ namespace Egl {
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);
 
-		// Keep this at top because it has the glfw context
+		// Keep this at the top because it has the glfw context
 		Scope<Window> mWindow;
+		PythonEmbedding pythonEmbedding;
 
 		ImGuiLayer* mImGuiLayer;
 		EditorLayer* mEditorLayer;

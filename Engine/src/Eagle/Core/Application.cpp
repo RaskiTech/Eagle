@@ -9,6 +9,7 @@
 #include "Eagle/Debug/EditorLayer.h"
 #include "Eagle/Core/Time.h"
 #include "Eagle/Core/Audio.h"
+#include "Eagle/Core/Python/PythonEmbedding.h"
 #include "UniqueID.h"
 
 // This Commit:
@@ -24,7 +25,7 @@ namespace Egl {
 
 #define EAGLE_BIND_EVENT_FUNC(x) std::bind(&Application::x, this, std::placeholders::_1)
 
-	Application::Application() {
+	Application::Application() : pythonEmbedding() {
 		EAGLE_PROFILE_FUNCTION();
 
 		mInstance = this;

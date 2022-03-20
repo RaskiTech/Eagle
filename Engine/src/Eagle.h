@@ -3,7 +3,7 @@
 // This file is for applications only. They can do #include <Eagle.h> and have everything they need
 
 #include "Eagle/Core/Application.h"
-#include "Eagle/Core/PythonEmbedding.h"
+#include "Eagle/Core/Python/PythonWrapper.h"
 #include "Eagle/Core/Time.h"
 #include "Eagle/Core/Log.h"
 #include "Eagle/Core/Keycodes.h"

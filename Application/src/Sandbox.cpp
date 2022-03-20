@@ -121,7 +121,7 @@ class ExampleScene : public Scene {
 		AudioClipID clip2 = Assets::CreateClip("Assets/Ring09.wav");
 		pedistal.AddComponent<AudioSource>(clip2).Play(true);
 		
-		Python::PythonTest();
+		Python::RunFunction("Script", "InputFunction", (const std::string)"Argument");
 	}
 	void SceneEnd() {
 

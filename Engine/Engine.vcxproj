@@ -153,7 +153,6 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="src\Eagle\Core\PythonEmbedding.h" />
     <ClInclude Include="src\Dependencies\Entt.h" />
     <ClInclude Include="src\Dependencies\ImGui.h" />
     <ClInclude Include="src\Dependencies\ImGuiInternal.h" />
@@ -163,8 +162,8 @@
     <ClInclude Include="src\Eagle\Components\ParticleComponents\ParticleSystem.h" />
     <ClInclude Include="src\Eagle\Components\ParticleComponents\ParticleUpdater.h" />
     <ClInclude Include="src\Eagle\Components\SceneCamera.h" />
-    <ClInclude Include="src\Eagle\Core\AppData.h" />
     <ClInclude Include="src\Eagle\Core\Application.h" />
+    <ClInclude Include="src\Eagle\Core\AssetManager.h" />
     <ClInclude Include="src\Eagle\Core\Audio.h" />
     <ClInclude Include="src\Eagle\Core\Core.h" />
     <ClInclude Include="src\Eagle\Core\DoesExist.h" />
@@ -176,7 +175,10 @@
     <ClInclude Include="src\Eagle\Core\Input.h" />
     <ClInclude Include="src\Eagle\Core\Keycodes.h" />
     <ClInclude Include="src\Eagle\Core\Log.h" />
+    <ClInclude Include="src\Eagle\Core\Python\PythonWrapper.h" />
+    <ClInclude Include="src\Eagle\Core\Python\PythonEmbedding.h" />
     <ClInclude Include="src\Eagle\Core\Random.h" />
+    <ClInclude Include="src\Eagle\Core\Serialization.h" />
     <ClInclude Include="src\Eagle\Core\Time.h" />
     <ClInclude Include="src\Eagle\Core\UniqueID.h" />
     <ClInclude Include="src\Eagle\Core\Window.h" />
@@ -629,18 +631,19 @@
     <ClInclude Include="vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Eagle\Core\PythonEmbedding.cpp" />
     <ClCompile Include="src\Eagle\Components\ParticleComponents\ParticleData.cpp" />
     <ClCompile Include="src\Eagle\Components\ParticleComponents\ParticleSetters.cpp" />
     <ClCompile Include="src\Eagle\Components\ParticleComponents\ParticleSystem.cpp" />
     <ClCompile Include="src\Eagle\Components\ParticleComponents\ParticleUpdater.cpp" />
     <ClCompile Include="src\Eagle\Components\SceneCamera.cpp" />
-    <ClCompile Include="src\Eagle\Core\AppData.cpp" />
     <ClCompile Include="src\Eagle\Core\Application.cpp" />
+    <ClCompile Include="src\Eagle\Core\AssetManager.cpp" />
     <ClCompile Include="src\Eagle\Core\Audio.cpp" />
     <ClCompile Include="src\Eagle\Core\EntryPoint.cpp" />
     <ClCompile Include="src\Eagle\Core\GameLayer.cpp" />
     <ClCompile Include="src\Eagle\Core\Log.cpp" />
+    <ClCompile Include="src\Eagle\Core\Python\PythonEmbedding.cpp" />
+    <ClCompile Include="src\Eagle\Core\Serialization.cpp" />
     <ClCompile Include="src\Eagle\Debug\EditorLayer.cpp" />
     <ClCompile Include="src\Eagle\Debug\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="src\Eagle\Debug\ImGui\ImGuiLayer.cpp" />

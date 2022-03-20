@@ -74,7 +74,7 @@ namespace Egl {
         }
 
 
-        for (int i = 0; i < framesPerBuffer; i++) {
+        for (int i = 0; i < (uint32_t)framesPerBuffer; i++) {
             auto& data = (*(*clip).clip).data;
             if constexpr (SetDontAdd) {
                 *out++ = (*clip).volume * data.samples[0][(*clip).samplePosition];
@@ -118,7 +118,7 @@ namespace Egl {
         }
 
         if (firstPlay) {
-            for (int i = 0; i < framesPerBuffer; i++)
+            for (int i = 0; i < (uint32_t)framesPerBuffer; i++)
                 *outStart++ = 0;
         }
 

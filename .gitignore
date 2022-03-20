@@ -7,6 +7,9 @@
 /Engine/vendor/PortAudio/bin/
 /Engine/vendor/PortAudio/bin-int/
 /Build/Engine.exe
+/Build/__pycache__/
+/Build/Assets/__pycache__/
+/Engine/vendor/Python310/__pycache__/
 
 # Files
 *.user
