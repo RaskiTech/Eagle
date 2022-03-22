@@ -22,6 +22,9 @@
     <Filter Include="src\Eagle\Core\Events">
       <UniqueIdentifier>{B6A2DA87-220F-9682-EB02-2EE0572EB8EA}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Eagle\Core\Python">
+      <UniqueIdentifier>{A3CAC1A1-0F37-7D9C-D82A-15FA44569F04}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\Eagle\Debug">
       <UniqueIdentifier>{701C7DD8-DCA7-EA9C-E5B8-6D9151C3469D}</UniqueIdentifier>
     </Filter>
@@ -75,9 +78,6 @@
     </Filter>
     <Filter Include="vendor\stb_image">
       <UniqueIdentifier>{0DA0BA59-F998-D9AB-22CB-BE300E23B9B7}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Eagle\Core\Python">
-      <UniqueIdentifier>{0af76a8a-911c-4790-b4ad-195b32f27e8d}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -146,6 +146,12 @@
     </ClInclude>
     <ClInclude Include="src\Eagle\Core\Log.h">
       <Filter>src\Eagle\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\Core\Python\PythonEmbedding.h">
+      <Filter>src\Eagle\Core\Python</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Eagle\Core\Python\PythonWrapper.h">
+      <Filter>src\Eagle\Core\Python</Filter>
     </ClInclude>
     <ClInclude Include="src\Eagle\Core\Random.h">
       <Filter>src\Eagle\Core</Filter>
@@ -1503,10 +1509,6 @@
     <ClInclude Include="vendor\stb_image\stb_image.h">
       <Filter>vendor\stb_image</Filter>
     </ClInclude>
-    <ClInclude Include="src\Eagle\Core\Python\PythonEmbedding.h">
-      <Filter>src\Eagle\Core</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Eagle\Core\Python\PythonWrapper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Eagle\Components\ParticleComponents\ParticleData.cpp">
@@ -1541,6 +1543,9 @@
     </ClCompile>
     <ClCompile Include="src\Eagle\Core\Log.cpp">
       <Filter>src\Eagle\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Eagle\Core\Python\PythonEmbedding.cpp">
+      <Filter>src\Eagle\Core\Python</Filter>
     </ClCompile>
     <ClCompile Include="src\Eagle\Core\Serialization.cpp">
       <Filter>src\Eagle\Core</Filter>
@@ -1631,9 +1636,6 @@
     </ClCompile>
     <ClCompile Include="vendor\stb_image\stb_image.cpp">
       <Filter>vendor\stb_image</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Eagle\Core\Python\PythonEmbedding.cpp">
-      <Filter>src\Eagle\Core</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -25,8 +25,8 @@
 #endif
 
 #ifdef EAGLE_ENABLE_ASSERTS
-	#define EAGLE_ASSERT(x, ...) { if (!(x)) { LOG_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-	#define EAGLE_ENG_ASSERT(x, ...) { if (!(x)) { LOG_ENG_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+	#define EAGLE_ASSERT(x, ...) { if (!(x)) { LOG_ERROR("Assertion Failed:", __VA_ARGS__); __debugbreak(); } }
+	#define EAGLE_ENG_ASSERT(x, ...) { if (!(x)) { LOG_ENG_ERROR("Assertion Failed:", __VA_ARGS__); __debugbreak(); } }
 
 	//#define EAGLE_ASSERT(x) { if (!(x)) { __debugbreak(); }}
 	//#define EAGLE_ENG_ASSERT(x) { if (!(x)) { __debugbreak(); }}
@@ -39,8 +39,8 @@
 #endif
 
 #ifdef EAGLE_ENABLE_WARNINGS
-	#define EAGLE_WARNING(x, ...) { if (!(x)) { LOG_WARN("Warning: {0}", __VA_ARGS__); } }
-	#define EAGLE_ENG_WARNING(x, ...) { if (!(x)) { LOG_ENG_WARN("Warning: {0}", __VA_ARGS__); } }
+	#define EAGLE_WARNING(x, ...) { if (!(x)) { LOG_WARN("Warning:", __VA_ARGS__); } }
+	#define EAGLE_ENG_WARNING(x, ...) { if (!(x)) { LOG_ENG_WARN("Warning:", __VA_ARGS__); } }
 #else
 	#define EAGLE_WARNING(x, ...)
 	#define EAGLE_ENG_WARNING(x, ...)

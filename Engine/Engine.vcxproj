@@ -175,8 +175,8 @@
     <ClInclude Include="src\Eagle\Core\Input.h" />
     <ClInclude Include="src\Eagle\Core\Keycodes.h" />
     <ClInclude Include="src\Eagle\Core\Log.h" />
-    <ClInclude Include="src\Eagle\Core\Python\PythonWrapper.h" />
     <ClInclude Include="src\Eagle\Core\Python\PythonEmbedding.h" />
+    <ClInclude Include="src\Eagle\Core\Python\PythonWrapper.h" />
     <ClInclude Include="src\Eagle\Core\Random.h" />
     <ClInclude Include="src\Eagle\Core\Serialization.h" />
     <ClInclude Include="src\Eagle\Core\Time.h" />

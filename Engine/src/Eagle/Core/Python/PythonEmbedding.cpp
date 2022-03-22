@@ -9,18 +9,68 @@
 	#include <Python.h>
 #endif
 
+#include <filesystem>
+
 #define SUPPORTED_PYTHON_ARGUMENT_CPP(TYPE, RETURN_FUNCTION) void* PythonEmbedding::GetArgumentPointer(TYPE& arg) const { return (RETURN_FUNCTION(arg)); }
 #define SUPPORTED_PYTHON_ARGUMENT_CPP_CSTR(TYPE, RETURN_FUNCTION) void* PythonEmbedding::GetArgumentPointer(TYPE& arg) const { return (RETURN_FUNCTION(arg.c_str())); }
 
 namespace Egl {
-    /*
-    void* PythonEmbedding::GetArgumentPointer(const std::string& arg) const { return PyUnicode_FromString(arg.c_str()); }
-    void* PythonEmbedding::GetArgumentPointer(std::string& arg) const { return PyUnicode_FromString(arg.c_str()); }
-    void* PythonEmbedding::GetArgumentPointer(const char*& arg) const { return PyUnicode_FromString(arg); }
-    void* PythonEmbedding::GetArgumentPointer(int& arg) const { return PyLong_FromLong(arg); }
-    void* PythonEmbedding::GetArgumentPointer(float& arg) const { return PyFloat_FromDouble(arg); }
-    void* PythonEmbedding::GetArgumentPointer(double& arg) const { return PyFloat_FromDouble(arg); }
-    /*/
+
+    /////////////////////////////
+    //////// Python file ////////
+    /////////////////////////////
+
+    PythonFile::PythonFile(std::string filepath) : path(filepath) {
+        FILE* filepoint;
+        errno_t err;
+
+        if ((err = fopen_s(&filepoint, filepath.c_str(), "r")) != 0) {
+            exists = false;
+            LOG_ENG_ERROR("Python: Cannot open file", filepath);
+            return;
+        }
+
+        exists = true;
+        file = filepoint;
+    }
+    PythonFile::~PythonFile() {
+        if (!exists)
+            return;
+
+        if (pythonObj != nullptr)
+            Py_DECREF(pythonObj);
+
+        fclose(file);
+    }
+
+    ////////////////////////////////////
+    //////// Python return data ////////
+    ////////////////////////////////////
+
+    PythonReturnData::PythonReturnData(void* data) {
+        this->data = data;
+    }
+    PythonReturnData::~PythonReturnData() {
+        if (data != NULL)
+            Py_DECREF(data);
+    }
+    int PythonReturnData::GetDataAsInt() const {
+        EAGLE_ENG_ASSERT(data != NULL, "Python: Trying to get null return data as int");
+        return PyLong_AsLong((PyObject*)data);
+    }
+    float PythonReturnData::GetDataAsFloat() const {
+        EAGLE_ENG_ASSERT(data != NULL, "Python: Trying to get null return data as float");
+        return PyFloat_AsDouble((PyObject*)data);
+    }
+    std::string PythonReturnData::GetDataAsString() const {
+        EAGLE_ENG_ASSERT(data != NULL, "Python: Trying to get null return data as string");
+        return std::string(PyUnicode_AsUTF8((PyObject*)data));
+    }
+
+    //////////////////////////////////
+    //////// Python embedding ////////
+    //////////////////////////////////
+
     // Supported python arguments. Add it also to the .h file
     SUPPORTED_PYTHON_ARGUMENT_CPP_CSTR(const std::string, PyUnicode_FromString);
     SUPPORTED_PYTHON_ARGUMENT_CPP_CSTR(std::string, PyUnicode_FromString);
@@ -28,23 +78,6 @@ namespace Egl {
     SUPPORTED_PYTHON_ARGUMENT_CPP(int, PyLong_FromLong);
     SUPPORTED_PYTHON_ARGUMENT_CPP(float, PyFloat_FromDouble);
     SUPPORTED_PYTHON_ARGUMENT_CPP(double, PyFloat_FromDouble);
-    //*/
-
-    PythonFile::PythonFile(std::string filepath) : path(filepath) {
-        file = fopen(filepath.c_str(), "r");
-        if (!file) {
-            exists = false;
-            return;
-        }
-
-        exists = true;
-
-    }
-    PythonFile::~PythonFile() {
-        if (!exists)
-            return;
-        fclose(file);
-    }
 
     PythonEmbedding::PythonEmbedding() {
         if (Py_IsInitialized())
@@ -54,9 +87,9 @@ namespace Egl {
         Py_SetPythonHome(L"../Engine/vendor/Python310");
         Py_Initialize();
         pythonPaths = Py_GetPath();
-        pythonPaths += L";../Build";
+        pythonPaths += L";../Build/Script.py"; // (std::wstring)std::filesystem::current_path() + std::wstring(L";") + pythonPaths;
         Py_SetPath(pythonPaths.c_str());
-        //std::wcout << Py_GetPath() << " "<< std::filesystem::current_path() << std::endl;
+        std::wcout << Py_GetPath() << " "<< std::filesystem::current_path() << std::endl;
     }
 
     PythonEmbedding::~PythonEmbedding() {
@@ -88,16 +121,14 @@ namespace Egl {
         PyObject* pModule = PyImport_Import(pName);
         Py_DECREF(pName);
         if (pModule == nullptr) {
-            LOG_ERROR("Python: Couldn't find file");
+            DisplayError();
             return PythonReturnData(NULL);
         }
 
         // Load function
-        PyObject* pFunc = PyObject_GetAttrString(pModule, "InputFunction");
+        PyObject* pFunc = PyObject_GetAttrString(pModule, _FunctionName.c_str());
         if (!pFunc || !PyCallable_Check(pFunc)) {
-            LOG_ERROR("Python: Error getting function");
-            if (PyErr_Occurred())
-                PyErr_Print();
+            DisplayError();
             return PythonReturnData(NULL);
         }
 
@@ -110,28 +141,31 @@ namespace Egl {
     }
 
     void PythonEmbedding::RunFile(const std::string& filepath) const {
-        FILE* PScriptFile = fopen(filepath.c_str(), "r");
-        if (PScriptFile) {
-            PyRun_SimpleFile(PScriptFile, filepath.c_str());
-            fclose(PScriptFile);
+        FILE* PScriptFile;
+        errno_t err;
+
+        if ((err = fopen_s(&PScriptFile, filepath.c_str(), "r")) != 0) {
+            LOG_ENG_ERROR("Python: Cannot open file", filepath);
+            return;
         }
-        else {
-            LOG_WARN("Couldn't open file: ", filepath);
-        }
+
+        PyRun_SimpleFile(PScriptFile, filepath.c_str());
+        fclose(PScriptFile);
     }
     void PythonEmbedding::RunFile(const PythonFile& file) const {
 
     }
 
-    PythonReturnData::PythonReturnData(void* data) {
-        this->data = data;
-    }
-    PythonReturnData::~PythonReturnData() {
-        if (data != NULL)
-            Py_DECREF(data);
-    }
-    int PythonReturnData::GetDataAsInt() {
-        EAGLE_ENG_ASSERT(data != NULL, "Getting return data even though it's null");
-        return PyLong_AsLong((PyObject*)data);
+    void PythonEmbedding::DisplayError() const {
+        if (!PyErr_Occurred()) {
+            LOG_ERROR("Python: Error occured");
+            return;
+        }
+
+        PyObject* ptype, * pvalue, * ptraceback;
+        PyErr_Fetch(&ptype, &pvalue, &ptraceback);
+        
+        const char* error = PyUnicode_AsUTF8(PyObject_Repr(pvalue));
+        LOG_ERROR("Python:", error);
     }
 }

@@ -24,9 +24,12 @@ namespace Egl {
 		PythonReturnData(void* data);
 		~PythonReturnData();
 
-		bool HasValue() { return data != NULL; }
+		bool HasValue() const { return data != NULL; }
 
-		int GetDataAsInt();
+		const void* GetDataPointer() const { return data; }
+		int GetDataAsInt() const;
+		float GetDataAsFloat() const;
+		std::string GetDataAsString() const;
 
 	private:
 		void* data;
@@ -47,6 +50,8 @@ namespace Egl {
 			void* packedArgs = SetupFunctionArguments(argCounter, args...);
 			return FinalizeCall(filepath, functionName, packedArgs);
 		}
+
+		void DisplayError() const;
 
 	private:
 		//*
