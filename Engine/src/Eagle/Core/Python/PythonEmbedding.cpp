@@ -86,10 +86,9 @@ namespace Egl {
 
         Py_SetPythonHome(L"../Engine/vendor/Python310");
         Py_Initialize();
-        pythonPaths = Py_GetPath();
-        pythonPaths += L";../Build/Script.py"; // (std::wstring)std::filesystem::current_path() + std::wstring(L";") + pythonPaths;
-        Py_SetPath(pythonPaths.c_str());
-        std::wcout << Py_GetPath() << " "<< std::filesystem::current_path() << std::endl;
+
+        // Add current dir and assets dir in python search paths
+        PyRun_SimpleString("import sys\nsys.path.append(\".\")\nsys.path.append(\"./Assets\")");
     }
 
     PythonEmbedding::~PythonEmbedding() {

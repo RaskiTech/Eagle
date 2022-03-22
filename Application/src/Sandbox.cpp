@@ -122,7 +122,6 @@ class ExampleScene : public Scene {
 		pedistal.AddComponent<AudioSource>(clip2).Play(true);
 		
 		PythonReturnData data = Python::RunFunction("Script.py", "TemplateFunction", (const std::string)"Argument");
-		LOG(data.GetDataAsString());
 	}
 	void SceneEnd() {
 
