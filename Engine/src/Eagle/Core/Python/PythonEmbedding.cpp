@@ -60,7 +60,7 @@ namespace Egl {
     }
     float PythonReturnData::GetDataAsFloat() const {
         EAGLE_ENG_ASSERT(data != NULL, "Python: Trying to get null return data as float");
-        return PyFloat_AsDouble((PyObject*)data);
+        return (float)PyFloat_AsDouble((PyObject*)data);
     }
     std::string PythonReturnData::GetDataAsString() const {
         EAGLE_ENG_ASSERT(data != NULL, "Python: Trying to get null return data as string");

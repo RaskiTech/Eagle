@@ -57,62 +57,30 @@ class ExampleScene : public Scene {
 		textComp.data.alignHorizontal = TextAlignHorizontal::Middle;
 	}
 
-	Entity example_ParticleBegin() {
-		Entity particle = AddEntity(EntityParams("ParticleSystem"));
-		particle.GetComponent<TransformComponent>().SetLocalPosition(0, 8.5f);
-		auto& particleSystem = particle.AddComponent<ParticleSystemComponent>(100000).particleSystem; // <-- The max amount of particles at a time
-		Ref<Particles::Emitter> emitter = CreateRef<Particles::Emitter>(30.0f); // <-- The amount of particles spawned per second
-
-		emitter->AddSetter(CreateRef<Particles::BoxPosSetter>(glm::vec2{ 0.15f, 0 }));
-		auto colorSetter = CreateRef<Particles::ColorSetter>();
-		colorSetter->maxStartColor = { 0, 0.75f, 1, 1 };
-		colorSetter->minStartColor = { 0.75f, 0, 1, 1 };
-		colorSetter->maxEndColor  =  { 1, 0, 1, 1 };
-		colorSetter->minEndColor  =  { 0, 1, 1, 1 };
-		emitter->AddSetter(colorSetter);
-		emitter->AddSetter(CreateRef<Particles::SizeSetter>(glm::vec2{ 0.03f, 0.03f }, glm::vec2{ 0.03f, 0.03f }));
-		emitter->AddSetter(CreateRef<Particles::VelocitySetter>(glm::vec2{ -0.5f, 2 }, glm::vec2{ 0.5f, 3 }));
-		emitter->AddSetter(CreateRef<Particles::TimeSetter>(5.0f, 10.0f));
-
-		particleSystem.AddEmitter(emitter);
-
-		particleSystem.AddUpdater(CreateRef<Particles::EulerUpdater>(glm::vec2{ 0, -1 }));
-		particleSystem.AddUpdater(CreateRef<Particles::ColorUpdater>());
-		particleSystem.AddUpdater(CreateRef<Particles::PerformantFloorUpdater>( -2.0f, 0.198f ));
-		particleSystem.AddUpdater(CreateRef<Particles::TimeUpdater>());
-
-		return particle;
-	}
-
 	void SceneBegin() override {
 		Entity camera = AddEntity("Camera");
 		auto& cameraComp = camera.AddComponent<CameraComponent>();
 		cameraComp.camera.SetSize(8.85f);
 		cameraComp.backgroundColor = { 0.19f, 0.32f, 0.45f, 1.0f };
-		camera.GetComponent<TransformComponent>().SetPosition(0.0f, -0.6f);
+		camera.Transform().SetPosition(0.0f, -0.6f);
 		SetPrimaryCamera(camera);
 		
 		auto& player = AddEntity("Player");
 		auto texture = Texture::Create("Assets/Player.png", false);
 		player.AddComponent<SpriteRendererComponent>(SubTexture::CreateFromIndexes(texture, { 0, 0 }, { 16, 16 }));
-		player.GetComponent<TransformComponent>().SetPosition(-4.2f, -1.5f);
+		player.Transform().SetPosition(-4.2f, -1.5f);
 		
 		Entity ground = AddEntity("Ground");
 		ground.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.4f, 0.42f, 0.52f, 1 });
-		ground.GetComponent<TransformComponent>().SetScale(13, 8);
-		ground.GetComponent<TransformComponent>().SetPosition(0, -6);
-		
-		Entity particleSystem = example_ParticleBegin();
+		ground.Transform().SetScale(13, 8).SetPosition(0, -6);
 		
 		Entity fireHydrant = AddEntity(EntityParams("Fire hydrant"));
 		fireHydrant.AddComponent<SpriteRendererComponent>(Texture::Create("Assets/FireHydrant.png", false));
-		fireHydrant.GetComponent<TransformComponent>().SetScale(0.5f, 8);
-		fireHydrant.GetComponent<TransformComponent>().SetLocalPosition(0, 4.5f);
+		fireHydrant.Transform().SetScale(0.5f, 8).SetLocalPosition(0, 4.5f);
 		
-		Entity pedistal = AddEntity(EntityParams("Firehydrant stucture"), fireHydrant, particleSystem);
+		Entity pedistal = AddEntity(EntityParams("Firehydrant stucture"), fireHydrant);
 		pedistal.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.5f, 0.52f, 0.62f, 1 });
-		pedistal.GetComponent<TransformComponent>().SetScale(2, 0.25f);
-		pedistal.GetComponent<TransformComponent>().SetPosition(1, -1.875f);
+		pedistal.Transform().SetScale(2, 0.25f).SetPosition(1, -1.875f);
 		
 		example_UI();
 

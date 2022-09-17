@@ -11,6 +11,10 @@
 /Build/Assets/__pycache__/
 /Engine/vendor/Python310/__pycache__/
 
+/Build/Eagle-Profile-Runtime.json
+/Build/Eagle-Profile-Shutdown.json
+/Build/Eagle-Profile-Startup.json
+
 # Files
 *.user
 *.sln

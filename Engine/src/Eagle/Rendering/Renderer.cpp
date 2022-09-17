@@ -1,5 +1,5 @@
 #include <EaglePCH.h>
-#include <glm/gtc/matrix_transform.hpp>
+#include <Dependencies/GLM.h>
 #include "Renderer.h"
 #include "RenderCommand.h"
 #include "Text/TextRenderer.h"

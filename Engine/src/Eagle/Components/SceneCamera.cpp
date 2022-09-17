@@ -1,5 +1,5 @@
 #include <EaglePCH.h>
-#include <glm/gtc/matrix_transform.hpp>
+#include <Dependencies/GLM.h>
 #include "SceneCamera.h"
 
 namespace Egl {

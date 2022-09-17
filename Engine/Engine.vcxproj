@@ -154,6 +154,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Dependencies\Entt.h" />
+    <ClInclude Include="src\Dependencies\GLM.h" />
     <ClInclude Include="src\Dependencies\ImGui.h" />
     <ClInclude Include="src\Dependencies\ImGuiInternal.h" />
     <ClInclude Include="src\Eagle.h" />

@@ -1,7 +1,7 @@
 #include <EaglePCH.h>
 #include <Dependencies/ImGui.h>
 #include <Dependencies/ImGuiInternal.h>
-#include <glm/gtc/type_ptr.hpp>
+#include <Dependencies/GLM.h>
 #include "PropertiesPanel.h"
 #include "Eagle/ECS/Components.h"
 #include "Eagle/Core/UniqueID.h"

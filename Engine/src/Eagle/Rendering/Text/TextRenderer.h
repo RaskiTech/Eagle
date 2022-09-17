@@ -1,5 +1,5 @@
 #pragma once
-#include <glm/glm.hpp>
+#include <Dependencies/GLM.h>
 #include "Eagle/Rendering/Texture.h"
 
 namespace Egl {

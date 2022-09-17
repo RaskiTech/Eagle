@@ -1,5 +1,5 @@
 #include <EaglePCH.h>
-#include <glm/gtc/type_ptr.hpp>
+#include <Dependencies/GLM.h>
 #include <Dependencies/ImGui.h>
 #include "Eagle/Core/UniqueID.h"
 #include "ParticleUpdater.h"

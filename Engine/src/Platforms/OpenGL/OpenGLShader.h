@@ -1,6 +1,6 @@
 #pragma once
 
-#include <glm/glm.hpp>
+#include <Dependencies/GLM.h>
 #include <glad/glad.h>
 #include "Eagle/Rendering/Shader.h"
 

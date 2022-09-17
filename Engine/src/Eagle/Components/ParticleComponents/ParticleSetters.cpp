@@ -1,8 +1,5 @@
 #include <EaglePCH.h>
-#include <glm/gtc/random.hpp>
-#include <glm/gtc/constants.hpp>
-#include <glm/gtc/type_ptr.hpp>
-#include <glm/gtx/rotate_vector.hpp>
+#include <Dependencies/GLM.h>
 #include <Dependencies/ImGui.h>
 #include "ParticleSetters.h"
 #include "Eagle/Core/Random.h"
@@ -32,7 +29,7 @@ namespace Egl {
 		}
 
 		void CirclePosSetter::Apply(float deltaTime, ParticleData* data, TransformComponent& tr, uint32_t startId, uint32_t endId) {
-			constexpr float pi2 = glm::pi<float>() * 2.0f;
+			float pi2 = glm::pi<float>() * 2.0f;
 			const glm::vec2& pos = tr.GetPosition();
 			for (uint32_t i = startId; i < endId; ++i) {
 				float ang = Random::Float(pi2); // glm::linearRand(0.0f, glm::pi<float>() * 2.0f);

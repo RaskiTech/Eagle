@@ -1,5 +1,5 @@
 #include <EaglePCH.h>
-#include <glm/gtx/rotate_vector.hpp>
+#include <Dependencies/GLM.h>
 #include "Components.h"
 #include "ComponentsInternal.h"
 #include "Eagle/Core/Application.h"
@@ -9,7 +9,7 @@
 namespace Egl {
 
 	#pragma region TransformComponent
-	void TransformComponent::SetPosition(const glm::vec2& position) {
+	TransformComponent& TransformComponent::SetPosition(const glm::vec2& position) {
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		if (parent != entt::null) {
 			const glm::vec2& parentWorldPosition = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetPosition();
@@ -22,8 +22,9 @@ namespace Egl {
 
 		const Relation& rel = thisEntity.GetComponent<Relation>();
 		SetWorldPosFlagsFalse(rel);
+		return *this;
 	}
-	void TransformComponent::SetRotation(float rotation) {
+	TransformComponent& TransformComponent::SetRotation(float rotation) {
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		if (parent != entt::null) {
 			const float parentWorldRotation = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetRotation();
@@ -37,8 +38,9 @@ namespace Egl {
 		const Relation& rel = thisEntity.GetComponent<Relation>();
 		SetWorldRotFlagsFalse(rel);
 		SetWorldPosFlagsFalse(rel);
+		return *this;
 	}
-	void TransformComponent::SetScale(const glm::vec2& scale) {
+	TransformComponent& TransformComponent::SetScale(const glm::vec2& scale) {
 		entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		if (parent != entt::null) {
 			const glm::vec2& parentWorldScale = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetScale();
@@ -52,24 +54,28 @@ namespace Egl {
 		const Relation& rel = thisEntity.GetComponent<Relation>();
 		SetWorldScaleFlagsFalse(rel);
 		SetWorldPosFlagsFalse(rel);
+		return *this;
 	}
 
-	void TransformComponent::SetLocalPosition(const glm::vec2& position) {
+	TransformComponent& TransformComponent::SetLocalPosition(const glm::vec2& position) {
 		localPosition = position;
 		const Relation& rel = thisEntity.GetComponent<Relation>();
 		SetWorldPosFlagsFalse(rel);
+		return *this;
 	}
-	void TransformComponent::SetLocalRotation(float rotation) {
+	TransformComponent& TransformComponent::SetLocalRotation(float rotation) {
 		localRotation = rotation;
 		const Relation& rel = thisEntity.GetComponent<Relation>();
 		SetWorldRotFlagsFalse(rel);
 		SetWorldPosFlagsFalse(rel);
+		return *this;
 	}
-	void TransformComponent::SetLocalScale(const glm::vec2& scale) {
+	TransformComponent& TransformComponent::SetLocalScale(const glm::vec2& scale) {
 		localScale = scale;
 		const Relation& rel = thisEntity.GetComponent<Relation>();
 		SetWorldScaleFlagsFalse(rel);
 		SetWorldPosFlagsFalse(rel);
+		return *this;
 	}
 
 	const glm::vec2& TransformComponent::GetPosition() const {

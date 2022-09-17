@@ -2,7 +2,7 @@
 
 #include <EaglePCH.h>
 #include "Eagle/Core/Events/Event.h"
-#include <glm/glm.hpp>
+#include <Dependencies/GLM.h>
 
 namespace Egl {
 	struct WindowProps {

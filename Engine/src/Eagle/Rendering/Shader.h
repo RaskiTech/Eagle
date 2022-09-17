@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-#include <glm/glm.hpp>
+#include <Dependencies/GLM.h>
 #include <unordered_map>
 #include "Eagle/Core/Core.h"
 

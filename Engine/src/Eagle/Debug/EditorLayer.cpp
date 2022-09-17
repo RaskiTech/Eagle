@@ -1,6 +1,5 @@
 #include <EaglePCH.h>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include <Dependencies/GLM.h>
 #include <Dependencies/ImGui.h>
 #include <Dependencies/Entt.h>
 #include "EditorLayer.h"

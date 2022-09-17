@@ -1,6 +1,6 @@
 #include <EaglePCH.h>
 #include <Dependencies/ImGui.h>
-#include <glm/gtc/type_ptr.hpp>
+#include <Dependencies/GLM.h>
 #include "HierarchyPanel.h"
 #include "Eagle/ECS/Components.h"
 #include "Eagle/ECS/ComponentsInternal.h"

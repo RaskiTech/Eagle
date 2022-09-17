@@ -1,6 +1,5 @@
 #pragma once
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include <Dependencies/GLM.h>
 #include "Eagle/Components/SceneCamera.h"
 #include "Eagle/Rendering/Texture.h"
 #include "Eagle/ECS/Script.h"
@@ -159,17 +158,17 @@ namespace Egl {
 	};
 	struct TransformComponent {
 		// Local position is always up to date. If the global position is needed, should be checked if the position if up to date.
-		void SetPosition(const glm::vec2& position);
-		void SetPosition(float x, float y) { SetPosition({ x, y }); }
-		void SetRotation(float rotation);
-		void SetScale(const glm::vec2& scale);
-		void SetScale(float x, float y) { SetScale({ x, y }); }
+		TransformComponent& SetPosition(const glm::vec2& position);
+		TransformComponent& SetPosition(float x, float y) { SetPosition({ x, y }); return *this; }
+		TransformComponent& SetRotation(float rotation);
+		TransformComponent& SetScale(const glm::vec2& scale);
+		TransformComponent& SetScale(float x, float y) { SetScale({ x, y }); return *this; }
 
-		void SetLocalPosition(const glm::vec2& position);
-		void SetLocalPosition(float x, float y) { SetLocalPosition({ x, y }); };
-		void SetLocalRotation(float rotation);
-		void SetLocalScale(const glm::vec2& scale);
-		void SetLocalScale(float x, float y) { SetLocalScale({ x, y }); }
+		TransformComponent& SetLocalPosition(const glm::vec2& position);
+		TransformComponent& SetLocalPosition(float x, float y) { SetLocalPosition({ x, y }); return *this; };
+		TransformComponent& SetLocalRotation(float rotation);
+		TransformComponent& SetLocalScale(const glm::vec2& scale);
+		TransformComponent& SetLocalScale(float x, float y) { SetLocalScale({ x, y }); return *this; }
 
 		const glm::vec2& GetPosition() const;
 		float GetRotation() const;
@@ -334,17 +333,17 @@ namespace Egl {
 	};
 
 	struct AudioSource {
-		void Play(bool play);
-		void SetVolume(float volume) { sample->volume = glm::clamp(volume, 0.0f, 1.0f); }
-		float GetDuration() { return (float)(*sample->clip).data.getLengthInSeconds(); }
-		float GetTime() { return (float)sample->samplePosition / (*sample->clip).data.getSampleRate(); }
-		void SetTime(float time) { sample->samplePosition = glm::clamp((int)(time * (*sample->clip).data.getSampleRate()), 0, (*sample->clip).data.getNumSamplesPerChannel()); }
-
 		AudioSource(AudioClipID clip);
 		AudioSource(AudioSource& source);
 		AudioSource(AudioSource&& source);
 		AudioSource& operator=(const AudioSource& other);
 		~AudioSource();
+
+		void Play(bool play);
+		void SetVolume(float volume) { sample->volume = glm::clamp(volume, 0.0f, 1.0f); }
+		float GetDuration() { return (float)(*sample->clip).data.getLengthInSeconds(); }
+		float GetTime() { return (float)sample->samplePosition / (*sample->clip).data.getSampleRate(); }
+		void SetTime(float time) { sample->samplePosition = glm::clamp((int)(time * (*sample->clip).data.getSampleRate()), 0, (*sample->clip).data.getNumSamplesPerChannel()); }
 
 	private:
 		void PossibleSampleDelete();

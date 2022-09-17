@@ -38,6 +38,8 @@ namespace Egl {
 		template<> void RemoveComponent<MetadataComponent>() const = delete;
 		template<> void RemoveComponent<Relation>() const = delete;
 
+		TransformComponent& Transform() const { return GetComponent<TransformComponent>(); }
+
 		void SetParent(const Entity& parent) const { parent.AddChild(*this); }
 		bool IsValid() const { return mEntity != entt::null; }
 		void AddChild(const Entity& child) const;
@@ -57,6 +59,7 @@ namespace Egl {
 		Scene* GetParentScene() const { return mScene; }
 
 		operator bool() const { return mEntity != entt::null; }
+
 	private:
 		entt::entity mEntity = entt::null;
 		Scene* mScene = nullptr;

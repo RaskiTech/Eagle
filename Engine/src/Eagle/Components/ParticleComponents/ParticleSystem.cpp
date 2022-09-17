@@ -1,5 +1,5 @@
 #include <EaglePCH.h>
-#include <glm/glm.hpp>
+#include <Dependencies/GLM.h>
 #include "ParticleSystem.h"
 #include "ParticleData.h"
 #include "ParticleSetters.h"

@@ -1,5 +1,4 @@
 #pragma once
-#include <glm/glm.hpp>
 #include "Core.h"
 #include "Window.h"
 #include "Eagle/Core/GameLayer.h"

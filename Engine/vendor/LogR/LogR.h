@@ -14,7 +14,7 @@ https://github.com/RaskiTech/LogR
 #define LogR_WHITE       "\033[37m"
 
 #ifdef LOGR_INCLUDE_GLM_TYPES
-#include <glm/glm.hpp>
+#include <Dependencies/GLM.h>
 #endif
 
 namespace LogR {
