@@ -1,15 +1,16 @@
 # Directories
 .vs/
-/bin/
-/bin-int/
-/Engine/vendor/Glad/bin/
-/Engine/vendor/Glad/bin-int/
-/Engine/vendor/PortAudio/bin/
-/Engine/vendor/PortAudio/bin-int/
-/Build/Engine.exe
-/Build/__pycache__/
-/Build/Assets/__pycache__/
-/Engine/vendor/Python310/__pycache__/
+bin/
+bin-int/
+Engine/vendor/Glad/bin/
+Engine/vendor/Glad/bin-int/
+Engine/vendor/PortAudio/bin/
+Engine/vendor/PortAudio/bin-int/
+Build/Engine.exe
+Build/__pycache__/
+Build/Assets/__pycache__/
+Engine/vendor/Python310/__pycache__/
+Engine/vendor/Python310/Lib/__pycache__/
 
 /Build/Eagle-Profile-Runtime.json
 /Build/Eagle-Profile-Shutdown.json
@@ -20,5 +21,5 @@
 *.sln
 *.vcproj
 *.vcproj.filters
-*.vcxproj
 *.vcxproj.filters
+*.vcxproj

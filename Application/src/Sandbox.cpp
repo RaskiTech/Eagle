@@ -28,7 +28,6 @@ public:
 	}
 
 	bool OnEvent(Event& e) {
-		// return: Does this event function consume the event
 		return false;
 	}
 };
@@ -85,11 +84,6 @@ class ExampleScene : public Scene {
 		example_UI();
 
 		camera.AddComponent<NativeScriptComponent>().Bind<example_CameraController>();
-		
-		AudioClipID clip2 = Assets::CreateClip("Assets/Ring09.wav");
-		pedistal.AddComponent<AudioSource>(clip2).Play(true);
-		
-		PythonReturnData data = Python::RunFunction("Script.py", "TemplateFunction", (const std::string)"Argument");
 	}
 	void SceneEnd() {
 

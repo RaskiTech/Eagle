@@ -107,7 +107,7 @@ namespace Egl {
 
 		// Iterate through and check what listeners are under the mouse
 		for (NativeScriptComponent* comp : mActiveScene->eventScriptsInOrder) {
-			EAGLE_ENG_ASSERT(comp->OnEventFunc, "The script doesn't have an event function but it is in the list");
+			EAGLE_ENG_ASSERT(comp->OnEventFunc, "The script doesn't have an event function but it is in the event list");
 			const Entity& entity = comp->baseInstance->GetEntity();
 			if (entity.HasComponent<TransformComponent>()) {
 				auto& tComp = entity.GetComponent<TransformComponent>();

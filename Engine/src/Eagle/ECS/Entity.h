@@ -39,6 +39,7 @@ namespace Egl {
 		template<> void RemoveComponent<Relation>() const = delete;
 
 		TransformComponent& Transform() const { return GetComponent<TransformComponent>(); }
+		UITransformComponent& UITransform() const { return GetComponent<UITransformComponent>(); }
 
 		void SetParent(const Entity& parent) const { parent.AddChild(*this); }
 		bool IsValid() const { return mEntity != entt::null; }

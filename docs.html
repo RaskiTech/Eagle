@@ -2,11 +2,106 @@
 <html>
 <head>
 <title>Eagle Docs</title>
+<style>
+    body {
+        background-color: #2d3436;
+        font-family: Verdana, Geneva, Tahoma, Arial;
+    }
+    p {
+        color: #dfe6e9;
+        font-size: 17px;
+    }
+    code {
+        color: #b2bec3;
+    }
+    h1 {
+        margin: auto;
+        text-align: center;
+        color:#ff7675;
+        padding: 25px;
+    }
+    h2 {
+        margin: auto;
+        width: 50%;
+        text-align: center;
+        color:#74b9ff;
+        padding-top: 30px;
+    }
+    .centered {
+        margin: auto;
+        text-align: center;
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+</style>
 </head>
 <body>
 
-<h1>Docs</h1>
-<p>TODO: write docs.</p>
+<h1>Eagle Engine Docs</h1>
+<div class="centered">
+    <p>Hello and welcome to the Eagle Engine docs. This is meant to be a brief introduction to all the different systems in Eagle Engine. This list is in no shape of form complete, so if you want more in-depth look at a feature, don't hesitate to take a peek at the code. This is more of a push to the right direction.</p>
+    <p>Eagle Engine is in its fullest when used to build interfaces for applications that connect python and c++. It is also possible to make games with it. However, if your scene requires many manually placed objects and is mostly not procedural, Eagle Engine might not be the best choice. There is an editor, but tweaking the placement of hundreds of game objects is not its primary purpose.</p>
+
+    <h2>Folder Structure</h2>
+    <p>
+        Your scripts should lie inside Application/src. When you need new scripts, create them there. The Build folder contains your built application. Make sure that you have run the application in release mode before exporting it, 
+        otherwise the debug version could be exported. The build folder also contains your Assets folder. Here you can put any media you need to use. These are the only folders you need to worry about.
+    </p>
+
+    <h2>Build options</h2>
+    <p>
+        Eagle build settings are located in Engine/src/EagleBuildSettings.h. (possibly changing soon) Here you can modify how the engine starts. You can disable the editor, for example.
+    </p>
+
+    <h2>Scenes</h2>
+    <p>
+        The application starts in <code>Egl::ApplicationStartup()</code>. This is the first function to be executed, and most of the time can be left alone. The function returns a reference to a scene. 
+        Create your scene class that is derived from the base class <code>Scene</code>. The scene class needs to implement two functions: <code>SceneBegin()</code> and <code>SceneEnd()</code>. In these functions you can initialize things, 
+        for example add entities and modify them.
+    </p>
+
+    <h2>Entities</h2>
+    <p>
+        You can add an entity to your scene by calling the <code>AddEntity()</code> function. Take a look at <code>EntityParams</code> to set some values to the entity. Every entity consists of components, which can be added 
+        and accessed with <code>.AddComponent<>()</code> and <code>.GetComponent<>()</code> respectfully. These will return references to the components. Don't store the references for a long time: they can become undefined 
+        if new components are added anywhere. Additionally, the object transform can be accessed with just <code>.Transform()</code>.
+    </p>
+
+    <h2>UI</h2>
+    <p>
+        Adding UI elements starts with a canvas, which is just an entity that always is the same size as the screen. A canvas can be added with <code>AddCanvas()</code>. Now you can add UI elements to this canvas by executing <code>AddUIEntity()</code>. 
+        UI entity sizes and positions are controlled by drivers, which can be set with <code>UIEntityParams</code> and later with setter functions. To get a better feel for the different drivers, experiment with them in the editor. You can add components 
+        to these entities like normal, for example <code>TextComponent</code>.
+    </p>
+
+    <h2>Scripts</h2>
+    <p>
+        You can add one script component per entity. You can do this by adding a native script component and calling .Bind on it with your script. <code>.AddComponent< NativeScriptComponent >().Bind< exampleScript >();</code> 
+        The bind function can of course take arguments. The script class itself is a class inheriting the base class <code>script</code>. The script class can optinally implement a couple of functions. <code>void OnCreate()</code> 
+        will run once when the script is attached, <code>void OnUpdate()</code> will run every frame that the script is attached, and <code>void OnDestroy()</code> will run when the script gets removed. In addition, 
+        <code>bool OnEvent(Event& e)</code> will run if the components receives any events when the mouse is on top of it. The function returns whether or not that event consumed the event. If the function consumed the event, 
+        objects behind it will not receive the event.
+    </p>
+
+    <h2>Logging</h2>
+    <p>
+        To log something, for example a variable, use the <code>LOG()</code> function. You can log anything from strings to glm types. If you want to log a value between some text, you can seperate the different parts with commas. 
+        <code>LOG("The value is ", myVariable, ". Yay!")</code> You can log warnings with <code>LOG_WARN()</code> and errors with <code>LOG_ERROR()</code>.
+    </p>
+
+    <h2>Python</h2>
+    <p>
+        You can open a python file with <code>Python::GetFile()</code> and then run the file with <code>Python::RunFile()</code>. You can also run just a function in the file. A python component coming soon...
+    </p>
+
+    <h2>Audio</h2>
+    <p>
+        You can create a clip with <code>Assets::CreateClip()</code>. This will give you a reference for that clip. To play this clip, add an <code>AudioSource</code> component to some entity, and feed the clip as a parameter. 
+        The audio will start playing when <code>.Play(true)</code> is called.
+    </p>
+
+    <div style="padding-bottom:30px"></div>
+</div>
 
 </body>
 </html>
