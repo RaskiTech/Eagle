@@ -17,6 +17,7 @@ Engine/vendor/Python310/Lib/__pycache__/
 /Build/Eagle-Profile-Startup.json
 
 # Files
+Build/Engine.exe
 *.user
 *.sln
 *.vcproj
