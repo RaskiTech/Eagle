@@ -44,13 +44,13 @@ namespace Egl {
 		if (e == entt::null)
 			return;
 
-		if (mHierarchyPanel.GetScene()->mRegistry.has<TransformComponent>(e)) {
-			TransformComponent& t = mHierarchyPanel.GetScene()->mRegistry.get<TransformComponent>(e);
+		if (mHierarchyPanel.GetScene()->mRegistry.has<Transform>(e)) {
+			Transform& t = mHierarchyPanel.GetScene()->mRegistry.get<Transform>(e);
 			pos = t.GetPosition();
 			radius = { t.GetScale().x / 2, t.GetScale().y / 2 };
 		}
 		else {
-			UITransformComponent& t = mHierarchyPanel.GetScene()->mRegistry.get<UITransformComponent>(e);
+			UITransform& t = mHierarchyPanel.GetScene()->mRegistry.get<UITransform>(e);
 			pos = t.GetWorldPosition();
 			radius = { t.GetWorldScale().x / 2, t.GetWorldScale().y / 2 };
 		}

@@ -7,7 +7,7 @@ namespace Egl {
 	bool operator == (const Entity& e1, const Entity& e2);
 	struct Relation;
 	struct MetadataComponent;
-	struct TransformComponent;
+	struct Transform;
 
 	class Entity {
 	public:
@@ -33,13 +33,13 @@ namespace Egl {
 			EAGLE_ENG_ASSERT(HasComponent<T>(), "Entity doesn't have the component");
 			return mScene->mRegistry.remove<T>(mEntity);
 		}
-		template<> void RemoveComponent<TransformComponent>() const = delete;
-		template<> void RemoveComponent<UITransformComponent>() const = delete;
+		template<> void RemoveComponent<Transform>() const = delete;
+		template<> void RemoveComponent<UITransform>() const = delete;
 		template<> void RemoveComponent<MetadataComponent>() const = delete;
 		template<> void RemoveComponent<Relation>() const = delete;
 
-		TransformComponent& Transform() const { return GetComponent<TransformComponent>(); }
-		UITransformComponent& UITransform() const { return GetComponent<UITransformComponent>(); }
+		Transform& GetTransform() const { return GetComponent<Transform>(); }
+		UITransform& GetUITransform() const { return GetComponent<UITransform>(); }
 
 		void SetParent(const Entity& parent) const { parent.AddChild(*this); }
 		bool IsValid() const { return mEntity != entt::null; }

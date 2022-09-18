@@ -13,7 +13,7 @@ namespace Egl {
 			virtual ~Emitter() = default;
 
 			// calls all the generators and at the end it activates (wakes) particle
-			virtual void Emit(float dt, ParticleData* data, TransformComponent& tr);
+			virtual void Emit(float dt, ParticleData* data, Transform& tr);
 
 			void AddSetter(Ref<ParticleSetter> gen) { mSetters.push_back(gen); }
 			auto& GetSetters() const { return mSetters; }
@@ -33,7 +33,7 @@ namespace Egl {
 			explicit ParticleSystem(uint32_t maxCount = 10000);
 			~ParticleSystem() {}
 
-			void Update(float deltaTime, TransformComponent& tr);
+			void Update(float deltaTime, Transform& tr);
 			void Render(uint16_t depth);
 			void Reset();
 

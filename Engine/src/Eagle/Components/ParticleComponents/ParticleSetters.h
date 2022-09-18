@@ -4,11 +4,11 @@
 
 
 namespace Egl {
-	struct TransformComponent;
+	struct Transform;
 
 	namespace Particles {
 		struct ParticleSetter {
-			virtual void Apply(float deltaTime, ParticleData* data, TransformComponent& tr, uint32_t startId, uint32_t endId) = 0;
+			virtual void Apply(float deltaTime, ParticleData* data, Transform& tr, uint32_t startId, uint32_t endId) = 0;
 			virtual void OnImGuiRender() = 0;
 		};
 	}
@@ -21,7 +21,7 @@ namespace Egl {
 			BoxPosSetter() {}
 			BoxPosSetter(const glm::vec2& maxOffset) : maxOffset(maxOffset) {}
 
-			virtual void Apply(float deltaTime, ParticleData* data, TransformComponent& tr, uint32_t startId, uint32_t endId) override;
+			virtual void Apply(float deltaTime, ParticleData* data, Transform& tr, uint32_t startId, uint32_t endId) override;
 			virtual void OnImGuiRender() override;
 
 			glm::vec2 maxOffset { 0 };
@@ -30,7 +30,7 @@ namespace Egl {
 			CirclePosSetter() { }
 			CirclePosSetter(const glm::vec2& radius) :radius(radius) {}
 
-			virtual void Apply(float deltaTime, ParticleData* data, TransformComponent& tr, uint32_t startId, uint32_t endId) override;
+			virtual void Apply(float deltaTime, ParticleData* data, Transform& tr, uint32_t startId, uint32_t endId) override;
 			virtual void OnImGuiRender() override;
 
 			glm::vec2 radius { 0 };
@@ -41,7 +41,7 @@ namespace Egl {
 			ColorSetter(const glm::vec4& minStartColor, const glm::vec4& maxStartColor, const glm::vec4& minEndColor, const glm::vec4& maxEndColor)
 				: minStartColor(minStartColor), maxStartColor(maxStartColor), minEndColor(minEndColor), maxEndColor(maxEndColor) {}
 
-			virtual void Apply(float deltaTime, ParticleData* data, TransformComponent& tr, uint32_t startId, uint32_t endId) override;
+			virtual void Apply(float deltaTime, ParticleData* data, Transform& tr, uint32_t startId, uint32_t endId) override;
 			virtual void OnImGuiRender() override;
 
 			glm::vec4 minStartColor { 1 };
@@ -54,7 +54,7 @@ namespace Egl {
 			VelocitySetter() {}
 			VelocitySetter(const glm::vec2& minVelocity, const glm::vec2& maxVelocity) : minVelocity(minVelocity), maxVelocity(maxVelocity) {}
 
-			virtual void Apply(float deltaTime, ParticleData* data, TransformComponent& tr, uint32_t startId, uint32_t endId) override;
+			virtual void Apply(float deltaTime, ParticleData* data, Transform& tr, uint32_t startId, uint32_t endId) override;
 			virtual void OnImGuiRender() override;
 
 			glm::vec2 minVelocity { 0 };
@@ -65,7 +65,7 @@ namespace Egl {
 			TimeSetter() {}
 			TimeSetter(float minTime, float maxTime) : minTime(minTime), maxTime(maxTime) {}
 
-			virtual void Apply(float deltaTime, ParticleData* data, TransformComponent& tr, uint32_t startId, uint32_t endId) override;
+			virtual void Apply(float deltaTime, ParticleData* data, Transform& tr, uint32_t startId, uint32_t endId) override;
 			virtual void OnImGuiRender() override;
 
 			float minTime = 1;
@@ -76,7 +76,7 @@ namespace Egl {
 			SizeSetter() {}
 			SizeSetter(const glm::vec2& minSize, const glm::vec2& maxSize) : minSize(minSize), maxSize(maxSize) {}
 
-			virtual void Apply(float deltaTime, ParticleData* data, TransformComponent& tr, uint32_t startId, uint32_t endId) override;
+			virtual void Apply(float deltaTime, ParticleData* data, Transform& tr, uint32_t startId, uint32_t endId) override;
 			virtual void OnImGuiRender() override;
 
 			glm::vec2 minSize{ 0 };

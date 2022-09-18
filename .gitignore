@@ -7,10 +7,12 @@ Engine/vendor/Glad/bin-int/
 Engine/vendor/PortAudio/bin/
 Engine/vendor/PortAudio/bin-int/
 Build/Engine.exe
+__pycache__/
 Build/__pycache__/
 Build/Assets/__pycache__/
 Engine/vendor/Python310/__pycache__/
 Engine/vendor/Python310/Lib/__pycache__/
+Engine/vendor/Python310/Lib/encodings/__pycache__/
 
 /Build/Eagle-Profile-Runtime.json
 /Build/Eagle-Profile-Shutdown.json
@@ -22,5 +24,6 @@ Build/Engine.exe
 *.sln
 *.vcproj
 *.vcproj.filters
-*.vcxproj.filters
 *.vcxproj
+*.vcxproj.filters
+*.filters

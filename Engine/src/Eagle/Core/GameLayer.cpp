@@ -109,13 +109,13 @@ namespace Egl {
 		for (NativeScriptComponent* comp : mActiveScene->eventScriptsInOrder) {
 			EAGLE_ENG_ASSERT(comp->OnEventFunc, "The script doesn't have an event function but it is in the event list");
 			const Entity& entity = comp->baseInstance->GetEntity();
-			if (entity.HasComponent<TransformComponent>()) {
-				auto& tComp = entity.GetComponent<TransformComponent>();
+			if (entity.HasComponent<Transform>()) {
+				auto& tComp = entity.GetComponent<Transform>();
 				if (IS_UNDER_MOUSE(mousePos.x, mousePos.y, tComp.GetPosition().x, tComp.GetPosition().y, tComp.GetScale().x/2, tComp.GetScale().y/2))
 					listenersUnderMouse.push_back(comp);
 			}
 			else {
-				auto& tComp = entity.GetComponent<UITransformComponent>();
+				auto& tComp = entity.GetComponent<UITransform>();
 				//LOG(glm::abs(mouseX - objX), objSizeX, glm::abs(mouseY-objY), objSizeY);
 				if (IS_UNDER_MOUSE(mousePos.x, mousePos.y, tComp.GetWorldPosition().x, tComp.GetWorldPosition().y, tComp.GetWorldScale().x/2, tComp.GetWorldScale().y/2))
 					listenersUnderMouse.push_back(comp);

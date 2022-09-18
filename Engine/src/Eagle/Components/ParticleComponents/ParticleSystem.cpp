@@ -10,7 +10,7 @@ namespace Egl {
 	namespace Particles {
 
 		///// Particle Emitter /////
-		void Emitter::Emit(float deltaTime, ParticleData* data, TransformComponent& tr) {
+		void Emitter::Emit(float deltaTime, ParticleData* data, Transform& tr) {
 			mEmitTime += deltaTime * mEmitsPerSecond;
 			const uint32_t maxNewParticles = (uint32_t)mEmitTime;
 			mEmitTime -= maxNewParticles;
@@ -31,7 +31,7 @@ namespace Egl {
 			mParticles.Generate(maxCount);
 		}
 
-		void ParticleSystem::Update(float deltaTime, TransformComponent& tr) {
+		void ParticleSystem::Update(float deltaTime, Transform& tr) {
 			for (auto& em : mEmitters)
 				em->Emit(deltaTime, &mParticles, tr);
 

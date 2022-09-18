@@ -13,7 +13,7 @@ using namespace Egl;
 class example_CameraController : public Script {
 public:
 	void OnUpdate() {
-		auto& transform = GetComponent<TransformComponent>();
+		auto& transform = GetComponent<Transform>();
 		auto& camera = GetComponent<CameraComponent>().camera;
 		float zoomSize = camera.GetSize();
 		auto pos = transform.GetPosition();
@@ -35,17 +35,15 @@ public:
 class ExampleScene : public Scene {
 	void example_UI() {
 		Entity canvas = AddCanvas();
-		UIEntityParams topCornerParams = UIEntityParams("Top corner square", (UITransformComponent::Driver)UITransformComponent::XDriver::ConstLeft 
-			| (UITransformComponent::Driver)UITransformComponent::WidthDriver::RelativeWidth, (UITransformComponent::Driver)UITransformComponent::YDriver::ConstTop 
-			| (UITransformComponent::Driver)UITransformComponent::HeightDriver::RelativeHeight, 25, 25, 0.15f, 0.1f, false, false);
-		UIEntityParams middleSquare = UIEntityParams("middleSquare", (UITransformComponent::Driver)UITransformComponent::LeftSideDriver::ConstOffset 
-			| (UITransformComponent::Driver)UITransformComponent::RightSideDriver::ConstOffset, (UITransformComponent::Driver)UITransformComponent::TopDriver::ConstOffset 
-			| (UITransformComponent::Driver)UITransformComponent::BottomDriver::ConstOffset, 25, 15, 25, 15, true, true);
+		UIEntityParams topCornerParams(UITransform::XDriver::ConstLeft, 25, UITransform::WidthDriver::RelativeWidth, 0.15f,
+			UITransform::YDriver::ConstTop, 25, UITransform::HeightDriver::RelativeHeight, 0.1f);
+		UIEntityParams middleSquare(UITransform::LeftDriver::Constant, 25, UITransform::RightDriver::Constant, 25,
+			UITransform::TopDriver::Constant, 15, UITransform::BottomDriver::Constant, 15);
 
-		Entity exampleSquare = AddUIEntity(topCornerParams, canvas);
+		Entity exampleSquare = AddUIEntity("Top corner square", topCornerParams, canvas);
 		exampleSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.3f, 0.3f, 0.3f, 1 });
 
-		Entity exampleOtherSquare = AddUIEntity(middleSquare, exampleSquare);
+		Entity exampleOtherSquare = AddUIEntity("middle square", middleSquare, exampleSquare);
 		exampleOtherSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.3f, 0.2f, 1 });
 		exampleOtherSquare.GetComponent<MetadataComponent>().subSorting = 1;
 
@@ -61,25 +59,25 @@ class ExampleScene : public Scene {
 		auto& cameraComp = camera.AddComponent<CameraComponent>();
 		cameraComp.camera.SetSize(8.85f);
 		cameraComp.backgroundColor = { 0.19f, 0.32f, 0.45f, 1.0f };
-		camera.Transform().SetPosition(0.0f, -0.6f);
+		camera.GetTransform().SetPosition(0.0f, -0.6f);
 		SetPrimaryCamera(camera);
 		
 		auto& player = AddEntity("Player");
 		auto texture = Texture::Create("Assets/Player.png", false);
 		player.AddComponent<SpriteRendererComponent>(SubTexture::CreateFromIndexes(texture, { 0, 0 }, { 16, 16 }));
-		player.Transform().SetPosition(-4.2f, -1.5f);
+		player.GetTransform().SetPosition(-4.2f, -1.5f);
 		
 		Entity ground = AddEntity("Ground");
 		ground.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.4f, 0.42f, 0.52f, 1 });
-		ground.Transform().SetScale(13, 8).SetPosition(0, -6);
+		ground.GetTransform().SetScale(13, 8).SetPosition(0, -6);
 		
-		Entity fireHydrant = AddEntity(EntityParams("Fire hydrant"));
-		fireHydrant.AddComponent<SpriteRendererComponent>(Texture::Create("Assets/FireHydrant.png", false));
-		fireHydrant.Transform().SetScale(0.5f, 8).SetLocalPosition(0, 4.5f);
-		
-		Entity pedistal = AddEntity(EntityParams("Firehydrant stucture"), fireHydrant);
+		Entity pedistal = AddEntity("Firehydrant stucture");
 		pedistal.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.5f, 0.52f, 0.62f, 1 });
-		pedistal.Transform().SetScale(2, 0.25f).SetPosition(1, -1.875f);
+		pedistal.GetTransform().SetScale(2, 0.25f).SetPosition(1, -1.875f);
+
+		Entity fireHydrant = AddEntity("Fire hydrant", pedistal);
+		fireHydrant.AddComponent<SpriteRendererComponent>(Texture::Create("Assets/FireHydrant.png", false));
+		fireHydrant.GetTransform().SetScale(1, 1.75f).SetLocalPosition(0, 4);
 		
 		example_UI();
 

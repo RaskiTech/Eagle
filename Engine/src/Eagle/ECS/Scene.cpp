@@ -12,15 +12,32 @@
 #include "Eagle/Core/Application.h"
 
 namespace Egl {
-	Scene::Scene() {
-		
-	}
+	Scene::Scene() {}
 
-	Entity Scene::AddEntity(const EntityParams& params) {
+	Entity Scene::AddEntity(const std::string& name, const EntityParams& params, Entity parent) {
 		entt::entity createdEntityID = mRegistry.create();
 		Entity newEntity = { createdEntityID, this };
-		newEntity.AddComponent<TransformComponent>(newEntity, params.position, params.rotation, params.scale);
-		newEntity.AddComponent<MetadataComponent>(params.name, params.sortingLayer, params.subSorting);
+		newEntity.AddComponent<Transform>(newEntity, params.position, params.rotation, params.scale);
+		newEntity.AddComponent<MetadataComponent>(name, params.sortingLayer, params.subSorting);
+
+		Relation& createdEntityRelation = newEntity.AddComponent<Relation>();
+		createdEntityRelation.parent = (entt::entity)parent.GetID();
+		Relation& parentRelation = parent.GetComponent<Relation>();
+		if (parentRelation.firstChild != entt::null)
+			mRegistry.get<Relation>(parentRelation.firstChild).previousSibling = createdEntityID;
+		createdEntityRelation.nextSibling = parentRelation.firstChild;
+		parentRelation.firstChild = createdEntityID;
+		parentRelation.childCount++;
+		return newEntity;
+	}
+	Entity Scene::AddEntity(const std::string& name, Entity parent) { return AddEntity(name, EntityParams(), parent); }
+	Entity Scene::AddEntity(const std::string& name) { return AddEntity(name, EntityParams()); }
+
+	Entity Scene::AddEntity(const std::string& name, const EntityParams& params) {
+		entt::entity createdEntityID = mRegistry.create();
+		Entity newEntity = { createdEntityID, this };
+		newEntity.AddComponent<Transform>(newEntity, params.position, params.rotation, params.scale);
+		newEntity.AddComponent<MetadataComponent>(name, params.sortingLayer, params.subSorting);
 		Relation& createdEntityRelation = newEntity.AddComponent<Relation>();
 
 		if (mFirstEntity == entt::null) {
@@ -33,28 +50,26 @@ namespace Egl {
 		}
 		return newEntity;
 	}
-	Entity Scene::AddEntity(const std::string& name) {
-		return AddEntity(EntityParams(name));
-	}
+
 	Entity Scene::AddCanvas() { 
-		Entity e = AddEntity(EntityParams("Canvas"));
+		Entity e = AddEntity("Canvas");
 		e.AddComponent<CanvasComponent>(); 
 		return e; 
 	}
-	Entity Scene::AddUIEntity(const UIEntityParams& params, Entity canvasOrParent) {
-		EAGLE_ENG_ASSERT(canvasOrParent.HasComponent<UITransformComponent>() || canvasOrParent.HasComponent<CanvasComponent>(), "Parent isn't a canvas or an UI entity");
+	Entity Scene::AddUIEntity(const std::string& name, const UIEntityParams& params, Entity canvasOrParent) {
+		EAGLE_ENG_ASSERT(canvasOrParent.HasComponent<UITransform>() || canvasOrParent.HasComponent<CanvasComponent>(), "Parent isn't a canvas or an UI entity");
 
 		entt::entity createdEntityID = mRegistry.create();
 		Entity newEntity = { createdEntityID, this };
-		UITransformComponent& align = newEntity.AddComponent<UITransformComponent>(newEntity, params.xDrivers, params.yDrivers, params.xPrimaryValue, 
+		UITransform& align = newEntity.AddComponent<UITransform>(newEntity, params.xDrivers, params.yDrivers, params.xPrimaryValue, 
 			params.yPrimaryValue, params.xSecondaryValue, params.ySecondaryValue, params.useSidesHorizontal, params.useSidesVertical);
-		newEntity.AddComponent<MetadataComponent>(params.name, params.sortingLayer, params.subSorting);
+		newEntity.AddComponent<MetadataComponent>(name, params.sortingLayer, params.subSorting);
 		Relation& createdEntityRelation = newEntity.AddComponent<Relation>();
 		newEntity.SetParent(canvasOrParent);
 		return newEntity;
 	}
 	Entity Scene::AddUIEntity(const std::string& name, Entity canvasOrParent) {
-		return AddUIEntity(UIEntityParams(name), canvasOrParent);
+		return AddUIEntity(name, UIEntityParams(), canvasOrParent);
 	}
 
 	void Scene::RemoveEntity(Entity& entity) {
@@ -90,7 +105,7 @@ namespace Egl {
 
 		if (mPrimaryCamera != entt::null) {
 			CameraComponent& camera = mRegistry.get<CameraComponent>(mPrimaryCamera);
-			TransformComponent& camTrans = mRegistry.get<TransformComponent>(mPrimaryCamera);
+			Transform& camTrans = mRegistry.get<Transform>(mPrimaryCamera);
 
 			RenderCommand::SetColor(camera.backgroundColor);
 			RenderCommand::Clear();
@@ -99,9 +114,9 @@ namespace Egl {
 
 			/////// View Scaler ///////
 			{
-				auto group = mRegistry.group<CanvasComponent>(entt::get<TransformComponent>);
+				auto group = mRegistry.group<CanvasComponent>(entt::get<Transform>);
 				for (auto entity : group) {
-					auto& transform = group.get<TransformComponent>(entity);
+					auto& transform = group.get<Transform>(entity);
 
 					const glm::vec2 size = { camera.camera.GetSize() * camera.camera.GetAspectRatio(), camera.camera.GetSize() };
 					if (transform.GetScale() != size)
@@ -116,9 +131,9 @@ namespace Egl {
 
 			/////// ParticleSystem ///////
 			{
-				auto group = mRegistry.group<ParticleSystemComponent>(entt::get<TransformComponent, MetadataComponent>);
+				auto group = mRegistry.group<ParticleSystemComponent>(entt::get<Transform, MetadataComponent>);
 				for (auto entity : group) {
-					auto [particleSystem, transform, metadata] = group.get<ParticleSystemComponent, TransformComponent, MetadataComponent>(entity);
+					auto [particleSystem, transform, metadata] = group.get<ParticleSystemComponent, Transform, MetadataComponent>(entity);
 					float delta = Time::GetFrameDelta();
 					particleSystem.particleSystem.Update(delta, transform);
 					uint16_t sorting = ((uint16_t)metadata.sortingLayer << 8) + (uint16_t)metadata.subSorting;
@@ -128,9 +143,9 @@ namespace Egl {
 
 			/////// Sprite ///////
 			{
-				auto group = mRegistry.group<SpriteRendererComponent>(entt::get<TransformComponent, MetadataComponent>);
+				auto group = mRegistry.group<SpriteRendererComponent>(entt::get<Transform, MetadataComponent>);
 				for (auto entity : group) {
-					auto [spriteRenderer, transform, metadata] = group.get<SpriteRendererComponent, TransformComponent, MetadataComponent>(entity);
+					auto [spriteRenderer, transform, metadata] = group.get<SpriteRendererComponent, Transform, MetadataComponent>(entity);
 					uint16_t sorting = metadata.CalculateSorting();
 					if (spriteRenderer.texture == nullptr)
 						Renderer::DrawColorQuad(sorting, transform.GetTransform(), spriteRenderer.color);
@@ -141,9 +156,9 @@ namespace Egl {
 
 			/////// UIAligment && Sprite ///////
 			{
-				auto group = mRegistry.group<UITransformComponent>(entt::get<SpriteRendererComponent, MetadataComponent>);
+				auto group = mRegistry.group<UITransform>(entt::get<SpriteRendererComponent, MetadataComponent>);
 				for (auto entity : group) {
-					auto [spriteRenderer, align, metadata] = group.get<SpriteRendererComponent, UITransformComponent, MetadataComponent>(entity);
+					auto [spriteRenderer, align, metadata] = group.get<SpriteRendererComponent, UITransform, MetadataComponent>(entity);
 					uint16_t sorting = metadata.CalculateSorting();
 					if (spriteRenderer.texture == nullptr)
 						Renderer::DrawColorQuad(sorting, align.GetTransform(), spriteRenderer.color);
@@ -154,9 +169,9 @@ namespace Egl {
 
 			/////// Text ///////
 			{
-				auto group = mRegistry.group<TextComponent>(entt::get<UITransformComponent, MetadataComponent>);
+				auto group = mRegistry.group<TextComponent>(entt::get<UITransform, MetadataComponent>);
 				for (auto entity : group) {
-					auto [textRenderer, align, metadata] = group.get<TextComponent, UITransformComponent, MetadataComponent>(entity);
+					auto [textRenderer, align, metadata] = group.get<TextComponent, UITransform, MetadataComponent>(entity);
 					uint16_t sorting = metadata.CalculateSorting();
 					const glm::vec2& scale = align.GetWorldScale();
 					textRenderer.renderer.RenderText(sorting, textRenderer.data, align.GetWorldPosition(), scale, camera.camera.GetSize());
@@ -171,7 +186,7 @@ namespace Egl {
 	}
 
 	glm::vec2 Scene::ScreenToWorldPos(const glm::vec2& pixelCoordinate) const {
-		const glm::vec2& camPos = mRegistry.get<TransformComponent>(mPrimaryCamera).GetPosition();
+		const glm::vec2& camPos = mRegistry.get<Transform>(mPrimaryCamera).GetPosition();
 		auto& camCam = mRegistry.get<CameraComponent>(mPrimaryCamera);
 		float screenSize = camCam.camera.GetSize();
 		const glm::vec2& viewSize = Application::Get().GetSceneWindowSize();
@@ -183,7 +198,7 @@ namespace Egl {
 		return posInScreenWorld + topCornerInWorld; 
 	}
 	glm::vec2 Scene::WorldToScreenPos(const glm::vec2& worldPos) const {
-		const glm::vec2& camPos = mRegistry.get<TransformComponent>(mPrimaryCamera).GetPosition();
+		const glm::vec2& camPos = mRegistry.get<Transform>(mPrimaryCamera).GetPosition();
 		auto& camCam = mRegistry.get<CameraComponent>(mPrimaryCamera);
 		float screenSize = camCam.camera.GetSize();
 		const glm::vec2& viewSize = Application::Get().GetSceneWindowSize();

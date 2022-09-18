@@ -21,58 +21,58 @@ namespace Egl {
 		CameraComponent(const glm::vec4& backgroundColor, bool fixedAspectRatio = false) : backgroundColor(backgroundColor), fixedAspectRatio(fixedAspectRatio) {}
 	};
 
-	struct UITransformComponent {
+	struct UITransform {
 	#pragma region drivers
 		using Driver = uint8_t;
-		enum class LeftSideDriver {
-			ConstOffset = 0 << 0,   // The side will always have the same offset from the parent
-			RelativeOffset = 1 << 0    // The sides offset will be a certain percent of the parents
+		enum class LeftDriver {
+			Constant = 0 << 0,   // The side will always have the same offset from the parent
+			Relative = 1 << 0    // The sides offset will be a certain percent of the parents
 		};
-		enum class RightSideDriver {
-			ConstOffset = 0 << 4,
-			RelativeOffset = 1 << 4
+		enum class RightDriver {
+			Constant = 0 << 4,
+			Relative = 1 << 4
 		};
 		enum class TopDriver {
-			ConstOffset = 0 << 0,
-			RelativeOffset = 1 << 0
+			Constant = 0 << 0,
+			Relative = 1 << 0
 		};
 		enum class BottomDriver {
-			ConstOffset = 0 << 4,
-			RelativeOffset = 1 << 4
+			Constant = 0 << 4,
+			Relative = 1 << 4
 		};
 
 		enum class XDriver {
 			ConstLeft   = 0 << 0, // The objects left side will always be the same distance from the windows left side
 			ConstRight  = 1 << 0, // The objects right side will always be the same distance from the windows right side
-			AlignCenter      = 2 << 0, // Have the objects center be at a certain percent horizontally
-			AlignLeft        = 3 << 0, // Have the objects top be at a certain percent horizontally
-			AlignRight       = 4 << 0  // Have the objects right side be at a certain percent horizontally
+			AlignCenter = 2 << 0, // Have the objects center be at a certain percent horizontally
+			AlignLeft   = 3 << 0, // Have the objects top be at a certain percent horizontally
+			AlignRight  = 4 << 0  // Have the objects right side be at a certain percent horizontally
 		};
 		enum class WidthDriver {
 			ConstWidth    = 0 << 4, // The object will always have the same width
-			RelativeWidth    = 1 << 4, // The objects width will be a certain percent of the parents
-			AspectWidth      = 2 << 4  // The width will depend on the height. 1 is height
+			RelativeWidth = 1 << 4, // The objects width will be a certain percent of the parents
+			AspectWidth   = 2 << 4  // The width will depend on the height. 1 is height
 		};
 		enum class YDriver {
 			ConstTop    = 0 << 0, // The objects top will always be the same distance from the windows top
 			ConstBottom = 1 << 0, // The objects bottom will always be the same distance from the windows bottom
-			AlignCenter      = 2 << 0, // Have the objects center be at a certain percent vertically
-			AlignTop         = 3 << 0, // Have the objects top be at a certain percent vertically
-			AlignBottom      = 4 << 0  // Have the objects bottom be at a certain percent vertically
+			AlignCenter = 2 << 0, // Have the objects center be at a certain percent vertically
+			AlignTop    = 3 << 0, // Have the objects top be at a certain percent vertically
+			AlignBottom = 4 << 0  // Have the objects bottom be at a certain percent vertically
 		};
 		enum class HeightDriver {
-			ConstHeight   = 0 << 4, // The object will always have the same height
-			RelativeHeight   = 1 << 4, // The objects height will be a certain percent of the parents
-			AspectHeight     = 2 << 4  // The height will depend on the width. 1 is width
+			ConstHeight    = 0 << 4, // The object will always have the same height
+			RelativeHeight = 1 << 4, // The objects height will be a certain percent of the parents
+			AspectHeight   = 2 << 4  // The height will depend on the width. 1 is width
 		};
 #pragma endregion
 
-		UITransformComponent(Entity thisEntity) : thisEntity(thisEntity) {};
-		UITransformComponent(Entity thisEntity, UITransformComponent::XDriver xDriver, float xValue, UITransformComponent::YDriver yDriver, float yValue, 
-			UITransformComponent::WidthDriver widthDriver, float widthValue, UITransformComponent::HeightDriver heightDriver, float heightValue)
+		UITransform(Entity thisEntity) : thisEntity(thisEntity) {};
+		UITransform(Entity thisEntity, UITransform::XDriver xDriver, float xValue, UITransform::YDriver yDriver, float yValue, 
+			UITransform::WidthDriver widthDriver, float widthValue, UITransform::HeightDriver heightDriver, float heightValue)
 			: thisEntity(thisEntity), xBitfield((Driver)xDriver | (Driver)widthDriver), yBitfield((Driver)yDriver | (Driver)heightDriver),
 			  xPrimaryValue(xValue), yPrimaryValue(yValue), xSecondaryValue(widthValue), ySecondaryValue(heightValue) {}
-		UITransformComponent(Entity thisEntity, Driver xDrivers, Driver yDrivers, float xPrimaryValue, float yPrimaryValue, float xSecondaryValue, float ySecondaryValue, bool useSidesHorizontal, bool useSidesVertical)
+		UITransform(Entity thisEntity, Driver xDrivers, Driver yDrivers, float xPrimaryValue, float yPrimaryValue, float xSecondaryValue, float ySecondaryValue, bool useSidesHorizontal, bool useSidesVertical)
 			: thisEntity(thisEntity), xBitfield(xDrivers), yBitfield(yDrivers), xPrimaryValue(xPrimaryValue), yPrimaryValue(yPrimaryValue), xSecondaryValue(xSecondaryValue), ySecondaryValue(ySecondaryValue),
 			useSidesHorizontal(useSidesHorizontal), useSidesVertical(useSidesVertical) {}
 
@@ -83,8 +83,8 @@ namespace Egl {
 		YDriver         GetYDriver()         const { return (YDriver)        (yBitfield & 15 /*00001111*/); }
 		WidthDriver     GetWidthDriver()     const { return (WidthDriver)    (xBitfield & 240/*11110000*/); }
 		HeightDriver    GetHeightDriver()    const { return (HeightDriver)   (yBitfield & 240/*11110000*/); }
-		RightSideDriver GetRightSideDriver() const { return (RightSideDriver)(xBitfield & 240/*11110000*/); }
-		LeftSideDriver  GetLeftSideDriver()  const { return (LeftSideDriver) (xBitfield & 15 /*00001111*/); }
+		RightDriver     GetRightSideDriver() const { return (RightDriver)    (xBitfield & 240/*11110000*/); }
+		LeftDriver      GetLeftSideDriver()  const { return (LeftDriver)     (xBitfield & 15 /*00001111*/); }
 		TopDriver       GetTopDriver()       const { return (TopDriver)      (yBitfield & 15 /*00001111*/); }
 		BottomDriver    GetBottomDriver()    const { return (BottomDriver)   (yBitfield & 240/*11110000*/); }
 
@@ -110,8 +110,8 @@ namespace Egl {
 		void SetYDriver(YDriver driver);
 		void SetWidthDriver(WidthDriver driver);
 		void SetHeightDriver(HeightDriver driver);
-		void SetLeftSideDriver(LeftSideDriver driver);
-		void SetRightSideDriver(RightSideDriver driver);
+		void SetLeftSideDriver(LeftDriver driver);
+		void SetRightSideDriver(RightDriver driver);
 		void SetTopDriver(TopDriver driver);
 		void SetBottomDriver(BottomDriver driver);
 
@@ -130,18 +130,18 @@ namespace Egl {
 		operator glm::mat4& () { return GetTransform(); }
 	protected:
 		void SetDimensionFlagsFalse(const Relation& thisRel) const;
-		friend struct TransformComponent;
+		friend struct Transform;
 	private:
 		void CorrectWorldCoors() const;
 		void CalculateDimensions(const glm::vec2& parentPos, const glm::vec2& parentScale) const;
 
-		void CalculateSidesX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
-		void CalculateSidesY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
-		void CalculateScaleXNoAspectCheck(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
-		void CalculateScaleXAspectCheck(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
-		void CalculateScaleY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
-		void CalculatePosX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
-		void CalculatePosY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const;
+		void CalculateSidesX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const;
+		void CalculateSidesY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const;
+		void CalculateScaleXNoAspectCheck(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const;
+		void CalculateScaleXAspectCheck(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const;
+		void CalculateScaleY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const;
+		void CalculatePosX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const;
+		void CalculatePosY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const;
 
 		Entity thisEntity;
 
@@ -156,19 +156,19 @@ namespace Egl {
 		mutable glm::vec2 worldPosition = { 0, 0 };
 		mutable glm::vec2 worldScale = { 1, 1 };
 	};
-	struct TransformComponent {
+	struct Transform {
 		// Local position is always up to date. If the global position is needed, should be checked if the position if up to date.
-		TransformComponent& SetPosition(const glm::vec2& position);
-		TransformComponent& SetPosition(float x, float y) { SetPosition({ x, y }); return *this; }
-		TransformComponent& SetRotation(float rotation);
-		TransformComponent& SetScale(const glm::vec2& scale);
-		TransformComponent& SetScale(float x, float y) { SetScale({ x, y }); return *this; }
+		Transform& SetPosition(const glm::vec2& position);
+		Transform& SetPosition(float x, float y) { SetPosition({ x, y }); return *this; }
+		Transform& SetRotation(float rotation);
+		Transform& SetScale(const glm::vec2& scale);
+		Transform& SetScale(float x, float y) { SetScale({ x, y }); return *this; }
 
-		TransformComponent& SetLocalPosition(const glm::vec2& position);
-		TransformComponent& SetLocalPosition(float x, float y) { SetLocalPosition({ x, y }); return *this; };
-		TransformComponent& SetLocalRotation(float rotation);
-		TransformComponent& SetLocalScale(const glm::vec2& scale);
-		TransformComponent& SetLocalScale(float x, float y) { SetLocalScale({ x, y }); return *this; }
+		Transform& SetLocalPosition(const glm::vec2& position);
+		Transform& SetLocalPosition(float x, float y) { SetLocalPosition({ x, y }); return *this; };
+		Transform& SetLocalRotation(float rotation);
+		Transform& SetLocalScale(const glm::vec2& scale);
+		Transform& SetLocalScale(float x, float y) { SetLocalScale({ x, y }); return *this; }
 
 		const glm::vec2& GetPosition() const;
 		float GetRotation() const;
@@ -181,9 +181,9 @@ namespace Egl {
 		glm::vec2 LocalToWorldPos(const glm::vec2& point) const;
 		glm::vec2 WorldToLocalPos(const glm::vec2& point) const;
 
-		TransformComponent(const TransformComponent&) = default;
-		TransformComponent(Entity entity, const glm::vec2& position) : localPosition(position), thisEntity(entity) {}
-		TransformComponent(Entity entity, const glm::vec2& position, float rotation, const glm::vec2& scale) : localPosition(position), localRotation(rotation), localScale(scale), thisEntity(entity) {}
+		Transform(const Transform&) = default;
+		Transform(Entity entity, const glm::vec2& position) : localPosition(position), thisEntity(entity) {}
+		Transform(Entity entity, const glm::vec2& position, float rotation, const glm::vec2& scale) : localPosition(position), localRotation(rotation), localScale(scale), thisEntity(entity) {}
 
 		glm::mat4 GetTransform() const {
 			return GetRotation() == 0 ?
@@ -211,7 +211,7 @@ namespace Egl {
 		void SetWorldPosFlagsFalse(const Relation& thisRel);
 		void SetWorldRotFlagsFalse(const Relation& thisRel);
 		void SetWorldScaleFlagsFalse(const Relation& thisRel);
-		friend struct UITransformComponent;
+		friend struct UITransform;
 	};
 
 	struct EntityParams {
@@ -219,31 +219,38 @@ namespace Egl {
 		float rotation = 0;
 		glm::vec2 scale = { 1, 1 };
 
-		std::string name = "New entity";
 		int8_t sortingLayer = 0;
 		uint8_t subSorting = 0;
 
-		EntityParams(const std::string& name = "New entity", int8_t sortingLayer = 0, uint8_t subSorting = 0) : name(name), sortingLayer(sortingLayer), subSorting(subSorting) {}
-		EntityParams(const std::string& name, const glm::vec2& position, float rotation, const glm::vec2& scale, int8_t sortingLayer = 0, uint8_t subSorting = 0)
-			: name(name), position(position), scale(scale), rotation(rotation), sortingLayer(sortingLayer), subSorting(subSorting) {};
+		EntityParams(int8_t sortingLayer = 0, uint8_t subSorting = 0) : sortingLayer(sortingLayer), subSorting(subSorting) {}
+		EntityParams(const glm::vec2& position, float rotation, const glm::vec2& scale, int8_t sortingLayer = 0, uint8_t subSorting = 0)
+			: position(position), scale(scale), rotation(rotation), sortingLayer(sortingLayer), subSorting(subSorting) {};
 	};
 	struct UIEntityParams {
 
 		bool useSidesHorizontal = false, useSidesVertical = false;
-		UITransformComponent::Driver xDrivers = (UITransformComponent::Driver)UITransformComponent::XDriver::AlignCenter 
-			| (UITransformComponent::Driver)UITransformComponent::WidthDriver::RelativeWidth;
-		UITransformComponent::Driver yDrivers = (UITransformComponent::Driver)UITransformComponent::YDriver::AlignCenter 
-			| (UITransformComponent::Driver)UITransformComponent::HeightDriver::RelativeHeight;
+		UITransform::Driver xDrivers = (UITransform::Driver)UITransform::XDriver::AlignCenter 
+			| (UITransform::Driver)UITransform::WidthDriver::RelativeWidth;
+		UITransform::Driver yDrivers = (UITransform::Driver)UITransform::YDriver::AlignCenter 
+			| (UITransform::Driver)UITransform::HeightDriver::RelativeHeight;
 		float xPrimaryValue = 0, yPrimaryValue = 0, xSecondaryValue = 0.8f, ySecondaryValue = 0.5f;
 
-		std::string name = "New entity";
 		int8_t sortingLayer = 0;
 		uint8_t subSorting = 0;
 
-		UIEntityParams(const std::string& name = "New entity", int8_t sortingLayer = 0, uint8_t subSorting = 0) : name(name), sortingLayer(sortingLayer), subSorting(subSorting) {}
-		UIEntityParams(const std::string& name, UITransformComponent::Driver xDrivers, UITransformComponent::Driver yDrivers, float xPrimaryValue, float yPrimaryValue, float xSecondaryValue, float ySecondaryValue, bool useSidesHorizontal, bool useSidesVertical, int8_t sortingLayer = 0, uint8_t subSorting = 0)
-			: name(name), xDrivers(xDrivers), yDrivers(yDrivers), xPrimaryValue(xPrimaryValue), yPrimaryValue(yPrimaryValue), xSecondaryValue(xSecondaryValue), 
-			ySecondaryValue(ySecondaryValue), useSidesHorizontal(useSidesHorizontal), useSidesVertical(useSidesVertical), sortingLayer(sortingLayer), subSorting(subSorting) {};
+		UIEntityParams(int8_t sortingLayer = 0, uint8_t subSorting = 0) : sortingLayer(sortingLayer), subSorting(subSorting) {}
+		UIEntityParams(UITransform::XDriver xPosition, float xValue, UITransform::WidthDriver width, float widthValue, UITransform::YDriver yPosition, float yValue, UITransform::HeightDriver height, float heightValue, int8_t sortingLayer = 0, uint8_t subSorting = 0)
+			: useSidesHorizontal(false), useSidesVertical(false), xDrivers((UITransform::Driver)xPosition | (UITransform::Driver)width), yDrivers((UITransform::Driver)yPosition | (UITransform::Driver)height), 
+			  xPrimaryValue(xValue), xSecondaryValue(widthValue), yPrimaryValue(yValue), ySecondaryValue(heightValue), sortingLayer(sortingLayer), subSorting(subSorting) {}
+		UIEntityParams(UITransform::LeftDriver left, float leftValue, UITransform::RightDriver right, float rightValue, UITransform::TopDriver top, float topValue, UITransform::BottomDriver bottom, float bottomValue, int8_t sortingLayer = 0, uint8_t subSorting = 0)
+			: useSidesHorizontal(true), useSidesVertical(true), xDrivers((UITransform::Driver)left | (UITransform::Driver)right), yDrivers((UITransform::Driver)bottom | (UITransform::Driver)top), 
+			  xPrimaryValue(leftValue), xSecondaryValue(rightValue), yPrimaryValue(topValue), ySecondaryValue(bottomValue), sortingLayer(sortingLayer), subSorting(subSorting) {}
+		UIEntityParams(UITransform::XDriver xPosition, float xValue, UITransform::WidthDriver width, float widthValue, UITransform::TopDriver top, float topValue, UITransform::BottomDriver bottom, float bottomValue, int8_t sortingLayer = 0, uint8_t subSorting = 0)
+			: useSidesHorizontal(false), useSidesVertical(true), xDrivers((UITransform::Driver)xPosition | (UITransform::Driver)width), yDrivers((UITransform::Driver)bottom | (UITransform::Driver)top), 
+			  xPrimaryValue(xValue), xSecondaryValue(widthValue), yPrimaryValue(topValue), ySecondaryValue(bottomValue), sortingLayer(sortingLayer), subSorting(subSorting) {}
+		UIEntityParams(UITransform::LeftDriver left, float leftValue, UITransform::RightDriver right, float rightValue, UITransform::YDriver yPosition, float yValue, UITransform::HeightDriver height, float heightValue, int8_t sortingLayer = 0, uint8_t subSorting = 0)
+			: useSidesHorizontal(true), useSidesVertical(false), xDrivers((UITransform::Driver)left | (UITransform::Driver)right), yDrivers((UITransform::Driver)yPosition | (UITransform::Driver)height), 
+			  xPrimaryValue(leftValue), xSecondaryValue(rightValue), yPrimaryValue(yValue), ySecondaryValue(heightValue), sortingLayer(sortingLayer), subSorting(subSorting) {}
 	};
 
 	struct MetadataComponent {

@@ -9,10 +9,10 @@
 namespace Egl {
 
 	#pragma region TransformComponent
-	TransformComponent& TransformComponent::SetPosition(const glm::vec2& position) {
+	Transform& Transform::SetPosition(const glm::vec2& position) {
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		if (parent != entt::null) {
-			const glm::vec2& parentWorldPosition = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetPosition();
+			const glm::vec2& parentWorldPosition = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent).GetPosition();
 			localPosition = position - parentWorldPosition;
 		}
 		else localPosition = position;
@@ -24,10 +24,10 @@ namespace Egl {
 		SetWorldPosFlagsFalse(rel);
 		return *this;
 	}
-	TransformComponent& TransformComponent::SetRotation(float rotation) {
+	Transform& Transform::SetRotation(float rotation) {
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		if (parent != entt::null) {
-			const float parentWorldRotation = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetRotation();
+			const float parentWorldRotation = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent).GetRotation();
 			localRotation = rotation - parentWorldRotation;
 		}
 		else localRotation = rotation;
@@ -40,11 +40,11 @@ namespace Egl {
 		SetWorldPosFlagsFalse(rel);
 		return *this;
 	}
-	TransformComponent& TransformComponent::SetScale(const glm::vec2& scale) {
+	Transform& Transform::SetScale(const glm::vec2& scale) {
 		entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		if (parent != entt::null) {
-			const glm::vec2& parentWorldScale = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetScale();
-			localScale = scale - parentWorldScale;
+			const glm::vec2& parentWorldScale = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent).GetScale();
+			localScale = scale / parentWorldScale;
 		}
 		else localScale = scale;
 
@@ -57,20 +57,20 @@ namespace Egl {
 		return *this;
 	}
 
-	TransformComponent& TransformComponent::SetLocalPosition(const glm::vec2& position) {
+	Transform& Transform::SetLocalPosition(const glm::vec2& position) {
 		localPosition = position;
 		const Relation& rel = thisEntity.GetComponent<Relation>();
 		SetWorldPosFlagsFalse(rel);
 		return *this;
 	}
-	TransformComponent& TransformComponent::SetLocalRotation(float rotation) {
+	Transform& Transform::SetLocalRotation(float rotation) {
 		localRotation = rotation;
 		const Relation& rel = thisEntity.GetComponent<Relation>();
 		SetWorldRotFlagsFalse(rel);
 		SetWorldPosFlagsFalse(rel);
 		return *this;
 	}
-	TransformComponent& TransformComponent::SetLocalScale(const glm::vec2& scale) {
+	Transform& Transform::SetLocalScale(const glm::vec2& scale) {
 		localScale = scale;
 		const Relation& rel = thisEntity.GetComponent<Relation>();
 		SetWorldScaleFlagsFalse(rel);
@@ -78,11 +78,11 @@ namespace Egl {
 		return *this;
 	}
 
-	const glm::vec2& TransformComponent::GetPosition() const {
+	const glm::vec2& Transform::GetPosition() const {
 		if (!worldPosRight) {
 			const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 			if (parent != entt::null) {
-				TransformComponent& parentTransform = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent);
+				Transform& parentTransform = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent);
 				const glm::vec2 parentAt00Pos = glm::rotateZ(glm::vec3{ parentTransform.GetScale() * localPosition, 0 }, parentTransform.GetRotation());
 				worldPosition = parentTransform.GetPosition() + parentAt00Pos;
 			}
@@ -93,11 +93,11 @@ namespace Egl {
 
 		return worldPosition;
 	}
-	float TransformComponent::GetRotation() const {
+	float Transform::GetRotation() const {
 		if (!worldRotRight) {
 			const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 			if (parent != entt::null)
-				worldRotation = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetRotation() + localRotation;
+				worldRotation = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent).GetRotation() + localRotation;
 			else
 				worldRotation = localRotation;
 			worldRotRight = true;
@@ -105,11 +105,11 @@ namespace Egl {
 
 		return worldRotation;
 	}
-	const glm::vec2& TransformComponent::GetScale() const {
+	const glm::vec2& Transform::GetScale() const {
 		if (!worldScaleRight) {
 			const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 			if (parent != entt::null)
-				worldScale = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent).GetScale() * localScale;
+				worldScale = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent).GetScale() * localScale;
 			else
 				worldScale = localScale;
 			worldScaleRight = true;
@@ -118,7 +118,7 @@ namespace Egl {
 		return worldScale;
 	}
 
-	void TransformComponent::SetWorldPosFlagsFalse(const Relation& thisRel) {
+	void Transform::SetWorldPosFlagsFalse(const Relation& thisRel) {
 		// If the flag is already false, all the ones below must be also
 		if (!worldPosRight)
 			return;
@@ -127,18 +127,18 @@ namespace Egl {
 		worldPosRight = false;
 		while (child != entt::null) {
 			Relation& childRel = thisEntity.GetParentScene()->mRegistry.get<Relation>(child);
-			if (thisEntity.GetParentScene()->mRegistry.has<TransformComponent>(child)) {
-				TransformComponent& tr = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(child);
+			if (thisEntity.GetParentScene()->mRegistry.has<Transform>(child)) {
+				Transform& tr = thisEntity.GetParentScene()->mRegistry.get<Transform>(child);
 				tr.SetWorldPosFlagsFalse(childRel);
 			}
 			else {
-				UITransformComponent& align = thisEntity.GetParentScene()->mRegistry.get<UITransformComponent>(child);
+				UITransform& align = thisEntity.GetParentScene()->mRegistry.get<UITransform>(child);
 				align.SetDimensionFlagsFalse(childRel);
 			}
 			child = childRel.nextSibling;
 		}
 	}
-	void TransformComponent::SetWorldRotFlagsFalse(const Relation& thisRel) {
+	void Transform::SetWorldRotFlagsFalse(const Relation& thisRel) {
 		// If the flag is already false, all the ones below must be also
 		if (!worldRotRight)
 			return;
@@ -147,18 +147,18 @@ namespace Egl {
 		worldRotRight = false;
 		while (child != entt::null) {
 			Relation& childRel = thisEntity.GetParentScene()->mRegistry.get<Relation>(child);
-			if (thisEntity.GetParentScene()->mRegistry.has<TransformComponent>(child)) {
-				TransformComponent& tr = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(child);
+			if (thisEntity.GetParentScene()->mRegistry.has<Transform>(child)) {
+				Transform& tr = thisEntity.GetParentScene()->mRegistry.get<Transform>(child);
 				tr.SetWorldRotFlagsFalse(childRel);
 			}
 			else {
-				UITransformComponent& align = thisEntity.GetParentScene()->mRegistry.get<UITransformComponent>(child);
+				UITransform& align = thisEntity.GetParentScene()->mRegistry.get<UITransform>(child);
 				align.SetDimensionFlagsFalse(childRel);
 			}
 			child = childRel.nextSibling;
 		}
 	}
-	void TransformComponent::SetWorldScaleFlagsFalse(const Relation& thisRel) {
+	void Transform::SetWorldScaleFlagsFalse(const Relation& thisRel) {
 		// If the flag is already false, all the ones below must be also
 		if (!worldScaleRight)
 			return;
@@ -167,25 +167,25 @@ namespace Egl {
 		worldScaleRight = false;
 		while (child != entt::null) {
 			Relation& childRel = thisEntity.GetParentScene()->mRegistry.get<Relation>(child);
-			if (thisEntity.GetParentScene()->mRegistry.has<TransformComponent>(child)) {
-				TransformComponent& tr = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(child);
+			if (thisEntity.GetParentScene()->mRegistry.has<Transform>(child)) {
+				Transform& tr = thisEntity.GetParentScene()->mRegistry.get<Transform>(child);
 				tr.SetWorldScaleFlagsFalse(childRel);
 			}
 			else {
-				UITransformComponent& align = thisEntity.GetParentScene()->mRegistry.get<UITransformComponent>(child);
+				UITransform& align = thisEntity.GetParentScene()->mRegistry.get<UITransform>(child);
 				align.SetDimensionFlagsFalse(childRel);
 			}
 			child = childRel.nextSibling;
 		}
 	}
 
-	glm::vec2 TransformComponent::LocalToWorldPos(const glm::vec2& point) const {
-		TransformComponent& relativeTrans = thisEntity.GetComponent<TransformComponent>();
+	glm::vec2 Transform::LocalToWorldPos(const glm::vec2& point) const {
+		Transform& relativeTrans = thisEntity.GetComponent<Transform>();
 		const glm::vec2 relativeAt00Pos = glm::rotateZ(glm::vec3{ relativeTrans.GetScale() * point, 0 }, relativeTrans.GetRotation());
 		return relativeTrans.GetPosition() + relativeAt00Pos;
 	}
-	glm::vec2 TransformComponent::WorldToLocalPos(const glm::vec2& point) const {
-		TransformComponent& relativeTrans = thisEntity.GetComponent<TransformComponent>();
+	glm::vec2 Transform::WorldToLocalPos(const glm::vec2& point) const {
+		Transform& relativeTrans = thisEntity.GetComponent<Transform>();
 		const glm::vec2 allDoneBackwards = (glm::vec2)glm::rotateZ(glm::vec3{ point - GetPosition(), 0 }, -relativeTrans.GetRotation()) / relativeTrans.GetScale();
 		return allDoneBackwards;
 	}
@@ -194,105 +194,105 @@ namespace Egl {
 	#pragma region UITransformComponent
 
 	// For better ScreenToWorldPos, use Scenes function. These are optimized just for UIAlign
-	static float ScreenToWorldPosX(float coor, CameraComponent& camCam, TransformComponent& camTrans) {
+	static float ScreenToWorldPosX(float coor, CameraComponent& camCam, Transform& camTrans) {
 		float screenSizeInWorld_X = camCam.camera.GetSize() * camCam.camera.GetAspectRatio();
 		return coor / Application::Get().GetSceneWindowSize().x * screenSizeInWorld_X + camTrans.GetPosition().x - screenSizeInWorld_X / 2;
 	}
-	static inline float ScreenToWorldPosY(float coor, CameraComponent& camCam, TransformComponent& camTrans) {
+	static inline float ScreenToWorldPosY(float coor, CameraComponent& camCam, Transform& camTrans) {
 		return coor / Application::Get().GetSceneWindowSize().y * camCam.camera.GetSize() + camTrans.GetPosition().y - camCam.camera.GetSize() / 2;
 	}
-	static float WorldToScreenPosX(float coor, CameraComponent& camCam, TransformComponent& camTrans) {
+	static float WorldToScreenPosX(float coor, CameraComponent& camCam, Transform& camTrans) {
 		float screenSizeInWorld_X = camCam.camera.GetSize() * camCam.camera.GetAspectRatio();
 		return (coor - camTrans.GetPosition().x + screenSizeInWorld_X / 2) * Application::Get().GetSceneWindowSize().x / screenSizeInWorld_X;
 	}
-	static inline float WorldToScreenPosY(float coor, CameraComponent& camCam, TransformComponent& camTrans) {
+	static inline float WorldToScreenPosY(float coor, CameraComponent& camCam, Transform& camTrans) {
 		return (coor - camTrans.GetPosition().y + camCam.camera.GetSize() / 2) * Application::Get().GetSceneWindowSize().y / camCam.camera.GetSize();
 	}
-	static inline float ScreenToWorldScaleY(float size, CameraComponent& camCam, TransformComponent& camTrans) {
+	static inline float ScreenToWorldScaleY(float size, CameraComponent& camCam, Transform& camTrans) {
 		return size / Application::Get().GetSceneWindowSize().y * camCam.camera.GetSize();
 	}
-	static inline float ScreenToWorldScaleX(float size, CameraComponent& camCam, TransformComponent& camTrans) {
+	static inline float ScreenToWorldScaleX(float size, CameraComponent& camCam, Transform& camTrans) {
 		return size / Application::Get().GetSceneWindowSize().x * camCam.camera.GetSize() * camCam.camera.GetAspectRatio();
 	}
-	static inline float WorldToScreenScaleY(float size, CameraComponent& camCam, TransformComponent& camTrans) {
+	static inline float WorldToScreenScaleY(float size, CameraComponent& camCam, Transform& camTrans) {
 		return size * Application::Get().GetSceneWindowSize().y / camCam.camera.GetSize();
 	}
-	static inline float WorldToScreenScaleX(float size, CameraComponent& camCam, TransformComponent& camTrans) {
+	static inline float WorldToScreenScaleX(float size, CameraComponent& camCam, Transform& camTrans) {
 		return size * Application::Get().GetSceneWindowSize().x / (camCam.camera.GetSize() * camCam.camera.GetAspectRatio());
 	}
 
-	void UITransformComponent::SetXPosValue(float val) { xPrimaryValue = val; SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>()); }
-	void UITransformComponent::SetYPosValue(float val) { yPrimaryValue = val; SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>()); }
-	void UITransformComponent::SetWidthValue(float val) { xSecondaryValue = val; SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>()); }
-	void UITransformComponent::SetHeightValue(float val) { ySecondaryValue = val; SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>()); }
+	void UITransform::SetXPosValue(float val) { xPrimaryValue = val; SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>()); }
+	void UITransform::SetYPosValue(float val) { yPrimaryValue = val; SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>()); }
+	void UITransform::SetWidthValue(float val) { xSecondaryValue = val; SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>()); }
+	void UITransform::SetHeightValue(float val) { ySecondaryValue = val; SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>()); }
 
-	void UITransformComponent::SetXDriver(XDriver driver) { 
+	void UITransform::SetXDriver(XDriver driver) { 
 		EAGLE_ENG_WARNING(!useSidesHorizontal, "Called SetXDriver() in UIAlignComponent but its horizontal axis is controlled by sides. Call SetUseSidesHorizontal() to change it or set the sides by their drivers.");
 		xBitfield = ((xBitfield & 240/*11110000*/) | (Driver)driver);
 		SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>()); 
 	}
-	void UITransformComponent::SetYDriver(YDriver driver) { 
+	void UITransform::SetYDriver(YDriver driver) { 
 		EAGLE_ENG_WARNING(!useSidesVertical, "Called SetYDriver() in UIAlignComponent but its vertical axis is controlled by sides. Call SetUseSidesHorizontal() to change it or set the sides by their drivers.");
 		yBitfield = ((yBitfield & 240/*11110000*/) | (Driver)driver);
 		SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>()); 
 	}
-	void UITransformComponent::SetWidthDriver(WidthDriver driver) {
+	void UITransform::SetWidthDriver(WidthDriver driver) {
 		EAGLE_ENG_WARNING(!useSidesHorizontal, "Called SetWidthDriver() in UIAlignComponent but its horizontal axis is controlled by sides. Call SetUseSidesVertical() to change it or set the sides by their drivers.");
 		xBitfield = ((xBitfield & 15/*00001111*/) | (Driver)driver);
 		SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>()); 
 	}
-	void UITransformComponent::SetHeightDriver(HeightDriver driver) {
+	void UITransform::SetHeightDriver(HeightDriver driver) {
 		EAGLE_ENG_WARNING(!useSidesVertical, "Called SetHeightDriver() in UIAlignComponent but its vertical axis is controlled by sides. Call SetUseSidesVertical() to change it or set the sides by their drivers.");
 		yBitfield = ((yBitfield & 15/*00001111*/) | (Driver)driver);
 		SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>());
 	}
-	void UITransformComponent::SetLeftSideDriver(LeftSideDriver driver) {
+	void UITransform::SetLeftSideDriver(LeftDriver driver) {
 		EAGLE_ENG_WARNING(useSidesHorizontal, "Called SetLeftSideDriver() in UIAlignComponent but its horizontal axis is controlled by object position and scale. Call SetUseSidesHorizontal() to change it or use the right drivers.");
 		xBitfield = ((xBitfield & 240/*11110000*/) | (Driver)driver);
 		SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>());
 	}
-	void UITransformComponent::SetRightSideDriver(RightSideDriver driver) {
+	void UITransform::SetRightSideDriver(RightDriver driver) {
 		EAGLE_ENG_WARNING(useSidesHorizontal, "Called SetRightSideDriver() in UIAlignComponent but its horizontal axis is controlled by object position and scale. Call SetUseSidesHorizontal() to change it or use the right drivers.");
 		xBitfield = ((xBitfield & 15/*00001111*/) | (Driver)driver);
 		SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>());
 	}
-	void UITransformComponent::SetTopDriver(TopDriver driver) {
+	void UITransform::SetTopDriver(TopDriver driver) {
 		EAGLE_ENG_WARNING(useSidesVertical, "Called SetTopDriver() in UIAlignComponent but its vertical axis is controlled by object position and scale. Call SetUseSidesVertical() to change it or use the right drivers.");
 		yBitfield = ((yBitfield & 240/*11110000*/) | (Driver)driver);
 		SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>());
 	}
-	void UITransformComponent::SetBottomDriver(BottomDriver driver) {
+	void UITransform::SetBottomDriver(BottomDriver driver) {
 		EAGLE_ENG_WARNING(useSidesVertical, "Called SetBottomDriver() in UIAlignComponent but its vertical axis is controlled by object position and scale. Call SetUseSidesVertical() to change it or use the right drivers.");
 		yBitfield = ((yBitfield & 15/*00001111*/) | (Driver)driver);
 		SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>());
 	}
 
-	void UITransformComponent::SetUseSidesHorizontal(bool sidesOverObjectTransform) {
+	void UITransform::SetUseSidesHorizontal(bool sidesOverObjectTransform) {
 		useSidesHorizontal = sidesOverObjectTransform;
 		xBitfield = 0;
 		SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>());
 	}
-	void UITransformComponent::SetUseSidesVertical(bool sidesOverObjectTransform) {
+	void UITransform::SetUseSidesVertical(bool sidesOverObjectTransform) {
 		useSidesVertical = sidesOverObjectTransform;
 		yBitfield = 0;
 		SetDimensionFlagsFalse(thisEntity.GetComponent<Relation>());
 	}
 
-	std::pair<const glm::vec2&, const glm::vec2&> UITransformComponent::GetParentWorldCoords(entt::entity parent) const {
-		if (thisEntity.GetParentScene()->mRegistry.has<UITransformComponent>(parent)) {
-			UITransformComponent& parentComp = thisEntity.GetParentScene()->mRegistry.get<UITransformComponent>(parent);
+	std::pair<const glm::vec2&, const glm::vec2&> UITransform::GetParentWorldCoords(entt::entity parent) const {
+		if (thisEntity.GetParentScene()->mRegistry.has<UITransform>(parent)) {
+			UITransform& parentComp = thisEntity.GetParentScene()->mRegistry.get<UITransform>(parent);
 			return std::pair<const glm::vec2&, const glm::vec2&>(parentComp.GetWorldPosition(), parentComp.GetWorldScale());
 		}
 		else {
-			TransformComponent& parentComp = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent);
+			Transform& parentComp = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent);
 			return std::pair<const glm::vec2&, const glm::vec2&>(parentComp.GetPosition(), parentComp.GetScale());
 		}
 	}
 
-	float UITransformComponent::GetPrimaryXFromWorldPos(float xWorldPos) const {
+	float UITransform::GetPrimaryXFromWorldPos(float xWorldPos) const {
 		Ref<Scene> activeScene = Application::Get().GetGameLayer()->GetActiveScene();
 		CameraComponent& cam = activeScene->GetPrimaryCamera().GetComponent<CameraComponent>();
-		TransformComponent& camTrans = activeScene->GetPrimaryCamera().GetComponent<TransformComponent>();
+		Transform& camTrans = activeScene->GetPrimaryCamera().GetComponent<Transform>();
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		auto [parentPos, parentScale] = GetParentWorldCoords(parent);
 
@@ -301,8 +301,8 @@ namespace Egl {
 			float leftSideWorldPos = xWorldPos - worldScale.x / 2;
 			float parentLeftSide = parentPos.x - parentScale.x / 2;
 			switch (GetLeftSideDriver()) {
-				case LeftSideDriver::ConstOffset: return WorldToScreenScaleX(leftSideWorldPos - parentLeftSide, cam, camTrans);
-				case LeftSideDriver::RelativeOffset: return (leftSideWorldPos - parentLeftSide) / parentScale.x;
+				case LeftDriver::Constant: return WorldToScreenScaleX(leftSideWorldPos - parentLeftSide, cam, camTrans);
+				case LeftDriver::Relative: return (leftSideWorldPos - parentLeftSide) / parentScale.x;
 			}
 		}
 		else {
@@ -316,10 +316,10 @@ namespace Egl {
 		}
 		return 0;
 	}
-	float UITransformComponent::GetSecondaryXFromWorldScale(float xWorldScale) const {
+	float UITransform::GetSecondaryXFromWorldScale(float xWorldScale) const {
 		Ref<Scene> activeScene = Application::Get().GetGameLayer()->GetActiveScene();
 		CameraComponent& cam = activeScene->GetPrimaryCamera().GetComponent<CameraComponent>();
-		TransformComponent& camTrans = activeScene->GetPrimaryCamera().GetComponent<TransformComponent>();
+		Transform& camTrans = activeScene->GetPrimaryCamera().GetComponent<Transform>();
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		auto [parentPos, parentScale] = GetParentWorldCoords(parent);
 
@@ -328,8 +328,8 @@ namespace Egl {
 			float rightSideWorldPos = xWorldScale + (worldPosition.x - worldScale.x / 2);
 			float parentRightSide = parentPos.x + parentScale.x / 2;
 			switch (GetRightSideDriver()) {
-				case RightSideDriver::ConstOffset: return -WorldToScreenScaleX(rightSideWorldPos - parentRightSide, cam, camTrans);
-				case RightSideDriver::RelativeOffset: return -(rightSideWorldPos - parentRightSide) / parentScale.x;
+				case RightDriver::Constant: return -WorldToScreenScaleX(rightSideWorldPos - parentRightSide, cam, camTrans);
+				case RightDriver::Relative: return -(rightSideWorldPos - parentRightSide) / parentScale.x;
 			}
 		}
 		else {
@@ -341,10 +341,10 @@ namespace Egl {
 		}
 		return 0;
 	}
-	float UITransformComponent::GetPrimaryYFromWorldPos(float yWorldPos) const {
+	float UITransform::GetPrimaryYFromWorldPos(float yWorldPos) const {
 		Ref<Scene> activeScene = Application::Get().GetGameLayer()->GetActiveScene();
 		CameraComponent& cam = activeScene->GetPrimaryCamera().GetComponent<CameraComponent>();
-		TransformComponent& camTrans = activeScene->GetPrimaryCamera().GetComponent<TransformComponent>();
+		Transform& camTrans = activeScene->GetPrimaryCamera().GetComponent<Transform>();
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		auto [parentPos, parentScale] = GetParentWorldCoords(parent);
 
@@ -353,8 +353,8 @@ namespace Egl {
 			float topWorldPos = yWorldPos + worldScale.y / 2;
 			float parentTop = parentPos.y + parentScale.y / 2;
 			switch (GetTopDriver()) {
-				case TopDriver::ConstOffset: return -WorldToScreenScaleY(topWorldPos - parentTop, cam, camTrans);
-				case TopDriver::RelativeOffset: return -(topWorldPos - parentTop) / parentScale.y;
+				case TopDriver::Constant: return -WorldToScreenScaleY(topWorldPos - parentTop, cam, camTrans);
+				case TopDriver::Relative: return -(topWorldPos - parentTop) / parentScale.y;
 			}
 		}
 		else {
@@ -368,10 +368,10 @@ namespace Egl {
 		}
 		return 0;
 	}
-	float UITransformComponent::GetSecondaryYFromWorldScale(float yWorldScale) const {
+	float UITransform::GetSecondaryYFromWorldScale(float yWorldScale) const {
 		Ref<Scene> activeScene = Application::Get().GetGameLayer()->GetActiveScene();
 		CameraComponent& cam = activeScene->GetPrimaryCamera().GetComponent<CameraComponent>();
-		TransformComponent& camTrans = activeScene->GetPrimaryCamera().GetComponent<TransformComponent>();
+		Transform& camTrans = activeScene->GetPrimaryCamera().GetComponent<Transform>();
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		auto [parentPos, parentScale] = GetParentWorldCoords(parent);
 
@@ -380,8 +380,8 @@ namespace Egl {
 			float bottomWorldPos = worldPosition.y - yWorldScale / 2;
 			float parentBottom = parentPos.y - parentScale.y / 2;
 			switch (GetBottomDriver()) {
-				case BottomDriver::ConstOffset: return WorldToScreenScaleY(bottomWorldPos - parentBottom, cam, camTrans);
-				case BottomDriver::RelativeOffset: return (bottomWorldPos - parentBottom) / parentScale.y;
+				case BottomDriver::Constant: return WorldToScreenScaleY(bottomWorldPos - parentBottom, cam, camTrans);
+				case BottomDriver::Relative: return (bottomWorldPos - parentBottom) / parentScale.y;
 			}
 		}
 		else {
@@ -394,16 +394,16 @@ namespace Egl {
 		return 0;
 	}
 
-	const glm::vec2& UITransformComponent::GetWorldPosition() const {
+	const glm::vec2& UITransform::GetWorldPosition() const {
 		if (!dimensionsRight) CorrectWorldCoors();
 		return worldPosition;
 	}
-	const glm::vec2& UITransformComponent::GetWorldScale() const {
+	const glm::vec2& UITransform::GetWorldScale() const {
 		if (!dimensionsRight) CorrectWorldCoors();
 		return worldScale;
 	}
 
-	void UITransformComponent::SetDimensionFlagsFalse(const Relation& thisRel) const {
+	void UITransform::SetDimensionFlagsFalse(const Relation& thisRel) const {
 		// If the flag is already false, all the ones below must be also
 		if (!dimensionsRight)
 			return;
@@ -412,38 +412,38 @@ namespace Egl {
 		dimensionsRight = false;
 		while (child != entt::null) {
 			Relation& childRel = thisEntity.GetParentScene()->mRegistry.get<Relation>(child);
-			if (thisEntity.GetParentScene()->mRegistry.has<TransformComponent>(child)) {
-				TransformComponent& tr = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(child);
+			if (thisEntity.GetParentScene()->mRegistry.has<Transform>(child)) {
+				Transform& tr = thisEntity.GetParentScene()->mRegistry.get<Transform>(child);
 				// TODO: Don't change everything, only the thing this functions was called from
 				tr.SetWorldPosFlagsFalse(childRel);
 				tr.SetWorldRotFlagsFalse(childRel);
 				tr.SetWorldScaleFlagsFalse(childRel);
 			}
 			else {
-				UITransformComponent& align = thisEntity.GetParentScene()->mRegistry.get<UITransformComponent>(child);
+				UITransform& align = thisEntity.GetParentScene()->mRegistry.get<UITransform>(child);
 				align.SetDimensionFlagsFalse(childRel);
 			}
 			child = childRel.nextSibling;
 		}
 	}
 
-	void UITransformComponent::CorrectWorldCoors() const {
+	void UITransform::CorrectWorldCoors() const {
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
-		if (thisEntity.GetParentScene()->mRegistry.has<UITransformComponent>(parent)) {
-			UITransformComponent& parentComp = thisEntity.GetParentScene()->mRegistry.get<UITransformComponent>(parent);
+		if (thisEntity.GetParentScene()->mRegistry.has<UITransform>(parent)) {
+			UITransform& parentComp = thisEntity.GetParentScene()->mRegistry.get<UITransform>(parent);
 			CalculateDimensions(parentComp.GetWorldPosition(), parentComp.GetWorldScale());
 		}
 		else {
-			TransformComponent& parentComp = thisEntity.GetParentScene()->mRegistry.get<TransformComponent>(parent);
+			Transform& parentComp = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent);
 			CalculateDimensions(parentComp.GetPosition(), parentComp.GetScale());
 		}
 		dimensionsRight = true;
 	}
 	
-	void UITransformComponent::CalculateDimensions(const glm::vec2& parentPos, const glm::vec2& parentScale) const {
+	void UITransform::CalculateDimensions(const glm::vec2& parentPos, const glm::vec2& parentScale) const {
 		Ref<Scene> activeScene = Application::Get().GetGameLayer()->GetActiveScene();
 		CameraComponent& cam = activeScene->GetPrimaryCamera().GetComponent<CameraComponent>();
-		TransformComponent& camTrans = activeScene->GetPrimaryCamera().GetComponent<TransformComponent>();
+		Transform& camTrans = activeScene->GetPrimaryCamera().GetComponent<Transform>();
 
 		if (useSidesHorizontal) {
 			if (useSidesVertical) {
@@ -475,21 +475,21 @@ namespace Egl {
 			}
 		}
 	}
-	inline void UITransformComponent::CalculateSidesX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const {
+	inline void UITransform::CalculateSidesX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const {
 		float leftSideWorldPos;
 		switch (GetLeftSideDriver()) {
-			case LeftSideDriver::ConstOffset: {
+			case LeftDriver::Constant: {
 				float parentLeftSide = parentPos.x - parentScale.x / 2;
 				leftSideWorldPos = parentLeftSide + ScreenToWorldScaleX(xPrimaryValue, cam, camTrans);
 				break;
 			}
-			case LeftSideDriver::RelativeOffset: {
+			case LeftDriver::Relative: {
 				float parentLeftSide = parentPos.x - parentScale.x / 2;
 				leftSideWorldPos = parentLeftSide + parentScale.x * xPrimaryValue;
 				break;
 			}
 			default: {
-				LeftSideDriver selectedDriver = GetLeftSideDriver();
+				LeftDriver selectedDriver = GetLeftSideDriver();
 				EAGLE_ENG_ASSERT(false, "The left side driver wasn't any of the options");
 				break;
 			}
@@ -497,18 +497,18 @@ namespace Egl {
 
 		float rightSideWorldPos;
 		switch (GetRightSideDriver()) {
-			case RightSideDriver::ConstOffset: {
+			case RightDriver::Constant: {
 				float parentRightSide = parentPos.x + parentScale.x / 2;
 				rightSideWorldPos = parentRightSide - ScreenToWorldScaleX(xSecondaryValue, cam, camTrans);
 				break;
 			}
-			case RightSideDriver::RelativeOffset: {
+			case RightDriver::Relative: {
 				float parentRightSide = parentPos.x + parentScale.x / 2;
 				rightSideWorldPos = parentRightSide - parentScale.x * xSecondaryValue;
 				break;
 			}
 			default: {
-				RightSideDriver selectedDriver = GetRightSideDriver();
+				RightDriver selectedDriver = GetRightSideDriver();
 				EAGLE_ENG_ASSERT(false, "The left side driver wasn't any of the options");
 				break;
 			}
@@ -517,15 +517,15 @@ namespace Egl {
 		worldScale.x = rightSideWorldPos - leftSideWorldPos;
 		worldPosition.x = (leftSideWorldPos + rightSideWorldPos) / 2;
 	}
-	inline void UITransformComponent::CalculateSidesY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const {
+	inline void UITransform::CalculateSidesY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const {
 		float topWorldPos;
 		switch (GetTopDriver()) {
-			case TopDriver::ConstOffset: {
+			case TopDriver::Constant: {
 				float parentTop = parentPos.y + parentScale.y / 2;
 				topWorldPos = parentTop - ScreenToWorldScaleY(yPrimaryValue, cam, camTrans);
 				break;
 			}
-			case TopDriver::RelativeOffset: {
+			case TopDriver::Relative: {
 				float parentTop = parentPos.y + parentScale.y / 2;
 				topWorldPos = parentTop - parentScale.y * yPrimaryValue;
 				break;
@@ -539,12 +539,12 @@ namespace Egl {
 
 		float bottomWorldPos;
 		switch (GetBottomDriver()) {
-			case BottomDriver::ConstOffset: {
+			case BottomDriver::Constant: {
 				float parentBottom = parentPos.y - parentScale.y / 2;
 				bottomWorldPos = parentBottom + ScreenToWorldScaleY(ySecondaryValue, cam, camTrans);
 				break;
 			}
-			case BottomDriver::RelativeOffset: {
+			case BottomDriver::Relative: {
 				float parentBottom = parentPos.y - parentScale.y / 2;
 				bottomWorldPos = parentBottom + parentScale.y * ySecondaryValue;
 				break;
@@ -559,7 +559,7 @@ namespace Egl {
 		worldScale.y = topWorldPos - bottomWorldPos;
 		worldPosition.y = (bottomWorldPos + topWorldPos) / 2;
 	}
-	inline void UITransformComponent::CalculateScaleXNoAspectCheck(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const {
+	inline void UITransform::CalculateScaleXNoAspectCheck(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const {
 		switch (GetWidthDriver()) {
 			case WidthDriver::ConstWidth: {
 				worldScale.x = ScreenToWorldScaleX(xSecondaryValue, cam, camTrans);
@@ -571,11 +571,11 @@ namespace Egl {
 			}
 		}
 	}
-	inline void UITransformComponent::CalculateScaleXAspectCheck(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const {
+	inline void UITransform::CalculateScaleXAspectCheck(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const {
 		if (GetWidthDriver() == WidthDriver::AspectWidth)
 			worldScale.x = worldScale.y * xSecondaryValue;
 	}
-	inline void UITransformComponent::CalculateScaleY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const {
+	inline void UITransform::CalculateScaleY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const {
 		switch (GetHeightDriver()) {
 			case HeightDriver::AspectHeight: {
 				worldScale.y = worldScale.x * ySecondaryValue;
@@ -591,7 +591,7 @@ namespace Egl {
 			}
 		}
 	}
-	inline void UITransformComponent::CalculatePosX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const {
+	inline void UITransform::CalculatePosX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const {
 		switch (GetXDriver()) {
 			case XDriver::AlignCenter: {
 				worldPosition.x = xPrimaryValue * parentScale.x + parentPos.x;
@@ -619,7 +619,7 @@ namespace Egl {
 			}
 		}
 	}
-	inline void UITransformComponent::CalculatePosY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, TransformComponent& camTrans) const {
+	inline void UITransform::CalculatePosY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const {
 		switch (GetYDriver()) {
 			case YDriver::AlignCenter: {
 				//worldPosition.y = ScreenToWorldPosY(WorldToScreenScaleY(parentScale.y, cam, camTrans) * yPrimaryValue + WorldToScreenPosY(parentPos.y, cam, camTrans), cam, camTrans);

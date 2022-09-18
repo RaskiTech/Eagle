@@ -16,20 +16,23 @@ namespace Egl {
 		Scene();
 		virtual ~Scene() = default;
 
-		template<typename... EntityParam>
-		Entity AddEntity(const EntityParams& params, EntityParam...childs) { auto e = AddEntity(params); AddEntityChildsImp(e, childs...); return e; }
-		template<typename... EntityParam>
-		Entity AddEntity(const std::string& name, EntityParam...childs)    { auto e = AddEntity(name  ); AddEntityChildsImp(e, childs...); return e; }
-		Entity AddEntity(const EntityParams& params);
+		//template<typename... EntityParam>
+		//Entity AddEntity(const std::string& name, const EntityParams& params, EntityParam...childs) { auto e = AddEntity(name, params); AddEntityChildsImp(e, childs...); return e; }
+		//template<typename... EntityParam>
+		//Entity AddEntity(const std::string& name, EntityParam...childs)    { auto e = AddEntity(name); AddEntityChildsImp(e, childs...); return e; }
+		Entity AddEntity(const std::string& name, const EntityParams& params, Entity parent);
+		Entity AddEntity(const std::string& name, Entity parent);
+		Entity AddEntity(const std::string& name, const EntityParams& params);
 		Entity AddEntity(const std::string& name);
 
-		Entity AddUIEntity(const UIEntityParams& params, Entity canvasOrParent);
+		Entity AddUIEntity(const std::string& name, const UIEntityParams& params, Entity canvasOrParent);
 		Entity AddUIEntity(const std::string& name, Entity canvasOrParent);
 
 		// Adds an entity with the CanvasComponent attached
 		Entity AddCanvas();
 
 		void RemoveEntity(Entity& entity);
+		void RemoveUIEntity(Entity& entity) { RemoveEntity(entity); }
 		void SetPrimaryCamera(Entity& camera);
 		const Entity GetPrimaryCamera();
 		glm::vec2 Scene::ScreenToWorldPos(const glm::vec2& pixelCoordinate) const;
@@ -58,8 +61,8 @@ namespace Egl {
 
 		friend class Entity;
 		friend class HierarchyPanel;
-		friend struct TransformComponent;
-		friend struct UITransformComponent;
+		friend struct Transform;
+		friend struct UITransform;
 		friend struct NativeScriptComponent;
 
 		inline void AddEntityChildsImp(Entity& createdEntity) {}

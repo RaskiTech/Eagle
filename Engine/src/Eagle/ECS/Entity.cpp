@@ -9,8 +9,8 @@ namespace Egl {
 	void Entity::AddChild(const Entity& child) const {
 		Relation& parentRelation = GetComponent<Relation>();
 		Relation& childRelation = mScene->mRegistry.get<Relation>(child.mEntity);
-		if (child.HasComponent<TransformComponent>()) {
-			auto& childTransform = child.GetComponent<TransformComponent>();
+		if (child.HasComponent<Transform>()) {
+			auto& childTransform = child.GetComponent<Transform>();
 			childTransform.worldPosRight = false;
 			childTransform.worldRotRight = false;
 			childTransform.worldScaleRight = false;
