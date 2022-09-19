@@ -3,20 +3,15 @@
 #include <atomic>
 #include "AssetManager.h"
 #include "Core.h"
+
 #define MAX_PLAYING_CLIP_COUNT 16
+#define SAMPLE_RATE   44100
 
 // AudioSource is an ecs holder for a pointer to AudioSample
 // Audio callback gets pointers to AudioSample
 
 // AudioSample owns AudioClip and some settings
 // AudioClip owns music data
-
-
-// TODO: Recourse manager because entt is likely moving AudioSource and that deletes 
-//		 AudioSample. Is it also needed so don't need to manage clip pointers
-// Then this will work:
-// player.AddComponent<AudioSource>(clip).Play(true);
-// ground.AddComponent<AudioSource>(clip2).Play(true);
 
 namespace Egl {
     typedef float AudioSamplePrecision;
@@ -29,7 +24,7 @@ namespace Egl {
         AudioClip(const std::string& audioFilePath);
     };
     struct AudioSample {
-        std::atomic<bool> playing = true;
+        std::atomic<bool> playing = false;
         std::atomic<float> volume = 0.5f;
         std::atomic<bool> loop = false;
         std::atomic<int> samplePosition = 0; // time

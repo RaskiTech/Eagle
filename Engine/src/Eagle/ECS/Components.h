@@ -347,11 +347,14 @@ namespace Egl {
 		~AudioSource();
 
 		void Play(bool play);
+		bool IsPlaying() { return sample->playing; }
 		void SetVolume(float volume) { sample->volume = glm::clamp(volume, 0.0f, 1.0f); }
+		float GetVolume() { return sample->volume; }
 		float GetDuration() { return (float)(*sample->clip).data.getLengthInSeconds(); }
 		float GetTime() { return (float)sample->samplePosition / (*sample->clip).data.getSampleRate(); }
 		void SetTime(float time) { sample->samplePosition = glm::clamp((int)(time * (*sample->clip).data.getSampleRate()), 0, (*sample->clip).data.getNumSamplesPerChannel()); }
-
+		bool GetIsLooping() { return sample->loop; }
+		void SetIsLooping(bool loop) { sample->loop = loop; }
 	private:
 		void PossibleSampleDelete();
 		AudioSample* sample;

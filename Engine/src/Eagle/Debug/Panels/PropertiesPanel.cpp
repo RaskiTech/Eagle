@@ -36,8 +36,8 @@ namespace Egl {
 			auto& component = e.GetComponent<ComponentType>();
 
 			if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), flags, name.c_str())) {
-				function(component);
 				ImGui::TreePop();
+				function(component);
 			}
 		}
 	}
@@ -146,7 +146,7 @@ namespace Egl {
 	}
 
 	void PropertiesPanel::DrawProperties() {
-		// This gives the oppurtunity to change the name, but there is really no reason, since saving isn't in development yet
+		// This gives the oppurtunity to change the name, but there is really no reason for it
 		//if (e.HasComponent<MetadataComponent>()) {
 		//	auto& tag = e.GetComponent<MetadataComponent>().tag;
 		//	char buffer[256];
@@ -197,11 +197,13 @@ namespace Egl {
 				component.SetLocalScale(scale);
 		});
 
-		DrawComponent<UITransform>("UI Align", drawedEntity, [&](UITransform& component) {
+		DrawComponent<UITransform>("UI Transform", drawedEntity, [&](UITransform& component) {
 			uint32_t worldTreeNodeUniqueID = UniqueID::GetUniqueFrameID(); // This because the options use ids so the tree could close when changing transform and sides
 
 			ImGuiIO& io = ImGui::GetIO();
 			auto& boldFont = io.Fonts->Fonts[0];
+
+			ImGui::Columns(1);
 
 			ImGui::PushFont(boldFont);
 			ImGui::Text("Horizontal");
@@ -225,7 +227,7 @@ namespace Egl {
 				component.SetWidthValue(newSec);
 			}
 			
-			ImGui::Columns(2);
+			ImGui::Columns(2, "id_Hor");
 			ImGui::SetColumnWidth(0, 15);
 			ImGui::NextColumn();
 
@@ -309,6 +311,7 @@ namespace Egl {
 					component.SetRightSideValue(value);
 				ImGui::PopItemWidth();
 			}
+
 			ImGui::Columns(1);
 			ImGui::Spacing();
 
@@ -334,7 +337,7 @@ namespace Egl {
 				component.SetHeightValue(newSec);
 			}
 
-			ImGui::Columns(2);
+			ImGui::Columns(2, "id_Ver");
 			ImGui::SetColumnWidth(0, 15);
 			ImGui::NextColumn();
 
@@ -507,6 +510,27 @@ namespace Egl {
 					updater->OnImGuiRender();
 				ImGui::TreePop();
 			}
+		});
+
+		DrawComponent<AudioSource>("Audio Source", drawedEntity, [](AudioSource& source) {
+			ImGui::Text("Playing: %s", source.IsPlaying() ? "True" : "False");
+			ImGui::Text("Length: %.1f seconds", source.GetDuration());
+			ImGui::Spacing();
+
+			if (ImGui::Button(source.IsPlaying() ? "Pause" : "Play")) {
+				source.Play(!source.IsPlaying());
+			}
+			if (ImGui::Button(source.GetIsLooping() ? "Looping" : "Not looping"))
+				source.SetIsLooping(!source.GetIsLooping());
+			
+			float time = source.GetTime();
+			if (ImGui::SliderFloat("Time", &time, 0, source.GetDuration()))
+				source.SetTime(time);
+
+			float vol = source.GetVolume();
+			if (ImGui::SliderFloat("Volume", &vol, 0, 1))
+				source.SetVolume(vol);
+
 		});
 	}
 }

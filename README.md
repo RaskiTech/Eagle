@@ -14,7 +14,7 @@ If the repository was previously cloned without the `--recursive` flag, it doesn
 After the installation go into the folder, and inside Startup-folder click your os setup file. Now you can open the Eagle.sln and start developing.
 
 ## Features include but aren't limited to
-- Python for a scripting language
+- Python
 - OpenGL renderer
 - An interactive UI library
 - Serialization
@@ -27,8 +27,6 @@ After the installation go into the folder, and inside Startup-folder click your 
 ## Possible upcoming features:
 - More editor tools
 - Support for Mac
-- Support for other rendering APIs
-
 
 More information and plans on the Eagle engine trello page: https://trello.com/b/Q6aYRSKR/eagle-engine
 

@@ -100,6 +100,13 @@
         The audio will start playing when <code>.Play(true)</code> is called.
     </p>
 
+    <h2>Profiling</h2>
+    <p>
+        To start seeing where your application slows down, you can set <code>EAGLE_PROFILE</code> to 1. Make sure you have <code>EAGLE_PROFILE_FUNCTION()</code> at the top of many functions, as these are the functions the engine will be profiling. 
+        The calls are stripped away if you aren't profiling, so don't worry about removing them. When profiling, try to keep your application open for less than a minute, as the resulting file size grows rapidly. 
+    When done, you can find three files under <code>Build</code> folder. <code>Eagle-Profile-Startup.json</code>, <code>Eagle-Profile-Runtime.json</code> and <code>Eagle-Profile-Shutdown.json</code>. Open chrome and go to <code>chrome://tracing</code>. Finally, drag one of the json files into the tab.
+    </p>
+
     <div style="padding-bottom:30px"></div>
 </div>
 

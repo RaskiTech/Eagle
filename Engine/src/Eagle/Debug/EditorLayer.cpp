@@ -136,7 +136,7 @@ namespace Egl {
 
 		//// Restart scene button ////
 		ImGui::Begin("Restart Scene");
-		if (ImGui::Button("Reset scene", ImVec2(ImGui::GetWindowWidth(), 0))) {
+		if (ImGui::Button("Reload scene", ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 40))) {
 			Application::Get().GetGameLayer()->ResetApplication();
 			mHierarchyPanel.SetContext(Application::Get().GetGameLayer()->GetActiveScene());
 			mHierarchyPanel.ResetSelection();

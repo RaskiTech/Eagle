@@ -3,8 +3,6 @@
 #include <portaudio.h>
 #include "Audio.h"
 
-#define NUM_SECONDS   4
-#define SAMPLE_RATE   44100
 
 namespace Egl {
     void* Audio::stream;
@@ -28,14 +26,6 @@ namespace Egl {
                 continue;
 
             playingSamples[i] = clip;
-
-            /*
-            LOG_ENG("Info about the clip:");
-            LOG_ENG("Length:", clip->audio.getLengthInSeconds());
-            LOG_ENG("Channels:", clip->audio.getNumChannels());
-            LOG_ENG("Sample rate:", clip->audio.getSampleRate());
-            LOG_ENG("Bit depth:", clip->audio.getBitDepth());
-            //*/
 
             return;
         }
@@ -93,8 +83,12 @@ namespace Egl {
             }
 
             if ((*clip).samplePosition >= data.getNumSamplesPerChannel()) {
-                (*clip).playing = false;
-                clip = nullptr;
+                if ((*clip).loop)
+                    (*clip).samplePosition = 0;
+                else {
+                    (*clip).playing = false;
+                    clip = nullptr;
+                }
                 return;
             }
         }
@@ -118,9 +112,11 @@ namespace Egl {
         }
 
         if (firstPlay) {
-            for (int i = 0; i < (uint32_t)framesPerBuffer; i++)
-                *outStart++ = 0;
+            // We have two output channels, so double framesPerBuffer
+            for (int i = 0; i < (uint32_t)framesPerBuffer*2; i++)
+                *outStart++ = 0.0f;
         }
+
 
         return 0;
     }
@@ -147,7 +143,7 @@ namespace Egl {
                 SAMPLE_RATE,
                 256,        // frames per buffer 
                 paCallback,
-                &playingSamples);
+                &playingSamples); // User data
             if (err != paNoError) {
                 ErrorCall(err);
                 return;

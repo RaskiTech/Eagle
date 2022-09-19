@@ -690,8 +690,11 @@ namespace Egl {
 	}
 
 	void AudioSource::Play(bool play) {
-		sample->playing = play;
-		if (play)
+		if (play && !sample->playing)
 			Audio::AddSample(sample);
+		else if (!play && sample->playing)
+			Audio::RemoveSample(sample);
+
+		sample->playing = play;
 	}
 }

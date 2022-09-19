@@ -55,6 +55,7 @@ class ExampleScene : public Scene {
 	}
 
 	void SceneBegin() override {
+
 		Entity camera = AddEntity("Camera");
 		auto& cameraComp = camera.AddComponent<CameraComponent>();
 		cameraComp.camera.SetSize(8.85f);
@@ -66,7 +67,8 @@ class ExampleScene : public Scene {
 		auto texture = Texture::Create("Assets/Player.png", false);
 		player.AddComponent<SpriteRendererComponent>(SubTexture::CreateFromIndexes(texture, { 0, 0 }, { 16, 16 }));
 		player.GetTransform().SetPosition(-4.2f, -1.5f);
-		
+		player.AddComponent<AudioSource>(Assets::CreateClip("Assets/Sound.wav"));
+
 		Entity ground = AddEntity("Ground");
 		ground.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.4f, 0.42f, 0.52f, 1 });
 		ground.GetTransform().SetScale(13, 8).SetPosition(0, -6);
