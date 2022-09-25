@@ -16,5 +16,10 @@ namespace Egl {
 		static PythonReturnData RunFunction(const std::string& filepath, const std::string& functionName, Args&&... args) {
 			return Application::Get().GetPython().RunFunction(filepath, functionName, args...);
 		}
+
+		template<typename... Args>
+		static PythonReturnData RunFunction(const PythonFile& file, const std::string& functionName, Args&&... args) {
+			return Application::Get().GetPython().RunFunction(file, functionName, args...);
+		}
 	};
 }

@@ -25,13 +25,13 @@ namespace Egl {
 		static const uint32_t maxIndices = 6 * maxQuads;
 		static const uint32_t maxTextureSlots = 32;
 
-		std::array<Ref<Texture>, maxTextureSlots> textureSlots;
+		std::array<TextureRef, maxTextureSlots> textureSlots;
 		uint32_t textureSlotIndex = 1; // Slot 0 is a white texture for colors
 
 		Ref<VertexArray> quadVA;
 		Ref<VertexBuffer> quadVB;
 		Ref<Shader> quadShader;
-		Ref<Texture> whiteTexture;
+		TextureRef whiteTexture = -1;
 
 		uint32_t quadIndexCount = 0;
 
@@ -91,9 +91,9 @@ namespace Egl {
 		sData.quadVA->SetIndexBuffer(quadIB);
 		delete[] quadIndices;
 
-		sData.whiteTexture = Texture::Create(1, 1);
+		sData.whiteTexture = Assets::CreateTexture(1, 1, false);
 		uint32_t data = 0xffffffff;
-		sData.whiteTexture->SetData(&data, sizeof(uint32_t));
+		Assets::GetTexture(sData.whiteTexture)->SendData(&data, sizeof(uint32_t));
 
 		int32_t samplers[sData.maxTextureSlots];
 		for (int32_t i = 0; i < sData.maxTextureSlots; i++)
@@ -153,7 +153,7 @@ namespace Egl {
 		DrawColorQuad(depth, transform, color);
 	}
 
-	void Renderer::DrawTextureQuad(uint16_t depth, const glm::vec3& position, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
+	void Renderer::DrawTextureQuad(uint16_t depth, const glm::vec3& position, const glm::vec2& size, const TextureRef texture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
@@ -162,7 +162,7 @@ namespace Egl {
 
 		DrawTextureQuad(depth, transform, texture, texCoords, tilingFactor, color);
 	}
-	void Renderer::DrawRotatedTextureQuad(uint16_t depth, const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<Texture>& texture, float tilingFactor, const glm::vec4& color) {
+	void Renderer::DrawRotatedTextureQuad(uint16_t depth, const glm::vec3& position, float radiants, const glm::vec2& size, const TextureRef texture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
@@ -173,29 +173,29 @@ namespace Egl {
 		DrawTextureQuad(depth, transform, texture, texCoords, tilingFactor, color);
 	}
 
-	void Renderer::DrawTextureQuad(uint16_t depth, const glm::vec3& position, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) {
+	void Renderer::DrawTextureQuad(uint16_t depth, const glm::vec3& position, const glm::vec2& size, const SubTextureRef subTexture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
-		EAGLE_ENG_ASSERT(subTexture != nullptr, "Texture cannot be null!");
+		EAGLE_ENG_ASSERT(subTexture != -1, "Texture cannot be null!");
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		DrawTextureQuad(depth, transform, subTexture->GetTexture(), subTexture->GetTextureCoords(), tilingFactor, color);
+		DrawTextureQuad(depth, transform, Assets::GetSubTexture(subTexture)->GetTexture(), Assets::GetSubTexture(subTexture)->GetTextureCoords(), tilingFactor, color);
 	}
-	void Renderer::DrawRotatedTextureQuad(uint16_t depth, const glm::vec3& position, float radiants, const glm::vec2& size, const Ref<SubTexture>& subTexture, float tilingFactor, const glm::vec4& color) {
+	void Renderer::DrawRotatedTextureQuad(uint16_t depth, const glm::vec3& position, float radiants, const glm::vec2& size, const SubTextureRef subTexture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
-		EAGLE_ENG_ASSERT(subTexture != nullptr, "Texture cannot be null!");
+		EAGLE_ENG_ASSERT(subTexture != -1, "Texture cannot be null!");
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
 
-		DrawTextureQuad(depth, transform, subTexture->GetTexture(), subTexture->GetTextureCoords(), tilingFactor, color);
+		DrawTextureQuad(depth, transform, Assets::GetSubTexture(subTexture)->GetTexture(), Assets::GetSubTexture(subTexture)->GetTextureCoords(), tilingFactor, color);
 	}
 
-	void Renderer::DrawTextureQuad(uint16_t depth, const glm::mat4& transform, const Ref<Texture>& texture, const glm::vec2 texCoords[4], float tilingFactor, const glm::vec4& color) {
+	void Renderer::DrawTextureQuad(uint16_t depth, const glm::mat4& transform, const TextureRef texture, const glm::vec2 texCoords[4], float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
-		EAGLE_ENG_ASSERT(texture != nullptr, "Texture cannot be null!");
+		EAGLE_ENG_ASSERT(texture != -1, "Texture cannot be null!");
 
 		if (sData.quadIndexCount >= RendererData::maxIndices)
 			StartNewBatch();
@@ -203,7 +203,7 @@ namespace Egl {
 		// Is this texture bound in some slot already
 		float textureIndex = 0;
 		for (uint32_t i = 1; i < sData.textureSlotIndex; i++) {
-			if (*sData.textureSlots[i].get() == *texture.get()) {
+			if (sData.textureSlots[i] == texture) {
 				textureIndex = (float)i;
 				break;
 			}
@@ -286,7 +286,7 @@ namespace Egl {
 	void Renderer::Flush() {
 		EAGLE_PROFILE_FUNCTION();
 		for (uint32_t i = 0; i < sData.textureSlotIndex; i++)
-			sData.textureSlots[i]->Bind(i);
+			Assets::GetTexture(sData.textureSlots[i])->Bind(i);
 
 		RenderCommand::DrawIndexed(sData.quadVA, sData.quadIndexCount);
 		sStats.drawCallCount++;

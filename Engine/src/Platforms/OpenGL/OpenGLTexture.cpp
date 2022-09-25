@@ -89,7 +89,7 @@ namespace Egl {
 		EAGLE_PROFILE_FUNCTION();
 		glDeleteTextures(1, &mRendererID);
 	}
-	void OpenGLTexture::SetData(void* data, uint32_t size) {
+	void OpenGLTexture::SendData(void* data, uint32_t size) {
 		glTextureSubImage2D(mRendererID, 0, 0, 0, mWidth, mHeight, mDataFormat, GL_UNSIGNED_BYTE, data);
 	}
 	void OpenGLTexture::Bind(uint32_t slot) const {

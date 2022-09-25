@@ -5,9 +5,9 @@
 namespace Egl {
 	struct Character {
 		Character() = default;
-		Character(Ref<Texture> texture, const glm::ivec2& size, const glm::ivec2& bearing, uint32_t advance)
+		Character(TextureRef texture, const glm::ivec2& size, const glm::ivec2& bearing, uint32_t advance)
 			: texture(texture), size(size), bearing(bearing), advance(advance) {}
-		Ref<Texture> texture = nullptr;
+		TextureRef texture = -1;
 		glm::ivec2 size = { 0, 0 };
 		glm::ivec2 bearing = { 0, 0 };
 		uint32_t advance = 0;

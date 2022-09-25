@@ -652,7 +652,7 @@ namespace Egl {
 	}
 	#pragma endregion
 
-	AudioSource::AudioSource(AudioClipID clip) {
+	AudioSource::AudioSource(AudioClipRef clip) {
 		sample = new AudioSample(clip);
 	}
 	AudioSource::AudioSource(AudioSource& other) : sample(other.sample) {
@@ -683,7 +683,7 @@ namespace Egl {
 
 		if (sample->playing) {
 			sample->playing = false;
-			Audio::RemoveSample(sample);
+			AudioPlayer::RemoveSample(sample);
 		}
 
 		delete sample;
@@ -691,9 +691,9 @@ namespace Egl {
 
 	void AudioSource::Play(bool play) {
 		if (play && !sample->playing)
-			Audio::AddSample(sample);
+			AudioPlayer::AddSample(sample);
 		else if (!play && sample->playing)
-			Audio::RemoveSample(sample);
+			AudioPlayer::RemoveSample(sample);
 
 		sample->playing = play;
 	}

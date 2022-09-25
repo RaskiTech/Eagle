@@ -266,13 +266,13 @@ namespace Egl {
 
 	struct SpriteRendererComponent {
 		glm::vec4 color = { 1, 1, 1, 1 };
-		Ref<SubTexture> texture = nullptr;
+		SubTextureRef texture = -1;
 		float tilingFactor = 1;
 
 		SpriteRendererComponent() = default;
-		SpriteRendererComponent(Ref<Texture> texture, const glm::vec4& color = {1, 1, 1, 1}, float tilingFactor = 1) 
-			: color(color), tilingFactor(tilingFactor), texture(CreateRef<SubTexture>(texture, glm::vec2{ 0, 0 }, glm::vec2{ 1, 1 })) {}
-		SpriteRendererComponent(Ref<SubTexture> texture, const glm::vec4& color = {1, 1, 1, 1}, float tilingFactor = 1) : color(color), texture(texture), tilingFactor(tilingFactor) {}
+		SpriteRendererComponent(TextureRef texture, const glm::vec4& color = {1, 1, 1, 1}, float tilingFactor = 1) 
+			: color(color), tilingFactor(tilingFactor), texture(Assets::CreateSubTexture(texture, glm::vec2{ 0, 0 }, glm::vec2{ 1, 1 })) {}
+		SpriteRendererComponent(SubTextureRef texture, const glm::vec4& color = {1, 1, 1, 1}, float tilingFactor = 1) : color(color), texture(texture), tilingFactor(tilingFactor) {}
 		SpriteRendererComponent(const glm::vec4& color) : color(color) {  }
 	};
 
@@ -340,7 +340,7 @@ namespace Egl {
 	};
 
 	struct AudioSource {
-		AudioSource(AudioClipID clip);
+		AudioSource(AudioClipRef clip);
 		AudioSource(AudioSource& source);
 		AudioSource(AudioSource&& source);
 		AudioSource& operator=(const AudioSource& other);

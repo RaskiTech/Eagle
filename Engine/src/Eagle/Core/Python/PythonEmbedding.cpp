@@ -21,17 +21,18 @@ namespace Egl {
     /////////////////////////////
 
     PythonFile::PythonFile(std::string filepath) : path(filepath) {
-        FILE* filepoint;
-        errno_t err;
+        std::string moduleName = PythonEmbedding::GetModuleName(filepath);
 
-        if ((err = fopen_s(&filepoint, filepath.c_str(), "r")) != 0) {
+        PyObject* pName = PyUnicode_FromString(moduleName.c_str());
+        pythonObj = PyImport_Import(pName);
+        Py_DECREF(pName);
+        if (pythonObj == nullptr) {
+            PythonEmbedding::DisplayError();
             exists = false;
-            LOG_ENG_ERROR("Python: Cannot open file", filepath);
             return;
         }
 
         exists = true;
-        file = filepoint;
     }
     PythonFile::~PythonFile() {
         if (!exists)
@@ -39,8 +40,6 @@ namespace Egl {
 
         if (pythonObj != nullptr)
             Py_DECREF(pythonObj);
-
-        fclose(file);
     }
 
     ////////////////////////////////////
@@ -80,6 +79,7 @@ namespace Egl {
     SUPPORTED_PYTHON_ARGUMENT_CPP(double, PyFloat_FromDouble);
 
     PythonEmbedding::PythonEmbedding() {
+
         if (Py_IsInitialized())
             return;
         initialized = true;
@@ -88,6 +88,8 @@ namespace Egl {
         Py_Initialize();
 
         // Add current dir and assets dir in python search paths
+        // Note: While it is recommended that we call the Eagle python api functions with Assets/ prefix, it is not needed, since it gets stripped away anyway (apart from 1 function).
+        // TODO: Figure out how to import modules (aka. files) with relative paths. Below we are hardcoding the Assets folder, meaning it's the only folder the scripts will work on.
         PyRun_SimpleString("import sys\nsys.path.append(\".\")\nsys.path.append(\"./Assets\")");
     }
 
@@ -112,11 +114,10 @@ namespace Egl {
     }
 
     PythonReturnData PythonEmbedding::FinalizeCall(const std::string& filepath, const std::string& functionName, void* argumentTuple) const {
-        std::string _filename = filepath.substr(filepath.length() - 3, 3) == std::string(".py") ? filepath.substr(0, filepath.length() - 3) : filepath;
-        const std::string& _FunctionName = functionName;
+        const std::string moduleName = GetModuleName(filepath);
 
         // Load file
-        PyObject* pName = PyUnicode_FromString(_filename.c_str());
+        PyObject* pName = PyUnicode_FromString(moduleName.c_str());
         PyObject* pModule = PyImport_Import(pName);
         Py_DECREF(pName);
         if (pModule == nullptr) {
@@ -124,8 +125,15 @@ namespace Egl {
             return PythonReturnData(NULL);
         }
 
+        PythonReturnData data = FinalizeCall(pModule, functionName, argumentTuple);
+        Py_DECREF(pModule);
+        return data;
+    }
+
+    PythonReturnData PythonEmbedding::FinalizeCall(void* pythonFileObj, const std::string& functionName, void* argumentTuple) const {
+
         // Load function
-        PyObject* pFunc = PyObject_GetAttrString(pModule, _FunctionName.c_str());
+        PyObject* pFunc = PyObject_GetAttrString((PyObject*)pythonFileObj, functionName.c_str());
         if (!pFunc || !PyCallable_Check(pFunc)) {
             DisplayError();
             return PythonReturnData(NULL);
@@ -133,31 +141,40 @@ namespace Egl {
 
         PyObject* pArgs = (PyObject*)argumentTuple;
         PyObject* pValue = PyObject_CallObject(pFunc, pArgs); // Run the function
-        Py_DECREF(pArgs);
-        Py_DECREF(pModule);
+        if (pArgs != nullptr)
+			Py_DECREF(pArgs);
+
+        if (pValue == nullptr) {
+            LOG_ENG_ERROR("Python: The following is either a python runtime error or the function couldn't be called.");
+            DisplayError();
+            return PythonReturnData(NULL);
+        }
 
         return PythonReturnData(pValue);
     }
 
     void PythonEmbedding::RunFile(const std::string& filepath) const {
-        FILE* PScriptFile;
-        errno_t err;
+        
+        PyObject* obj = Py_BuildValue("s", filepath.c_str());
 
-        if ((err = fopen_s(&PScriptFile, filepath.c_str(), "r")) != 0) {
-            LOG_ENG_ERROR("Python: Cannot open file", filepath);
+        // "Note: On Windows, fp should be opened as binary mode (e.g. fopen(filename, "rb")). Otherwise, Python may not handle script file with LF line ending correctly."
+        FILE* file = _Py_fopen_obj(obj, "rb");
+
+        if (file == nullptr) {
+            DisplayError();
+            //LOG_ENG_ERROR("Python: Error loading", filepath, "-", strerror(err));
             return;
         }
 
-        PyRun_SimpleFile(PScriptFile, filepath.c_str());
-        fclose(PScriptFile);
+        int ret = PyRun_SimpleFileEx(file, filepath.c_str(), 1);
     }
     void PythonEmbedding::RunFile(const PythonFile& file) const {
-
+        RunFile(file.GetPath());
     }
 
-    void PythonEmbedding::DisplayError() const {
+    void PythonEmbedding::DisplayError() {
         if (!PyErr_Occurred()) {
-            LOG_ERROR("Python: Error occured");
+            LOG_ENG_ERROR("Python: Error occured");
             return;
         }
 
@@ -165,6 +182,6 @@ namespace Egl {
         PyErr_Fetch(&ptype, &pvalue, &ptraceback);
         
         const char* error = PyUnicode_AsUTF8(PyObject_Repr(pvalue));
-        LOG_ERROR("Python:", error);
+        LOG_ENG_ERROR("Python:", error);
     }
 }

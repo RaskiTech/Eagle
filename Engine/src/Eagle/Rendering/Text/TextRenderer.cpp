@@ -38,7 +38,7 @@ namespace Egl {
 
 			uint32_t width = font->glyph->bitmap.width;
 			uint32_t height = font->glyph->bitmap.rows;
-			Ref<Texture> tex = Texture::Create(width, height, true, false);
+			TextureRef tex = Assets::CreateTexture(width, height, true, false);
 			fontHeight = (float)(font->height >> 6);
 			fontDescend = (float)(-font->descender >> 6);
 
@@ -56,7 +56,7 @@ namespace Egl {
 				currPtr++;
 			}
 
-			tex->SetData(ptr, width*height*4);
+			Assets::GetTexture(tex)->SendData(ptr, width*height*4);
 			free(ptr);
 
 			Character ch(tex, 

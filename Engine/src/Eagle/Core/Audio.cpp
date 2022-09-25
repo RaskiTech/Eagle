@@ -5,8 +5,8 @@
 
 
 namespace Egl {
-    void* Audio::stream;
-    std::array<std::atomic<AudioSample*>, MAX_PLAYING_CLIP_COUNT> Audio::playingSamples;
+    void* AudioPlayer::stream;
+    std::array<std::atomic<AudioSample*>, MAX_PLAYING_CLIP_COUNT> AudioPlayer::playingSamples;
 
     AudioClip::AudioClip(const std::string& audioFilePath) {
         EAGLE_PROFILE_SCOPE("AudioFile: load audioClip");
@@ -15,11 +15,9 @@ namespace Egl {
         if (!loaded)
             LOG_ENG_ERROR("Couldn't load the file at", audioFilePath);
     }
-    AudioSample::AudioSample(AudioClipID id) : id(id), clip(Assets::GetClip(id)) {
+    AudioSample::AudioSample(AudioClipRef id) : id(id), clip(Assets::GetClip(id)) { }
 
-    }
-
-    void Audio::AddSample(AudioSample* clip) {
+    void AudioPlayer::AddSample(AudioSample* clip) {
         EAGLE_PROFILE_FUNCTION();
         for (int i = 0; i < MAX_PLAYING_CLIP_COUNT; i++) {
             if (playingSamples[i] != nullptr)
@@ -32,7 +30,7 @@ namespace Egl {
 
         LOG_ENG_WARN("Already playing the max amount of audio clips.");
     }
-    void Audio::RemoveSample(AudioSample* sample) {
+    void AudioPlayer::RemoveSample(AudioSample* sample) {
         EAGLE_PROFILE_FUNCTION();
         for (int i = 0; i < MAX_PLAYING_CLIP_COUNT; i++) {
             if (playingSamples[i] != sample)
@@ -121,7 +119,7 @@ namespace Egl {
         return 0;
     }
 
-    void Audio::Init() {
+    void AudioPlayer::Init() {
         EAGLE_PROFILE_FUNCTION();
         PaError err;
 
@@ -159,7 +157,7 @@ namespace Egl {
         }
     }
 
-    void Audio::Close() {
+    void AudioPlayer::Close() {
         EAGLE_PROFILE_FUNCTION();
         PaError err = Pa_StopStream(stream);
         if (err != paNoError) {

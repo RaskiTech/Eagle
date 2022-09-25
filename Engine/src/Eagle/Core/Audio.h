@@ -31,15 +31,14 @@ namespace Egl {
         std::atomic<AudioClip*> clip;
 
         float GetPlayTime() const { return (float)samplePosition / ((AudioClip*)clip)->data.getSampleRate(); }
-        AudioSample(AudioClipID audioClip);
+        AudioSample(AudioClipRef audioClip);
     private:
-        AudioClipID id; // Assets should be stored in raw pointers, so keep the ID to get the reference count right
+        AudioClipRef id; // Assets should be stored in raw pointers, so keep the ID to get the reference count right
         uint8_t referencesHere = 1; // Reference counting in AudioSample
         friend struct AudioSource;
     };
 
-    // Audio playing manager
-    class Audio {
+    class AudioPlayer {
     public:
         static void AddSample(AudioSample* sample);
         static void RemoveSample(AudioSample* sample);

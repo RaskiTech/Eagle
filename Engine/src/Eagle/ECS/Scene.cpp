@@ -147,10 +147,10 @@ namespace Egl {
 				for (auto entity : group) {
 					auto [spriteRenderer, transform, metadata] = group.get<SpriteRendererComponent, Transform, MetadataComponent>(entity);
 					uint16_t sorting = metadata.CalculateSorting();
-					if (spriteRenderer.texture == nullptr)
+					if (spriteRenderer.texture == -1)
 						Renderer::DrawColorQuad(sorting, transform.GetTransform(), spriteRenderer.color);
 					else
-						Renderer::DrawTextureQuad(sorting, transform.GetTransform(), spriteRenderer.texture->GetTexture(), spriteRenderer.texture->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
+						Renderer::DrawTextureQuad(sorting, transform.GetTransform(), Assets::GetSubTexture(spriteRenderer.texture)->GetTexture(), Assets::GetSubTexture(spriteRenderer.texture)->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
 				}
 			}
 
@@ -160,10 +160,10 @@ namespace Egl {
 				for (auto entity : group) {
 					auto [spriteRenderer, align, metadata] = group.get<SpriteRendererComponent, UITransform, MetadataComponent>(entity);
 					uint16_t sorting = metadata.CalculateSorting();
-					if (spriteRenderer.texture == nullptr)
+					if (spriteRenderer.texture == -1)
 						Renderer::DrawColorQuad(sorting, align.GetTransform(), spriteRenderer.color);
 					else
-						Renderer::DrawTextureQuad(sorting, align.GetTransform(), spriteRenderer.texture->GetTexture(), spriteRenderer.texture->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
+						Renderer::DrawTextureQuad(sorting, align.GetTransform(), Assets::GetSubTexture(spriteRenderer.texture)->GetTexture(), Assets::GetSubTexture(spriteRenderer.texture)->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
 				}
 			}
 

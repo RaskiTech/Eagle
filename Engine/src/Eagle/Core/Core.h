@@ -50,6 +50,11 @@
 #define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
 
 namespace Egl {
+
+	// Mostly used for rendering stuff. Could be replaced with the Assets class, but do we want the possibility that the user uses them?
+	// Maybe yes for shaders, or maybe replace all with just shared pointers (what they really are anyways)
+	// Maybe yes because we want to track memory
+
 	template<typename T>
 	using Scope = std::unique_ptr<T>;
 
@@ -57,6 +62,8 @@ namespace Egl {
 	constexpr Scope<T> CreateScope(Args&& ... args) {
 		return std::make_unique<T>(std::forward<Args>(args)...);
 	}
+
+
 
 	template<typename T>
 	using Ref = std::shared_ptr<T>;

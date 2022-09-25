@@ -217,7 +217,7 @@ namespace Egl {
 				component.SetUseSidesHorizontal(!transformActive);
 				float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
 
-				// Set slider speeds and values, so UI isn't awful to design
+				// Set slider speeds and values, so UI isn't awful to design with
 				value1Speed = camSize * (component.GetPrimaryXFromWorldPos(1) - component.GetPrimaryXFromWorldPos(0)) / SLIDER_FRICTION;
 				value2Speed = camSize * (component.GetSecondaryXFromWorldScale(1) - component.GetSecondaryXFromWorldScale(0)) / SLIDER_FRICTION;
 
@@ -473,7 +473,7 @@ namespace Egl {
 
 		DrawComponent<SpriteRendererComponent>("Sprite Renderer", drawedEntity, [](SpriteRendererComponent& component) {
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
-			if (component.texture != nullptr) ImGui::Text("Has texture: True");
+			if (component.texture != -1) ImGui::Text("Has texture: True");
 			else ImGui::Text("Has texture: False");
 		});
 

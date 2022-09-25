@@ -38,7 +38,7 @@ namespace Egl {
 			Renderer::Init();
 			Random::Init();
 			SaveData::Init();
-			Audio::Init();
+			AudioPlayer::Init();
 		}
 
 		// On editor this will be overwritten on the next frame
@@ -57,7 +57,7 @@ namespace Egl {
 	}
 
 	Application::~Application() {
-		Audio::Close();
+		AudioPlayer::Close();
 		Renderer::Shutdown();
 	}
 

@@ -64,8 +64,8 @@ class ExampleScene : public Scene {
 		SetPrimaryCamera(camera);
 		
 		auto& player = AddEntity("Player");
-		auto texture = Texture::Create("Assets/Player.png", false);
-		player.AddComponent<SpriteRendererComponent>(SubTexture::CreateFromIndexes(texture, { 0, 0 }, { 16, 16 }));
+		auto texture = Assets::CreateTexture("Assets/Player.png", false);
+		player.AddComponent<SpriteRendererComponent>(Assets::CreateSubTexture(texture, { 16, 16 }, { 0, 0 }, { 1, 1 }));
 		player.GetTransform().SetPosition(-4.2f, -1.5f);
 		player.AddComponent<AudioSource>(Assets::CreateClip("Assets/Sound.wav"));
 
@@ -78,7 +78,7 @@ class ExampleScene : public Scene {
 		pedistal.GetTransform().SetScale(2, 0.25f).SetPosition(1, -1.875f);
 
 		Entity fireHydrant = AddEntity("Fire hydrant", pedistal);
-		fireHydrant.AddComponent<SpriteRendererComponent>(Texture::Create("Assets/FireHydrant.png", false));
+		fireHydrant.AddComponent<SpriteRendererComponent>(Assets::CreateTexture("Assets/FireHydrant.png", false));
 		fireHydrant.GetTransform().SetScale(1, 1.75f).SetLocalPosition(0, 4);
 		
 		example_UI();
