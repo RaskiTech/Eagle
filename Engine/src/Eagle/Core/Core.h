@@ -1,4 +1,5 @@
 #pragma once
+#include "EagleBuildSettings.h"
 #include <memory>
 
 #ifdef _WIN32
@@ -17,12 +18,19 @@
 	#error Eagle currently only supports windows
 #endif
 
-#define BIT(x) (1<<x)
+
+
+
+// What is defined in certain configurations
 
 #if defined EAGLE_DEBUG
 	#define EAGLE_ENABLE_ASSERTS
 	#define EAGLE_ENABLE_WARNINGS
 #endif
+
+
+
+// Handle configuration definitions
 
 #ifdef EAGLE_ENABLE_ASSERTS
 	#define EAGLE_ASSERT(x, ...) { if (!(x)) { LOG_ERROR("Assertion Failed:", __VA_ARGS__); __debugbreak(); } }
@@ -46,8 +54,16 @@
 	#define EAGLE_ENG_WARNING(x, ...)
 #endif
 
+#ifdef EAGLE_EDITOR
+	// Statements that only execute when the editor is present
+	#define EAGLE_EDITOR_ONLY(x) x
+#else
+	#define EAGLE_EDITOR_ONLY(x)
+#endif
+
 
 #define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
+#define BIT(x) (1<<x)
 
 namespace Egl {
 

@@ -85,6 +85,7 @@ class ExampleScene : public Scene {
 
 		camera.AddComponent<NativeScriptComponent>().Bind<example_CameraController>();
 	}
+
 	void SceneEnd() {
 
 	}

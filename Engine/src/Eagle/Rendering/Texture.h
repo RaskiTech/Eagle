@@ -3,7 +3,7 @@
 #include <string>
 #include "Eagle/Core/Core.h"
 #include "Eagle/Core/AssetManager.h"
-#include <glm/glm.hpp>
+#include <Dependencies/GLM.h>
 
 namespace Egl {
 	//enum class TextureFormat {

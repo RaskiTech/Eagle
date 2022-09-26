@@ -5,6 +5,7 @@
 #include "Eagle/ECS/Scene.h"
 #include "Eagle/Rendering/Framebuffer.h"
 #include "Panels/HierarchyPanel.h"
+#include "Eagle/Debug/Panels/AssetsPanel.h"
 
 
 namespace Egl {
@@ -26,5 +27,6 @@ namespace Egl {
 	private:
 		bool mScenePanelFocused = false, mScenePanelHovered = false;
 		HierarchyPanel mHierarchyPanel;
+		AssetsPanel mAssetsPanel;
 	};
 }

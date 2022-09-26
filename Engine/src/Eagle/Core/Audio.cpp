@@ -13,7 +13,7 @@ namespace Egl {
         data.shouldLogErrorsToConsole(false);
         bool loaded = data.load(audioFilePath);
         if (!loaded)
-            LOG_ENG_ERROR("Couldn't load the file at", audioFilePath);
+            LOG_ENG_ERROR("Couldn't load the file at", audioFilePath, "Make sure it is wav or aiff format and the file exists.");
     }
     AudioSample::AudioSample(AudioClipRef id) : id(id), clip(Assets::GetClip(id)) { }
 
