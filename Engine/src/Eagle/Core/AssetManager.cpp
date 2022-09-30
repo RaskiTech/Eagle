@@ -8,22 +8,36 @@ namespace Egl {
     std::unordered_map<uint32_t, std::pair<uint32_t, void*>> Assets::assets;
     uint32_t Assets::nextID = 0;
 
-    AssetReference::AssetReference(const AssetReference& other) : id(other.id) { Assets::assets[id].first++; }
+    AssetReference::AssetReference(const AssetReference& other) : id(other.id) {
+        if (id == -1)
+            return;
+		Assets::assets[id].first++;
+    }
     AssetReference::~AssetReference() {
-        Assets::assets[id].first--;
+        if (id == -1)
+            return;
+		Assets::assets[id].first--;
+
         if (Assets::assets[id].first == 0)
             Assets::UnloadAsset(*this);
     }
 	AssetReference& AssetReference::operator=(AssetReference other) {
 		std::swap(id, other.id);
-		Assets::assets[id].first++;
+        //if (id != -1)
+		//	Assets::assets[id].first++;
 		return *this;
 	}
+    void Assets::UnloadAsset(const AssetReference& ref) {
+        EAGLE_EDITOR_ONLY(AssetPanel::DeleteAssetName(ref));
+        delete assets[ref].second;
+        assets.erase(ref);
+    }
+
 
     AudioClipRef Assets::CreateClip(const std::string& filepath) {
         AudioClip* asset = new AudioClip(filepath);
         AudioClipRef ref = GetNextID();
-        EAGLE_EDITOR_ONLY(AssetsPanel::SubmitAssetName(ref, std::string("Clip ").append(filepath.substr(filepath.find_last_of("/\\") + 1))));
+        EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, std::string("Clip ").append(filepath.substr(filepath.find_last_of("/\\") + 1))));
         assets[ref] = std::make_pair(1, asset);
         return ref;
     }
@@ -31,14 +45,14 @@ namespace Egl {
     TextureRef Assets::CreateTexture(const std::string& filepath, bool scaleUpBlur, bool tile) {
         Texture* asset = Texture::CreateDangling(filepath, scaleUpBlur, tile);
         TextureRef ref = GetNextID();
-        EAGLE_EDITOR_ONLY(AssetsPanel::SubmitAssetName(ref, std::string("Tex ").append(filepath.substr(filepath.find_last_of("/\\") + 1))));
+        EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, std::string("Tex ").append(filepath.substr(filepath.find_last_of("/\\") + 1))));
         assets[ref] = std::make_pair(1, asset);
         return ref;
     }
-    TextureRef Assets::CreateTexture(uint32_t width, uint32_t height, bool scaleUpBlur, bool tile) {
+    TextureRef Assets::CreateTexture(uint32_t width, uint32_t height, bool scaleUpBlur, bool tile, const char* shortIdentifierName) {
         Texture* asset = Texture::CreateDangling(width, height, scaleUpBlur, tile);
         TextureRef ref = GetNextID();
-        EAGLE_EDITOR_ONLY(AssetsPanel::SubmitAssetName(ref, std::string("Tex ").append(std::to_string(width)).append("x").append(std::to_string(height))));
+        EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, shortIdentifierName + std::string("Tex ").append(std::to_string(width)).append("x").append(std::to_string(height))));
         assets[ref] = std::make_pair(1, asset);
         return ref;
     }
@@ -46,22 +60,16 @@ namespace Egl {
     SubTextureRef Assets::CreateSubTexture(const TextureRef& texture, const glm::vec2& minCoord, const glm::vec2& maxCoord) {
         SubTexture* asset = SubTexture::CreateDangling(texture, minCoord, maxCoord);
         SubTextureRef ref = GetNextID();
-        EAGLE_EDITOR_ONLY(AssetsPanel::SubmitAssetName(ref, "Sub" + AssetsPanel::GetAssetName(texture)));
+        EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, "Sub" + AssetPanel::GetAssetName(texture)));
         assets[ref] = std::make_pair(1, asset);
         return ref;
     }
     SubTextureRef Assets::CreateSubTexture(const TextureRef& texture, const glm::vec2& oneCellSize, const glm::vec2& thisCellIndex, const glm::vec2& thisCellIndexSize) {
         SubTexture* asset = SubTexture::CreateDanglingFromIndexes(texture, thisCellIndex, oneCellSize, thisCellIndexSize);
         SubTextureRef ref = GetNextID();
-        EAGLE_EDITOR_ONLY(AssetsPanel::SubmitAssetName(ref, "Sub" + AssetsPanel::GetAssetName(texture)));
+        EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, "Sub" + AssetPanel::GetAssetName(texture)));
         assets[ref] = std::make_pair(1, asset);
         return ref;
-    }
-
-    void Assets::UnloadAsset(const AssetReference& ref) {
-        EAGLE_EDITOR_ONLY(AssetsPanel::DeleteAssetName(ref));
-        delete assets[ref].second;
-        assets.erase(ref);
     }
 
 	uint32_t Assets::GetNextID() {

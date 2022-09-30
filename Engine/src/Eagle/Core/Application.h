@@ -46,9 +46,9 @@ namespace Egl {
 		Scope<Window> mWindow;
 		PythonEmbedding pythonEmbedding;
 
-		ImGuiLayer* mImGuiLayer;
-		EditorLayer* mEditorLayer;
-		GameLayer* mGameLayer;
+		ImGuiLayer* mImGuiLayer = nullptr;
+		EditorLayer* mEditorLayer = nullptr;
+		GameLayer* mGameLayer = nullptr;
 
 		glm::vec2 mSceneWindowSize = { 0, 0 };  // Tells the window size
 		glm::vec2 mScenePanelOffset = { 0, 0 }; // Only in edit mode, can always call GetSceneWindowOffset() though;

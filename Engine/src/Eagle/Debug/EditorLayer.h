@@ -24,9 +24,11 @@ namespace Egl {
 		void OnEvent(Event& event);
 		void OnImGuiRender();
 
+		AssetPanel& GetAssetPanel() { return mAssetPanel; }
+
 	private:
 		bool mScenePanelFocused = false, mScenePanelHovered = false;
 		HierarchyPanel mHierarchyPanel;
-		AssetsPanel mAssetsPanel;
+		AssetPanel mAssetPanel;
 	};
 }

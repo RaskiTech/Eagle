@@ -15,7 +15,6 @@ namespace Egl {
 		uint32_t id = -1;
 		
 		operator uint32_t() const { return id; }
-		//bool operator==(const AssetReference& other) const { return id == other.id; }
 		AssetReference() : id(-1) {}
 		AssetReference(uint32_t id) : id(id) {}
 		~AssetReference();
@@ -33,7 +32,7 @@ namespace Egl {
 	public:
 		static AudioClipRef CreateClip(const std::string& filepath);
 		static TextureRef CreateTexture(const std::string& filepath, bool scaleUpBlur = true, bool tile = false);
-		static TextureRef CreateTexture(uint32_t width, uint32_t height, bool scaleUpBlur = true, bool tile = false);
+		static TextureRef CreateTexture(uint32_t width, uint32_t height, bool scaleUpBlur = true, bool tile = false, const char* shortIdentifierName = "");
 		static SubTextureRef CreateSubTexture(const TextureRef& texture, const glm::vec2& oneCellSize, const glm::vec2& thisCellIndex, const glm::vec2& thisCellIndexSize);
 		static SubTextureRef CreateSubTexture(const TextureRef& texture, const glm::vec2& minCoord, const glm::vec2& maxCoord);
 		static TextureRef CreateFontAtlas(const std::string& filepath) { EAGLE_ENG_ASSERT(false, "Not implemented."); return -1; }

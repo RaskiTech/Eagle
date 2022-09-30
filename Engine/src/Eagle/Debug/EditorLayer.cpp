@@ -133,7 +133,7 @@ namespace Egl {
 		ImGui::PopStyleVar();
 
 		mHierarchyPanel.OnImGuiRender();
-		mAssetsPanel.OnImGuiRender();
+		mAssetPanel.OnImGuiRender();
 
 		//// Restart scene button ////
 		ImGui::Begin("Restart Scene");
