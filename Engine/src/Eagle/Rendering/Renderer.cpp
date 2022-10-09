@@ -30,7 +30,7 @@ namespace Egl {
 
 		Ref<VertexArray> quadVA;
 		Ref<VertexBuffer> quadVB;
-		Ref<Shader> quadShader;
+		ShaderRef quadShader;
 		TextureRef whiteTexture = -1;
 
 		uint32_t quadIndexCount = 0;
@@ -99,9 +99,10 @@ namespace Egl {
 		for (int32_t i = 0; i < sData.maxTextureSlots; i++)
 			samplers[i] = i;
 
-		sData.quadShader = Shader::Create("Assets/shader.ghsl");
-		sData.quadShader->Bind();
-		sData.quadShader->SetIntArray("uTextures", samplers, sData.maxTextureSlots);
+		sData.quadShader = Assets::CreateShader("Assets/shader.ghsl");
+		Shader* shader = Assets::GetShader(sData.quadShader);
+		shader->Bind();
+		shader->SetIntArray("uTextures", samplers, sData.maxTextureSlots);
 
 		// Set the white texture to slot 0
 		sData.textureSlots[0] = sData.whiteTexture;
@@ -119,8 +120,9 @@ namespace Egl {
 
 		glm::mat4 viewProj = camera.GetProjection() * glm::inverse(transform);
 
-		sData.quadShader->Bind();
-		sData.quadShader->SetMat4("uViewProjection", viewProj);
+		Shader* shader = Assets::GetShader(sData.quadShader);
+		shader->Bind();
+		shader->SetMat4("uViewProjection", viewProj);
 
 		sData.quadDataPtr = sData.quadDataBase;
 		sData.quadIndexCount = 0; 

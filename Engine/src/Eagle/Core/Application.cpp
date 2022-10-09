@@ -59,6 +59,13 @@ namespace Egl {
 	Application::~Application() {
 		AudioPlayer::Close();
 		Renderer::Shutdown();
+
+		if (mEditorLayer)
+			delete mEditorLayer;
+		if (mImGuiLayer)
+			delete mImGuiLayer;
+		if (mGameLayer)
+			delete mGameLayer;
 	}
 
 	void Application::OnEvent(Event& e) {

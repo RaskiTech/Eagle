@@ -8,12 +8,12 @@ namespace Egl {
 	class HierarchyPanel {
 	public:
 		HierarchyPanel() = default;
-		HierarchyPanel(const Ref<Scene>& scene);
+		HierarchyPanel(const SceneRef& scene);
 
-		void SetContext(const Ref<Scene>& scene);
+		void SetContext(const SceneRef& scene);
 		void ResetSelection();
 		entt::entity GetSelectedEntity() { return mSelectedEntity; }
-		Ref<Scene> GetScene() { return mScene; }
+		SceneRef GetScene() { return mScene; }
 
 		void OnImGuiRender();
 	private:
@@ -21,6 +21,6 @@ namespace Egl {
 
 		PropertiesPanel mPropertiesPanel;
 		entt::entity mSelectedEntity{ entt::null };
-		Ref<Scene> mScene;
+		SceneRef mScene;
 	};
 }

@@ -25,12 +25,12 @@ namespace Egl {
 		void SubscribeToEvents(NativeScriptComponent* script);
 
 		void ResetApplication();
-		Ref<Scene> GetActiveScene() const { return mActiveScene; }
-		void ActivateScene(Ref<Scene> scene);
+		const SceneRef& GetActiveScene() const { return mActiveScene; }
+		void ActivateScene(SceneRef scene);
 
 		Ref<Framebuffer> ReadFramebuffer() const { return mFramebuffer; }
 	private:
 		Ref<Framebuffer> mFramebuffer;
-		Ref<Scene> mActiveScene;
+		SceneRef mActiveScene;
 	};
 }

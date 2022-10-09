@@ -91,6 +91,6 @@ class ExampleScene : public Scene {
 	}
 };
 
-Ref<Scene> Egl::ApplicationStartup() {
-	return CreateRef<ExampleScene>();
+SceneRef Egl::ApplicationStartup() {
+	return Assets::CreateScene<ExampleScene>();
 }

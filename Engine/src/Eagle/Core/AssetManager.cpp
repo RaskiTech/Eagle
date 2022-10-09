@@ -8,28 +8,16 @@ namespace Egl {
     std::unordered_map<uint32_t, std::pair<uint32_t, void*>> Assets::assets;
     uint32_t Assets::nextID = 0;
 
-    AssetReference::AssetReference(const AssetReference& other) : id(other.id) {
-        if (id == -1)
+    void AssetReference::CopyConstructor(const AssetReference& other) {
+        if (other.id == -1)
             return;
+        id = other.id;
 		Assets::assets[id].first++;
     }
-    AssetReference::~AssetReference() {
-        if (id == -1)
-            return;
-		Assets::assets[id].first--;
-
-        if (Assets::assets[id].first == 0)
-            Assets::UnloadAsset(*this);
-    }
-	AssetReference& AssetReference::operator=(AssetReference other) {
-		std::swap(id, other.id);
-        //if (id != -1)
-		//	Assets::assets[id].first++;
-		return *this;
-	}
+    template<typename AssetType>
     void Assets::UnloadAsset(const AssetReference& ref) {
         EAGLE_EDITOR_ONLY(AssetPanel::DeleteAssetName(ref));
-        delete assets[ref].second;
+        delete (AssetType*)assets[ref].second;
         assets.erase(ref);
     }
 
@@ -64,6 +52,22 @@ namespace Egl {
         assets[ref] = std::make_pair(1, asset);
         return ref;
     }
+
+    ShaderRef Assets::CreateShader(const std::string& filepath) {
+        Shader* asset = Shader::CreateDangling(filepath);
+        ShaderRef ref = GetNextID();
+        EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, "Shader " + asset->GetName()));
+        assets[ref] = std::make_pair(1, asset);
+        return ref;
+    }
+    ShaderRef Assets::CreateShader(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader) {
+        Shader* asset = Shader::CreateDangling(name, vertexShader, fragmentShader);
+        ShaderRef ref = GetNextID();
+        EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, "Shader " + asset->GetName()));
+        assets[ref] = std::make_pair(1, asset);
+        return ref;
+    }
+
     SubTextureRef Assets::CreateSubTexture(const TextureRef& texture, const glm::vec2& oneCellSize, const glm::vec2& thisCellIndex, const glm::vec2& thisCellIndexSize) {
         SubTexture* asset = SubTexture::CreateDanglingFromIndexes(texture, thisCellIndex, oneCellSize, thisCellIndexSize);
         SubTextureRef ref = GetNextID();
@@ -71,6 +75,13 @@ namespace Egl {
         assets[ref] = std::make_pair(1, asset);
         return ref;
     }
+
+    SceneRef Assets::AddSceneToAssets(Scene* scenePtr) {
+        SceneRef ref = GetNextID();
+        EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, "Scene"));
+        assets[ref] = std::make_pair(1, scenePtr);
+        return ref;
+	}
 
 	uint32_t Assets::GetNextID() {
         // Find and return the next free key

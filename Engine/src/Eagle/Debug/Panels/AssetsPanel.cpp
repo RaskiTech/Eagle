@@ -15,10 +15,6 @@ namespace Egl {
 
 	void Egl::AssetPanel::OnImGuiRender() {
 
-		//bool yes = true;
-		//ImGui::ShowDemoWindow(&yes);
-
-
 		ImGui::Begin("Assets viewer");
 
 		ImGuiIO& io = ImGui::GetIO();
@@ -96,7 +92,7 @@ namespace Egl {
 		else if (sortWay == SortOption::ReferenceCount)
 			sort = CompareEntryReference;
 
-		auto sortAscendingOrDescending = [&](const std::pair<uint32_t, std::pair<uint32_t, void*>> o1, const std::pair<uint32_t, std::pair<uint32_t, void*>> o2) { return sort(!sortDescending, o1, o2); };
+		auto sortAscendingOrDescending = [&](const std::pair<uint32_t, std::pair<uint32_t, void*>> o1, const std::pair<uint32_t, std::pair<uint32_t, void*>> o2) { return sort(sortDescending, o1, o2); };
 
 		std::sort(assetDataSorted.begin(), assetDataSorted.end(), sortAscendingOrDescending);
 

@@ -3,12 +3,13 @@
 #include <Dependencies/GLM.h>
 #include <unordered_map>
 #include "Eagle/Core/Core.h"
+#include "Eagle/Core/AssetManager.h"
 
 namespace Egl {
 	class Shader {
 	public:
-		static Ref<Shader> Create(const std::string& filepath);
-		static Ref<Shader> Create(const std::string& name, const std::string& vectexShader, const std::string& fragmentShader);
+		static Shader* CreateDangling(const std::string& filepath);
+		static Shader* CreateDangling(const std::string& name, const std::string& vectexShader, const std::string& fragmentShader);
 		virtual ~Shader() = default;
 
 		virtual const std::string& GetName() const = 0;
@@ -28,14 +29,14 @@ namespace Egl {
 	// Currently not used, but this exists
 	class ShaderLibrary {
 	public:
-		void Add(const std::string& name, const Ref<Shader>& shader);
-		inline void Add(const Ref<Shader>& shader) { Add(shader->GetName(), shader); }
-		Ref<Shader> Load(const std::string& filepath);
-		Ref<Shader> Load(const std::string& name, const std::string& filepath);
+		void Add(const std::string& name, const ShaderRef& shader);
+		inline void Add(const ShaderRef& shader) { Add(Assets::GetShader(shader)->GetName(), shader); }
+		ShaderRef Load(const std::string& filepath);
+		ShaderRef Load(const std::string& name, const std::string& filepath);
 
-		Ref<Shader> Get(const std::string& name);
+		ShaderRef Get(const std::string& name);
 		bool Exists(const std::string& name);
 	private:
-		std::unordered_map<std::string, Ref<Shader>> mShaders;
+		std::unordered_map<std::string, ShaderRef> mShaders;
 	};
 }

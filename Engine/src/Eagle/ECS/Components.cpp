@@ -290,7 +290,7 @@ namespace Egl {
 	}
 
 	float UITransform::GetPrimaryXFromWorldPos(float xWorldPos) const {
-		Ref<Scene> activeScene = Application::Get().GetGameLayer()->GetActiveScene();
+		Scene* activeScene = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene());
 		CameraComponent& cam = activeScene->GetPrimaryCamera().GetComponent<CameraComponent>();
 		Transform& camTrans = activeScene->GetPrimaryCamera().GetComponent<Transform>();
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
@@ -317,7 +317,7 @@ namespace Egl {
 		return 0;
 	}
 	float UITransform::GetSecondaryXFromWorldScale(float xWorldScale) const {
-		Ref<Scene> activeScene = Application::Get().GetGameLayer()->GetActiveScene();
+		Scene* activeScene = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene());
 		CameraComponent& cam = activeScene->GetPrimaryCamera().GetComponent<CameraComponent>();
 		Transform& camTrans = activeScene->GetPrimaryCamera().GetComponent<Transform>();
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
@@ -342,7 +342,7 @@ namespace Egl {
 		return 0;
 	}
 	float UITransform::GetPrimaryYFromWorldPos(float yWorldPos) const {
-		Ref<Scene> activeScene = Application::Get().GetGameLayer()->GetActiveScene();
+		Scene* activeScene = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene());
 		CameraComponent& cam = activeScene->GetPrimaryCamera().GetComponent<CameraComponent>();
 		Transform& camTrans = activeScene->GetPrimaryCamera().GetComponent<Transform>();
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
@@ -369,7 +369,7 @@ namespace Egl {
 		return 0;
 	}
 	float UITransform::GetSecondaryYFromWorldScale(float yWorldScale) const {
-		Ref<Scene> activeScene = Application::Get().GetGameLayer()->GetActiveScene();
+		Scene* activeScene = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene());
 		CameraComponent& cam = activeScene->GetPrimaryCamera().GetComponent<CameraComponent>();
 		Transform& camTrans = activeScene->GetPrimaryCamera().GetComponent<Transform>();
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
@@ -441,7 +441,7 @@ namespace Egl {
 	}
 	
 	void UITransform::CalculateDimensions(const glm::vec2& parentPos, const glm::vec2& parentScale) const {
-		Ref<Scene> activeScene = Application::Get().GetGameLayer()->GetActiveScene();
+		Scene* activeScene = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene());
 		CameraComponent& cam = activeScene->GetPrimaryCamera().GetComponent<CameraComponent>();
 		Transform& camTrans = activeScene->GetPrimaryCamera().GetComponent<Transform>();
 

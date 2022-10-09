@@ -44,13 +44,14 @@ namespace Egl {
 		if (e == entt::null)
 			return;
 
-		if (mHierarchyPanel.GetScene()->mRegistry.has<Transform>(e)) {
-			Transform& t = mHierarchyPanel.GetScene()->mRegistry.get<Transform>(e);
+		Scene* scene = Assets::GetScene(mHierarchyPanel.GetScene());
+		if (scene->mRegistry.has<Transform>(e)) {
+			Transform& t = scene->mRegistry.get<Transform>(e);
 			pos = t.GetPosition();
 			radius = { t.GetScale().x / 2, t.GetScale().y / 2 };
 		}
 		else {
-			UITransform& t = mHierarchyPanel.GetScene()->mRegistry.get<UITransform>(e);
+			UITransform& t = scene->mRegistry.get<UITransform>(e);
 			pos = t.GetWorldPosition();
 			radius = { t.GetWorldScale().x / 2, t.GetWorldScale().y / 2 };
 		}
@@ -138,10 +139,11 @@ namespace Egl {
 		//// Restart scene button ////
 		ImGui::Begin("Restart Scene");
 		if (ImGui::Button("Reload scene", ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 40))) {
+			mHierarchyPanel.SetContext(-1);
 			Application::Get().GetGameLayer()->ResetApplication();
 			mHierarchyPanel.SetContext(Application::Get().GetGameLayer()->GetActiveScene());
 			mHierarchyPanel.ResetSelection();
-			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(Application::Get().GetSceneWindowSize().x / Application::Get().GetSceneWindowSize().y);
+			Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene())->SetViewportAspectRatio(Application::Get().GetSceneWindowSize().x / Application::Get().GetSceneWindowSize().y);
 		}
 
 		ImGui::End();

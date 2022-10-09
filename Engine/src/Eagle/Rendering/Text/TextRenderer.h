@@ -34,6 +34,7 @@ namespace Egl {
 	class TextRenderer {
 	public:
 		TextRenderer(const std::string& fontPath) { LoadFont(fontPath); linePixelWidths.reserve(20); };
+		~TextRenderer() = default;
 		void LoadFont(const std::string& fontPath);
 
 		void ChangeRenderedText(const std::string& unprocessedText);

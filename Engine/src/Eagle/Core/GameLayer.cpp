@@ -5,6 +5,7 @@
 #include "GameLayer.h"
 #include "Input.h"
 #include "Eagle/Rendering/RenderCommand.h"
+#include "Eagle/Core/AssetManager.h"
 
 // Handles calling input and client functions.
 
@@ -17,23 +18,24 @@ namespace Egl {
 		mFramebuffer = Framebuffer::Create(defenition);
 	}
 
-	void GameLayer::ActivateScene(Ref<Scene> scene) {
-		mActiveScene = scene;
+	void GameLayer::ActivateScene(SceneRef sceneRef) {
+		mActiveScene = sceneRef;
+		Scene* scene = Assets::GetScene(mActiveScene);
 		{
 			EAGLE_PROFILE_SCOPE("Client - SceneBegin");
-			mActiveScene->SceneBegin();
+			scene->SceneBegin();
 		}
 		{
 			EAGLE_PROFILE_SCOPE("Client - Scripts: OnCreate");
-			auto view = mActiveScene->mRegistry.view<NativeScriptComponent>();
+			auto view = scene->mRegistry.view<NativeScriptComponent>();
 			view.each([&](auto entity, NativeScriptComponent& scriptComponent) {
 				EAGLE_ENG_ASSERT(scriptComponent.baseInstance != nullptr, "Instance is a nullptr");
 
-				scriptComponent.baseInstance->mEntity = Entity{ entity, mActiveScene.get() };
+				scriptComponent.baseInstance->mEntity = Entity{ entity, scene };
 
 				// Add it to an event array
 				if (scriptComponent.OnEventFunc)
-					mActiveScene->eventScriptsInOrder.push_back(&scriptComponent);
+					scene->eventScriptsInOrder.push_back(&scriptComponent);
 			});
 			view.each([&](auto entity, NativeScriptComponent& scriptComponent) {
 				if (scriptComponent.OnCreateFunc)
@@ -41,28 +43,28 @@ namespace Egl {
 			});
 		}
 
-		std::sort(mActiveScene->eventScriptsInOrder.begin(), mActiveScene->eventScriptsInOrder.end(), [&](NativeScriptComponent* e1, NativeScriptComponent* e2) {
-			auto& mc1 = mActiveScene->mRegistry.get<MetadataComponent>((entt::entity)e1->baseInstance->GetEntity().GetID());
-			auto& mc2 = mActiveScene->mRegistry.get<MetadataComponent>((entt::entity)e2->baseInstance->GetEntity().GetID());
+		std::sort(scene->eventScriptsInOrder.begin(), scene->eventScriptsInOrder.end(), [&](NativeScriptComponent* e1, NativeScriptComponent* e2) {
+			auto& mc1 = scene->mRegistry.get<MetadataComponent>((entt::entity)e1->baseInstance->GetEntity().GetID());
+			auto& mc2 = scene->mRegistry.get<MetadataComponent>((entt::entity)e2->baseInstance->GetEntity().GetID());
 			if (mc1.sortingLayer == mc2.sortingLayer)
 				return mc1.subSorting > mc2.subSorting;
 			else
 				return mc1.sortingLayer > mc2.sortingLayer;
 		});
-		mActiveScene->sceneInitComplete = true;
+		scene->sceneInitComplete = true;
 	}
 
 	void GameLayer::OnAttach() {
 		{
 			EAGLE_PROFILE_SCOPE("Client - ApplicationStartup");
-			Ref<Scene> scene = ApplicationStartup();
+			SceneRef scene = ApplicationStartup();
 			ActivateScene(scene);
 		}
 	}
 	void GameLayer::OnDetach() {
 		{
 			EAGLE_PROFILE_SCOPE("Application - Scripts: Destroy");
-			mActiveScene->mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
+			Assets::GetScene(mActiveScene)->mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
 				if (scriptComponent.OnDestroyFunc)
 					scriptComponent.OnDestroyFunc(scriptComponent.baseInstance);
 				scriptComponent.DeleteBase();
@@ -70,20 +72,22 @@ namespace Egl {
 		}
 		{
 			EAGLE_PROFILE_SCOPE("Application - SceneEnd");
-			mActiveScene->SceneEnd();
+			Assets::GetScene(mActiveScene)->SceneEnd();
 		}
+
+		mActiveScene = -1;
 	}
 	void GameLayer::OnUpdate(bool needToDrawToScreen) {
 		FramebufferDefenition def = mFramebuffer->GetDefenition();
 		const glm::vec2& sceneSize = Application::Get().GetSceneWindowSize();
 		if (sceneSize.x > 0.0f && sceneSize.y > 0.0f && (sceneSize.x != def.width || sceneSize.y != def.height)) {
 			mFramebuffer->Resize((uint32_t)sceneSize.x, (uint32_t)sceneSize.y);
-			Application::Get().GetGameLayer()->GetActiveScene()->SetViewportAspectRatio(sceneSize.x / sceneSize.y);
+			Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene())->SetViewportAspectRatio(sceneSize.x / sceneSize.y);
 		}
 		
 		mFramebuffer->Bind();
 
-		mActiveScene->OnUpdate();
+		Assets::GetScene(mActiveScene)->OnUpdate();
 
 		Input::ResetInputState();
 
@@ -99,14 +103,15 @@ namespace Egl {
 
 	#define IS_UNDER_MOUSE(mouseX, mouseY, objX, objY, objXRad, objYRad) (glm::abs(mouseX-objX) < objXRad && glm::abs(mouseY-objY) < objYRad)
 	void GameLayer::DistributeEvent(Event& e) {
-		EAGLE_ENG_ASSERT(mActiveScene->sceneInitComplete, "The init isn't complete yet but there was an event");
-		glm::vec2 mousePos = mActiveScene->ScreenToWorldPos(Input::MousePos());
+		Scene* scene = Assets::GetScene(mActiveScene);
+		EAGLE_ENG_ASSERT(scene->sceneInitComplete, "The init isn't complete yet but there was an event");
+		glm::vec2 mousePos = scene->ScreenToWorldPos(Input::MousePos());
 		std::vector<NativeScriptComponent*> listenersUnderMouse;
 
 		// TODO: Use binary search to find the objects
 
 		// Iterate through and check what listeners are under the mouse
-		for (NativeScriptComponent* comp : mActiveScene->eventScriptsInOrder) {
+		for (NativeScriptComponent* comp : scene->eventScriptsInOrder) {
 			EAGLE_ENG_ASSERT(comp->OnEventFunc, "The script doesn't have an event function but it is in the event list");
 			const Entity& entity = comp->baseInstance->GetEntity();
 			if (entity.HasComponent<Transform>()) {
@@ -130,11 +135,12 @@ namespace Egl {
 		return vec.insert(std::upper_bound(vec.begin(), vec.end(), item, pred), item);
 	}
 	void GameLayer::SubscribeToEvents(NativeScriptComponent* script) {
+		Scene* scene = Assets::GetScene(mActiveScene);
 		// Add the script here if the scene instalation is complete. Else it will be added after sceneStart
-		if (mActiveScene != nullptr && mActiveScene->sceneInitComplete) {
-			Insert_sorted(mActiveScene->eventScriptsInOrder, script, [&](NativeScriptComponent* e1, NativeScriptComponent* e2) {
-				auto mc1 = mActiveScene->mRegistry.get<MetadataComponent>((entt::entity)e1->baseInstance->GetEntity().GetID());
-				auto mc2 = mActiveScene->mRegistry.get<MetadataComponent>((entt::entity)e2->baseInstance->GetEntity().GetID());
+		if (scene != nullptr && scene->sceneInitComplete) {
+			Insert_sorted(scene->eventScriptsInOrder, script, [&](NativeScriptComponent* e1, NativeScriptComponent* e2) {
+				auto mc1 = scene->mRegistry.get<MetadataComponent>((entt::entity)e1->baseInstance->GetEntity().GetID());
+				auto mc2 = scene->mRegistry.get<MetadataComponent>((entt::entity)e2->baseInstance->GetEntity().GetID());
 				if (mc1.sortingLayer == mc2.sortingLayer)
 					return mc1.subSorting > mc2.subSorting;
 				else

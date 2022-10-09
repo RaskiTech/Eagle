@@ -6,11 +6,11 @@
 #include "Eagle/ECS/ComponentsInternal.h"
 
 namespace Egl {
-	HierarchyPanel::HierarchyPanel(const Ref<Scene>& scene) {
+	HierarchyPanel::HierarchyPanel(const SceneRef& scene) {
 		SetContext(scene);
 	}
 
-	void HierarchyPanel::SetContext(const Ref<Scene>& scene) {
+	void HierarchyPanel::SetContext(const SceneRef& scene) {
 		mScene = scene;
 	}
 	void HierarchyPanel::ResetSelection() {
@@ -27,11 +27,13 @@ namespace Egl {
 		ImGui::Text("Scene Hierarchy");
 		ImGui::PopFont();
 
-		entt::entity currentEntity = mScene->mFirstEntity;
+		Scene* scene = Assets::GetScene(mScene);
+
+		entt::entity currentEntity = scene->mFirstEntity;
 
 		while (currentEntity != entt::null) {
 			DrawEntityNode(currentEntity);
-			currentEntity = mScene->mRegistry.get<Relation>(currentEntity).nextSibling;
+			currentEntity = scene->mRegistry.get<Relation>(currentEntity).nextSibling;
 		}
 
 		if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(0)) {
@@ -43,8 +45,9 @@ namespace Egl {
 	}
 
 	void HierarchyPanel::DrawEntityNode(entt::entity e) {
-		auto [ tagComp, RelationComp ] = mScene->mRegistry.get<MetadataComponent, Relation>(e);
+		Scene* scene = Assets::GetScene(mScene);
 
+		auto [ tagComp, RelationComp ] = scene->mRegistry.get<MetadataComponent, Relation>(e);
 
 		ImGuiTreeNodeFlags parentFlags = ((mSelectedEntity == e) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 		ImGuiTreeNodeFlags leafFlags   = ((mSelectedEntity == e) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_Bullet      | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -52,16 +55,16 @@ namespace Egl {
 
 		if (ImGui::IsItemClicked()) {
 			mSelectedEntity = e;
-			mPropertiesPanel.SetDrawedEntity({ e, mScene.get() });
+			mPropertiesPanel.SetDrawedEntity({ e, scene });
 		}
 
 		if (opened) {
-			auto& comp = mScene->mRegistry.get<Relation>(e);
+			auto& comp = scene->mRegistry.get<Relation>(e);
 			auto current = comp.firstChild;
 			
 			while (current != entt::null) {
 				DrawEntityNode(current);
-				current = mScene->mRegistry.get<Relation>(current).nextSibling;
+				current = scene->mRegistry.get<Relation>(current).nextSibling;
 			}
 
 			ImGui::TreePop();

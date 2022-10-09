@@ -137,7 +137,7 @@ namespace Egl {
 
 		if (e.IsValid()) // Check that the entity isn't null
 			ComponentEditorInit<UITransform>(e, [&](UITransform& component) {
-				float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
+				float camSize = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene())->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
 				value1Speed = camSize * (component.GetPrimaryXFromWorldPos(1) - component.GetPrimaryXFromWorldPos(0)) / SLIDER_FRICTION;
 				value2Speed = camSize * (component.GetSecondaryXFromWorldScale(1) - component.GetSecondaryXFromWorldScale(0)) / SLIDER_FRICTION;
 				value3Speed = camSize * (component.GetPrimaryXFromWorldPos(1) - component.GetPrimaryXFromWorldPos(0)) / SLIDER_FRICTION;
@@ -199,6 +199,7 @@ namespace Egl {
 
 		DrawComponent<UITransform>("UI Transform", drawedEntity, [&](UITransform& component) {
 			uint32_t worldTreeNodeUniqueID = UniqueID::GetUniqueFrameID(); // This because the options use ids so the tree could close when changing transform and sides
+			Scene* scene = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene());
 
 			ImGuiIO& io = ImGui::GetIO();
 			auto& boldFont = io.Fonts->Fonts[0];
@@ -215,7 +216,7 @@ namespace Egl {
 				const glm::vec2& worldScale = component.GetWorldScale();
 
 				component.SetUseSidesHorizontal(!transformActive);
-				float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
+				float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
 
 				// Set slider speeds and values, so UI isn't awful to design with
 				value1Speed = camSize * (component.GetPrimaryXFromWorldPos(1) - component.GetPrimaryXFromWorldPos(0)) / SLIDER_FRICTION;
@@ -242,7 +243,7 @@ namespace Egl {
 					component.SetXDriver(newXDriver);
 					float newValue = component.GetPrimaryXFromWorldPos(worldPos.x);
 					component.SetXPosValue(newValue);
-					float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
+					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
 					value1Speed = camSize*(component.GetPrimaryXFromWorldPos(worldPos.x + 1) - newValue) / SLIDER_FRICTION;
 				}
 
@@ -262,7 +263,7 @@ namespace Egl {
 					component.SetWidthDriver(newSelectedWidth);
 					float newValue = component.GetSecondaryXFromWorldScale(worldScale.x);
 					component.SetWidthValue(newValue);
-					float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
+					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
 					value2Speed = camSize * (component.GetSecondaryXFromWorldScale(worldScale.x + 1) - newValue) / SLIDER_FRICTION;
 				}
 
@@ -282,7 +283,7 @@ namespace Egl {
 					component.SetLeftSideDriver(newLeftDriver);
 					float newValue = component.GetPrimaryXFromWorldPos(worldPos.x);
 					component.SetLeftSideValue(newValue);
-					float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
+					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
 					value1Speed = camSize * (component.GetPrimaryXFromWorldPos(worldPos.x + 1) - newValue) / SLIDER_FRICTION;
 				}
 
@@ -302,7 +303,7 @@ namespace Egl {
 					component.SetRightSideDriver(newRightDriver);
 					float newValue = component.GetSecondaryXFromWorldScale(worldScale.x);
 					component.SetRightSideValue(newValue);
-					float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
+					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
 					value2Speed = camSize * (component.GetSecondaryXFromWorldScale(worldScale.x + 1) - newValue) / SLIDER_FRICTION;
 				}
 				value = component.GetRightSideValue();
@@ -325,7 +326,7 @@ namespace Egl {
 				const glm::vec2& worldScale = component.GetWorldScale();
 
 				component.SetUseSidesVertical(!transformActive);
-				float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
+				float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
 
 				// Set slider speeds and values, so UI isn't awful to design
 				value3Speed = camSize * (component.GetPrimaryYFromWorldPos(1) - component.GetPrimaryYFromWorldPos(0)) / SLIDER_FRICTION;
@@ -350,7 +351,7 @@ namespace Egl {
 					component.SetYDriver(newYDriver);
 					float newValue = component.GetPrimaryYFromWorldPos(worldPos.y);
 					component.SetYPosValue(newValue);
-					float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
+					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
 					value3Speed = camSize * (component.GetPrimaryYFromWorldPos(worldPos.x + 1) - newValue) / SLIDER_FRICTION;
 				}
 				float value = component.GetYPosValue();
@@ -368,7 +369,7 @@ namespace Egl {
 					component.SetHeightDriver(newHeightDriver);
 					float newValue = component.GetSecondaryYFromWorldScale(worldScale.y);
 					component.SetHeightValue(newValue);
-					float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
+					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
 					value4Speed = camSize * (component.GetSecondaryYFromWorldScale(worldScale.x + 1) - newValue) / SLIDER_FRICTION;
 				}
 				value = component.GetHeightValue();
@@ -386,7 +387,7 @@ namespace Egl {
 					component.SetTopDriver(newTopDriver);
 					float newValue = component.GetPrimaryYFromWorldPos(worldPos.y);
 					component.SetTopValue(newValue);
-					float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
+					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
 					value3Speed = camSize * (component.GetPrimaryYFromWorldPos(worldPos.x + 1) - newValue) / SLIDER_FRICTION;
 				}
 
@@ -405,7 +406,7 @@ namespace Egl {
 					component.SetBottomDriver(newBottomDriver);
 					float newValue = component.GetSecondaryYFromWorldScale(worldScale.y);
 					component.SetBottomValue(newValue);
-					float camSize = Application::Get().GetGameLayer()->GetActiveScene()->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
+					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
 					value4Speed = camSize * (component.GetSecondaryYFromWorldScale(worldScale.x + 1) - newValue) / SLIDER_FRICTION;
 				}
 				value = component.GetBottomValue();
@@ -443,7 +444,7 @@ namespace Egl {
 
 		DrawComponent<CameraComponent>("Camera", drawedEntity, [&](CameraComponent& component) {
 			if (ImGui::Button("Set primary camera")) {
-				auto scene = Application::Get().GetGameLayer()->GetActiveScene();
+				auto scene = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene());
 				scene->SetPrimaryCamera(drawedEntity);
 			}
 
