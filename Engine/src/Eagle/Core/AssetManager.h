@@ -16,10 +16,10 @@ namespace Egl {
 	struct AssetReference {
 		uint32_t id = -1;
 		
-		operator uint32_t() const { return id; }
 		AssetReference() : id(-1) {}
 		AssetReference(uint32_t id) : id(id) {}
 
+		operator uint32_t() const { return id; }
 		void CopyConstructor(const AssetReference& other);
 
 		template<typename AssetType>
@@ -41,6 +41,7 @@ namespace Egl {
 				ReferenceType(const ReferenceType& other) { CopyConstructor(other); } \
 				ReferenceType& operator=(ReferenceType other) { std::swap(id, other.id); return *this; } \
 				~ReferenceType() { OnDelete<AssetType>(); } \
+				operator uint32_t() const { return id; } \
 		}
 
 
@@ -77,6 +78,7 @@ namespace Egl {
 		static Scene* GetScene(const SceneRef& id) { return (Scene*)assets[id].second; }
 
 		static uint32_t GetReferenceCount(const AssetReference& ref) { return assets[ref].first; }
+		static uint32_t GetReferenceCount_DEBUG(uint32_t id) { return assets[id].first; }
 		static std::vector<uint32_t> GetAllUsedIDs();
 		static std::vector<std::pair<uint32_t, std::pair<uint32_t, void*>>> GetAllAssetData();
 		

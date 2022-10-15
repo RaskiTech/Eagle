@@ -15,12 +15,15 @@ namespace Egl {
 		defenition.attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
 		defenition.width = 1280;
 		defenition.height = 720;
-		mFramebuffer = Framebuffer::Create(defenition);
+		_Framebuffer = Framebuffer::Create(defenition);
 	}
 
 	void GameLayer::ActivateScene(SceneRef sceneRef) {
-		mActiveScene = sceneRef;
-		Scene* scene = Assets::GetScene(mActiveScene);
+		if (_ActiveScene != -1)
+			DeactivateCurrentScene();
+
+		_ActiveScene = sceneRef;
+		Scene* scene = Assets::GetScene(_ActiveScene);
 		{
 			EAGLE_PROFILE_SCOPE("Client - SceneBegin");
 			scene->SceneBegin();
@@ -54,6 +57,24 @@ namespace Egl {
 		scene->sceneInitComplete = true;
 	}
 
+	void GameLayer::DeactivateCurrentScene() {
+		{
+			EAGLE_PROFILE_SCOPE("Application - Scripts: Destroy");
+			Assets::GetScene(_ActiveScene)->mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
+				if (scriptComponent.OnDestroyFunc)
+					scriptComponent.OnDestroyFunc(scriptComponent.baseInstance);
+				scriptComponent.DeleteBase();
+			});
+		}
+		{
+			EAGLE_PROFILE_SCOPE("Application - SceneEnd");
+			Assets::GetScene(_ActiveScene)->SceneEnd();
+		}
+
+		EAGLE_EDITOR_ONLY(Application::Get().GetEditorLayer()->OnSceneDelete());
+		_ActiveScene = -1;
+	}
+
 	void GameLayer::OnAttach() {
 		{
 			EAGLE_PROFILE_SCOPE("Client - ApplicationStartup");
@@ -62,51 +83,44 @@ namespace Egl {
 		}
 	}
 	void GameLayer::OnDetach() {
-		{
-			EAGLE_PROFILE_SCOPE("Application - Scripts: Destroy");
-			Assets::GetScene(mActiveScene)->mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
-				if (scriptComponent.OnDestroyFunc)
-					scriptComponent.OnDestroyFunc(scriptComponent.baseInstance);
-				scriptComponent.DeleteBase();
-			});
-		}
-		{
-			EAGLE_PROFILE_SCOPE("Application - SceneEnd");
-			Assets::GetScene(mActiveScene)->SceneEnd();
-		}
-
-		mActiveScene = -1;
+		DeactivateCurrentScene();
 	}
 	void GameLayer::OnUpdate(bool needToDrawToScreen) {
-		FramebufferDefenition def = mFramebuffer->GetDefenition();
+		FramebufferDefenition def = _Framebuffer->GetDefenition();
 		const glm::vec2& sceneSize = Application::Get().GetSceneWindowSize();
 		if (sceneSize.x > 0.0f && sceneSize.y > 0.0f && (sceneSize.x != def.width || sceneSize.y != def.height)) {
-			mFramebuffer->Resize((uint32_t)sceneSize.x, (uint32_t)sceneSize.y);
+			_Framebuffer->Resize((uint32_t)sceneSize.x, (uint32_t)sceneSize.y);
 			Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene())->SetViewportAspectRatio(sceneSize.x / sceneSize.y);
 		}
 		
-		mFramebuffer->Bind();
+		_Framebuffer->Bind();
 
-		Assets::GetScene(mActiveScene)->OnUpdate();
+		if (_ScheduledSceneSwitch != -1) {
+
+			ActivateScene(_ScheduledSceneSwitch);
+			_ScheduledSceneSwitch = -1;
+		}
+		Assets::GetScene(_ActiveScene)->OnUpdate();
 
 		Input::ResetInputState();
 
 		// If running in the editor or not
 		if (needToDrawToScreen) {
 			const glm::vec2& size = Application::Get().GetSceneWindowSize();
-			mFramebuffer->DrawToScreenAndUnbind((uint32_t)size.x, (uint32_t)size.y);
+			_Framebuffer->DrawToScreenAndUnbind((uint32_t)size.x, (uint32_t)size.y);
 		}
 		else {
-			mFramebuffer->Unbind();
+			_Framebuffer->Unbind();
 		}
 	}
 
-	#define IS_UNDER_MOUSE(mouseX, mouseY, objX, objY, objXRad, objYRad) (glm::abs(mouseX-objX) < objXRad && glm::abs(mouseY-objY) < objYRad)
+	#define IS_UNDER_CURSOR(mousePos, objPos, objScale) (glm::abs(mousePos.x-objPos.x) < objScale.x/2 && glm::abs(mousePos.y-objPos.y) < objScale.y/2)
 	void GameLayer::DistributeEvent(Event& e) {
-		Scene* scene = Assets::GetScene(mActiveScene);
+		Scene* scene = Assets::GetScene(_ActiveScene);
 		EAGLE_ENG_ASSERT(scene->sceneInitComplete, "The init isn't complete yet but there was an event");
 		glm::vec2 mousePos = scene->ScreenToWorldPos(Input::MousePos());
 		std::vector<NativeScriptComponent*> listenersUnderMouse;
+		bool isMouseEvent = e.GetGategoryFlags() & (int)Egl::EventGategory::Mouse;
 
 		// TODO: Use binary search to find the objects
 
@@ -116,13 +130,13 @@ namespace Egl {
 			const Entity& entity = comp->baseInstance->GetEntity();
 			if (entity.HasComponent<Transform>()) {
 				auto& tComp = entity.GetComponent<Transform>();
-				if (IS_UNDER_MOUSE(mousePos.x, mousePos.y, tComp.GetPosition().x, tComp.GetPosition().y, tComp.GetScale().x/2, tComp.GetScale().y/2))
+				if (!isMouseEvent || IS_UNDER_CURSOR(mousePos, tComp.GetPosition(), tComp.GetScale()))
 					listenersUnderMouse.push_back(comp);
 			}
 			else {
 				auto& tComp = entity.GetComponent<UITransform>();
 				//LOG(glm::abs(mouseX - objX), objSizeX, glm::abs(mouseY-objY), objSizeY);
-				if (IS_UNDER_MOUSE(mousePos.x, mousePos.y, tComp.GetWorldPosition().x, tComp.GetWorldPosition().y, tComp.GetWorldScale().x/2, tComp.GetWorldScale().y/2))
+				if (!isMouseEvent || IS_UNDER_CURSOR(mousePos, tComp.GetWorldPosition(), tComp.GetWorldScale()))
 					listenersUnderMouse.push_back(comp);
 			}
 		}
@@ -135,7 +149,7 @@ namespace Egl {
 		return vec.insert(std::upper_bound(vec.begin(), vec.end(), item, pred), item);
 	}
 	void GameLayer::SubscribeToEvents(NativeScriptComponent* script) {
-		Scene* scene = Assets::GetScene(mActiveScene);
+		Scene* scene = Assets::GetScene(_ActiveScene);
 		// Add the script here if the scene instalation is complete. Else it will be added after sceneStart
 		if (scene != nullptr && scene->sceneInitComplete) {
 			Insert_sorted(scene->eventScriptsInOrder, script, [&](NativeScriptComponent* e1, NativeScriptComponent* e2) {

@@ -6,13 +6,6 @@
 #include "Eagle/ECS/ComponentsInternal.h"
 
 namespace Egl {
-	HierarchyPanel::HierarchyPanel(const SceneRef& scene) {
-		SetContext(scene);
-	}
-
-	void HierarchyPanel::SetContext(const SceneRef& scene) {
-		mScene = scene;
-	}
 	void HierarchyPanel::ResetSelection() {
 		mSelectedEntity = entt::null;
 		mPropertiesPanel.SetDrawedEntity({});
@@ -27,12 +20,12 @@ namespace Egl {
 		ImGui::Text("Scene Hierarchy");
 		ImGui::PopFont();
 
-		Scene* scene = Assets::GetScene(mScene);
+		Scene* scene = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene());
 
 		entt::entity currentEntity = scene->mFirstEntity;
 
 		while (currentEntity != entt::null) {
-			DrawEntityNode(currentEntity);
+			DrawEntityNode(currentEntity, scene);
 			currentEntity = scene->mRegistry.get<Relation>(currentEntity).nextSibling;
 		}
 
@@ -44,9 +37,7 @@ namespace Egl {
 		mPropertiesPanel.OnImGuiRender();
 	}
 
-	void HierarchyPanel::DrawEntityNode(entt::entity e) {
-		Scene* scene = Assets::GetScene(mScene);
-
+	void HierarchyPanel::DrawEntityNode(entt::entity e, Scene* scene) {
 		auto [ tagComp, RelationComp ] = scene->mRegistry.get<MetadataComponent, Relation>(e);
 
 		ImGuiTreeNodeFlags parentFlags = ((mSelectedEntity == e) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
@@ -63,7 +54,7 @@ namespace Egl {
 			auto current = comp.firstChild;
 			
 			while (current != entt::null) {
-				DrawEntityNode(current);
+				DrawEntityNode(current, scene);
 				current = scene->mRegistry.get<Relation>(current).nextSibling;
 			}
 

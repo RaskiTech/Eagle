@@ -20,8 +20,6 @@ namespace Egl {
 	///////////////////// On Attach //////////////////////
 	void EditorLayer::OnAttach() {
 		EAGLE_PROFILE_FUNCTION();
-
-		mHierarchyPanel.SetContext(Application::Get().GetGameLayer()->GetActiveScene());
 	}
 
 	void EditorLayer::OnDetach() {
@@ -44,7 +42,7 @@ namespace Egl {
 		if (e == entt::null)
 			return;
 
-		Scene* scene = Assets::GetScene(mHierarchyPanel.GetScene());
+		Scene* scene = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene());
 		if (scene->mRegistry.has<Transform>(e)) {
 			Transform& t = scene->mRegistry.get<Transform>(e);
 			pos = t.GetPosition();
@@ -62,6 +60,10 @@ namespace Egl {
 		Renderer::DrawColorQuad(0, glm::vec2{ pos.x - radius.x - width / 2, pos.y }, { width, radius.y * 2 + width * 2 }, outlineColor);
 		Renderer::DrawColorQuad(0, glm::vec2{ pos.x, pos.y + radius.y + width / 2 }, { radius.x * 2 + width * 2, width }, outlineColor);
 		Renderer::DrawColorQuad(0, glm::vec2{ pos.x, pos.y - radius.y - width / 2 }, { radius.x * 2 + width * 2, width }, outlineColor);
+	}
+
+	void EditorLayer::OnSceneDelete() {
+		mHierarchyPanel.ResetSelection();
 	}
 
 	void EditorLayer::OnImGuiRender() {
@@ -139,9 +141,7 @@ namespace Egl {
 		//// Restart scene button ////
 		ImGui::Begin("Restart Scene");
 		if (ImGui::Button("Reload scene", ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 40))) {
-			mHierarchyPanel.SetContext(-1);
 			Application::Get().GetGameLayer()->ResetApplication();
-			mHierarchyPanel.SetContext(Application::Get().GetGameLayer()->GetActiveScene());
 			mHierarchyPanel.ResetSelection();
 			Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene())->SetViewportAspectRatio(Application::Get().GetSceneWindowSize().x / Application::Get().GetSceneWindowSize().y);
 		}

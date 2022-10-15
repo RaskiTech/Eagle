@@ -10,26 +10,11 @@ using namespace Egl;
 // common API functionalities.
 ////
 
+
 class example_CameraController : public Script {
 public:
-	void OnUpdate() {
-		auto& transform = GetComponent<Transform>();
-		auto& camera = GetComponent<CameraComponent>().camera;
-		float zoomSize = camera.GetSize();
-		auto pos = transform.GetPosition();
-		float speed = 5;
-
-		if (Input::IsKeyPressed(EGL_KEY_A)) transform.SetPosition(pos.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f, pos.y);
-		if (Input::IsKeyPressed(EGL_KEY_D)) transform.SetPosition(pos.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f, pos.y);
-		if (Input::IsKeyPressed(EGL_KEY_S)) transform.SetPosition(pos.x, pos.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f);
-		if (Input::IsKeyPressed(EGL_KEY_W)) transform.SetPosition(pos.x, pos.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f);
-		int scroll = Input::MouseScrolledY();
-		if (scroll < 0 || zoomSize > 1) camera.SetSize(zoomSize - scroll);
-	}
-
-	bool OnEvent(Event& e) {
-		return false;
-	}
+	void OnUpdate();
+	bool OnEvent(Event& e);
 };
 
 class ExampleScene : public Scene {
@@ -62,6 +47,7 @@ class ExampleScene : public Scene {
 		cameraComp.backgroundColor = { 0.19f, 0.32f, 0.45f, 1.0f };
 		camera.GetTransform().SetPosition(0.0f, -0.6f);
 		SetPrimaryCamera(camera);
+		camera.AddComponent<NativeScriptComponent>().Bind<example_CameraController>();
 		
 		auto& player = AddEntity("Player");
 		auto texture = Assets::CreateTexture("Assets/Player.png", false);
@@ -83,13 +69,71 @@ class ExampleScene : public Scene {
 		
 		example_UI();
 
-		camera.AddComponent<NativeScriptComponent>().Bind<example_CameraController>();
 	}
 
-	void SceneEnd() {
-
-	}
+	void SceneEnd() { }
 };
+
+class UIScene : public Scene {
+	void SceneBegin() override {
+		Entity camera = AddEntity("Camera");
+		auto& cameraComp = camera.AddComponent<CameraComponent>();
+		cameraComp.camera.SetSize(8.85f);
+		cameraComp.backgroundColor = { 0.19f, 0.32f, 0.45f, 1.0f };
+		camera.GetTransform().SetPosition(0.0f, -0.6f);
+		SetPrimaryCamera(camera);
+		camera.AddComponent<NativeScriptComponent>().Bind<example_CameraController>();
+
+		auto& player = AddEntity("Player");
+		auto texture = Assets::CreateTexture("Assets/Player.png", false);
+		player.AddComponent<SpriteRendererComponent>(Assets::CreateSubTexture(texture, { 16, 16 }, { 0, 0 }, { 1, 1 }));
+		player.GetTransform().SetPosition(-4.2f, -1.5f);
+		player.AddComponent<AudioSource>(Assets::CreateClip("Assets/Sound.wav"));
+
+		Entity ground = AddEntity("Ground");
+		ground.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.4f, 0.42f, 0.52f, 1 });
+		ground.GetTransform().SetScale(13, 8).SetPosition(0, -6);
+
+		ground = AddEntity("Floating box");
+		ground.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.42f, 0.2f, 1 });
+		ground.GetTransform().SetScale(13, 8).SetPosition(0, 6);
+	}
+	void SceneEnd() {}
+};
+
+
+void example_CameraController::OnUpdate() {
+	auto& transform = GetComponent<Transform>();
+	auto& camera = GetComponent<CameraComponent>().camera;
+	float zoomSize = camera.GetSize();
+	auto pos = transform.GetPosition();
+	float speed = 5;
+
+	if (Input::IsKeyPressed(EGL_KEY_A)) transform.SetPosition(pos.x -= speed * Time::GetFrameDelta() * zoomSize * 0.2f, pos.y);
+	if (Input::IsKeyPressed(EGL_KEY_D)) transform.SetPosition(pos.x += speed * Time::GetFrameDelta() * zoomSize * 0.2f, pos.y);
+	if (Input::IsKeyPressed(EGL_KEY_S)) transform.SetPosition(pos.x, pos.y -= speed * Time::GetFrameDelta() * zoomSize * 0.2f);
+	if (Input::IsKeyPressed(EGL_KEY_W)) transform.SetPosition(pos.x, pos.y += speed * Time::GetFrameDelta() * zoomSize * 0.2f);
+	int scroll = Input::MouseScrolledY();
+	if (scroll < 0 || zoomSize > 1) camera.SetSize(zoomSize - scroll);
+
+}
+bool example_CameraController::OnEvent(Event& e) {
+
+	if (e.GetEventType() == Egl::EventType::KeyPressed) {
+		Egl::KeyPressedEvent pressed = *(Egl::KeyPressedEvent*)&e;
+		if (pressed.GetKeyCode() != EGL_KEY_SPACE)
+			return false;
+
+		Scene* scene = GetParentScene();
+		ExampleScene* sceneCast = dynamic_cast<ExampleScene*>(scene);
+		if (sceneCast == nullptr)
+			SwitchToScene(Assets::CreateScene<ExampleScene>());
+		else
+			SwitchToScene(Assets::CreateScene<UIScene>());
+	}
+
+	return false;
+}
 
 SceneRef Egl::ApplicationStartup() {
 	return Assets::CreateScene<ExampleScene>();

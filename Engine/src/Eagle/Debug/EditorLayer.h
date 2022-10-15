@@ -20,6 +20,7 @@ namespace Egl {
 
 		void OnUpdate();
 		void DrawSelectedEntityOutline(const CameraComponent& camera);
+		void OnSceneDelete();
 
 		void OnEvent(Event& event);
 		void OnImGuiRender();

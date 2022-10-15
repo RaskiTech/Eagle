@@ -24,6 +24,9 @@ namespace Egl {
 		Scene*                  GetParentScene()  const { return mEntity.GetParentScene(); }
 		Entity                  GetParent()       const { return mEntity.GetParent(); }
 
+
+		void SwitchToScene(SceneRef scene) const { Application::Get().GetGameLayer()->ScheduleSceneSwitch(scene); }
+
 	private:
 		Entity mEntity;
 		friend class GameLayer;

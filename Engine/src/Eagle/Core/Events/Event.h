@@ -4,7 +4,6 @@
 
 namespace Egl {
 
-	// Events are blocking
 	enum class EventType {
 		None = 0,
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
