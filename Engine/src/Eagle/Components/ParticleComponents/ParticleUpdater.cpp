@@ -1,9 +1,9 @@
 #include <EaglePCH.h>
 #include <Dependencies/GLM.h>
 #include <Dependencies/ImGui.h>
-#include "Eagle/Core/UniqueID.h"
 #include "ParticleUpdater.h"
 #include "ParticleData.h"
+#include "Eagle/Core/Random.h"
 
 namespace Egl {
 	namespace Particles {
@@ -87,8 +87,9 @@ namespace Egl {
 			if (ImGui::Button("Add Attractor"))
 				mAttractors.push_back(glm::vec3(0));
 
+			int id = 0;
 			for (auto& attractor : mAttractors) {
-				ImGui::PushID(UniqueID::GetUniqueFrameID());
+				ImGui::PushID(id++);
 				ImGui::Text("Attractor");
 				ImGui::Indent();
 

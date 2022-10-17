@@ -11,7 +11,8 @@ To start using the Eagle engine, make sure you have git installed. If not, you c
 Open Command prompt and run `git clone --recursive https://github.com/RaskiTech/Eagle Eagle`.
 If the repository was previously cloned without the `--recursive` flag, it doesn't have the required submodules. You get them by going into the folder and running `git submodule update --init`.
 
-After the installation go into the folder, and inside Startup-folder click your os setup file. Now you can open the Eagle.sln and start developing.
+After the installation go into the folder, and inside Macros-folder click your os setup file. Now you can open the Eagle.sln and start developing.
+Eagle engine docs can be found in docs.html in the main directory.
 
 ## Features include but aren't limited to
 - Python

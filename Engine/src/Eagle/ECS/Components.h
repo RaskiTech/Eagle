@@ -303,8 +303,10 @@ namespace Egl {
 		std::function<bool(Script*, Event&)> OnEventFunc;
 
 		template<typename T, typename ... Args>
-		T* Bind(Args&&... args) {
+		T* Bind(Entity entity, Args&&... args) {
 			baseInstance = new T(args...);
+			baseInstance->mEntity = entity;
+
 			COMPILE_IF_VALID(T, OnCreate(),
 				OnCreateFunc = [](Script* instance) { ((T*)instance)->OnCreate(); };
 			);
@@ -355,6 +357,9 @@ namespace Egl {
 		void SetTime(float time) { sample->samplePosition = glm::clamp((int)(time * (*sample->clip).data.getSampleRate()), 0, (*sample->clip).data.getNumSamplesPerChannel()); }
 		bool GetIsLooping() { return sample->loop; }
 		void SetIsLooping(bool loop) { sample->loop = loop; }
+
+		AudioSample* GetSample() { return sample; }
+
 	private:
 		void PossibleSampleDelete();
 		AudioSample* sample;

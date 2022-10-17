@@ -10,7 +10,6 @@
 #include "Eagle/Core/Time.h"
 #include "Eagle/Core/Audio.h"
 #include "Eagle/Core/Python/PythonEmbedding.h"
-#include "UniqueID.h"
 
 // This Commit:
 // Stability for playing audio
@@ -18,7 +17,6 @@
 namespace Egl {
 	std::uniform_int_distribution<std::mt19937::result_type> Random::sDistribution;
 	std::mt19937 Random::sRandomizer;
-	uint32_t UniqueID::mCurrentFrameID;
 	std::string SaveData::persistantDataPath;
 
 	Application* Application::mInstance = nullptr;
@@ -82,13 +80,10 @@ namespace Egl {
 		while (mRunning) {
 			EAGLE_PROFILE_SCOPE("RunLoop");
 
-			// Utility handling
 			{
 				float time = mWindow->GetTime();
 				Time::SetTime(time, time - mLastFrameTime);
 				mLastFrameTime = time;
-
-				UniqueID::ResetFrameIDs();
 			}
 
 			if (!mMinimized) {

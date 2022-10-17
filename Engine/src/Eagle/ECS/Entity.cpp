@@ -7,8 +7,11 @@ namespace Egl {
 	Entity::Entity(entt::entity entity, Scene* scene) : mEntity(entity), mScene(scene) {}
 
 	void Entity::AddChild(const Entity& child) const {
+
 		Relation& parentRelation = GetComponent<Relation>();
 		Relation& childRelation = mScene->mRegistry.get<Relation>(child.mEntity);
+		EAGLE_ENG_ASSERT(parentRelation.childCount != 255, "Entity already has the maximum amount of childs, 255");
+
 		if (child.HasComponent<Transform>()) {
 			auto& childTransform = child.GetComponent<Transform>();
 			childTransform.worldPosRight = false;
@@ -53,6 +56,10 @@ namespace Egl {
 			childIndex--;
 		}
 		return { wantedEntity, mScene };
+	}
+
+	uint32_t Entity::GetChildCount() const {
+		return GetComponent<Relation>().childCount;
 	}
 
 	bool operator == (const Entity& e1, const Entity& e2) {

@@ -21,6 +21,7 @@ namespace Egl {
 		}
 		template<typename T> bool HasComponent() const {
 			EAGLE_ENG_ASSERT(mEntity != entt::null, "The entity doesn't exist, it's null");
+			EAGLE_ENG_ASSERT(mScene->mRegistry.valid(mEntity), "The entity isn't valid. It was probably deleted.");
 			return mScene->mRegistry.has<T>(mEntity);
 		}
 		// Shouldn't be stored for too long since the reference can become
@@ -41,11 +42,23 @@ namespace Egl {
 		Transform& GetTransform() const { return GetComponent<Transform>(); }
 		UITransform& GetUITransform() const { return GetComponent<UITransform>(); }
 
+		template<typename ScriptType, typename... Args> ScriptType& AddScript(Args&&... args) {
+			EAGLE_ENG_ASSERT(!HasComponent<NativeScriptComponent>(), "Entity already has a script.");
+			return *AddComponent<NativeScriptComponent>().Bind<ScriptType>({ mEntity, mScene }, std::forward<Args>(args)...);
+		}
+		template<typename ScriptType> ScriptType& GetScript() {
+			EAGLE_ENG_ASSERT(HasComponent<NativeScriptComponent>(), "Entity doesn't have a script.");
+			return *(ScriptType*)GetComponent<NativeScriptComponent>().baseInstance;
+		}
+
 		void SetParent(const Entity& parent) const { parent.AddChild(*this); }
 		bool IsValid() const { return mEntity != entt::null; }
 		void AddChild(const Entity& child) const;
 		Entity GetParent() const;
 		Entity GetChild(uint8_t childIndex) const;
+		uint32_t GetID() const { return (uint32_t)mEntity; }
+		uint32_t GetChildCount() const;
+		Scene* GetParentScene() const { return mScene; }
 
 		template<typename Func>
 		void ForEachChild(Func functionThatTakesEntity) const {
@@ -56,8 +69,6 @@ namespace Egl {
 			}
 		}
 
-		uint32_t GetID() const { return (uint32_t)mEntity; }
-		Scene* GetParentScene() const { return mScene; }
 
 		operator bool() const { return mEntity != entt::null; }
 

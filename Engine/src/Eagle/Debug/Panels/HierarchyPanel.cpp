@@ -29,12 +29,18 @@ namespace Egl {
 			currentEntity = scene->mRegistry.get<Relation>(currentEntity).nextSibling;
 		}
 
-		if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(0)) {
-			mSelectedEntity = entt::null;
-			mPropertiesPanel.SetDrawedEntity({});
-		}
+		if (ImGui::IsWindowHovered() && ImGui::IsMouseDown(0))
+			ResetSelection();
+
+		ValidateSelectedEntity();
 
 		mPropertiesPanel.OnImGuiRender();
+	}
+
+	void HierarchyPanel::ValidateSelectedEntity() {
+		Scene* scene = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene());
+		if (mSelectedEntity != entt::null && !scene->mRegistry.valid(mSelectedEntity))
+			ResetSelection();
 	}
 
 	void HierarchyPanel::DrawEntityNode(entt::entity e, Scene* scene) {

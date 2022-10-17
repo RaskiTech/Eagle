@@ -1,6 +1,7 @@
 #pragma once
 #include <Dependencies/Entt.h>
-#include <Eagle/Rendering/Text/TextRenderer.h>
+#include <functional>
+#include "Eagle/Rendering/Text/TextRenderer.h"
 
 // The client will inherit this scene and provide the functions.
 
@@ -8,6 +9,7 @@ namespace Egl {
 
 	class Entity;
 	struct NativeScriptComponent;
+	class Script;
 	struct EntityParams;
 	struct UIEntityParams;
 
@@ -31,8 +33,8 @@ namespace Egl {
 		// Adds an entity with the CanvasComponent attached
 		Entity AddCanvas();
 
-		void RemoveEntity(Entity& entity);
-		void RemoveUIEntity(Entity& entity) { RemoveEntity(entity); }
+		void DeleteEntity(Entity& entity);
+		void DeleteUIEntity(Entity& entity) { DeleteEntity(entity); }
 		void SetPrimaryCamera(Entity& camera);
 		const Entity GetPrimaryCamera();
 		glm::vec2 Scene::ScreenToWorldPos(const glm::vec2& pixelCoordinate) const;
@@ -47,7 +49,7 @@ namespace Egl {
 		void OnUpdate();
 
 		bool sceneInitComplete = false;
-		std::vector<NativeScriptComponent*> eventScriptsInOrder;
+		std::vector<std::pair<Script*, std::function<bool(Script*, Event&)>>> eventScriptsInOrder;
 
 		friend struct NativeScriptComponent;
 		friend class GameLayer;
@@ -64,6 +66,8 @@ namespace Egl {
 		friend struct Transform;
 		friend struct UITransform;
 		friend struct NativeScriptComponent;
+
+		void _DeleteEntityNow(entt::entity e);
 
 		inline void AddEntityChildsImp(Entity& createdEntity) {}
 		template<typename AddEntityChildParam, typename... AddEntityChildParamRest>

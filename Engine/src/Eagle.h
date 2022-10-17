@@ -30,3 +30,5 @@
 #include "Eagle/Rendering/Buffer.h"
 #include "Eagle/Rendering/Shader.h"
 #include "Eagle/Rendering/Texture.h"
+
+#include <Dependencies/GLM.h>

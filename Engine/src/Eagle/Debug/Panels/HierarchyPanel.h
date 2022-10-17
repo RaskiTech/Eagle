@@ -10,9 +10,10 @@ namespace Egl {
 		HierarchyPanel() = default;
 
 		void ResetSelection();
-		entt::entity GetSelectedEntity() { return mSelectedEntity; }
+		entt::entity GetSelectedEntity() { ValidateSelectedEntity(); return mSelectedEntity; }
 
 		void OnImGuiRender();
+		void ValidateSelectedEntity();
 	private:
 		void DrawEntityNode(entt::entity e, Scene* scene);
 

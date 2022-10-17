@@ -39,7 +39,7 @@
 
 <h1>Eagle Engine Docs</h1>
 <div class="centered">
-    <p>Hello and welcome to the Eagle Engine docs. This is meant to be a brief introduction to all the different systems in Eagle Engine. This list is in no shape of form complete, so if you want more in-depth look at a feature, don't hesitate to take a peek at the code. This is more of a push to the right direction.</p>
+    <p>Hello and welcome to the Eagle Engine docs. This is meant to be a brief introduction to all the different systems in Eagle Engine. This list is in no shape of form complete nor does it include all the different things you can do, so if you want more in-depth look at a feature, don't hesitate to take a peek at the code. This is more of a push to the right direction.</p>
     <p>Eagle Engine is in its fullest when used to build interfaces for applications that connect python and c++. It is also possible to make games with it. However, if your scene requires many manually placed objects and is mostly not procedural, Eagle Engine might not be the best choice. There is an editor, but tweaking the placement of hundreds of game objects is not its primary purpose.</p>
 
     <h2>Folder Structure</h2>
@@ -79,7 +79,7 @@
         You can add one script component per entity. You can do this by adding a native script component and calling .Bind on it with your script. <code>.AddComponent< NativeScriptComponent >().Bind< exampleScript >();</code> 
         The bind function can of course take arguments. The script class itself is a class inheriting the base class <code>script</code>. The script class can optinally implement a couple of functions. <code>void OnCreate()</code> 
         will run once when the script is attached, <code>void OnUpdate()</code> will run every frame that the script is attached, and <code>void OnDestroy()</code> will run when the script gets removed. In addition, 
-        <code>bool OnEvent(Event& e)</code> will run if the components receives any events when the mouse is on top of it. The function returns whether or not that event consumed the event. If the function consumed the event, 
+        <code>bool OnEvent(Event& e)</code> will run if the components receives any keyboard events or any mouse events when the mouse is on top of it. The function returns whether or not that event consumed the event. If the function consumed the event, 
         objects behind it will not receive the event.
     </p>
 

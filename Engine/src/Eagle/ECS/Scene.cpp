@@ -72,8 +72,43 @@ namespace Egl {
 		return AddUIEntity(name, UIEntityParams(), canvasOrParent);
 	}
 
-	void Scene::RemoveEntity(Entity& entity) {
-		mRegistry.destroy((entt::entity)entity.GetID());
+
+	void Scene::DeleteEntity(Entity& entity) { 
+		// Store the entities to destroy and destroy them later after all the scripts update?
+		_DeleteEntityNow((entt::entity)entity.GetID()); 
+	}
+	void Scene::_DeleteEntityNow(entt::entity entity) {
+
+		Relation& rel = mRegistry.get<Relation>(entity);
+
+		entt::entity child = rel.firstChild;
+		while (child != entt::null) {
+			entt::entity next = mRegistry.get<Relation>(child).nextSibling;
+			_DeleteEntityNow(child);
+			child = next;
+		}
+
+		if (rel.previousSibling != entt::null)
+			mRegistry.get<Relation>(rel.previousSibling).nextSibling = rel.nextSibling;
+		if (rel.nextSibling != entt::null)
+			mRegistry.get<Relation>(rel.nextSibling).previousSibling = rel.previousSibling;
+		if (rel.parent != entt::null) {
+			Relation& parent = mRegistry.get<Relation>(rel.parent);
+			parent.childCount--;
+			if (parent.firstChild == entity)
+				parent.firstChild = rel.nextSibling;
+		}
+		else {
+			if (mFirstEntity == entity) {
+				mFirstEntity = mRegistry.get<Relation>(mFirstEntity).nextSibling;
+			}
+		}
+
+		if (NativeScriptComponent* script = mRegistry.try_get<NativeScriptComponent>(entity)) {
+			Application::Get().GetGameLayer()->OptOutOfEvents(script);
+		}
+
+		mRegistry.destroy(entity);
 	}
 
 	void Scene::SetPrimaryCamera(Entity& camera) {
@@ -102,6 +137,9 @@ namespace Egl {
 					scriptComponent.OnUpdateFunc(scriptComponent.baseInstance);
 			});
 		}
+
+		if (!mRegistry.valid(mPrimaryCamera))
+			mPrimaryCamera = entt::null;
 
 		if (mPrimaryCamera != entt::null) {
 			CameraComponent& camera = mRegistry.get<CameraComponent>(mPrimaryCamera);
@@ -186,6 +224,8 @@ namespace Egl {
 	}
 
 	glm::vec2 Scene::ScreenToWorldPos(const glm::vec2& pixelCoordinate) const {
+		EAGLE_ENG_ASSERT(mPrimaryCamera != entt::null, "ScreenToWorldPos was called, but we don't have a primary camera.")
+
 		const glm::vec2& camPos = mRegistry.get<Transform>(mPrimaryCamera).GetPosition();
 		auto& camCam = mRegistry.get<CameraComponent>(mPrimaryCamera);
 		float screenSize = camCam.camera.GetSize();
@@ -198,6 +238,8 @@ namespace Egl {
 		return posInScreenWorld + topCornerInWorld; 
 	}
 	glm::vec2 Scene::WorldToScreenPos(const glm::vec2& worldPos) const {
+		EAGLE_ENG_ASSERT(mPrimaryCamera != entt::null, "WorldToScreenPos was called, but we don't have a primary camera.")
+
 		const glm::vec2& camPos = mRegistry.get<Transform>(mPrimaryCamera).GetPosition();
 		auto& camCam = mRegistry.get<CameraComponent>(mPrimaryCamera);
 		float screenSize = camCam.camera.GetSize();

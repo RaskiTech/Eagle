@@ -4,7 +4,6 @@
 #include <Dependencies/GLM.h>
 #include "PropertiesPanel.h"
 #include "Eagle/ECS/Components.h"
-#include "Eagle/Core/UniqueID.h"
 #include "Eagle/Core/Application.h"
 
 #define SLIDER_FRICTION 512
@@ -35,15 +34,15 @@ namespace Egl {
 			
 			auto& component = e.GetComponent<ComponentType>();
 
-			if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), flags, name.c_str())) {
+			if (ImGui::TreeNodeEx(name.c_str(), flags, name.c_str())) {
 				ImGui::TreePop();
 				function(component);
 			}
 		}
 	}
 
-	static bool DrawVec2(const char* name, float* value_ptr) {
-		ImGui::PushID(UniqueID::GetUniqueFrameID());
+	static bool DrawVec2(const char* name, float* value_ptr, const char* id) {
+		ImGui::PushID(id);
 		ImGui::Columns(2);
 
 		ImGui::SetColumnWidth(0, 100);
@@ -58,8 +57,8 @@ namespace Egl {
 		ImGui::PopID();
 		return isTrue;
 	}
-	static bool DrawFloat(const char* name, float* value) {
-		ImGui::PushID(UniqueID::GetUniqueFrameID());
+	static bool DrawFloat(const char* name, float* value, const char* id) {
+		ImGui::PushID(id);
 		ImGui::Columns(2);
 
 		ImGui::SetColumnWidth(0, 100);
@@ -76,7 +75,7 @@ namespace Egl {
 	}
 
 	template<uint8_t optionAmount>
-	static uint8_t SelectWidget(const char* name, std::array<const char*, optionAmount> options, uint8_t selectedIndex, int numInSameLine = 4) {
+	static uint8_t SelectWidget(const char* name, std::array<const char*, optionAmount> options, uint8_t selectedIndex, int numInSameLine, const std::string& id) {
 		ImGui::Columns(2);
 
 		ImGui::SetColumnWidth(0, 100);
@@ -85,8 +84,11 @@ namespace Egl {
 
 		constexpr float height = 17.5f;
 
+		std::string uniqueID = id + '0';
 		for (int i = 0; i < optionAmount; i++) {
-			ImGui::PushID(UniqueID::GetUniqueFrameID());
+			uniqueID[uniqueID.length() - 1] = i;
+
+			ImGui::PushID(uniqueID.c_str());
 			if (i % numInSameLine != 0) ImGui::SameLine();
 			else ImGui::Spacing();
 
@@ -101,10 +103,14 @@ namespace Egl {
 		return selectedIndex;
 	}
 	template<uint8_t optionAmount>
-	static uint8_t SelectWidget(std::array<const char*, optionAmount> options, uint8_t selectedIndex, int numInSameLine = 4) {
+	static uint8_t SelectWidget(std::array<const char*, optionAmount> options, uint8_t selectedIndex, int numInSameLine, const std::string& id) {
 		constexpr float height = 17.5f;
+
+		std::string uniqueID = id + '0';
 		for (int i = 0; i < optionAmount; i++) {
-			ImGui::PushID(UniqueID::GetUniqueFrameID());
+			uniqueID[uniqueID.length() - 1] = i;
+
+			ImGui::PushID(uniqueID.c_str());
 			if (i % numInSameLine != 0) ImGui::SameLine();
 			else ImGui::Spacing();
 
@@ -115,14 +121,16 @@ namespace Egl {
 		}
 		return selectedIndex;
 	}
-	static bool SelectWidget(const char* first, const char* second, bool firstSelected, bool sameLine = true) {
+	static bool SelectWidget(const char* first, const char* second, bool firstSelected, bool sameLine, const std::string& id) {
 		constexpr float height = 17.5f;
 
-		ImGui::PushID(UniqueID::GetUniqueFrameID());
+		std::string uniqueID = id + '0';
+		ImGui::PushID(uniqueID.c_str());
 		if (ImGui::Selectable(first, firstSelected, 0, ImVec2((ImGui::CalcItemWidth() * 1.5f - 30) / 2, height)))
 			firstSelected = true;
 		ImGui::PopID();
-		ImGui::PushID(UniqueID::GetUniqueFrameID());
+		uniqueID[uniqueID.length() - 1] = '1';
+		ImGui::PushID(uniqueID.c_str());
 		ImGui::SameLine();
 		if (ImGui::Selectable(second, !firstSelected, 0, ImVec2((ImGui::CalcItemWidth() * 1.5f - 30) / 2, height)))
 			firstSelected = false;
@@ -185,20 +193,19 @@ namespace Egl {
 
 		DrawComponent<Transform>("Transform", drawedEntity, [](Transform& component) {
 			auto pos = component.GetLocalPosition();
-			if (DrawVec2("Position", glm::value_ptr(pos)))
+			if (DrawVec2("Position", glm::value_ptr(pos), "#pos"))
 				component.SetLocalPosition(pos);
 
 			auto rot = component.GetLocalRotation();
-			if (DrawFloat("Rotation", &rot))
+			if (DrawFloat("Rotation", &rot, "#rot"))
 				component.SetLocalRotation(rot);
 
 			auto scale = component.GetLocalScale();
-			if (DrawVec2("Scale", glm::value_ptr(scale)))
+			if (DrawVec2("Scale", glm::value_ptr(scale), "#scl"))
 				component.SetLocalScale(scale);
 		});
 
 		DrawComponent<UITransform>("UI Transform", drawedEntity, [&](UITransform& component) {
-			uint32_t worldTreeNodeUniqueID = UniqueID::GetUniqueFrameID(); // This because the options use ids so the tree could close when changing transform and sides
 			Scene* scene = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene());
 
 			ImGuiIO& io = ImGui::GetIO();
@@ -210,7 +217,7 @@ namespace Egl {
 			ImGui::Text("Horizontal");
 			ImGui::PopFont();
 			bool isTransformActive = !component.GetUseSidesHorizontal();
-			bool transformActive = SelectWidget("Transform", "Sides", isTransformActive);
+			bool transformActive = SelectWidget("Transform", "Sides", isTransformActive, true, "#transformActive");
 			if (transformActive != isTransformActive) {
 				const glm::vec2& worldPos = component.GetWorldPosition();
 				const glm::vec2& worldScale = component.GetWorldScale();
@@ -237,7 +244,7 @@ namespace Egl {
 				ImGui::Text("Position");
 				UITransform::XDriver xDriver = component.GetXDriver();
 				UITransform::XDriver newXDriver = (UITransform::XDriver)
-					SelectWidget(std::array<const char*, 5>{"ConstLeft", "ConstRight", "RelativeCenter", "RelativeLeft", "RelativeRight"}, (uint8_t)xDriver, 5);
+					SelectWidget(std::array<const char*, 5>{"ConstLeft", "ConstRight", "RelativeCenter", "RelativeLeft", "RelativeRight"}, (uint8_t)xDriver, 5, "#position100");
 				if (xDriver != newXDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetXDriver(newXDriver);
@@ -257,7 +264,7 @@ namespace Egl {
 				ImGui::Text("Scale");
 				UITransform::WidthDriver widthDriver = component.GetWidthDriver();
 				UITransform::WidthDriver newSelectedWidth = (UITransform::WidthDriver)
-					(SelectWidget(std::array<const char*, 3>{"ConstWidth", "RelativeWidth", "AspectWidth"}, (uint8_t)widthDriver >> 4, 3) << 4);
+					(SelectWidget(std::array<const char*, 3>{"ConstWidth", "RelativeWidth", "AspectWidth"}, (uint8_t)widthDriver >> 4, 3, "#scale100") << 4);
 				if (widthDriver != newSelectedWidth) {
 					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetWidthDriver(newSelectedWidth);
@@ -277,7 +284,7 @@ namespace Egl {
 				ImGui::Text("Left side");
 				UITransform::LeftDriver leftDriver = component.GetLeftSideDriver();
 				UITransform::LeftDriver newLeftDriver = (UITransform::LeftDriver)
-					SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)leftDriver, 2);
+					SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)leftDriver, 2, "#leftSide100");
 				if (leftDriver != newLeftDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetLeftSideDriver(newLeftDriver);
@@ -297,7 +304,7 @@ namespace Egl {
 				ImGui::Text("Right side");
 				UITransform::RightDriver rightDriver = component.GetRightSideDriver();
 				UITransform::RightDriver newRightDriver = (UITransform::RightDriver)
-					(SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)rightDriver >> 4, 2) << 4);
+					(SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)rightDriver >> 4, 2, "#rightside") << 4);
 				if (rightDriver != newRightDriver) {
 					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetRightSideDriver(newRightDriver);
@@ -320,7 +327,7 @@ namespace Egl {
 			ImGui::Text("Vertical");
 			ImGui::PopFont();
 			isTransformActive = !component.GetUseSidesVertical();
-			transformActive = SelectWidget("Transform", "Sides", isTransformActive);
+			transformActive = SelectWidget("Transform", "Sides", isTransformActive, true, "#transformActive2");
 			if (isTransformActive != transformActive) {
 				const glm::vec2& worldPos = component.GetWorldPosition();
 				const glm::vec2& worldScale = component.GetWorldScale();
@@ -345,7 +352,7 @@ namespace Egl {
 			if (transformActive) {
 				ImGui::Text("Position");
 				UITransform::YDriver yDriver = component.GetYDriver();
-				UITransform::YDriver newYDriver = (UITransform::YDriver)SelectWidget(std::array<const char*, 5>{"ConstTop", "ConstBottom", "Center", "RelativeTop", "RelativeBottom"}, (uint8_t)yDriver, 5);
+				UITransform::YDriver newYDriver = (UITransform::YDriver)SelectWidget(std::array<const char*, 5>{"ConstTop", "ConstBottom", "Center", "RelativeTop", "RelativeBottom"}, (uint8_t)yDriver, 5, "#position200");
 				if (yDriver != newYDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetYDriver(newYDriver);
@@ -363,7 +370,7 @@ namespace Egl {
 
 				ImGui::Text("Scale");
 				UITransform::HeightDriver heightDriver = component.GetHeightDriver();
-				UITransform::HeightDriver newHeightDriver = (UITransform::HeightDriver)(SelectWidget(std::array<const char*, 3>{"ConstHeight", "RelativeHeight", "AspectHeight"}, (uint8_t)heightDriver >> 4, 3) << 4);
+				UITransform::HeightDriver newHeightDriver = (UITransform::HeightDriver)(SelectWidget(std::array<const char*, 3>{"ConstHeight", "RelativeHeight", "AspectHeight"}, (uint8_t)heightDriver >> 4, 3, "#scale200") << 4);
 				if (heightDriver != newHeightDriver) {
 					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetHeightDriver(newHeightDriver);
@@ -381,7 +388,7 @@ namespace Egl {
 			else {
 				ImGui::Text("Top");
 				UITransform::TopDriver topDriver = component.GetTopDriver();
-				UITransform::TopDriver newTopDriver = (UITransform::TopDriver)SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)topDriver, 2);
+				UITransform::TopDriver newTopDriver = (UITransform::TopDriver)SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)topDriver, 2, "#top200");
 				if (topDriver != newTopDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetTopDriver(newTopDriver);
@@ -400,7 +407,7 @@ namespace Egl {
 
 				ImGui::Text("Bottom");
 				UITransform::BottomDriver bottomDriver = component.GetBottomDriver();
-				UITransform::BottomDriver newBottomDriver = (UITransform::BottomDriver)(SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)bottomDriver >> 4, 2) << 4);
+				UITransform::BottomDriver newBottomDriver = (UITransform::BottomDriver)(SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)bottomDriver >> 4, 2, "#bottom200") << 4);
 				if (bottomDriver != newBottomDriver) {
 					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetBottomDriver(newBottomDriver);
@@ -419,7 +426,7 @@ namespace Egl {
 			ImGui::Spacing();
 
 			// World position node
-			if (ImGui::TreeNodeEx((void*)(intptr_t)worldTreeNodeUniqueID, ImGuiTreeNodeFlags_SpanAvailWidth, "World Position")) {
+			if (ImGui::TreeNodeEx("#worldPositionNode", ImGuiTreeNodeFlags_SpanAvailWidth, "World Position")) {
 				ImGui::Columns(2);
 				ImGui::SetColumnWidth(0, 100);
 				ImGui::Text("Position");
@@ -463,8 +470,8 @@ namespace Egl {
 			if (ImGui::InputTextMultiline("Text", buffer, sizeof(buffer), ImVec2(0, 80))) {
 				comp.SetText(std::string(buffer));
 			}
-			comp.data.alignHorizontal = (TextAlignHorizontal)SelectWidget("Horizontal", std::array<const char*, 3>{"Left", "Middle", "Right"}, (uint8_t)comp.data.alignHorizontal);
-			comp.data.alignVertical = (TextAlignVertical)SelectWidget("Vertical", std::array<const char*, 3>{"Top", "Middle", "Bottom"}, (uint8_t)comp.data.alignVertical);
+			comp.data.alignHorizontal = (TextAlignHorizontal)SelectWidget("Horizontal", std::array<const char*, 3>{"Left", "Middle", "Right"}, (uint8_t)comp.data.alignHorizontal, 4, "#textComponent");
+			comp.data.alignVertical = (TextAlignVertical)SelectWidget("Vertical", std::array<const char*, 3>{"Top", "Middle", "Bottom"}, (uint8_t)comp.data.alignVertical, 4, "#textComponent2");
 
 			ImGui::DragFloat("Font size", &comp.data.fontSize, 0.02f, 0, 100);
 
@@ -486,7 +493,7 @@ namespace Egl {
 			const ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_SpanAvailWidth;
 			const ImGuiTreeNodeFlags flagsNotOpen = ImGuiTreeNodeFlags_SpanAvailWidth;
 
-			if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), flags, "Emitters")) {
+			if (ImGui::TreeNodeEx("#Emitters2081", flags, "Emitters")) {
 				auto& emitters = component.particleSystem.GetEmitters();
 				for (auto& emitter : emitters) {
 					float emitPerSec = emitter->GetEmistPerSecond();
@@ -496,7 +503,7 @@ namespace Egl {
 					ImGui::Spacing();
 					auto& generators = emitter->GetSetters();
 
-					if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), flagsNotOpen, "Generators")) {
+					if (ImGui::TreeNodeEx("#generators329", flagsNotOpen, "Generators")) {
 						for(auto& generator : generators)
 							generator->OnImGuiRender();
 						ImGui::TreePop();
@@ -505,7 +512,7 @@ namespace Egl {
 
 				ImGui::TreePop();
 			}
-			if (ImGui::TreeNodeEx((void*)(intptr_t)UniqueID::GetUniqueFrameID(), flags, "Updaters")) {
+			if (ImGui::TreeNodeEx("#updaters10398", flags, "Updaters")) {
 				auto& updaters = component.particleSystem.GetUpdaters();
 				for (auto& updater : updaters)
 					updater->OnImGuiRender();
