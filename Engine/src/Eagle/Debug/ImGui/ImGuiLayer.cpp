@@ -11,12 +11,9 @@
 #include <glad/glad.h>
 
 namespace Egl {
-    ImGuiLayer::ImGuiLayer() {
+    ImGuiLayer::ImGuiLayer() { }
+    ImGuiLayer::~ImGuiLayer() { }
 
-    }
-    ImGuiLayer::~ImGuiLayer() {
-
-    }
     void ImGuiLayer::OnAttach() {
         EAGLE_PROFILE_FUNCTION();
         // Setup Dear ImGui context

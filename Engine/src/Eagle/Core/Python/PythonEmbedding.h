@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 
 //*
 // Supported python arguments. Add it also to the cpp file

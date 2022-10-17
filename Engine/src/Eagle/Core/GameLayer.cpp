@@ -1,5 +1,7 @@
 #include <EaglePCH.h>
 #include <EagleApplicationStartup.h>
+
+#include "Eagle/Core/Application.h"
 #include "Eagle/ECS/Components.h"
 #include "Eagle/Debug/EditorLayer.h"
 #include "GameLayer.h"
@@ -7,7 +9,7 @@
 #include "Eagle/Rendering/RenderCommand.h"
 #include "Eagle/Core/AssetManager.h"
 
-// Handles calling input and client functions.
+// Handles scene management
 
 namespace Egl {
 	GameLayer::GameLayer() {
@@ -28,6 +30,8 @@ namespace Egl {
 			EAGLE_PROFILE_SCOPE("Client - SceneBegin");
 			scene->SceneBegin();
 		}
+		scene->_sceneState = Scene::SceneState::SceneBeginCalled_1;
+
 		{
 			EAGLE_PROFILE_SCOPE("Client - Scripts: OnCreate");
 			auto view = scene->mRegistry.view<NativeScriptComponent>();
@@ -43,6 +47,7 @@ namespace Egl {
 					scriptComponent.OnCreateFunc(scriptComponent.baseInstance);
 			});
 		}
+		scene->_sceneState = Scene::SceneState::CreateCalled_2;
 
 		std::sort(scene->eventScriptsInOrder.begin(), scene->eventScriptsInOrder.end(), [&](auto& e1, auto& e2) {
 			auto& mc1 = scene->mRegistry.get<MetadataComponent>((entt::entity)e1.first->GetEntity().GetID());
@@ -52,22 +57,30 @@ namespace Egl {
 			else
 				return mc1.sortingLayer > mc2.sortingLayer;
 		});
-		scene->sceneInitComplete = true;
+		scene->_sceneState = Scene::SceneState::Running_3;
 	}
 
 	void GameLayer::DeactivateCurrentScene() {
+		Scene* scene = Assets::GetScene(_activeScene);
+		EAGLE_ENG_ASSERT(scene->_sceneState == Scene::SceneState::Running_3, "Tried to deactivate scene that wasn't in a running state.");
+
+		scene->_sceneState = Scene::SceneState::StartedDestroying_4;
+
 		{
 			EAGLE_PROFILE_SCOPE("Application - Scripts: Destroy");
-			Assets::GetScene(_activeScene)->mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
+			scene->mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
 				if (scriptComponent.OnDestroyFunc)
 					scriptComponent.OnDestroyFunc(scriptComponent.baseInstance);
 				scriptComponent.DeleteBase();
 			});
 		}
+		scene->_sceneState = Scene::SceneState::DestroyCalled_5;
+
 		{
 			EAGLE_PROFILE_SCOPE("Application - SceneEnd");
-			Assets::GetScene(_activeScene)->SceneEnd();
+			scene->SceneEnd();
 		}
+		scene->_sceneState = Scene::SceneState::SceneEndCalled_6;
 
 		EAGLE_EDITOR_ONLY(Application::Get().GetEditorLayer()->OnSceneDelete());
 		_activeScene = -1;
@@ -115,7 +128,7 @@ namespace Egl {
 	#define IS_UNDER_CURSOR(mousePos, objPos, objScale) (glm::abs(mousePos.x-objPos.x) < objScale.x/2 && glm::abs(mousePos.y-objPos.y) < objScale.y/2)
 	void GameLayer::DistributeEvent(Event& e) {
 		Scene* scene = Assets::GetScene(_activeScene);
-		EAGLE_ENG_ASSERT(scene->sceneInitComplete, "The init isn't complete yet but there was an event");
+		EAGLE_ENG_ASSERT(scene->GetSceneState() == Scene::SceneState::Running_3, "The scene isn't running but we had an event.");
 		glm::vec2 mousePos = scene->GetPrimaryCamera().IsValid() ? scene->ScreenToWorldPos(Input::MousePos()) : glm::vec2{ 0, 0 };
 		std::vector<std::pair<Script*, std::function<bool(Script*, Event&)>>> listenersUnderMouse;
 		bool isMouseEvent = e.GetGategoryFlags() & (int)Egl::EventGategory::Mouse;
@@ -142,49 +155,16 @@ namespace Egl {
 			if (eventScript.second(eventScript.first, e))
 				break;
 	}
-	template< typename T, typename Pred >
-	static typename std::vector<T>::iterator Insert_sorted(std::vector<T>& vec, T const& item, Pred pred) {
-		return vec.insert(std::upper_bound(vec.begin(), vec.end(), item, pred), item);
-	}
 	
-	void GameLayer::SubscribeToEvents(NativeScriptComponent* script) {
-		EAGLE_ENG_ASSERT(script->OnEventFunc, "Script doesn't have an event function.");
-
-		Scene* scene = Assets::GetScene(_activeScene);
-		// Add the script here if the scene instalation is complete. Else it will be added after sceneStart
-		if (scene != nullptr && scene->sceneInitComplete) {
-			Insert_sorted(scene->eventScriptsInOrder, std::make_pair(script->baseInstance, script->OnEventFunc), [&](auto& e1, auto& e2) {
-				auto mc1 = scene->mRegistry.get<MetadataComponent>((entt::entity)e1.first->GetEntity().GetID());
-				auto mc2 = scene->mRegistry.get<MetadataComponent>((entt::entity)e2.first->GetEntity().GetID());
-				if (mc1.sortingLayer == mc2.sortingLayer)
-					return mc1.subSorting > mc2.subSorting;
-				else
-					return mc1.sortingLayer > mc2.sortingLayer;
-			});
-		}
-	}
-	void GameLayer::OptOutOfEvents(NativeScriptComponent* script) {
-		EAGLE_ENG_ASSERT(script->OnEventFunc, "Script doesn't have an event function.");
-
-		Scene* scene = Assets::GetScene(_activeScene);
-
-		int i = 0;
-		while (true) {
-			EAGLE_ENG_ASSERT(i < scene->eventScriptsInOrder.size(), "Script event function wasn't in the eventScript list");
-			if (scene->eventScriptsInOrder[i].first == script->baseInstance) {
-				scene->eventScriptsInOrder.erase(scene->eventScriptsInOrder.begin() + i);
-				break;
-			}
-			i++;
-		}
-	}
 
 	void GameLayer::ResetApplication() {
 		OnDetach();
+		LOG_ENG_INFO("Application reset.");
 		OnAttach();
 	}
 	void GameLayer::OnEvent(Event& event) {
 		Input::OnEvent(event);
+		DistributeEvent(event);
 	}
 	void GameLayer::OnImGuiRender() {
 

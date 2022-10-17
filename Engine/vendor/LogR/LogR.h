@@ -7,11 +7,14 @@ https://github.com/RaskiTech/LogR
 #include <iostream>
 #include <sstream>
 
-#define LogR_RED         "\033[31m"
-#define LogR_GREEN       "\033[32m"
-#define LogR_YELLOW      "\033[33m"
-#define LogR_COLOR_RESET "\033[0m "
-#define LogR_WHITE       "\033[37m"
+#define LogR_RED         "\033[0;31m "
+#define LogR_GREEN       "\033[0;32m "
+#define LogR_YELLOW      "\033[0;33m "
+#define LogR_WHITE       "\033[0;37m "
+
+#define LogR_CYAN        "\033[0;36m"
+#define LOG_PREFIX_COLOR LogR_CYAN
+#define LogR_COLOR_RESET "\033[0;0m"
 
 #ifdef LOGR_INCLUDE_GLM_TYPES
 #include <Dependencies/GLM.h>
@@ -47,11 +50,11 @@ namespace LogR {
 		}
 		template<typename... Args>
 		inline void Log(Args&&... args) {
-			LogColor(LogR_GREEN, std::forward<Args>(args)...);
+			LogColor(LogR_WHITE, std::forward<Args>(args)...);
 		}
 		template<typename... Args>
 		inline void Success(Args&&... args) {
-			LogColor(LogR_WHITE, std::forward<Args>(args)...);
+			LogColor(LogR_GREEN, std::forward<Args>(args)...);
 		}
 	private:
 		template<typename... Args>
@@ -59,7 +62,7 @@ namespace LogR {
 			std::stringstream stream;
 			ParseInput(stream, args...);
 	
-			std::cout << color << prefix << LogR_COLOR_RESET << stream.str() << '\n';
+			std::cout << LOG_PREFIX_COLOR << prefix << color <<  stream.str() << LogR_COLOR_RESET << '\n';
 		}
 	private:
 		const char* prefix;
@@ -84,6 +87,7 @@ namespace LogR {
 		template<typename T> inline void TypeToString(std::ostream& os, T& type) {
 			os << type;
 		}
+
 
 		// Overriding:
 

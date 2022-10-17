@@ -1,6 +1,5 @@
 #pragma once
 #include <unordered_map>
-#include "Eagle/Core/Application.h"
 
 namespace Egl {
 	class AssetPanel {

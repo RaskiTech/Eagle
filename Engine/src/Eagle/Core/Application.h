@@ -1,11 +1,12 @@
 #pragma once
 #include "Core.h"
+#include <Dependencies/GLM.h>
 #include "Window.h"
 #include "Eagle/Core/GameLayer.h"
+#include "Eagle/Debug/EditorLayer.h"
 #include "Eagle/Debug/ImGui/ImGuiLayer.h"
 #include "Eagle/Core/Events/Event.h"
 #include "Eagle/Core/Events/ApplicationEvent.h"
-#include "Eagle/Core/Events/Event.h"
 #include "Eagle/Core/Python/PythonEmbedding.h"
 
 namespace Egl {

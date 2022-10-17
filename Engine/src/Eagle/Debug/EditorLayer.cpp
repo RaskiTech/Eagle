@@ -3,6 +3,7 @@
 #include <Dependencies/ImGui.h>
 #include <Dependencies/Entt.h>
 #include "EditorLayer.h"
+#include "Eagle/Core/Application.h"
 #include "Eagle/ECS/Components.h"
 #include "Eagle/ECS/Scene.h"
 #include "Eagle/ECS/Script.h"
@@ -135,8 +136,8 @@ namespace Egl {
 		ImGui::End();
 		ImGui::PopStyleVar();
 
-		mHierarchyPanel.OnImGuiRender();
 		mAssetPanel.OnImGuiRender();
+		mHierarchyPanel.OnImGuiRender();
 
 		//// Restart scene button ////
 		ImGui::Begin("Restart Scene");
@@ -147,9 +148,19 @@ namespace Egl {
 		}
 
 		ImGui::End();
+
+		CallApplicationOnEditorFunctions();
 	}
 
-	void EditorLayer::OnEvent(Egl::Event& event) {
-		EAGLE_PROFILE_FUNCTION();
+	void EditorLayer::CallApplicationOnEditorFunctions() {
+		{
+			EAGLE_PROFILE_SCOPE("Application - Scripts: OnEditor");
+			Scene* scene = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene());
+			scene->mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
+				if (scriptComponent.OnEditorFunc)
+					scriptComponent.OnEditorFunc(scriptComponent.baseInstance);
+			});
+		}
 	}
+
 }

@@ -1,7 +1,18 @@
 #pragma once
+#include <Dependencies/Entt.h>
 
 #define LOGR_INCLUDE_GLM_TYPES
 #include <LogR.h>
+
+///////////////////////////////////////
+// Custom types for the Eagle Engine //
+///////////////////////////////////////
+
+template<> inline void LogR::Logger::TypeToString(std::ostream& os, entt::entity& type) {
+	os << (uint32_t)type;
+}
+
+///////////////////////////////////////
 
 namespace Egl {
 	class Log {

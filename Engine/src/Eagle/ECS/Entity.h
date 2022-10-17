@@ -42,7 +42,7 @@ namespace Egl {
 		Transform& GetTransform() const { return GetComponent<Transform>(); }
 		UITransform& GetUITransform() const { return GetComponent<UITransform>(); }
 
-		template<typename ScriptType, typename... Args> ScriptType& AddScript(Args&&... args) {
+		template<typename ScriptType, typename... Args> ScriptType& AttachScript(Args&&... args) {
 			EAGLE_ENG_ASSERT(!HasComponent<NativeScriptComponent>(), "Entity already has a script.");
 			return *AddComponent<NativeScriptComponent>().Bind<ScriptType>({ mEntity, mScene }, std::forward<Args>(args)...);
 		}
@@ -58,7 +58,7 @@ namespace Egl {
 		Entity GetChild(uint8_t childIndex) const;
 		uint32_t GetID() const { return (uint32_t)mEntity; }
 		uint32_t GetChildCount() const;
-		Scene* GetParentScene() const { return mScene; }
+		Scene* GetScene() const { return mScene; }
 
 		template<typename Func>
 		void ForEachChild(Func functionThatTakesEntity) const {

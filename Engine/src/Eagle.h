@@ -2,6 +2,9 @@
 
 // This file is for applications only. They can do #include <Eagle.h> and have everything they need
 
+#include "Eagle/Core/Core.h"
+#include <EaglePCH.h>
+
 #include "Eagle/Core/Application.h"
 #include "Eagle/Core/Python/PythonWrapper.h"
 #include "Eagle/Core/Time.h"

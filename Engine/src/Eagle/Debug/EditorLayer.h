@@ -1,5 +1,4 @@
 #pragma once
-#include "Eagle/Core/Application.h"
 #include "Eagle/Core/Events/Event.h"
 #include "Eagle/ECS/Components.h"
 #include "Eagle/ECS/Scene.h"
@@ -22,8 +21,8 @@ namespace Egl {
 		void DrawSelectedEntityOutline(const CameraComponent& camera);
 		void OnSceneDelete();
 
-		void OnEvent(Event& event);
 		void OnImGuiRender();
+		void CallApplicationOnEditorFunctions();
 
 		AssetPanel& GetAssetPanel() { return mAssetPanel; }
 

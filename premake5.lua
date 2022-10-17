@@ -1,4 +1,4 @@
-workspace "Eagle"
+workspace "Application"
 	architecture "x64"
 	startproject "Engine"
 

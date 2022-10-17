@@ -12,7 +12,7 @@ namespace Egl {
 	Transform& Transform::SetPosition(const glm::vec2& position) {
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		if (parent != entt::null) {
-			const glm::vec2& parentWorldPosition = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent).GetPosition();
+			const glm::vec2& parentWorldPosition = thisEntity.GetScene()->mRegistry.get<Transform>(parent).GetPosition();
 			localPosition = position - parentWorldPosition;
 		}
 		else localPosition = position;
@@ -27,7 +27,7 @@ namespace Egl {
 	Transform& Transform::SetRotation(float rotation) {
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		if (parent != entt::null) {
-			const float parentWorldRotation = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent).GetRotation();
+			const float parentWorldRotation = thisEntity.GetScene()->mRegistry.get<Transform>(parent).GetRotation();
 			localRotation = rotation - parentWorldRotation;
 		}
 		else localRotation = rotation;
@@ -43,7 +43,7 @@ namespace Egl {
 	Transform& Transform::SetScale(const glm::vec2& scale) {
 		entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 		if (parent != entt::null) {
-			const glm::vec2& parentWorldScale = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent).GetScale();
+			const glm::vec2& parentWorldScale = thisEntity.GetScene()->mRegistry.get<Transform>(parent).GetScale();
 			localScale = scale / parentWorldScale;
 		}
 		else localScale = scale;
@@ -82,7 +82,7 @@ namespace Egl {
 		if (!worldPosRight) {
 			const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 			if (parent != entt::null) {
-				Transform& parentTransform = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent);
+				Transform& parentTransform = thisEntity.GetScene()->mRegistry.get<Transform>(parent);
 				const glm::vec2 parentAt00Pos = glm::rotateZ(glm::vec3{ parentTransform.GetScale() * localPosition, 0 }, parentTransform.GetRotation());
 				worldPosition = parentTransform.GetPosition() + parentAt00Pos;
 			}
@@ -97,7 +97,7 @@ namespace Egl {
 		if (!worldRotRight) {
 			const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 			if (parent != entt::null)
-				worldRotation = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent).GetRotation() + localRotation;
+				worldRotation = thisEntity.GetScene()->mRegistry.get<Transform>(parent).GetRotation() + localRotation;
 			else
 				worldRotation = localRotation;
 			worldRotRight = true;
@@ -109,7 +109,7 @@ namespace Egl {
 		if (!worldScaleRight) {
 			const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
 			if (parent != entt::null)
-				worldScale = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent).GetScale() * localScale;
+				worldScale = thisEntity.GetScene()->mRegistry.get<Transform>(parent).GetScale() * localScale;
 			else
 				worldScale = localScale;
 			worldScaleRight = true;
@@ -126,13 +126,13 @@ namespace Egl {
 		entt::entity child = thisRel.firstChild;
 		worldPosRight = false;
 		while (child != entt::null) {
-			Relation& childRel = thisEntity.GetParentScene()->mRegistry.get<Relation>(child);
-			if (thisEntity.GetParentScene()->mRegistry.has<Transform>(child)) {
-				Transform& tr = thisEntity.GetParentScene()->mRegistry.get<Transform>(child);
+			Relation& childRel = thisEntity.GetScene()->mRegistry.get<Relation>(child);
+			if (thisEntity.GetScene()->mRegistry.has<Transform>(child)) {
+				Transform& tr = thisEntity.GetScene()->mRegistry.get<Transform>(child);
 				tr.SetWorldPosFlagsFalse(childRel);
 			}
 			else {
-				UITransform& align = thisEntity.GetParentScene()->mRegistry.get<UITransform>(child);
+				UITransform& align = thisEntity.GetScene()->mRegistry.get<UITransform>(child);
 				align.SetDimensionFlagsFalse(childRel);
 			}
 			child = childRel.nextSibling;
@@ -146,13 +146,13 @@ namespace Egl {
 		entt::entity child = thisRel.firstChild;
 		worldRotRight = false;
 		while (child != entt::null) {
-			Relation& childRel = thisEntity.GetParentScene()->mRegistry.get<Relation>(child);
-			if (thisEntity.GetParentScene()->mRegistry.has<Transform>(child)) {
-				Transform& tr = thisEntity.GetParentScene()->mRegistry.get<Transform>(child);
+			Relation& childRel = thisEntity.GetScene()->mRegistry.get<Relation>(child);
+			if (thisEntity.GetScene()->mRegistry.has<Transform>(child)) {
+				Transform& tr = thisEntity.GetScene()->mRegistry.get<Transform>(child);
 				tr.SetWorldRotFlagsFalse(childRel);
 			}
 			else {
-				UITransform& align = thisEntity.GetParentScene()->mRegistry.get<UITransform>(child);
+				UITransform& align = thisEntity.GetScene()->mRegistry.get<UITransform>(child);
 				align.SetDimensionFlagsFalse(childRel);
 			}
 			child = childRel.nextSibling;
@@ -166,13 +166,13 @@ namespace Egl {
 		entt::entity child = thisRel.firstChild;
 		worldScaleRight = false;
 		while (child != entt::null) {
-			Relation& childRel = thisEntity.GetParentScene()->mRegistry.get<Relation>(child);
-			if (thisEntity.GetParentScene()->mRegistry.has<Transform>(child)) {
-				Transform& tr = thisEntity.GetParentScene()->mRegistry.get<Transform>(child);
+			Relation& childRel = thisEntity.GetScene()->mRegistry.get<Relation>(child);
+			if (thisEntity.GetScene()->mRegistry.has<Transform>(child)) {
+				Transform& tr = thisEntity.GetScene()->mRegistry.get<Transform>(child);
 				tr.SetWorldScaleFlagsFalse(childRel);
 			}
 			else {
-				UITransform& align = thisEntity.GetParentScene()->mRegistry.get<UITransform>(child);
+				UITransform& align = thisEntity.GetScene()->mRegistry.get<UITransform>(child);
 				align.SetDimensionFlagsFalse(childRel);
 			}
 			child = childRel.nextSibling;
@@ -279,12 +279,12 @@ namespace Egl {
 	}
 
 	std::pair<const glm::vec2&, const glm::vec2&> UITransform::GetParentWorldCoords(entt::entity parent) const {
-		if (thisEntity.GetParentScene()->mRegistry.has<UITransform>(parent)) {
-			UITransform& parentComp = thisEntity.GetParentScene()->mRegistry.get<UITransform>(parent);
+		if (thisEntity.GetScene()->mRegistry.has<UITransform>(parent)) {
+			UITransform& parentComp = thisEntity.GetScene()->mRegistry.get<UITransform>(parent);
 			return std::pair<const glm::vec2&, const glm::vec2&>(parentComp.GetWorldPosition(), parentComp.GetWorldScale());
 		}
 		else {
-			Transform& parentComp = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent);
+			Transform& parentComp = thisEntity.GetScene()->mRegistry.get<Transform>(parent);
 			return std::pair<const glm::vec2&, const glm::vec2&>(parentComp.GetPosition(), parentComp.GetScale());
 		}
 	}
@@ -411,16 +411,16 @@ namespace Egl {
 		entt::entity child = thisRel.firstChild;
 		dimensionsRight = false;
 		while (child != entt::null) {
-			Relation& childRel = thisEntity.GetParentScene()->mRegistry.get<Relation>(child);
-			if (thisEntity.GetParentScene()->mRegistry.has<Transform>(child)) {
-				Transform& tr = thisEntity.GetParentScene()->mRegistry.get<Transform>(child);
+			Relation& childRel = thisEntity.GetScene()->mRegistry.get<Relation>(child);
+			if (thisEntity.GetScene()->mRegistry.has<Transform>(child)) {
+				Transform& tr = thisEntity.GetScene()->mRegistry.get<Transform>(child);
 				// TODO: Don't change everything, only the thing this functions was called from
 				tr.SetWorldPosFlagsFalse(childRel);
 				tr.SetWorldRotFlagsFalse(childRel);
 				tr.SetWorldScaleFlagsFalse(childRel);
 			}
 			else {
-				UITransform& align = thisEntity.GetParentScene()->mRegistry.get<UITransform>(child);
+				UITransform& align = thisEntity.GetScene()->mRegistry.get<UITransform>(child);
 				align.SetDimensionFlagsFalse(childRel);
 			}
 			child = childRel.nextSibling;
@@ -429,12 +429,12 @@ namespace Egl {
 
 	void UITransform::CorrectWorldCoors() const {
 		const entt::entity parent = thisEntity.GetComponent<Relation>().parent;
-		if (thisEntity.GetParentScene()->mRegistry.has<UITransform>(parent)) {
-			UITransform& parentComp = thisEntity.GetParentScene()->mRegistry.get<UITransform>(parent);
+		if (thisEntity.GetScene()->mRegistry.has<UITransform>(parent)) {
+			UITransform& parentComp = thisEntity.GetScene()->mRegistry.get<UITransform>(parent);
 			CalculateDimensions(parentComp.GetWorldPosition(), parentComp.GetWorldScale());
 		}
 		else {
-			Transform& parentComp = thisEntity.GetParentScene()->mRegistry.get<Transform>(parent);
+			Transform& parentComp = thisEntity.GetScene()->mRegistry.get<Transform>(parent);
 			CalculateDimensions(parentComp.GetPosition(), parentComp.GetScale());
 		}
 		dimensionsRight = true;

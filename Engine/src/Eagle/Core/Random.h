@@ -1,5 +1,6 @@
 #pragma once
 #include <random>
+#include "Core.h"
 
 namespace Egl {
 	class Random {

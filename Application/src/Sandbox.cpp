@@ -29,6 +29,10 @@ public:
 	}
 
 	bool OnEvent(Event& e) {
+		if (KeyPressedEvent* keyEvent = e.FilterAs<KeyPressedEvent>()) {
+			LOG("Key pressed: ", keyEvent->GetKeyCode());
+		}
+
 		return false;
 	}
 };
@@ -63,7 +67,7 @@ class ExampleScene : public Scene {
 		cameraComp.backgroundColor = { 0.19f, 0.32f, 0.45f, 1.0f };
 		camera.GetTransform().SetPosition(0.0f, -0.6f);
 		SetPrimaryCamera(camera);
-		camera.AddScript<example_CameraController>();
+		camera.AttachScript<example_CameraController>();
 		
 		auto& player = AddEntity("Player");
 		auto texture = Assets::CreateTexture("Assets/Player.png", false);

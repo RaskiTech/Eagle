@@ -34,6 +34,12 @@ namespace Egl {
 		}
 		inline bool IsHandled() const { return handled; }
 
+		template<typename EventType> EventType* FilterAs() {
+			if (GetEventType() == EventType::GetStaticType())
+				return (EventType*)this;
+			return nullptr;
+		}
+
 		bool handled = false;
 	};
 

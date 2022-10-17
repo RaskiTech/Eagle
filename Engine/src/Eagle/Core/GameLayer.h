@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Eagle/Core/Events/Event.h"
-
 #include "Eagle/ECS/Scene.h"
 #include "Eagle/Rendering/Framebuffer.h"
 
@@ -11,7 +10,7 @@ namespace Egl {
 	class GameLayer {
 	public:
 		GameLayer();
-		~GameLayer() = default;
+		~GameLayer() { OnDetach(); };
 
 		void OnAttach();
 		void OnDetach();
@@ -22,8 +21,6 @@ namespace Egl {
 		void OnImGuiRender();
 
 		void DistributeEvent(Event& e);
-		void SubscribeToEvents(NativeScriptComponent* script);
-		void OptOutOfEvents(NativeScriptComponent* script);
 
 		void ResetApplication();
 		const SceneRef& GetActiveScene() const { return _activeScene; }

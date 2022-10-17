@@ -1,8 +1,14 @@
 #include <EaglePCH.h>
 #include <Dependencies/GLM.h>
+#include "Eagle/Core/Application.h"
 #include "SceneCamera.h"
 
 namespace Egl {
+	SceneCamera::SceneCamera() {
+		mAspectRatio = Application::Get().GetSceneWindowSize().x / Application::Get().GetSceneWindowSize().y;
+		RecaulculateProjection(); 
+	}
+
 	void SceneCamera::SetBounds(float size, float nearClip, float farClip) {
 		mSize = size;
 		mNearClip = nearClip;

@@ -1,15 +1,14 @@
 #pragma once
 #include <Dependencies/Entt.h>
 #include <functional>
-#include "Eagle/Rendering/Text/TextRenderer.h"
 
 // The client will inherit this scene and provide the functions.
 
 namespace Egl {
 
 	class Entity;
-	struct NativeScriptComponent;
 	class Script;
+	struct NativeScriptComponent;
 	struct EntityParams;
 	struct UIEntityParams;
 
@@ -44,36 +43,55 @@ namespace Egl {
 		virtual void SceneBegin() = 0;
 		virtual void SceneEnd() = 0;
 
+		void SwitchToScene(SceneRef scene) const;
+
+		enum class SceneState {
+			StartedCreate_0     = 0,
+			SceneBeginCalled_1  = 1,
+			CreateCalled_2      = 2,
+			Running_3           = 3,
+			StartedDestroying_4 = 4,
+			DestroyCalled_5     = 5,
+			SceneEndCalled_6    = 6
+		};
+
+		SceneState GetSceneState() { return _sceneState; }
+
+		void ValidateSceneCameraExistence() {
+			if (!mRegistry.valid(mPrimaryCamera))
+				mPrimaryCamera = entt::null;
+		}
+
 	private:
 		void SetViewportAspectRatio(float aspectRatio);
 		void OnUpdate();
 
-		bool sceneInitComplete = false;
+		SceneState _sceneState = SceneState::StartedCreate_0;
+
+		void SubscribeToEvents(NativeScriptComponent* script);
+		void OptOutOfEvents(NativeScriptComponent* script);
 		std::vector<std::pair<Script*, std::function<bool(Script*, Event&)>>> eventScriptsInOrder;
 
 		friend struct NativeScriptComponent;
 		friend class GameLayer;
-		friend class EditorLayer;
-		friend class Application;
+
+	private:
+
+		std::vector<entt::entity> entityDeleteQueue;
+
 	private:
 		entt::registry mRegistry;
 		entt::entity mPrimaryCamera = entt::null;
 
 		entt::entity mFirstEntity = entt::null;
 
+		friend class EditorLayer;
 		friend class Entity;
 		friend class HierarchyPanel;
 		friend struct Transform;
 		friend struct UITransform;
-		friend struct NativeScriptComponent;
 
 		void _DeleteEntityNow(entt::entity e);
 
-		inline void AddEntityChildsImp(Entity& createdEntity) {}
-		template<typename AddEntityChildParam, typename... AddEntityChildParamRest>
-		inline void AddEntityChildsImp(Entity& createdEntity, AddEntityChildParam first, AddEntityChildParamRest&&...rest) {
-			createdEntity.AddChild(first);
-			AddEntityChildsImp(createdEntity, rest...);
-		}
 	};
 }

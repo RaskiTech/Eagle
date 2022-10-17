@@ -12,7 +12,10 @@
 #include "Eagle/Core/Application.h"
 
 namespace Egl {
-	Scene::Scene() {}
+	Scene::Scene() {
+		eventScriptsInOrder.reserve(50);
+		entityDeleteQueue.reserve(50);
+	}
 
 	Entity Scene::AddEntity(const std::string& name, const EntityParams& params, Entity parent) {
 		entt::entity createdEntityID = mRegistry.create();
@@ -72,15 +75,25 @@ namespace Egl {
 		return AddUIEntity(name, UIEntityParams(), canvasOrParent);
 	}
 
-
 	void Scene::DeleteEntity(Entity& entity) { 
-		// Store the entities to destroy and destroy them later after all the scripts update?
-		_DeleteEntityNow((entt::entity)entity.GetID()); 
+		EAGLE_ENG_ASSERT((entt::entity)entity.GetID() != entt::null, "Tried to delete an entity that was null."); 
+		entityDeleteQueue.push_back((entt::entity)entity.GetID()); 
 	}
 	void Scene::_DeleteEntityNow(entt::entity entity) {
+		// Run OnDestroy
+		// Remove calls to OnEvent
+		// Destroy childs
+		// Destroy self
 
+		NativeScriptComponent* script = mRegistry.try_get<NativeScriptComponent>(entity);
+		if (script) {
+			if (script->OnEventFunc)
+				OptOutOfEvents(script);
+			if (script->OnDestroyFunc)
+				script->OnDestroyFunc(script->baseInstance);
+		}
+		
 		Relation& rel = mRegistry.get<Relation>(entity);
-
 		entt::entity child = rel.firstChild;
 		while (child != entt::null) {
 			entt::entity next = mRegistry.get<Relation>(child).nextSibling;
@@ -104,16 +117,12 @@ namespace Egl {
 			}
 		}
 
-		if (NativeScriptComponent* script = mRegistry.try_get<NativeScriptComponent>(entity)) {
-			Application::Get().GetGameLayer()->OptOutOfEvents(script);
-		}
-
 		mRegistry.destroy(entity);
 	}
 
 	void Scene::SetPrimaryCamera(Entity& camera) {
 		EAGLE_ENG_ASSERT(camera.HasComponent<CameraComponent>(), "Tried to set a primary camera, but the entity doesn't have a camera");
-		EAGLE_ENG_ASSERT(camera.GetParentScene() == this, "Tried to set a primary camera, but the entity doesn't belong in this scene");
+		EAGLE_ENG_ASSERT(camera.GetScene() == this, "Tried to set a primary camera, but the entity doesn't belong in this scene");
 		mPrimaryCamera = (entt::entity)camera.GetID();
 	}
 
@@ -137,9 +146,6 @@ namespace Egl {
 					scriptComponent.OnUpdateFunc(scriptComponent.baseInstance);
 			});
 		}
-
-		if (!mRegistry.valid(mPrimaryCamera))
-			mPrimaryCamera = entt::null;
 
 		if (mPrimaryCamera != entt::null) {
 			CameraComponent& camera = mRegistry.get<CameraComponent>(mPrimaryCamera);
@@ -221,6 +227,49 @@ namespace Egl {
 	#endif
 			Renderer::EndScene();
 		}
+
+
+		for (int i = 0; i < entityDeleteQueue.size(); i++) {
+			// Was it a child of an already deleted entity? Did the delete on the entity get called twice?
+			if (mRegistry.valid(entityDeleteQueue[i]))
+				_DeleteEntityNow(entityDeleteQueue[i]);
+		}
+
+		// If the camera got deleted for example, set it to null
+		ValidateSceneCameraExistence();
+	}
+
+	template< typename T, typename Pred >
+	static typename std::vector<T>::iterator Insert_sorted(std::vector<T>& vec, T const& item, Pred pred) {
+		return vec.insert(std::upper_bound(vec.begin(), vec.end(), item, pred), item);
+	}
+	void Scene::SubscribeToEvents(NativeScriptComponent* script) {
+		EAGLE_ENG_ASSERT(script->OnEventFunc, "Script doesn't have an event function.");
+
+		// Add the script here if the scene instalation is complete. Else it will be added after sceneStart
+		if (GetSceneState() >= SceneState::Running_3) {
+			Insert_sorted(eventScriptsInOrder, std::make_pair(script->baseInstance, script->OnEventFunc), [&](auto& e1, auto& e2) {
+				auto mc1 = mRegistry.get<MetadataComponent>((entt::entity)e1.first->GetEntity().GetID());
+				auto mc2 = mRegistry.get<MetadataComponent>((entt::entity)e2.first->GetEntity().GetID());
+				if (mc1.sortingLayer == mc2.sortingLayer)
+					return mc1.subSorting > mc2.subSorting;
+				else
+					return mc1.sortingLayer > mc2.sortingLayer;
+			});
+		}
+	}
+	void Scene::OptOutOfEvents(NativeScriptComponent* script) {
+		EAGLE_ENG_ASSERT(script->OnEventFunc, "Script doesn't have an event function.");
+
+		int i = 0;
+		while (true) {
+			EAGLE_ENG_ASSERT(i < eventScriptsInOrder.size(), "Script event function wasn't in the eventScript list");
+			if (eventScriptsInOrder[i].first == script->baseInstance) {
+				eventScriptsInOrder.erase(eventScriptsInOrder.begin() + i);
+				break;
+			}
+			i++;
+		}
 	}
 
 	glm::vec2 Scene::ScreenToWorldPos(const glm::vec2& pixelCoordinate) const {
@@ -251,6 +300,10 @@ namespace Egl {
 		const glm::vec2 posInScreenWorld = worldPos - topCornerInWorld;
 		const glm::vec2 posInScreen01 = posInScreenWorld / screenSizeInWorld;
 		return { posInScreen01.x * viewSize.x, posInScreen01.y * -viewSize.y };
+	}
+
+	void Scene::SwitchToScene(SceneRef scene) const {
+		Application::Get().GetGameLayer()->ScheduleSceneSwitch(scene);
 	}
 
 	void Scene::SetViewportAspectRatio(float aspectRatio) {

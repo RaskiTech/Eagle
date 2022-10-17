@@ -76,11 +76,12 @@
 
     <h2>Scripts</h2>
     <p>
-        You can add one script component per entity. You can do this by adding a native script component and calling .Bind on it with your script. <code>.AddComponent< NativeScriptComponent >().Bind< exampleScript >();</code> 
-        The bind function can of course take arguments. The script class itself is a class inheriting the base class <code>script</code>. The script class can optinally implement a couple of functions. <code>void OnCreate()</code> 
+        You can add one script component per entity. You can do this by making a script call that inherits from <code>Script</code>. Then you can call <code>.AttachScript&ltScriptType&gt()</code> on your entity. 
+        The function can take arguments that will then be passed to the scirpt constructor. Your script class can optinally implement a couple of functions. <code>void OnCreate()</code> 
         will run once when the script is attached, <code>void OnUpdate()</code> will run every frame that the script is attached, and <code>void OnDestroy()</code> will run when the script gets removed. In addition, 
-        <code>bool OnEvent(Event& e)</code> will run if the components receives any keyboard events or any mouse events when the mouse is on top of it. The function returns whether or not that event consumed the event. If the function consumed the event, 
-        objects behind it will not receive the event.
+        <code>bool OnEvent(Event& e)</code> will run if the components receives any mouse events when the mouse is on top of it, or any other events. The function returns whether or not that event consumed the event. If the function consumed the event, 
+        objects behind it will not receive the event. You can easily filter, <code>KeyEvents</code> for example, with <code>if (KeyEvent* keyE = e.FilterAs&ltKeyEvent&gt()) { ... }</code>. <code>void OnEditor()</code> will run every frame 
+        when the editor is running. Here you can create custom editor windows, for example.
     </p>
 
     <h2>Logging</h2>
