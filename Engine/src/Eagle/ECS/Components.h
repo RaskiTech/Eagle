@@ -301,6 +301,7 @@ namespace Egl {
 		std::function<void(Script*)> OnDestroyFunc;
 		std::function<void(Script*)> OnUpdateFunc;
 		std::function<void(Script*)> OnEditorFunc;
+		std::function<void(Script*)> OnPropertyRenderFunc;
 		std::function<bool(Script*, Event&)> OnEventFunc;
 
 		template<typename T, typename ... Args>
@@ -319,6 +320,9 @@ namespace Egl {
 			);
 			COMPILE_IF_VALID(T, OnEditor(),
 				OnEditorFunc = [](Script* instance) { ((T*)instance)->OnEditor(); };
+			);
+			COMPILE_IF_VALID(T, OnPropertyRender(),
+				OnPropertyRenderFunc = [](Script* instance) { ((T*)instance)->OnPropertyRender(); };
 			);
 
 			COMPILE_IF_EVENTFUNC(T,

@@ -11,7 +11,7 @@ namespace Egl {
 		void DrawProperties();
 
 		// UITransformComponent
-		float value1Speed = 1, value2Speed = 1, value3Speed = 1, value4Speed = 1;
+		float _value1Speed = 1, _value2Speed = 1, _value3Speed = 1, _value4Speed = 1;
 
 		Entity drawedEntity;
 	};

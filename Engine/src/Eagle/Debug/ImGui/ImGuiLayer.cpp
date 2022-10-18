@@ -86,59 +86,37 @@ namespace Egl {
     void ImGuiLayer::SetDarkThemeColors() {
         ImGuiStyle& style = ImGui::GetStyle();
 
-        // From british palette, flatuicolors
-        ImVec4 white1     = ImVec4{ 245.0f / 255, 246.0f / 255, 250.0f / 255, 1.0f };
-        ImVec4 white2     = ImVec4{ 220.0f / 255, 221.0f / 255, 225.0f / 255, 1.0f };
+        style.Colors[ImGuiCol_WindowBg]           = EDITOR_COLOR_DARK;
 
-        ImVec4 violet1    = ImVec4{ 156.0f / 255 - 0.1f, 136.0f / 255 - 0.1f, 255.0f / 255 - 0.1f, 1.0f };
-        ImVec4 violet2    = ImVec4{ 140.0f / 255 - 0.1f, 122.0f / 255 - 0.1f, 230.0f / 255 - 0.1f, 1.0f };
+        style.Colors[ImGuiCol_Header]             = EDITOR_COLOR_LIGHTBLUE1;
+        style.Colors[ImGuiCol_HeaderHovered]      = EDITOR_COLOR_LIGHTBLUE1;
+        style.Colors[ImGuiCol_HeaderActive]       = EDITOR_COLOR_LIGHTBLUE1;
 
-        ImVec4 lightBlue1 = ImVec4{ 64.0f / 255, 115.0f / 255, 158.0f / 255, 1.0f };
-        ImVec4 lightBlue2 = ImVec4{ 72.0f / 255, 126.0f / 255, 176.0f / 255, 1.0f };
-                                        
-        ImVec4 darkBlue1  = ImVec4{ 25.0f / 255, 42.0f / 255, 86.0f / 255, 1.0f };
-        ImVec4 darkBlue2  = ImVec4{ 39.0f / 255, 60.0f / 255, 117.0f / 255, 1.0f };
+        style.Colors[ImGuiCol_Button]             = EDITOR_COLOR_DARKGRAY2;
+        style.Colors[ImGuiCol_ButtonHovered]      = EDITOR_COLOR_DARKGRAY1;
+        style.Colors[ImGuiCol_ButtonActive]       = EDITOR_COLOR_DARKGRAY1;
 
-        ImVec4 lightGray1 = ImVec4{ 127.0f / 255, 143.0f / 255, 166.0f / 255, 1.0f };
-        ImVec4 lightGray2 = ImVec4{ 113.0f / 255, 128.0f / 255, 147.0f / 255, 1.0f };
+        style.Colors[ImGuiCol_FrameBg]            = EDITOR_COLOR_DARKGRAY2;
+        style.Colors[ImGuiCol_FrameBgHovered]     = EDITOR_COLOR_DARKGRAY1;
+        style.Colors[ImGuiCol_FrameBgActive]      = EDITOR_COLOR_DARKGRAY1;
 
-        ImVec4 darkGray0  = ImVec4{ 53.0f / 255+0.15f, 59.0f / 255+0.15f, 72.0f / 255+0.15f, 1.0f };
-        ImVec4 darkGray1  = ImVec4{ 53.0f / 255+0.1f, 59.0f / 255 + 0.1f, 72.0f / 255 + 0.1f, 1.0f };
-        ImVec4 darkGray2  = ImVec4{ 47.0f / 255, 54.0f / 255, 64.0f / 255, 1.0f };
+        style.Colors[ImGuiCol_Tab]                = EDITOR_COLOR_VIOLET1;//EDITOR_COLOR_LIGHTBLUE1;
+        style.Colors[ImGuiCol_TabHovered]         = EDITOR_COLOR_VIOLET2;//EDITOR_COLOR_LIGHTBLUE2;
+        style.Colors[ImGuiCol_TabActive]          = EDITOR_COLOR_VIOLET2;//EDITOR_COLOR_LIGHTBLUE2;
+        style.Colors[ImGuiCol_TabUnfocused]       = EDITOR_COLOR_VIOLET1;//EDITOR_COLOR_LIGHTBLUE1;
+        style.Colors[ImGuiCol_TabUnfocusedActive] = EDITOR_COLOR_VIOLET2;//EDITOR_COLOR_LIGHTBLUE2;
 
-        ImVec4 dark = ImVec4{ 0.1f, 0.1f, 0.1f, 1.0f };
+        style.Colors[ImGuiCol_TitleBg]            = EDITOR_COLOR_DARKGRAY3;
+        style.Colors[ImGuiCol_TitleBgActive]      = EDITOR_COLOR_DARKGRAY3;
+        style.Colors[ImGuiCol_TitleBgCollapsed]   = EDITOR_COLOR_DARKGRAY3;
 
-        style.Colors[ImGuiCol_WindowBg]           = dark;
+        style.Colors[ImGuiCol_CheckMark]          = EDITOR_COLOR_WHITE1;
+        style.Colors[ImGuiCol_Text]               = EDITOR_COLOR_WHITE1;
+        style.Colors[ImGuiCol_TextDisabled]       = EDITOR_COLOR_WHITE2;
 
-        style.Colors[ImGuiCol_Header]             = lightBlue1;
-        style.Colors[ImGuiCol_HeaderHovered]      = lightBlue1;
-        style.Colors[ImGuiCol_HeaderActive]       = lightBlue1;
-
-        style.Colors[ImGuiCol_Button]             = darkGray1;
-        style.Colors[ImGuiCol_ButtonHovered]      = darkGray0;
-        style.Colors[ImGuiCol_ButtonActive]       = darkGray0;
-                                                    
-        style.Colors[ImGuiCol_FrameBg]            = darkGray1;
-        style.Colors[ImGuiCol_FrameBgHovered]     = darkGray0;
-        style.Colors[ImGuiCol_FrameBgActive]      = darkGray0;
-
-        style.Colors[ImGuiCol_Tab]                = lightBlue1;
-        style.Colors[ImGuiCol_TabHovered]         = lightBlue2;
-        style.Colors[ImGuiCol_TabActive]          = lightBlue2;
-        style.Colors[ImGuiCol_TabUnfocused]       = lightBlue1;
-        style.Colors[ImGuiCol_TabUnfocusedActive] = lightBlue2;
-                                                                   
-        style.Colors[ImGuiCol_TitleBg]            = darkGray2;
-        style.Colors[ImGuiCol_TitleBgActive]      = darkGray2;
-        style.Colors[ImGuiCol_TitleBgCollapsed]   = darkGray2;
-
-        style.Colors[ImGuiCol_CheckMark]          = white1;
-        style.Colors[ImGuiCol_Text]               = white1;
-        style.Colors[ImGuiCol_TextDisabled]       = white2;
-
-        style.Colors[ImGuiCol_Separator]          = darkGray2;
-        style.Colors[ImGuiCol_SeparatorHovered]   = lightGray2;
-        style.Colors[ImGuiCol_SeparatorActive]    = lightGray2;
+        style.Colors[ImGuiCol_Separator]          = EDITOR_COLOR_DARKGRAY3;
+        style.Colors[ImGuiCol_SeparatorHovered]   = EDITOR_COLOR_LIGHTGRAY2;
+        style.Colors[ImGuiCol_SeparatorActive]    = EDITOR_COLOR_LIGHTGRAY2;
     }
     void ImGuiLayer::OnEvent(Event& event) {
         if (!mLetMouseThrough) {

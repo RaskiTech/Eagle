@@ -690,8 +690,12 @@ namespace Egl {
 	}
 
 	void AudioSource::Play(bool play) {
-		if (play && !sample->playing)
+
+		if (play && !sample->playing) {
+			if (sample->samplePosition >= (*sample->clip).data.getNumSamplesPerChannel())
+				sample->samplePosition = 0;
 			AudioPlayer::AddSample(sample);
+		}
 		else if (!play && sample->playing)
 			AudioPlayer::RemoveSample(sample);
 

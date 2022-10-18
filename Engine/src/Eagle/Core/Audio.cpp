@@ -81,9 +81,8 @@ namespace Egl {
             }
 
             if ((*clip).samplePosition >= data.getNumSamplesPerChannel()) {
-                if ((*clip).loop)
-                    (*clip).samplePosition = 0;
-                else {
+				(*clip).samplePosition = 0;
+                if (!(*clip).loop) {
                     (*clip).playing = false;
                     clip = nullptr;
                 }
