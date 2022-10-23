@@ -21,6 +21,8 @@ namespace Egl {
 	}
 
 	void GameLayer::ActivateScene(SceneRef sceneRef) {
+		EAGLE_PROFILE_FUNCTION();
+
 		if (_activeScene != -1)
 			DeactivateCurrentScene();
 
@@ -35,13 +37,6 @@ namespace Egl {
 		{
 			EAGLE_PROFILE_SCOPE("Client - Scripts: OnCreate");
 			auto view = scene->mRegistry.view<NativeScriptComponent>();
-			view.each([&](auto entity, NativeScriptComponent& scriptComponent) {
-				EAGLE_ENG_ASSERT(scriptComponent.baseInstance != nullptr, "Instance is a nullptr");
-
-				// Add it to an event array
-				if (scriptComponent.OnEventFunc)
-					scene->eventScriptsInOrder.push_back(std::make_pair(scriptComponent.baseInstance, scriptComponent.OnEventFunc));
-			});
 			view.each([&](auto entity, NativeScriptComponent& scriptComponent) {
 				if (scriptComponent.OnCreateFunc)
 					scriptComponent.OnCreateFunc(scriptComponent.baseInstance);
@@ -61,6 +56,8 @@ namespace Egl {
 	}
 
 	void GameLayer::DeactivateCurrentScene() {
+		EAGLE_PROFILE_FUNCTION();
+
 		Scene* scene = Assets::GetScene(_activeScene);
 		EAGLE_ENG_ASSERT(scene->_sceneState == Scene::SceneState::Running_3, "Tried to deactivate scene that wasn't in a running state.");
 
@@ -82,7 +79,7 @@ namespace Egl {
 		}
 		scene->_sceneState = Scene::SceneState::SceneEndCalled_6;
 
-		EAGLE_EDITOR_ONLY(Application::Get().GetEditorLayer()->OnSceneDelete());
+		EAGLE_EDITOR_ONLY(if (Application::Get().GetEditorLayer() != nullptr) Application::Get().GetEditorLayer()->OnSceneDelete());
 		_activeScene = -1;
 	}
 
@@ -101,7 +98,7 @@ namespace Egl {
 		const glm::vec2& sceneSize = Application::Get().GetSceneWindowSize();
 		if (sceneSize.x > 0.0f && sceneSize.y > 0.0f && (sceneSize.x != def.width || sceneSize.y != def.height)) {
 			_framebuffer->Resize((uint32_t)sceneSize.x, (uint32_t)sceneSize.y);
-			Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene())->SetViewportAspectRatio(sceneSize.x / sceneSize.y);
+			Assets::GetScene(GetActiveScene())->ChangeCameraAspectRatios(sceneSize.x / sceneSize.y);
 		}
 		
 		_framebuffer->Bind();
@@ -167,6 +164,13 @@ namespace Egl {
 		DistributeEvent(event);
 	}
 	void GameLayer::OnImGuiRender() {
-
+		{
+			EAGLE_PROFILE_SCOPE("Application - Scripts: OnEditor");
+			Scene* scene = Assets::GetScene(GetActiveScene());
+			scene->mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
+				if (scriptComponent.OnImGuiFunc)
+					scriptComponent.OnImGuiFunc(scriptComponent.baseInstance);
+			});
+		}
 	}
 }

@@ -2,7 +2,7 @@
 #include "Application.h"
 #include "Eagle/Rendering/Texture.h"
 
-#include "EagleBuildSettings.h"
+#include "Eagle/Core/Core.h"
 
 inline void EagleMain() {
 	Egl::Log::Init();

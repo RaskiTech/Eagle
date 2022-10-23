@@ -300,7 +300,7 @@ namespace Egl {
 		std::function<void(Script*)> OnCreateFunc;
 		std::function<void(Script*)> OnDestroyFunc;
 		std::function<void(Script*)> OnUpdateFunc;
-		std::function<void(Script*)> OnEditorFunc;
+		std::function<void(Script*)> OnImGuiFunc;
 		std::function<void(Script*)> OnPropertyRenderFunc;
 		std::function<bool(Script*, Event&)> OnEventFunc;
 
@@ -311,6 +311,9 @@ namespace Egl {
 
 			COMPILE_IF_VALID(T, OnCreate(),
 				OnCreateFunc = [](Script* instance) { ((T*)instance)->OnCreate(); };
+
+				if (entity.GetScene()->GetSceneState() >= Scene::SceneState::SceneBeginCalled_1)
+					OnCreateFunc(baseInstance);
 			);
 			COMPILE_IF_VALID(T, OnDestroy(),
 				OnDestroyFunc = [](Script* instance) { ((T*)instance)->OnDestroy(); };
@@ -318,8 +321,8 @@ namespace Egl {
 			COMPILE_IF_VALID(T, OnUpdate(),
 				OnUpdateFunc = [](Script* instance) { ((T*)instance)->OnUpdate(); };
 			);
-			COMPILE_IF_VALID(T, OnEditor(),
-				OnEditorFunc = [](Script* instance) { ((T*)instance)->OnEditor(); };
+			COMPILE_IF_VALID(T, OnImGuiRender(),
+				OnImGuiFunc = [](Script* instance) { ((T*)instance)->OnImGuiRender(); };
 			);
 			COMPILE_IF_VALID(T, OnPropertyRender(),
 				OnPropertyRenderFunc = [](Script* instance) { ((T*)instance)->OnPropertyRender(); };
@@ -330,8 +333,6 @@ namespace Egl {
 				entity.GetScene()->SubscribeToEvents(this);
 			);
 
-			if (entity.GetScene()->GetSceneState() >= Scene::SceneState::SceneBeginCalled_1)
-				OnCreateFunc(baseInstance);
 
 			EAGLE_ENG_ASSERT(entity.GetScene()->GetSceneState() < Scene::SceneState::StartedDestroying_4, "Please don't add new components in OnDestroy or in SceneEnd!");
 

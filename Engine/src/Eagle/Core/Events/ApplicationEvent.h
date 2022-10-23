@@ -67,6 +67,7 @@ namespace Egl {
 		EVENT_CLASS_TYPE(WindowClose);
 	};
 
+	// As of now, we don't send AppTick, AppRender or AppUpdate events
 	class AppTickEvent : public Event {
 	public:
 		AppTickEvent() {}

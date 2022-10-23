@@ -46,6 +46,7 @@ namespace Egl {
 			EAGLE_ENG_ASSERT(!HasComponent<NativeScriptComponent>(), "Entity already has a script.");
 			return *AddComponent<NativeScriptComponent>().Bind<ScriptType>({ mEntity, mScene }, std::forward<Args>(args)...);
 		}
+		bool HasScript() { return HasComponent<NativeScriptComponent>(); }
 		template<typename ScriptType> ScriptType& GetScript() {
 			EAGLE_ENG_ASSERT(HasComponent<NativeScriptComponent>(), "Entity doesn't have a script.");
 			return *(ScriptType*)GetComponent<NativeScriptComponent>().baseInstance;

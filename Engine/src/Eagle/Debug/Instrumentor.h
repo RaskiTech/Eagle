@@ -111,7 +111,7 @@ namespace Egl {
     };
 }
 
-#include <EagleBuildSettings.h>
+#include "Eagle/Core/Core.h"
 
 #if EAGLE_PROFILE
     #define EAGLE_PROFILE_BEGIN(name, filepath) ::Egl::Instrumentor::Get().BeginSession(name, filepath)

@@ -1,5 +1,5 @@
 #include <EaglePCH.h>
-#include <EagleBuildSettings.h>
+#include "Eagle/Core/Core.h"
 #include "Scene.h"
 #include "Eagle/Core/Application.h"
 #include "Eagle/Debug/EditorLayer.h"
@@ -257,6 +257,8 @@ namespace Egl {
 					return mc1.sortingLayer > mc2.sortingLayer;
 			});
 		}
+		else
+			eventScriptsInOrder.push_back(std::make_pair(script->baseInstance, script->OnEventFunc));
 	}
 	void Scene::OptOutOfEvents(NativeScriptComponent* script) {
 		EAGLE_ENG_ASSERT(script->OnEventFunc, "Script doesn't have an event function.");
@@ -306,7 +308,7 @@ namespace Egl {
 		Application::Get().GetGameLayer()->ScheduleSceneSwitch(scene);
 	}
 
-	void Scene::SetViewportAspectRatio(float aspectRatio) {
+	void Scene::ChangeCameraAspectRatios(float aspectRatio) {
 		// Resize cameras that don't have a fixed aspect ratio
 		auto& view = mRegistry.view<CameraComponent>();
 		for (auto entity : view) {

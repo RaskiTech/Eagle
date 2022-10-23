@@ -2,6 +2,7 @@
 #include "Eagle/Core/Core.h"
 #include "AssetManager.h"
 #include "Eagle/Debug/Panels/AssetsPanel.h"
+#include "Eagle/ECS/Scene.h"
 #include "Audio.h"
 
 namespace Egl {
@@ -23,7 +24,13 @@ namespace Egl {
 
 
     AudioClipRef Assets::CreateClip(const std::string& filepath) {
+        EAGLE_PROFILE_FUNCTION();
         AudioClip* asset = new AudioClip(filepath);
+        if (asset->data.GetAudioFileFormat() == AudioFileFormat::NotLoaded) {
+            delete asset;
+            return AudioClipRef();
+        }
+
         AudioClipRef ref = GetNextID();
         EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, std::string("Clip ").append(filepath.substr(filepath.find_last_of("/\\") + 1))));
         assets[ref] = std::make_pair(1, asset);
@@ -31,6 +38,7 @@ namespace Egl {
     }
 
     TextureRef Assets::CreateTexture(const std::string& filepath, bool scaleUpBlur, bool tile) {
+        EAGLE_PROFILE_FUNCTION();
         Texture* asset = Texture::CreateDangling(filepath, scaleUpBlur, tile);
         TextureRef ref = GetNextID();
         EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, std::string("Tex ").append(filepath.substr(filepath.find_last_of("/\\") + 1))));
@@ -38,6 +46,7 @@ namespace Egl {
         return ref;
     }
     TextureRef Assets::CreateTexture(uint32_t width, uint32_t height, bool scaleUpBlur, bool tile, const char* shortIdentifierName) {
+        EAGLE_PROFILE_FUNCTION();
         Texture* asset = Texture::CreateDangling(width, height, scaleUpBlur, tile);
         TextureRef ref = GetNextID();
         EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, shortIdentifierName + std::string("Tex ").append(std::to_string(width)).append("x").append(std::to_string(height))));
@@ -46,6 +55,7 @@ namespace Egl {
     }
 
     SubTextureRef Assets::CreateSubTexture(const TextureRef& texture, const glm::vec2& minCoord, const glm::vec2& maxCoord) {
+        EAGLE_PROFILE_FUNCTION();
         SubTexture* asset = SubTexture::CreateDangling(texture, minCoord, maxCoord);
         SubTextureRef ref = GetNextID();
         EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, "Sub" + AssetPanel::GetAssetName(texture)));
@@ -54,6 +64,7 @@ namespace Egl {
     }
 
     ShaderRef Assets::CreateShader(const std::string& filepath) {
+        EAGLE_PROFILE_FUNCTION();
         Shader* asset = Shader::CreateDangling(filepath);
         ShaderRef ref = GetNextID();
         EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, "Shader " + asset->GetName()));
@@ -61,6 +72,7 @@ namespace Egl {
         return ref;
     }
     ShaderRef Assets::CreateShader(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader) {
+        EAGLE_PROFILE_FUNCTION();
         Shader* asset = Shader::CreateDangling(name, vertexShader, fragmentShader);
         ShaderRef ref = GetNextID();
         EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, "Shader " + asset->GetName()));
@@ -69,6 +81,7 @@ namespace Egl {
     }
 
     SubTextureRef Assets::CreateSubTexture(const TextureRef& texture, const glm::vec2& oneCellSize, const glm::vec2& thisCellIndex, const glm::vec2& thisCellIndexSize) {
+        EAGLE_PROFILE_FUNCTION();
         SubTexture* asset = SubTexture::CreateDanglingFromIndexes(texture, thisCellIndex, oneCellSize, thisCellIndexSize);
         SubTextureRef ref = GetNextID();
         EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, "Sub" + AssetPanel::GetAssetName(texture)));

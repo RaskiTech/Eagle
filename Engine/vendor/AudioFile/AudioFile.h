@@ -91,6 +91,9 @@ public:
     //=============================================================
     /** @Returns the sample rate */
     uint32_t getSampleRate() const;
+
+    /** @Returns the audio file format of this file */
+    AudioFileFormat GetAudioFileFormat() { return audioFileFormat; }
     
     /** @Returns the number of audio channels in the buffer */
     int getNumChannels() const;

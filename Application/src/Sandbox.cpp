@@ -1,7 +1,6 @@
 #pragma once
 #include <Eagle.h>
 #include <EagleApplicationStartup.h>
-
 #include <Eagle/Rendering/Text/TextRenderer.h>
 using namespace Egl;
 
@@ -90,6 +89,7 @@ class ExampleScene : public Scene {
 		example_UI();
 
 	}
+
 
 	void SceneEnd() {
 

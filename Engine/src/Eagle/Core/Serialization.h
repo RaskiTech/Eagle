@@ -12,6 +12,8 @@ namespace Egl {
 	/// <summary>Save data for later use. Note: the data must be read in the same order.</summary>
 	class SaveData {
 	public:
+		static std::string GetPersistableDataPath() { return persistantDataPath; }
+
 		SaveData(const std::string& relativeLoadPath);
 		~SaveData();
 	
@@ -47,6 +49,8 @@ namespace Egl {
 
 	class LoadData {
 	public:
+		static std::string GetPersistableDataPath() { return SaveData::GetPersistableDataPath(); }
+
 		LoadData(const std::string& relativeLoadPath);
 		~LoadData();
 	

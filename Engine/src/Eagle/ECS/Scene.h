@@ -63,7 +63,9 @@ namespace Egl {
 		}
 
 	private:
-		void SetViewportAspectRatio(float aspectRatio);
+		void ChangeCameraAspectRatios(float aspectRatio);
+		friend class Application;
+	private:
 		void OnUpdate();
 
 		SceneState _sceneState = SceneState::StartedCreate_0;

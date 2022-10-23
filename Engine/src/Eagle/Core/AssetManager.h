@@ -16,6 +16,8 @@ namespace Egl {
 	struct AssetReference {
 		uint32_t id = -1;
 		
+		bool Valid() { return id != -1; }
+
 		AssetReference() : id(-1) {}
 		AssetReference(uint32_t id) : id(id) {}
 
@@ -65,7 +67,7 @@ namespace Egl {
 		static SubTextureRef CreateSubTexture(const TextureRef& texture, const glm::vec2& minCoord, const glm::vec2& maxCoord);
 		static ShaderRef CreateShader(const std::string& filepath);
 		static ShaderRef CreateShader(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader);
-		template<typename MyScene> static SceneRef CreateScene() { return AddSceneToAssets(new MyScene()); }
+		template<typename MyScene> static SceneRef CreateScene() { EAGLE_PROFILE_FUNCTION(); return AddSceneToAssets(new MyScene()); }
 	private:
 		static SceneRef AddSceneToAssets(Scene* sceneRef);
 	public:

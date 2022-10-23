@@ -49,7 +49,13 @@ namespace Egl {
 	}
 
 	Entity Entity::GetChild(uint8_t childIndex) const {
-		entt::entity wantedEntity = GetComponent<Relation>().firstChild;
+		Relation& rel = GetComponent<Relation>();
+		if (childIndex >= rel.childCount) {
+			LOG_ENG_ERROR("Child index was greater than child count. Entity doesn't have that many childs.");
+			return Entity();
+		}
+
+		entt::entity wantedEntity = rel.firstChild;
 		while (childIndex > 0) {
 			EAGLE_ENG_ASSERT(wantedEntity != entt::null, "Entity doesn't have that many childs");
 			wantedEntity = mScene->mRegistry.get<Relation>(wantedEntity).nextSibling;

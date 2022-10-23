@@ -653,6 +653,7 @@ namespace Egl {
 	#pragma endregion
 
 	AudioSource::AudioSource(AudioClipRef clip) {
+		EAGLE_ENG_ASSERT(clip.Valid(), "Clip reference passed to AudioSource wasn't a valid reference.");
 		sample = new AudioSample(clip);
 	}
 	AudioSource::AudioSource(AudioSource& other) : sample(other.sample) {

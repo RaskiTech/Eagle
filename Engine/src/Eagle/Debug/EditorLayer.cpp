@@ -10,6 +10,7 @@
 #include "Eagle/Core/Events/MouseEvent.h"
 #include "Eagle/Rendering/Renderer.h"
 #include "Eagle/Core/Time.h"
+#include "Eagle/Core/Core.h"
 
 #include "Eagle/Core/Input.h"
 #include "Eagle/Core/Keycodes.h"
@@ -68,7 +69,6 @@ namespace Egl {
 	}
 
 	void EditorLayer::OnImGuiRender() {
-
 		EAGLE_PROFILE_FUNCTION();
 		auto& style = ImGui::GetStyle();
 		float originalWindowMinSize = style.WindowMinSize.x;
@@ -101,6 +101,9 @@ namespace Egl {
 		}
 		ImGui::Text("  FPS: %d", fps);
 		ImGui::Text("  Ms per frame: %.1f", ms);
+
+		if (EAGLE_PROFILE)
+			ImGui::TextWrapped("     Note: Profiling is enabled which noticeably hinders performance.");
 
 		ImGui::Spacing();
 		ImGui::PushFont(boldFont);
@@ -140,27 +143,13 @@ namespace Egl {
 		mHierarchyPanel.OnImGuiRender();
 
 		//// Restart scene button ////
-		ImGui::Begin("Restart Scene");
-		if (ImGui::Button("Reload scene", ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 40))) {
+		ImGui::Begin("Restart Application");
+		if (ImGui::Button("Reload application", ImVec2(ImGui::GetWindowWidth(), ImGui::GetWindowHeight() - 40))) {
 			Application::Get().GetGameLayer()->ResetApplication();
 			mHierarchyPanel.ResetSelection();
-			Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene())->SetViewportAspectRatio(Application::Get().GetSceneWindowSize().x / Application::Get().GetSceneWindowSize().y);
+			Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene())->ChangeCameraAspectRatios(Application::Get().GetSceneWindowSize().x / Application::Get().GetSceneWindowSize().y);
 		}
 
 		ImGui::End();
-
-		CallApplicationOnEditorFunctions();
 	}
-
-	void EditorLayer::CallApplicationOnEditorFunctions() {
-		{
-			EAGLE_PROFILE_SCOPE("Application - Scripts: OnEditor");
-			Scene* scene = Assets::GetScene(Application::Get().GetGameLayer()->GetActiveScene());
-			scene->mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
-				if (scriptComponent.OnEditorFunc)
-					scriptComponent.OnEditorFunc(scriptComponent.baseInstance);
-			});
-		}
-	}
-
 }

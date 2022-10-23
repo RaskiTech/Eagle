@@ -1,5 +1,5 @@
 #include <EaglePCH.h>
-#include <EagleBuildSettings.h>
+#include <Eagle/Core/Core.h>
 #include "Application.h"
 #include "Eagle/Rendering/Renderer.h"
 #include "Eagle/Rendering/RenderCommand.h"
@@ -45,18 +45,18 @@ namespace Egl {
 		mGameLayer = new GameLayer();
 		mGameLayer->OnAttach();
 
-#if EAGLE_EDITOR
+#if EAGLE_ENABLE_IMGUI
 		mImGuiLayer = new ImGuiLayer();
 		mImGuiLayer->OnAttach();
-
+#endif
+#if EAGLE_EDITOR
 		mEditorLayer = new EditorLayer();
 		mEditorLayer->OnAttach();
 #endif
 	}
 
 	Application::~Application() {
-		AudioPlayer::Close();
-		Renderer::Shutdown();
+		EAGLE_PROFILE_FUNCTION();
 
 		if (mEditorLayer)
 			delete mEditorLayer;
@@ -64,6 +64,10 @@ namespace Egl {
 			delete mImGuiLayer;
 		if (mGameLayer)
 			delete mGameLayer;
+
+		AudioPlayer::Close();
+		Renderer::Shutdown();
+
 	}
 
 	void Application::OnEvent(Event& e) {
@@ -92,23 +96,23 @@ namespace Egl {
 					EAGLE_PROFILE_SCOPE("Updating layers");
 
 	#if EAGLE_EDITOR
-
 					mEditorLayer->OnUpdate();
 					mGameLayer->OnUpdate(false);
+	#else
+					mGameLayer->OnUpdate(true);
+	#endif
 
+	#if EAGLE_ENABLE_IMGUI
 					{
-						EAGLE_PROFILE_SCOPE("ImGui update");
 						mImGuiLayer->Begin();
 
 						mGameLayer->OnImGuiRender();
+		#if EAGLE_EDITOR
 						mEditorLayer->OnImGuiRender();
-
+		#endif
 						mImGuiLayer->End();
 					}
-	#else // EAGLE_EDITOR
-					mGameLayer->OnUpdate(true);
-	#endif // EAGLE_EDITOR
-					
+	#endif
 				}
 			}
 
@@ -133,7 +137,7 @@ namespace Egl {
 
 #if !EAGLE_EDITOR
 		mSceneWindowSize = { (float)e.GetWidth(), (float)e.GetHeight() };
-		mGameLayer->GetActiveScene()->SetViewportAspectRatio(mSceneWindowSize.x / mSceneWindowSize.y);
+		Assets::GetScene(mGameLayer->GetActiveScene())->ChangeCameraAspectRatios(mSceneWindowSize.x / mSceneWindowSize.y);
 #endif
 
 		return false;

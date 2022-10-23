@@ -35,7 +35,16 @@ namespace Egl {
 			
 			auto& component = e.GetComponent<ComponentType>();
 
-			if (ImGui::TreeNodeEx(name.c_str(), flags, name.c_str())) {
+			ImGui::PushStyleColor(ImGuiCol_Header,        EDITOR_COLOR_VIOLET1);
+			ImGui::PushStyleColor(ImGuiCol_HeaderHovered, EDITOR_COLOR_VIOLET1);
+			ImGui::PushStyleColor(ImGuiCol_HeaderActive,  EDITOR_COLOR_VIOLET1);
+
+			bool render = ImGui::TreeNodeEx(name.c_str(), flags, name.c_str());
+
+			ImGui::PopStyleColor(3);
+
+			if (render)
+			{
 				ImGui::TreePop();
 				function(component);
 			}
@@ -93,7 +102,7 @@ namespace Egl {
 	}
 
 	template<uint8_t optionAmount>
-	static uint8_t SelectWidget(const char* name, std::array<const char*, optionAmount> options, uint8_t selectedIndex, int numInSameLine, const std::string& id) {
+	static uint8_t SelectWidget(const char* name, std::array<const char*, optionAmount> options, uint8_t selectedIndex, int numInSameLine, const std::string& id, int rightSideOffset = 0) {
 		ImGui::Columns(2);
 
 		ImGui::SetColumnWidth(0, 100);
@@ -101,6 +110,7 @@ namespace Egl {
 		ImGui::NextColumn();
 
 		constexpr float height = 17.5f;
+		float oneButtonWidth = (ImGui::GetColumnWidth() - rightSideOffset) / numInSameLine;
 
 		std::string uniqueID = id + '0';
 		for (int i = 0; i < optionAmount; i++) {
@@ -110,7 +120,7 @@ namespace Egl {
 			if (i % numInSameLine != 0) ImGui::SameLine();
 			else ImGui::Spacing();
 
-			if (ImGui::Selectable(options[i], i == selectedIndex, 0, ImVec2((ImGui::CalcItemWidth() * 1.5f - 30) / numInSameLine, height)))
+			if (ImGui::Selectable(options[i], i == selectedIndex, 0, ImVec2(oneButtonWidth, height)))
 				selectedIndex = i;
 
 			ImGui::PopID();
@@ -150,12 +160,6 @@ namespace Egl {
 			}
 			draw_list->ChannelsMerge();
 
-
-
-			//if (ImGui::Selectable(options[i], i == selectedIndex, 0, ImVec2(oneButtonWidth, height)))
-			//	selectedIndex = i;
-
-			//ImGui::PopID();
 		}
 		return selectedIndex;
 	}
@@ -790,13 +794,13 @@ namespace Egl {
 			if (ImGui::InputTextMultiline("Text", buffer, sizeof(buffer), ImVec2(0, 80))) {
 				comp.SetText(std::string(buffer));
 			}
-			comp.data.alignHorizontal = (TextAlignHorizontal)SelectWidget("Horizontal", std::array<const char*, 3>{"Left", "Middle", "Right"}, (uint8_t)comp.data.alignHorizontal, 4, "#textComponent");
-			comp.data.alignVertical = (TextAlignVertical)SelectWidget("Vertical", std::array<const char*, 3>{"Top", "Middle", "Bottom"}, (uint8_t)comp.data.alignVertical, 4, "#textComponent2");
+			comp.data.alignHorizontal = (TextAlignHorizontal)SelectWidget("Horizontal", std::array<const char*, 3>{"Left", "Middle", "Right"}, (uint8_t)comp.data.alignHorizontal, 4, "#textComponent", -30);
+			comp.data.alignVertical = (TextAlignVertical)SelectWidget("Vertical", std::array<const char*, 3>{"Top", "Middle", "Bottom"}, (uint8_t)comp.data.alignVertical, 4, "#textComponent2", -30);
 
 			ImGui::DragFloat("Font size", &comp.data.fontSize, 0.02f, 0, 100);
 
 			ImGui::ColorEdit4("Color", glm::value_ptr(comp.data.color));
-			ImGui::DragInt("Chars visible", (int*)&comp.data.charsVisible, 1, -1);
+			ImGui::DragInt("Chars visible", (int*)&comp.data.charsVisible, 0.2f, -1, std::numeric_limits<int>::max());
 		});
 
 		DrawComponent<SpriteRendererComponent>("Sprite Renderer", drawedEntity, [](SpriteRendererComponent& component) {

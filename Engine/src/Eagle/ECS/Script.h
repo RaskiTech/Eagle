@@ -18,7 +18,7 @@ namespace Egl {
 
 		void                    SetParent(const Entity& parent) const { mEntity.SetParent(parent); }
 		void                    AddChild(const Entity& child) const { mEntity.AddChild(child); }
-		Entity                  GetChild(uint8_t childIndex) const { mEntity.GetChild(childIndex); }
+		Entity                  GetChild(uint8_t childIndex) const { return mEntity.GetChild(childIndex); }
 		uint32_t                GetChildCount() const { return mEntity.GetChildCount(); }
 
 		// Get this script's entity

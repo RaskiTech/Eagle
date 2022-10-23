@@ -27,7 +27,7 @@ namespace Egl {
 
 	void OpenGLContext::SwapBuffers()
 	{
-		EAGLE_PROFILE_FUNCTION();
+		EAGLE_PROFILE_SCOPE("OpenGLContext::SwapBuffers() - Also waiting for VSync");
 		glfwSwapBuffers(mWindowHandle);
 	}
 }

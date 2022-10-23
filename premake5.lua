@@ -117,11 +117,15 @@ project "Application"
 	objdir ("bin-int/" .. outputDir .. "/%{prj.name}")
 
 	files {
+		"%{prj.name}/EagleBuildSettings.h",
+
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp"
 	}
 
 	includedirs {
+		"Application/src",
+
 		"%{Includes.glm}",
 		"%{Includes.entt}",
 		"%{Includes.ImGui}",

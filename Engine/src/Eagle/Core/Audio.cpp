@@ -1,6 +1,18 @@
 #include <EaglePCH.h>
 #include <AudioFile.h>
+
+#ifndef _CRT_SECURE_NO_WARNINGS
+	#define _CRT_SECURE_NO_WARNINGS
+	#define EAGLE_PORT_AUDIO_REMOVE_CRT
+#endif
+
 #include <portaudio.h>
+
+#ifdef EAGLE_PORT_AUDIO_REMOVE_CRT
+	#undef EAGLE_PORT_AUDIO_REMOVE_CRT
+#endif
+
+
 #include "Audio.h"
 
 
@@ -13,7 +25,7 @@ namespace Egl {
         data.shouldLogErrorsToConsole(false);
         bool loaded = data.load(audioFilePath);
         if (!loaded)
-            LOG_ENG_ERROR("Couldn't load the file at", audioFilePath, "Make sure it is wav or aiff format and the file exists.");
+            LOG_ENG_ERROR("Couldn't load the file at", audioFilePath, "- Make sure it is wav or aiff format and the file exists.");
     }
     AudioSample::AudioSample(AudioClipRef id) : id(id), clip(Assets::GetClip(id)) { }
 
@@ -119,11 +131,10 @@ namespace Egl {
     }
 
     void AudioPlayer::Init() {
-        EAGLE_PROFILE_FUNCTION();
+        EAGLE_PROFILE_SCOPE("AudioPlayer::Init() - Initializing PortAudio");
         PaError err;
 
         {
-            EAGLE_PROFILE_SCOPE("Initialize PortAudio");
             err = Pa_Initialize();
             if (err != paNoError) {
                 ErrorCall(err);
@@ -157,7 +168,7 @@ namespace Egl {
     }
 
     void AudioPlayer::Close() {
-        EAGLE_PROFILE_FUNCTION();
+        EAGLE_PROFILE_SCOPE("AudioPlayer::Close() - PortAudio shutdown");
         PaError err = Pa_StopStream(stream);
         if (err != paNoError) {
             ErrorCall(err);

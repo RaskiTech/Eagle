@@ -1,5 +1,5 @@
 #pragma once
-#include "EagleBuildSettings.h"
+#include <Eagle/../../../Application/EagleBuildSettings.h>
 #include <memory>
 
 #ifdef _WIN32
@@ -14,25 +14,27 @@
 #endif
 
 
-#ifndef EAGLE_PLATFORM_WINDOWS
+#if !EAGLE_PLATFORM_WINDOWS
 	#error Eagle currently only supports windows
 #endif
 
 
 
+///////////////////////////////////////////////
+// What is defined in certain configurations //
+///////////////////////////////////////////////
 
-// What is defined in certain configurations
-
-#if defined EAGLE_DEBUG
-	#define EAGLE_ENABLE_ASSERTS
-	#define EAGLE_ENABLE_WARNINGS
+#ifdef EAGLE_DEBUG
+	#define EAGLE_ENABLE_ASSERTS 1
+	#define EAGLE_ENABLE_WARNINGS 1
 #endif
 
 
+//////////////////////////////////////
+// Handle configuration definitions //
+//////////////////////////////////////
 
-// Handle configuration definitions
-
-#ifdef EAGLE_ENABLE_ASSERTS
+#if EAGLE_ENABLE_ASSERTS
 	#define EAGLE_ASSERT(x, ...) { if (!(x)) { LOG_ERROR("Assertion Failed:", __VA_ARGS__); __debugbreak(); } }
 	#define EAGLE_ENG_ASSERT(x, ...) { if (!(x)) { LOG_ENG_ERROR("Assertion Failed:", __VA_ARGS__); __debugbreak(); } }
 
@@ -46,7 +48,8 @@
 	//#define EAGLE_ENG_ASSERT(x)
 #endif
 
-#ifdef EAGLE_ENABLE_WARNINGS
+
+#if EAGLE_ENABLE_WARNINGS
 	#define EAGLE_WARNING(x, ...) { if (!(x)) { LOG_WARN("Warning:", __VA_ARGS__); } }
 	#define EAGLE_ENG_WARNING(x, ...) { if (!(x)) { LOG_ENG_WARN("Warning:", __VA_ARGS__); } }
 #else
@@ -54,12 +57,23 @@
 	#define EAGLE_ENG_WARNING(x, ...)
 #endif
 
-#ifdef EAGLE_EDITOR
+#if EAGLE_EDITOR
 	// Statements that only execute when the editor is present
-	#define EAGLE_EDITOR_ONLY(x) x
+	#define EAGLE_EDITOR_ONLY(x) {x;}
 #else
 	#define EAGLE_EDITOR_ONLY(x)
 #endif
+
+
+#if EAGLE_ENABLE_IMGUI_ON_STANDALONE
+	#define EAGLE_ENABLE_IMGUI 1
+#else
+	#if EAGLE_EDITOR
+		#define EAGLE_ENABLE_IMGUI 1
+	#endif
+#endif
+
+
 
 
 #define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)

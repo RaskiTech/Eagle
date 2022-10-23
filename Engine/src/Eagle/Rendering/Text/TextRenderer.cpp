@@ -104,8 +104,10 @@ namespace Egl {
 				continue;
 			}
 
-			if (--remainingChars < 0)
+			if (remainingChars == 0)
 				break;
+
+			remainingChars--;
 			
 			EAGLE_ENG_ASSERT(0 <= c && c <= 128, "Character is out of range.");
 
