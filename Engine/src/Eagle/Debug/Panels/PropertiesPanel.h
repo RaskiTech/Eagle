@@ -9,6 +9,7 @@ namespace Egl {
 		void SetDrawedEntity(Entity e);
 	private:
 		void DrawProperties();
+		std::string GetEntityParamsStringFromEntity(Entity entity);
 
 		// UITransformComponent
 		float _value1Speed = 1, _value2Speed = 1, _value3Speed = 1, _value4Speed = 1;

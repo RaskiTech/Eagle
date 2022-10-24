@@ -250,7 +250,7 @@ namespace Egl {
 
 
 
-		DrawComponent<Transform>("Transform", drawedEntity, [](Transform& component) {
+		DrawComponent<Transform>("Transform", drawedEntity, [&](Transform& component) {
 			auto pos = component.GetLocalPosition();
 			if (DrawVec2("Position", glm::value_ptr(pos), "#pos"))
 				component.SetLocalPosition(pos);
@@ -262,6 +262,14 @@ namespace Egl {
 			auto scale = component.GetLocalScale();
 			if (DrawVec2("Scale", glm::value_ptr(scale), "#scl"))
 				component.SetLocalScale(scale);
+
+			ImGui::Spacing();
+			if (ImGui::Button("Copy to clipboard", ImVec2(ImGui::GetWindowContentRegionWidth(), 0)))
+			{
+				std::string text = GetEntityParamsStringFromEntity(drawedEntity);
+				Application::Get().GetWindow().SetClipboard(text);
+			}
+			ImGui::Spacing();
 		});
 
 		DrawComponent<UITransform>("UI Transform", drawedEntity, [&](UITransform& component) {
@@ -317,24 +325,24 @@ namespace Egl {
 				ImGui::Text("Horizontal Position");
 				ImGui::PopFont();
 
-				ImGui::Columns(2, "##constantRelativeColumn");
-				float nextSelectableOneButtonWidth = ImGui::GetWindowContentRegionWidth() / 5;
-				ImGui::SetColumnWidth(0, nextSelectableOneButtonWidth * 2);
-				CenteredTextInColumn("Constant");
-				ImGui::NextColumn();
+				//ImGui::Columns(2, "##constantRelativeColumn");
+				//float nextSelectableOneButtonWidth = ImGui::GetWindowContentRegionWidth() / 5;
+				//ImGui::SetColumnWidth(0, nextSelectableOneButtonWidth * 2);
+				//CenteredTextInColumn("Constant");
+				//ImGui::NextColumn();
 
-				ImDrawList* drawList = ImGui::GetWindowDrawList();
-				ImVec2 vec = ImGui::GetCursorScreenPos();
-				ImVec4 col = EDITOR_COLOR_DARKGRAY3;
-				ImU32 lineColor = IM_COL32(col.x * 255, col.y * 255, col.z * 255, col.w * 255);
-				drawList->AddLine(ImVec2(vec.x - 5, vec.y + ImGui::GetTextLineHeightWithSpacing()), ImVec2(vec.x - 5, vec.y), lineColor, 5);
+				//ImDrawList* drawList = ImGui::GetWindowDrawList();
+				//ImVec2 vec = ImGui::GetCursorScreenPos();
+				//ImVec4 col = EDITOR_COLOR_DARKGRAY3;
+				//ImU32 lineColor = IM_COL32(col.x * 255, col.y * 255, col.z * 255, col.w * 255);
+				//drawList->AddLine(ImVec2(vec.x - 5, vec.y + ImGui::GetTextLineHeightWithSpacing()), ImVec2(vec.x - 5, vec.y), lineColor, 5);
 
-				CenteredTextInColumn("Relative");
-				ImGui::Columns(1);
+				//CenteredTextInColumn("Relative");
+				//ImGui::Columns(1);
 
 				UITransform::XDriver old_xDriver = component.GetXDriver();
 				UITransform::XDriver new_xDriver = (UITransform::XDriver)
-					SelectWidget(std::array<const char*, 5>{"Left", "Right", "Center", "Left", "Right"}, (uint8_t)old_xDriver, 5, "#position100", 30);
+					SelectWidget(std::array<const char*, 3>{"Left", "Center", "Right"}, (uint8_t)old_xDriver, 3, "#position100");
 				
 				if (old_xDriver != new_xDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
@@ -357,7 +365,7 @@ namespace Egl {
 				ImGui::PopFont();
 				UITransform::WidthDriver widthDriver = component.GetWidthDriver();
 				UITransform::WidthDriver newSelectedWidth = (UITransform::WidthDriver)
-					(SelectWidget(std::array<const char*, 3>{"Constant", "Relative", "Aspect"}, (uint8_t)widthDriver >> 4, 3, "#scale100") << 4);
+					(SelectWidget(std::array<const char*, 3>{"Constant", "Relative", "AspectRatio"}, (uint8_t)widthDriver >> 4, 3, "#scale100") << 4);
 				if (widthDriver != newSelectedWidth) {
 					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetWidthDriver(newSelectedWidth);
@@ -425,23 +433,8 @@ namespace Egl {
 				ImGui::Text("Vertical Position");
 				ImGui::PopFont();
 
-				ImGui::Columns(2, "#constantRelativeColumn21");
-				float nextSelectableOneButtonWidth = ImGui::GetWindowContentRegionWidth() / 5;
-				ImGui::SetColumnWidth(0, nextSelectableOneButtonWidth * 2);
-				CenteredTextInColumn("Constant");
-				ImGui::NextColumn();
-
-				ImDrawList* drawList = ImGui::GetWindowDrawList();
-				ImVec2 vec = ImGui::GetCursorScreenPos();
-				ImVec4 col = EDITOR_COLOR_DARKGRAY3;
-				ImU32 lineColor = IM_COL32(col.x * 255, col.y * 255, col.z * 255, col.w * 255);
-				drawList->AddLine(ImVec2(vec.x - 5, vec.y + ImGui::GetTextLineHeightWithSpacing()), ImVec2(vec.x - 5, vec.y), lineColor, 5);
-
-				CenteredTextInColumn("Relative");
-				ImGui::Columns(1);
-
 				UITransform::YDriver old_yDriver = component.GetYDriver();
-				UITransform::YDriver new_yDriver = (UITransform::YDriver)SelectWidget(std::array<const char*, 5>{"Top", "Bottom", "Center", "Top", "Bottom"}, (uint8_t)old_yDriver, 5, "#position200", 30);
+				UITransform::YDriver new_yDriver = (UITransform::YDriver)SelectWidget(std::array<const char*, 3>{"Top", "Center", "Bottom"}, (uint8_t)old_yDriver, 3, "#position200");
 				if (old_yDriver != new_yDriver) {
 					const glm::vec2& worldPos = component.GetWorldPosition();
 					component.SetYDriver(new_yDriver);
@@ -461,7 +454,7 @@ namespace Egl {
 				ImGui::Text("Height");
 				ImGui::PopFont();
 				UITransform::HeightDriver heightDriver = component.GetHeightDriver();
-				UITransform::HeightDriver newHeightDriver = (UITransform::HeightDriver)(SelectWidget(std::array<const char*, 3>{"Constant", "Relative", "Aspect"}, (uint8_t)heightDriver >> 4, 3, "#scale200") << 4);
+				UITransform::HeightDriver newHeightDriver = (UITransform::HeightDriver)(SelectWidget(std::array<const char*, 3>{"Constant", "Relative", "AspectRatio"}, (uint8_t)heightDriver >> 4, 3, "#scale200") << 4);
 				if (heightDriver != newHeightDriver) {
 					const glm::vec2& worldScale = component.GetWorldScale();
 					component.SetHeightDriver(newHeightDriver);
@@ -518,222 +511,6 @@ namespace Egl {
 				ImGui::PopItemWidth();
 			}
 
-			/*
-			ImGui::Columns(1);
-
-			ImGui::PushFont(boldFont);
-			ImGui::Text("Horizontal");
-			ImGui::PopFont();
-			bool isTransformActive = !component.GetUseSidesHorizontal();
-			bool transformActive = SelectWidget("Transform", "Sides", isTransformActive, true, "#transformActive");
-			if (transformActive != isTransformActive) {
-				const glm::vec2& worldPos = component.GetWorldPosition();
-				const glm::vec2& worldScale = component.GetWorldScale();
-
-				component.SetUseSidesHorizontal(!transformActive);
-				float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
-
-				// Set slider speeds and values, so UI isn't awful to design with
-				value1Speed = camSize * (component.GetPrimaryXFromWorldPos(1) - component.GetPrimaryXFromWorldPos(0)) / SLIDER_FRICTION;
-				value2Speed = camSize * (component.GetSecondaryXFromWorldScale(1) - component.GetSecondaryXFromWorldScale(0)) / SLIDER_FRICTION;
-
-				float newPrim = component.GetPrimaryXFromWorldPos(worldPos.x);
-				component.SetXPosValue(newPrim);
-				float newSec = component.GetSecondaryXFromWorldScale(worldScale.x);
-				component.SetWidthValue(newSec);
-			}
-			
-			ImGui::Columns(2, "id_Hor");
-			ImGui::SetColumnWidth(0, 15);
-			ImGui::NextColumn();
-
-
-			if (transformActive) {
-				ImGui::Text("Position");
-				UITransform::XDriver xDriver = component.GetXDriver();
-				UITransform::XDriver newXDriver = (UITransform::XDriver)
-					SelectWidget(std::array<const char*, 5>{"ConstLeft", "ConstRight", "RelativeCenter", "RelativeLeft", "RelativeRight"}, (uint8_t)xDriver, 5, "#position100");
-				if (xDriver != newXDriver) {
-					const glm::vec2& worldPos = component.GetWorldPosition();
-					component.SetXDriver(newXDriver);
-					float newValue = component.GetPrimaryXFromWorldPos(worldPos.x);
-					component.SetXPosValue(newValue);
-					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
-					value1Speed = camSize*(component.GetPrimaryXFromWorldPos(worldPos.x + 1) - newValue) / SLIDER_FRICTION;
-				}
-
-				float value = component.GetXPosValue();
-				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value1", &value, value1Speed))
-					component.SetXPosValue(value);
-				ImGui::PopItemWidth();
-				ImGui::Spacing();
-
-				ImGui::Text("Scale");
-				UITransform::WidthDriver widthDriver = component.GetWidthDriver();
-				UITransform::WidthDriver newSelectedWidth = (UITransform::WidthDriver)
-					(SelectWidget(std::array<const char*, 3>{"ConstWidth", "RelativeWidth", "AspectWidth"}, (uint8_t)widthDriver >> 4, 3, "#scale100") << 4);
-				if (widthDriver != newSelectedWidth) {
-					const glm::vec2& worldScale = component.GetWorldScale();
-					component.SetWidthDriver(newSelectedWidth);
-					float newValue = component.GetSecondaryXFromWorldScale(worldScale.x);
-					component.SetWidthValue(newValue);
-					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
-					value2Speed = camSize * (component.GetSecondaryXFromWorldScale(worldScale.x + 1) - newValue) / SLIDER_FRICTION;
-				}
-
-				value = component.GetWidthValue();
-				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value2", &value, value2Speed))
-					component.SetWidthValue(value);
-				ImGui::PopItemWidth();
-			}
-			else {
-				ImGui::Text("Left side");
-				UITransform::LeftDriver leftDriver = component.GetLeftSideDriver();
-				UITransform::LeftDriver newLeftDriver = (UITransform::LeftDriver)
-					SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)leftDriver, 2, "#leftSide100");
-				if (leftDriver != newLeftDriver) {
-					const glm::vec2& worldPos = component.GetWorldPosition();
-					component.SetLeftSideDriver(newLeftDriver);
-					float newValue = component.GetPrimaryXFromWorldPos(worldPos.x);
-					component.SetLeftSideValue(newValue);
-					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
-					value1Speed = camSize * (component.GetPrimaryXFromWorldPos(worldPos.x + 1) - newValue) / SLIDER_FRICTION;
-				}
-
-				float value = component.GetLeftSideValue();
-				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value3", &value, value1Speed))
-					component.SetLeftSideValue(value);
-				ImGui::PopItemWidth();
-				ImGui::Spacing();
-
-				ImGui::Text("Right side");
-				UITransform::RightDriver rightDriver = component.GetRightSideDriver();
-				UITransform::RightDriver newRightDriver = (UITransform::RightDriver)
-					(SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)rightDriver >> 4, 2, "#rightside") << 4);
-				if (rightDriver != newRightDriver) {
-					const glm::vec2& worldScale = component.GetWorldScale();
-					component.SetRightSideDriver(newRightDriver);
-					float newValue = component.GetSecondaryXFromWorldScale(worldScale.x);
-					component.SetRightSideValue(newValue);
-					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
-					value2Speed = camSize * (component.GetSecondaryXFromWorldScale(worldScale.x + 1) - newValue) / SLIDER_FRICTION;
-				}
-				value = component.GetRightSideValue();
-				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value4", &value, value2Speed))
-					component.SetRightSideValue(value);
-				ImGui::PopItemWidth();
-			}
-
-			ImGui::Columns(1);
-			ImGui::Spacing();
-
-			ImGui::PushFont(boldFont);
-			ImGui::Text("Vertical");
-			ImGui::PopFont();
-			isTransformActive = !component.GetUseSidesVertical();
-			transformActive = SelectWidget("Transform", "Sides", isTransformActive, true, "#transformActive2");
-			if (isTransformActive != transformActive) {
-				const glm::vec2& worldPos = component.GetWorldPosition();
-				const glm::vec2& worldScale = component.GetWorldScale();
-
-				component.SetUseSidesVertical(!transformActive);
-				float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
-
-				// Set slider speeds and values, so UI isn't awful to design
-				value3Speed = camSize * (component.GetPrimaryYFromWorldPos(1) - component.GetPrimaryYFromWorldPos(0)) / SLIDER_FRICTION;
-				value4Speed = camSize * (component.GetSecondaryYFromWorldScale(1) - component.GetSecondaryYFromWorldScale(0)) / SLIDER_FRICTION;
-
-				float newPrim = component.GetPrimaryYFromWorldPos(worldPos.y);
-				component.SetYPosValue(newPrim);
-				float newSec = component.GetSecondaryYFromWorldScale(worldScale.y);
-				component.SetHeightValue(newSec);
-			}
-
-			ImGui::Columns(2, "id_Ver");
-			ImGui::SetColumnWidth(0, 15);
-			ImGui::NextColumn();
-
-			if (transformActive) {
-				ImGui::Text("Position");
-				UITransform::YDriver yDriver = component.GetYDriver();
-				UITransform::YDriver newYDriver = (UITransform::YDriver)SelectWidget(std::array<const char*, 5>{"ConstTop", "ConstBottom", "Center", "RelativeTop", "RelativeBottom"}, (uint8_t)yDriver, 5, "#position200");
-				if (yDriver != newYDriver) {
-					const glm::vec2& worldPos = component.GetWorldPosition();
-					component.SetYDriver(newYDriver);
-					float newValue = component.GetPrimaryYFromWorldPos(worldPos.y);
-					component.SetYPosValue(newValue);
-					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
-					value3Speed = camSize * (component.GetPrimaryYFromWorldPos(worldPos.x + 1) - newValue) / SLIDER_FRICTION;
-				}
-				float value = component.GetYPosValue();
-				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value5", &value, value3Speed))
-					component.SetYPosValue(value);
-				ImGui::PopItemWidth();
-				ImGui::Spacing();
-
-				ImGui::Text("Scale");
-				UITransform::HeightDriver heightDriver = component.GetHeightDriver();
-				UITransform::HeightDriver newHeightDriver = (UITransform::HeightDriver)(SelectWidget(std::array<const char*, 3>{"ConstHeight", "RelativeHeight", "AspectHeight"}, (uint8_t)heightDriver >> 4, 3, "#scale200") << 4);
-				if (heightDriver != newHeightDriver) {
-					const glm::vec2& worldScale = component.GetWorldScale();
-					component.SetHeightDriver(newHeightDriver);
-					float newValue = component.GetSecondaryYFromWorldScale(worldScale.y);
-					component.SetHeightValue(newValue);
-					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
-					value4Speed = camSize * (component.GetSecondaryYFromWorldScale(worldScale.x + 1) - newValue) / SLIDER_FRICTION;
-				}
-				value = component.GetHeightValue();
-				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value6", &value, value4Speed))
-					component.SetHeightValue(value);
-				ImGui::PopItemWidth();
-			}
-			else {
-				ImGui::Text("Top");
-				UITransform::TopDriver topDriver = component.GetTopDriver();
-				UITransform::TopDriver newTopDriver = (UITransform::TopDriver)SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)topDriver, 2, "#top200");
-				if (topDriver != newTopDriver) {
-					const glm::vec2& worldPos = component.GetWorldPosition();
-					component.SetTopDriver(newTopDriver);
-					float newValue = component.GetPrimaryYFromWorldPos(worldPos.y);
-					component.SetTopValue(newValue);
-					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
-					value3Speed = camSize * (component.GetPrimaryYFromWorldPos(worldPos.x + 1) - newValue) / SLIDER_FRICTION;
-				}
-
-				float value = component.GetTopValue();
-				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value7", &value, value3Speed))
-					component.SetTopValue(value);
-				ImGui::PopItemWidth();
-				ImGui::Spacing();
-
-				ImGui::Text("Bottom");
-				UITransform::BottomDriver bottomDriver = component.GetBottomDriver();
-				UITransform::BottomDriver newBottomDriver = (UITransform::BottomDriver)(SelectWidget(std::array<const char*, 2>{"ConstOffset", "RelativeOffset"}, (uint8_t)bottomDriver >> 4, 2, "#bottom200") << 4);
-				if (bottomDriver != newBottomDriver) {
-					const glm::vec2& worldScale = component.GetWorldScale();
-					component.SetBottomDriver(newBottomDriver);
-					float newValue = component.GetSecondaryYFromWorldScale(worldScale.y);
-					component.SetBottomValue(newValue);
-					float camSize = scene->GetPrimaryCamera().GetComponent<CameraComponent>().camera.GetSize();
-					value4Speed = camSize * (component.GetSecondaryYFromWorldScale(worldScale.x + 1) - newValue) / SLIDER_FRICTION;
-				}
-				value = component.GetBottomValue();
-				ImGui::PushItemWidth(ImGui::CalcItemWidth() * 1.5f);
-				if (ImGui::DragFloat("##Value8", &value, value4Speed))
-					component.SetBottomValue(value);
-				ImGui::PopItemWidth();
-			}
-			ImGui::Columns(1);
-			ImGui::Spacing();
-			*/
-
 			ImGui::Spacing();
 
 			// World position node
@@ -758,6 +535,14 @@ namespace Egl {
 
 				ImGui::TreePop();
 			}
+
+			ImGui::Spacing();
+			if (ImGui::Button("Copy to clipboard", ImVec2(ImGui::GetWindowContentRegionWidth(), 0)))
+			{
+				std::string text = GetEntityParamsStringFromEntity(drawedEntity);
+				Application::Get().GetWindow().SetClipboard(text);
+			}
+			ImGui::Spacing();
 		});
 
 		DrawComponent<NativeScriptComponent>("Script component", drawedEntity, [&](NativeScriptComponent& comp) {
@@ -864,5 +649,154 @@ namespace Egl {
 				source.SetVolume(vol);
 
 		});
+	}
+
+	std::string PropertiesPanel::GetEntityParamsStringFromEntity(Entity entity)
+	{
+		std::stringstream str;
+
+		if (entity.HasComponent<Transform>())
+		{
+			Transform& comp = entity.GetComponent<Transform>();
+			str << "EntityParams(";
+			
+			str << "{ " << comp.GetPosition().x << ", " << comp.GetPosition().y << " }, ";
+			str << comp.GetRotation() << ", ";
+			str << "{ " << comp.GetScale().x << ", " << comp.GetScale().y << " }";
+		}
+		else
+		{
+			UITransform& comp = entity.GetComponent<UITransform>();
+			str << "UIEntityParams(";
+
+			if (comp.GetUseSidesHorizontal())
+			{
+				str << "UITransform::LeftDriver::";
+				switch (comp.GetLeftSideDriver())
+				{
+					case UITransform::LeftDriver::Constant:
+						str << "Constant";
+						break;
+					case UITransform::LeftDriver::Relative:
+						str << "Relative";
+						break;
+				}
+				str << ", " << comp.GetLeftSideValue();
+				
+				str << ", UITransform::RightDriver::";
+				switch (comp.GetRightSideDriver())
+				{
+					case UITransform::RightDriver::Constant:
+						str << "Constant";
+						break;
+					case UITransform::RightDriver::Relative:
+						str << "Relative";
+						break;
+				}
+				str << ", " << comp.GetRightSideValue();
+			}
+			else
+			{
+				str << "UITransform::XDriver::";
+				switch (comp.GetXDriver())
+				{
+					case UITransform::XDriver::Left:
+						str << "Left";
+						break;
+					case UITransform::XDriver::Center:
+						str << "Center";
+						break;
+					case UITransform::XDriver::Right:
+						str << "Right";
+						break;
+				}
+				str << ", " << comp.GetXPosValue();
+
+				str << ", UITransform::WidthDriver::";
+				switch (comp.GetWidthDriver())
+				{
+					case UITransform::WidthDriver::Constant:
+						str << "Constant";
+						break;
+					case UITransform::WidthDriver::Relative:
+						str << "Relative";
+						break;
+					case UITransform::WidthDriver::AspectRatio:
+						str << "AspectRatio";
+						break;
+				}
+				str << ", " << comp.GetWidthValue();
+			}
+
+			str << ", ";
+
+			if (comp.GetUseSidesVertical())
+			{
+				str << "UITransform::TopDriver::";
+				switch (comp.GetTopDriver())
+				{
+					case UITransform::TopDriver::Constant:
+						str << "Constant";
+						break;
+					case UITransform::TopDriver::Relative:
+						str << "Relative";
+						break;
+				}
+				str << ", " << comp.GetTopValue();
+				
+				str << ", UITransform::BottomDriver::";
+				switch (comp.GetBottomDriver())
+				{
+					case UITransform::BottomDriver::Constant:
+						str << "Constant";
+						break;
+					case UITransform::BottomDriver::Relative:
+						str << "Relative";
+						break;
+				}
+				str << ", " << comp.GetBottomValue();
+			}
+			else
+			{
+				str << "UITransform::YDriver::";
+				switch (comp.GetYDriver())
+				{
+					case UITransform::YDriver::Top:
+						str << "Top";
+						break;
+					case UITransform::YDriver::Center:
+						str << "Center";
+						break;
+					case UITransform::YDriver::Bottom:
+						str << "Bottom";
+						break;
+				}
+				str << ", " << comp.GetYPosValue();
+
+				str << ", UITransform::HeightDriver::";
+				switch (comp.GetHeightDriver())
+				{
+					case UITransform::HeightDriver::Constant:
+						str << "Constant";
+						break;
+					case UITransform::HeightDriver::Relative:
+						str << "Relative";
+						break;
+					case UITransform::HeightDriver::AspectRatio:
+						str << "AspectRatio";
+						break;
+				}
+				str << ", " << comp.GetHeightValue();
+			}
+
+		}
+
+		str << ", ";
+		
+		MetadataComponent& comp = entity.GetComponent<MetadataComponent>();
+		str << (int)comp.sortingLayer << ", " << (int)comp.subSorting;
+		str << ")";
+
+		return str.str();
 	}
 }

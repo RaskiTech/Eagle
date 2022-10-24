@@ -67,7 +67,6 @@ namespace Egl {
 
 		AudioPlayer::Close();
 		Renderer::Shutdown();
-
 	}
 
 	void Application::OnEvent(Event& e) {

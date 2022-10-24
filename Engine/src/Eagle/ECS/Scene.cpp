@@ -218,7 +218,7 @@ namespace Egl {
 					auto [textRenderer, align, metadata] = group.get<TextComponent, UITransform, MetadataComponent>(entity);
 					uint16_t sorting = metadata.CalculateSorting();
 					const glm::vec2& scale = align.GetWorldScale();
-					textRenderer.renderer.RenderText(sorting, textRenderer.data, align.GetWorldPosition(), scale, camera.camera.GetSize());
+					Assets::GetFont(textRenderer.font)->RenderText(sorting, textRenderer.data, align.GetWorldPosition(), scale, camera.camera.GetSize());
 				}
 			}
 

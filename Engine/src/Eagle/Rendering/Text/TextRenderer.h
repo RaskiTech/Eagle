@@ -31,10 +31,10 @@ namespace Egl {
 		int charsVisible = -1;
 	};
 
-	class TextRenderer {
+	class FontRenderer {
 	public:
-		TextRenderer(const std::string& fontPath) { LoadFont(fontPath); linePixelWidths.reserve(20); };
-		~TextRenderer() = default;
+		FontRenderer(const std::string& fontPath) { LoadFont(fontPath); linePixelWidths.reserve(20); };
+		~FontRenderer() = default;
 		void LoadFont(const std::string& fontPath);
 
 		void ChangeRenderedText(const std::string& unprocessedText);

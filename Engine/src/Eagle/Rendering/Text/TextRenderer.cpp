@@ -12,7 +12,7 @@
 // Make text rendering use an atlas
 
 namespace Egl {
-	void TextRenderer::LoadFont(const std::string& fontPath) {
+	void FontRenderer::LoadFont(const std::string& fontPath) {
 		FT_Library ft;
 		if (FT_Init_FreeType(&ft)) {
 			EAGLE_ENG_ASSERT(false, "Couldn't initialize FreeType");
@@ -38,7 +38,7 @@ namespace Egl {
 
 			uint32_t width = font->glyph->bitmap.width;
 			uint32_t height = font->glyph->bitmap.rows;
-			TextureRef tex = Assets::CreateTexture(width, height, true, false, "_Font");
+			TextureRef tex = Assets::LoadTexture(width, height, true, false, "_Font");
 			fontHeight = (float)(font->height >> 6);
 			fontDescend = (float)(-font->descender >> 6);
 
@@ -70,7 +70,7 @@ namespace Egl {
 		FT_Done_FreeType(ft);
 	}
 
-	void TextRenderer::ChangeRenderedText(const std::string& unprocessedText) {
+	void FontRenderer::ChangeRenderedText(const std::string& unprocessedText) {
 		originalText = unprocessedText;
 		lastMaxWidth = 0; // Dirty flag in disguise
 	}
@@ -78,7 +78,7 @@ namespace Egl {
 	// TODO:
 	// leftSideWallPos
 	// align V & H
-	void TextRenderer::RenderText(const uint16_t& sorting, const TextProperties& data, const glm::vec2& containerMiddle, const glm::vec2& containerSize, float cameraSize) {
+	void FontRenderer::RenderText(const uint16_t& sorting, const TextProperties& data, const glm::vec2& containerMiddle, const glm::vec2& containerSize, float cameraSize) {
 		EAGLE_PROFILE_FUNCTION();
 		if (originalText.size() == 0)
 			return;
@@ -130,7 +130,7 @@ if (spaceLeft < 0) {    \
 	spaceLeft = maxPixelWidth - wordSize; \
 }
 
-	std::string TextRenderer::AddLineBreaks(const std::string& original, float maxPixelWidth) {
+	std::string FontRenderer::AddLineBreaks(const std::string& original, float maxPixelWidth) {
 		EAGLE_PROFILE_FUNCTION();
 		std::istringstream words(original);
 		std::ostringstream wrapped;
@@ -178,7 +178,7 @@ if (spaceLeft < 0) {    \
 		return wrapped.str();
 	}
 
-	inline void TextRenderer::PlaceToNewLine(glm::vec2& pos, const glm::vec2& containerMiddle, 
+	inline void FontRenderer::PlaceToNewLine(glm::vec2& pos, const glm::vec2& containerMiddle, 
 		const glm::vec2& containerSize, TextAlignHorizontal hor, TextAlignVertical ver, int lineIndex, float relativeFontSize) 
 	{
 		switch (hor) {

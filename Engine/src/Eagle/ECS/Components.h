@@ -42,28 +42,34 @@ namespace Egl {
 		};
 
 		enum class XDriver {
-			ConstLeft   = 0 << 0, // The objects left side will always be the same distance from the windows left side
-			ConstRight  = 1 << 0, // The objects right side will always be the same distance from the windows right side
-			AlignCenter = 2 << 0, // Have the objects center be at a certain percent horizontally
-			AlignLeft   = 3 << 0, // Have the objects top be at a certain percent horizontally
-			AlignRight  = 4 << 0  // Have the objects right side be at a certain percent horizontally
+			Left   = 0 << 0, // The objects left side will always be the same distance from the windows left side
+			Center = 1 << 0, // The object center will always be at a certain percent horizontally
+			Right  = 2 << 0, // The objects right side will always be the same distance from the windows right side
+
+			// These options are not available. They are confusing and unnecessary.
+			//RelativeCenter = 3 << 0, // Have the objects center be at a certain percent horizontally
+			//RelativeLeft   = 4 << 0, // Have the objects top be at a certain percent horizontally
+			//RelativeRight  = 5 << 0  // Have the objects right side be at a certain percent horizontally
 		};
 		enum class WidthDriver {
-			ConstWidth    = 0 << 4, // The object will always have the same width
-			RelativeWidth = 1 << 4, // The objects width will be a certain percent of the parents
-			AspectWidth   = 2 << 4  // The width will depend on the height. 1 is height
+			Constant    = 0 << 4, // The object will always have the same width
+			Relative    = 1 << 4, // The objects width will be a certain percent of the parents
+			AspectRatio = 2 << 4  // The width will depend on the height. 1 is height
 		};
 		enum class YDriver {
-			ConstTop    = 0 << 0, // The objects top will always be the same distance from the windows top
-			ConstBottom = 1 << 0, // The objects bottom will always be the same distance from the windows bottom
-			AlignCenter = 2 << 0, // Have the objects center be at a certain percent vertically
-			AlignTop    = 3 << 0, // Have the objects top be at a certain percent vertically
-			AlignBottom = 4 << 0  // Have the objects bottom be at a certain percent vertically
+			Top    = 0 << 0, // The objects top will always be the same distance from the windows top
+			Center = 1 << 0, // The objects center will always be at a certain percent vertically
+			Bottom = 2 << 0, // The objects bottom will always be the same distance from the windows bottom
+
+			// These options are not available. They are confusing and unnecessary.
+			//AlignCenter = 2 << 0, // Have the objects center be at a certain percent vertically
+			//AlignTop    = 3 << 0, // Have the objects top be at a certain percent vertically
+			//AlignBottom = 4 << 0  // Have the objects bottom be at a certain percent vertically
 		};
 		enum class HeightDriver {
-			ConstHeight    = 0 << 4, // The object will always have the same height
-			RelativeHeight = 1 << 4, // The objects height will be a certain percent of the parents
-			AspectHeight   = 2 << 4  // The height will depend on the width. 1 is width
+			Constant    = 0 << 4, // The object will always have the same height
+			Relative    = 1 << 4, // The objects height will be a certain percent of the parents
+			AspectRatio = 2 << 4  // The height will depend on the width. 1 is width
 		};
 #pragma endregion
 
@@ -148,8 +154,8 @@ namespace Egl {
 		// If the component uses pos and width, xBitField tells x position and width and same goes for y. Then primary value is pos and secondary scale value
 		// If the component uses sides, xBitfield tells left and right side and same goes for y. The primary values are left and top and secondary right and bottom.
 		bool useSidesHorizontal = false, useSidesVertical = false;
-		Driver xBitfield = (Driver)XDriver::AlignCenter | (Driver)WidthDriver::RelativeWidth;
-		Driver yBitfield = (Driver)YDriver::AlignCenter | (Driver)HeightDriver::RelativeHeight;
+		Driver xBitfield = (Driver)XDriver::Center | (Driver)WidthDriver::Relative;
+		Driver yBitfield = (Driver)YDriver::Center | (Driver)HeightDriver::Relative;
 		float xPrimaryValue = 0, yPrimaryValue = 0, xSecondaryValue = 0.8f, ySecondaryValue = 0.5f;
 
 		mutable bool dimensionsRight = false;
@@ -229,10 +235,10 @@ namespace Egl {
 	struct UIEntityParams {
 
 		bool useSidesHorizontal = false, useSidesVertical = false;
-		UITransform::Driver xDrivers = (UITransform::Driver)UITransform::XDriver::AlignCenter 
-			| (UITransform::Driver)UITransform::WidthDriver::RelativeWidth;
-		UITransform::Driver yDrivers = (UITransform::Driver)UITransform::YDriver::AlignCenter 
-			| (UITransform::Driver)UITransform::HeightDriver::RelativeHeight;
+		UITransform::Driver xDrivers = (UITransform::Driver)UITransform::XDriver::Center 
+			| (UITransform::Driver)UITransform::WidthDriver::Relative;
+		UITransform::Driver yDrivers = (UITransform::Driver)UITransform::YDriver::Center 
+			| (UITransform::Driver)UITransform::HeightDriver::Relative;
 		float xPrimaryValue = 0, yPrimaryValue = 0, xSecondaryValue = 0.8f, ySecondaryValue = 0.5f;
 
 		int8_t sortingLayer = 0;
@@ -271,20 +277,20 @@ namespace Egl {
 
 		SpriteRendererComponent() = default;
 		SpriteRendererComponent(TextureRef texture, const glm::vec4& color = {1, 1, 1, 1}, float tilingFactor = 1) 
-			: color(color), tilingFactor(tilingFactor), texture(Assets::CreateSubTexture(texture, glm::vec2{ 0, 0 }, glm::vec2{ 1, 1 })) {}
+			: color(color), tilingFactor(tilingFactor), texture(Assets::LoadSubTexture(texture, glm::vec2{ 0, 0 }, glm::vec2{ 1, 1 })) {}
 		SpriteRendererComponent(SubTextureRef texture, const glm::vec4& color = {1, 1, 1, 1}, float tilingFactor = 1) : color(color), texture(texture), tilingFactor(tilingFactor) {}
 		SpriteRendererComponent(const glm::vec4& color) : color(color) {  }
 	};
 
 	struct TextComponent {
-		TextRenderer renderer;
+		FontRef font = -1;
 		TextProperties data;
 
-		void SetText(const std::string& str) { renderer.ChangeRenderedText(str); }
-		const std::string& GetText() const { return renderer.GetOriginalText(); }
+		void SetText(const std::string& str) { Assets::GetFont(font)->ChangeRenderedText(str); }
+		const std::string& GetText() const { return Assets::GetFont(font)->GetOriginalText(); }
 
-		TextComponent(const std::string& fontPath) : renderer(fontPath) {}
-		TextComponent() : renderer("Assets/Fonts/Roboto/Roboto-Regular.ttf") {}
+		TextComponent(FontRef font) : font(font) {}
+		TextComponent() = default;
 	};
 
 	struct ParticleSystemComponent {
@@ -358,7 +364,7 @@ namespace Egl {
 	struct AudioSource {
 		AudioSource(AudioClipRef clip);
 		AudioSource(AudioSource& source);
-		AudioSource(AudioSource&& source);
+		AudioSource(AudioSource&& source) noexcept;
 		AudioSource& operator=(const AudioSource& other);
 		~AudioSource();
 

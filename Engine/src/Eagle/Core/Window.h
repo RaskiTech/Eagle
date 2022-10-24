@@ -26,6 +26,9 @@ namespace Egl {
 		virtual uint32_t GetPositionY() const = 0;
 		virtual uint32_t GetPositionX() const = 0;
 
+		virtual void SetClipboard(const std::string& text) const = 0;
+		virtual std::string GetClipboard() const = 0;
+
 		virtual float GetTime() const = 0;
 
 		virtual void* NativeWindow() const = 0;

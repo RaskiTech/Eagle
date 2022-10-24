@@ -94,7 +94,7 @@ namespace Egl {
 		sData.quadVA->SetIndexBuffer(quadIB);
 		delete[] quadIndices;
 
-		sData.whiteTexture = Assets::CreateTexture(1, 1, false, false, "Base");
+		sData.whiteTexture = Assets::LoadTexture(1, 1, false, false, "Base");
 		uint32_t data = 0xffffffff;
 		Assets::GetTexture(sData.whiteTexture)->SendData(&data, sizeof(uint32_t));
 
@@ -102,7 +102,7 @@ namespace Egl {
 		for (int32_t i = 0; i < sData.maxTextureSlots; i++)
 			samplers[i] = i;
 
-		sData.quadShader = Assets::CreateShader("Assets/shader.ghsl");
+		sData.quadShader = Assets::LoadShader("Assets/shader.ghsl");
 		Shader* shader = Assets::GetShader(sData.quadShader);
 		shader->Bind();
 		shader->SetIntArray("uTextures", samplers, sData.maxTextureSlots);

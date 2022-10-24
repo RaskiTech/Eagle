@@ -307,11 +307,11 @@ namespace Egl {
 		}
 		else {
 			switch (GetXDriver()) {
-				case XDriver::AlignCenter:     return (WorldToScreenPosX(xWorldPos, cam, camTrans) - WorldToScreenPosX(parentPos.x, cam, camTrans)) / WorldToScreenScaleX(parentScale.x, cam, camTrans);
-				case XDriver::AlignLeft:       return (WorldToScreenPosX(xWorldPos - (worldScale.x / 2), cam, camTrans) - WorldToScreenPosX(parentPos.x, cam, camTrans)) / WorldToScreenScaleX(parentScale.x, cam, camTrans);
-				case XDriver::AlignRight:      return (WorldToScreenPosX(xWorldPos + (worldScale.x / 2), cam, camTrans) - WorldToScreenPosX(parentPos.x, cam, camTrans)) / WorldToScreenScaleX(parentScale.x, cam, camTrans);
-				case XDriver::ConstLeft:  return WorldToScreenPosX(xWorldPos - (worldScale.x / 2), cam, camTrans) - WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans);
-				case XDriver::ConstRight: return -(WorldToScreenPosX(xWorldPos + (worldScale.x / 2), cam, camTrans) - Application::Get().GetSceneWindowSize().x + WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans));
+				//case XDriver::AlignLeft:       return (WorldToScreenPosX(xWorldPos - (worldScale.x / 2), cam, camTrans) - WorldToScreenPosX(parentPos.x, cam, camTrans)) / WorldToScreenScaleX(parentScale.x, cam, camTrans);
+				//case XDriver::AlignRight:      return (WorldToScreenPosX(xWorldPos + (worldScale.x / 2), cam, camTrans) - WorldToScreenPosX(parentPos.x, cam, camTrans)) / WorldToScreenScaleX(parentScale.x, cam, camTrans);
+				case XDriver::Left:  return WorldToScreenPosX(xWorldPos - (worldScale.x / 2), cam, camTrans) - WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans);
+				case XDriver::Center:     return (WorldToScreenPosX(xWorldPos, cam, camTrans) - WorldToScreenPosX(parentPos.x, cam, camTrans)) / WorldToScreenScaleX(parentScale.x, cam, camTrans);
+				case XDriver::Right: return -(WorldToScreenPosX(xWorldPos + (worldScale.x / 2), cam, camTrans) - Application::Get().GetSceneWindowSize().x + WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans));
 			}
 		}
 		return 0;
@@ -334,9 +334,9 @@ namespace Egl {
 		}
 		else {
 			switch (GetWidthDriver()) {
-				case WidthDriver::AspectWidth:   return xWorldScale / worldScale.y;
-				case WidthDriver::ConstWidth: return WorldToScreenScaleX(xWorldScale, cam, camTrans);
-				case WidthDriver::RelativeWidth: return xWorldScale / parentScale.x;
+				case WidthDriver::AspectRatio:   return xWorldScale / worldScale.y;
+				case WidthDriver::Constant: return WorldToScreenScaleX(xWorldScale, cam, camTrans);
+				case WidthDriver::Relative: return xWorldScale / parentScale.x;
 			}
 		}
 		return 0;
@@ -359,11 +359,11 @@ namespace Egl {
 		}
 		else {
 			switch (GetYDriver()) {
-				case YDriver::AlignCenter:      return (WorldToScreenPosY(yWorldPos, cam, camTrans) - WorldToScreenPosY(parentPos.y, cam, camTrans)) / WorldToScreenScaleY(parentScale.y, cam, camTrans);
-				case YDriver::AlignTop:         return (WorldToScreenPosY(yWorldPos + (worldScale.y / 2), cam, camTrans) - WorldToScreenPosY(parentPos.y, cam, camTrans)) / WorldToScreenScaleY(parentScale.y, cam, camTrans);
-				case YDriver::AlignBottom:      return (WorldToScreenPosY(yWorldPos - (worldScale.y / 2), cam, camTrans) - WorldToScreenPosY(parentPos.y, cam, camTrans)) / WorldToScreenScaleY(parentScale.y, cam, camTrans);
-				case YDriver::ConstTop:    return -(WorldToScreenPosY(yWorldPos + (worldScale.y / 2), cam, camTrans) - Application::Get().GetSceneWindowSize().y + WorldToScreenPosY(parentPos.y - parentScale.y / 2, cam, camTrans));
-				case YDriver::ConstBottom: return WorldToScreenPosY(yWorldPos - (worldScale.y / 2), cam, camTrans) - WorldToScreenPosY(parentPos.y - parentScale.y / 2, cam, camTrans);
+				//case YDriver::AlignTop:         return (WorldToScreenPosY(yWorldPos + (worldScale.y / 2), cam, camTrans) - WorldToScreenPosY(parentPos.y, cam, camTrans)) / WorldToScreenScaleY(parentScale.y, cam, camTrans);
+				//case YDriver::AlignBottom:      return (WorldToScreenPosY(yWorldPos - (worldScale.y / 2), cam, camTrans) - WorldToScreenPosY(parentPos.y, cam, camTrans)) / WorldToScreenScaleY(parentScale.y, cam, camTrans);
+				case YDriver::Top:    return -(WorldToScreenPosY(yWorldPos + (worldScale.y / 2), cam, camTrans) - Application::Get().GetSceneWindowSize().y + WorldToScreenPosY(parentPos.y - parentScale.y / 2, cam, camTrans));
+				case YDriver::Center:      return (WorldToScreenPosY(yWorldPos, cam, camTrans) - WorldToScreenPosY(parentPos.y, cam, camTrans)) / WorldToScreenScaleY(parentScale.y, cam, camTrans);
+				case YDriver::Bottom: return WorldToScreenPosY(yWorldPos - (worldScale.y / 2), cam, camTrans) - WorldToScreenPosY(parentPos.y - parentScale.y / 2, cam, camTrans);
 			}
 		}
 		return 0;
@@ -386,9 +386,9 @@ namespace Egl {
 		}
 		else {
 			switch (GetHeightDriver()) {
-				case HeightDriver::AspectHeight:   return yWorldScale / worldScale.x;
-				case HeightDriver::ConstHeight: return WorldToScreenScaleY(yWorldScale, cam, camTrans);
-				case HeightDriver::RelativeHeight: return yWorldScale / parentScale.y;
+				case HeightDriver::AspectRatio:   return yWorldScale / worldScale.x;
+				case HeightDriver::Constant: return WorldToScreenScaleY(yWorldScale, cam, camTrans);
+				case HeightDriver::Relative: return yWorldScale / parentScale.y;
 			}
 		}
 		return 0;
@@ -561,31 +561,31 @@ namespace Egl {
 	}
 	inline void UITransform::CalculateScaleXNoAspectCheck(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const {
 		switch (GetWidthDriver()) {
-			case WidthDriver::ConstWidth: {
+			case WidthDriver::Constant: {
 				worldScale.x = ScreenToWorldScaleX(xSecondaryValue, cam, camTrans);
 				break;
 			}
-			case WidthDriver::RelativeWidth: {
+			case WidthDriver::Relative: {
 				worldScale.x = xSecondaryValue * parentScale.x;
 				break;
 			}
 		}
 	}
 	inline void UITransform::CalculateScaleXAspectCheck(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const {
-		if (GetWidthDriver() == WidthDriver::AspectWidth)
+		if (GetWidthDriver() == WidthDriver::AspectRatio)
 			worldScale.x = worldScale.y * xSecondaryValue;
 	}
 	inline void UITransform::CalculateScaleY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const {
 		switch (GetHeightDriver()) {
-			case HeightDriver::AspectHeight: {
+			case HeightDriver::AspectRatio: {
 				worldScale.y = worldScale.x * ySecondaryValue;
 				break;
 			}
-			case HeightDriver::ConstHeight: {
+			case HeightDriver::Constant: {
 				worldScale.y = ScreenToWorldScaleY(ySecondaryValue, cam, camTrans);
 				break;
 			}
-			case HeightDriver::RelativeHeight: {
+			case HeightDriver::Relative: {
 				worldScale.y = ySecondaryValue * parentScale.y, cam, camTrans;
 				break;
 			}
@@ -593,10 +593,7 @@ namespace Egl {
 	}
 	inline void UITransform::CalculatePosX(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const {
 		switch (GetXDriver()) {
-			case XDriver::AlignCenter: {
-				worldPosition.x = xPrimaryValue * parentScale.x + parentPos.x;
-				break;
-			}
+			/*
 			case XDriver::AlignLeft: {
 				float leftSideOffset = worldScale.x / 2;
 				worldPosition.x = xPrimaryValue * parentScale.x + parentPos.x + leftSideOffset;
@@ -607,12 +604,17 @@ namespace Egl {
 				worldPosition.x = xPrimaryValue * parentScale.x + parentPos.x + rightSideOffset;
 				break;
 			}
-			case XDriver::ConstLeft: {
+			*/
+			case XDriver::Left: {
 				float halfOfWidth = worldScale.x / 2;
 				worldPosition.x = ScreenToWorldPosX(xPrimaryValue + WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans), cam, camTrans) + halfOfWidth;
 				break;
 			}
-			case XDriver::ConstRight: {
+			case XDriver::Center: {
+				worldPosition.x = xPrimaryValue * parentScale.x + parentPos.x;
+				break;
+			}
+			case XDriver::Right: {
 				float halfOfWidth = worldScale.x / 2;
 				worldPosition.x = ScreenToWorldPosX(Application::Get().GetSceneWindowSize().x - (xPrimaryValue + WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans)), cam, camTrans) - halfOfWidth;
 				break;
@@ -621,11 +623,7 @@ namespace Egl {
 	}
 	inline void UITransform::CalculatePosY(const glm::vec2& parentPos, const glm::vec2& parentScale, CameraComponent& cam, Transform& camTrans) const {
 		switch (GetYDriver()) {
-			case YDriver::AlignCenter: {
-				//worldPosition.y = ScreenToWorldPosY(WorldToScreenScaleY(parentScale.y, cam, camTrans) * yPrimaryValue + WorldToScreenPosY(parentPos.y, cam, camTrans), cam, camTrans);
-				worldPosition.y = yPrimaryValue * parentScale.y + parentPos.y;
-				break;
-			}
+			/*
 			case YDriver::AlignTop: {
 				float topSideOffset = -worldScale.y / 2;
 				//worldPosition.y = ScreenToWorldPosY(WorldToScreenScaleY(parentScale.y, cam, camTrans) * yPrimaryValue + WorldToScreenPosY(parentPos.y, cam, camTrans), cam, camTrans) + topSideOffset;
@@ -638,12 +636,18 @@ namespace Egl {
 				worldPosition.y = yPrimaryValue * parentScale.y + parentPos.y + bottomSideOffset;
 				break;
 			}
-			case YDriver::ConstTop: {
+			*/
+			case YDriver::Top: {
 				float halfOfHeight = worldScale.y / 2;
 				worldPosition.y = ScreenToWorldPosY(Application::Get().GetSceneWindowSize().y - (yPrimaryValue + WorldToScreenPosY(parentPos.y - parentScale.y / 2, cam, camTrans)), cam, camTrans) - halfOfHeight;
 				break;
 			}
-			case YDriver::ConstBottom: {
+			case YDriver::Center: {
+				//worldPosition.y = ScreenToWorldPosY(WorldToScreenScaleY(parentScale.y, cam, camTrans) * yPrimaryValue + WorldToScreenPosY(parentPos.y, cam, camTrans), cam, camTrans);
+				worldPosition.y = yPrimaryValue * parentScale.y + parentPos.y;
+				break;
+			}
+			case YDriver::Bottom: {
 				float halfOfHeight = worldScale.y / 2;
 				worldPosition.y = ScreenToWorldPosY(yPrimaryValue + WorldToScreenPosY(parentPos.y - parentScale.y / 2, cam, camTrans), cam, camTrans) + halfOfHeight;
 				break;
@@ -660,7 +664,7 @@ namespace Egl {
 		sample->referencesHere++;
 	}
 
-	AudioSource::AudioSource(AudioSource&& source) : sample(source.sample) {
+	AudioSource::AudioSource(AudioSource&& source) noexcept : sample(source.sample) {
 		// No reference management. It only moves
 		source.sample = nullptr;
 	}

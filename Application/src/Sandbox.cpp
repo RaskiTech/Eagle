@@ -39,8 +39,8 @@ public:
 class ExampleScene : public Scene {
 	void example_UI() {
 		Entity canvas = AddCanvas();
-		UIEntityParams topCornerParams(UITransform::XDriver::ConstLeft, 25, UITransform::WidthDriver::RelativeWidth, 0.15f,
-			UITransform::YDriver::ConstTop, 25, UITransform::HeightDriver::RelativeHeight, 0.1f);
+		UIEntityParams topCornerParams(UITransform::XDriver::Left, 25, UITransform::WidthDriver::Relative, 0.15f,
+			UITransform::YDriver::Top, 25, UITransform::HeightDriver::Relative, 0.1f);
 		UIEntityParams middleSquare(UITransform::LeftDriver::Constant, 25, UITransform::RightDriver::Constant, 25,
 			UITransform::TopDriver::Constant, 15, UITransform::BottomDriver::Constant, 15);
 
@@ -51,7 +51,8 @@ class ExampleScene : public Scene {
 		exampleOtherSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.3f, 0.2f, 1 });
 		exampleOtherSquare.GetComponent<MetadataComponent>().subSorting = 1;
 
-		auto& textComp = AddUIEntity("Text", canvas).AddComponent<TextComponent>();
+		FontRef font = Assets::LoadFont("Assets/Fonts/Roboto/Roboto-Regular.ttf");
+		auto& textComp = AddUIEntity("Text", canvas).AddComponent<TextComponent>(font);
 		textComp.SetText("Example scene");
 		textComp.data.fontSize = 10;
 		textComp.data.alignVertical = TextAlignVertical::Middle;
@@ -59,7 +60,6 @@ class ExampleScene : public Scene {
 	}
 
 	void SceneBegin() override {
-
 		Entity camera = AddEntity("Camera");
 		auto& cameraComp = camera.AddComponent<CameraComponent>();
 		cameraComp.camera.SetSize(8.85f);
@@ -69,10 +69,10 @@ class ExampleScene : public Scene {
 		camera.AttachScript<example_CameraController>();
 		
 		auto& player = AddEntity("Player");
-		auto texture = Assets::CreateTexture("Assets/Player.png", false);
-		player.AddComponent<SpriteRendererComponent>(Assets::CreateSubTexture(texture, { 16, 16 }, { 0, 0 }, { 1, 1 }));
+		auto texture = Assets::LoadTexture("Assets/Player.png", false);
+		player.AddComponent<SpriteRendererComponent>(Assets::LoadSubTexture(texture, { 16, 16 }, { 0, 0 }, { 1, 1 }));
 		player.GetTransform().SetPosition(-4.2f, -1.5f);
-		player.AddComponent<AudioSource>(Assets::CreateClip("Assets/Sound.wav"));
+		player.AddComponent<AudioSource>(Assets::LoadClip("Assets/Sound.wav"));
 
 		Entity ground = AddEntity("Ground");
 		ground.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.4f, 0.42f, 0.52f, 1 });
@@ -83,11 +83,10 @@ class ExampleScene : public Scene {
 		pedistal.GetTransform().SetScale(2, 0.25f).SetPosition(1, -1.875f);
 
 		Entity fireHydrant = AddEntity("Fire hydrant", pedistal);
-		fireHydrant.AddComponent<SpriteRendererComponent>(Assets::CreateTexture("Assets/FireHydrant.png", false));
+		fireHydrant.AddComponent<SpriteRendererComponent>(Assets::LoadTexture("Assets/FireHydrant.png", false));
 		fireHydrant.GetTransform().SetScale(1, 1.75f).SetLocalPosition(0, 4);
 		
 		example_UI();
-
 	}
 
 

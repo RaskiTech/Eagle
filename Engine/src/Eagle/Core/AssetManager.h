@@ -12,6 +12,7 @@ namespace Egl {
 	class SubTexture;
 	class Shader;
 	class Scene;
+	class FontRenderer;
 
 	struct AssetReference {
 		uint32_t id = -1;
@@ -57,16 +58,18 @@ namespace Egl {
 	DEFINE_ASSET_REFERENCE(SubTextureRef, SubTexture);
 	DEFINE_ASSET_REFERENCE(ShaderRef, Shader);
 	DEFINE_ASSET_REFERENCE(SceneRef, Scene);
+	DEFINE_ASSET_REFERENCE(FontRef, FontRenderer);
 
 	class Assets {
 	public:
-		static AudioClipRef CreateClip(const std::string& filepath);
-		static TextureRef CreateTexture(const std::string& filepath, bool scaleUpBlur = true, bool tile = false);
-		static TextureRef CreateTexture(uint32_t width, uint32_t height, bool scaleUpBlur = true, bool tile = false, const char* shortIdentifierName = "");
-		static SubTextureRef CreateSubTexture(const TextureRef& texture, const glm::vec2& oneCellSize, const glm::vec2& thisCellIndex, const glm::vec2& thisCellIndexSize);
-		static SubTextureRef CreateSubTexture(const TextureRef& texture, const glm::vec2& minCoord, const glm::vec2& maxCoord);
-		static ShaderRef CreateShader(const std::string& filepath);
-		static ShaderRef CreateShader(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader);
+		static AudioClipRef LoadClip(const std::string& filepath);
+		static TextureRef LoadTexture(const std::string& filepath, bool scaleUpBlur = true, bool tile = false);
+		static TextureRef LoadTexture(uint32_t width, uint32_t height, bool scaleUpBlur = true, bool tile = false, const char* shortIdentifierName = "");
+		static SubTextureRef LoadSubTexture(const TextureRef& texture, const glm::vec2& oneCellSize, const glm::vec2& thisCellIndex, const glm::vec2& thisCellIndexSize);
+		static SubTextureRef LoadSubTexture(const TextureRef& texture, const glm::vec2& minCoord, const glm::vec2& maxCoord);
+		static ShaderRef LoadShader(const std::string& filepath);
+		static ShaderRef LoadShader(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader);
+		static FontRef LoadFont(const std::string& name);
 		template<typename MyScene> static SceneRef CreateScene() { EAGLE_PROFILE_FUNCTION(); return AddSceneToAssets(new MyScene()); }
 	private:
 		static SceneRef AddSceneToAssets(Scene* sceneRef);
@@ -78,6 +81,7 @@ namespace Egl {
 		static AudioClip* GetClip(const AudioClipRef& id) { return (AudioClip*)assets[id].second; }
 		static Shader* GetShader(const ShaderRef& id) { return (Shader*)assets[id].second; }
 		static Scene* GetScene(const SceneRef& id) { return (Scene*)assets[id].second; }
+		static FontRenderer* GetFont(const FontRef& id) { return (FontRenderer*)assets[id].second; }
 
 		static uint32_t GetReferenceCount(const AssetReference& ref) { return assets[ref].first; }
 		static uint32_t GetReferenceCount_DEBUG(uint32_t id) { return assets[id].first; }

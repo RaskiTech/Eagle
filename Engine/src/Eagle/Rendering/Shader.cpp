@@ -31,12 +31,12 @@ namespace Egl {
 		mShaders[name] = shader;
 	}
 	ShaderRef ShaderLibrary::Load(const std::string& filepath) {
-		ShaderRef shader = Assets::CreateShader(filepath);
+		ShaderRef shader = Assets::LoadShader(filepath);
 		Add(shader);
 		return shader;
 	}
 	ShaderRef ShaderLibrary::Load(const std::string& name, const std::string& filepath) {
-		ShaderRef shader = Assets::CreateShader(filepath);
+		ShaderRef shader = Assets::LoadShader(filepath);
 		Add(name, shader);
 		return shader;
 	}
