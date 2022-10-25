@@ -43,11 +43,13 @@ namespace Egl {
 		UITransform& GetUITransform() const { return GetComponent<UITransform>(); }
 
 		template<typename ScriptType, typename... Args> ScriptType& AttachScript(Args&&... args) {
+			static_assert(std::is_base_of<Script, ScriptType>::value, "Entity::AttachScript template argument must be a class deriving from Script.");
 			EAGLE_ENG_ASSERT(!HasComponent<NativeScriptComponent>(), "Entity already has a script.");
 			return *AddComponent<NativeScriptComponent>().Bind<ScriptType>({ mEntity, mScene }, std::forward<Args>(args)...);
 		}
 		bool HasScript() { return HasComponent<NativeScriptComponent>(); }
 		template<typename ScriptType> ScriptType& GetScript() {
+			static_assert(std::is_base_of<Script, ScriptType>::value, "Entity::GetScript template argument must be a class deriving from Script.");
 			EAGLE_ENG_ASSERT(HasComponent<NativeScriptComponent>(), "Entity doesn't have a script.");
 			return *(ScriptType*)GetComponent<NativeScriptComponent>().baseInstance;
 		}

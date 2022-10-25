@@ -105,10 +105,11 @@ namespace Egl {
 					{
 						mImGuiLayer->Begin();
 
-						mGameLayer->OnImGuiRender();
 		#if EAGLE_EDITOR
 						mEditorLayer->OnImGuiRender();
 		#endif
+						mGameLayer->OnImGuiRender();
+
 						mImGuiLayer->End();
 					}
 	#endif
