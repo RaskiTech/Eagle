@@ -36,6 +36,7 @@ namespace Egl {
 
 		static inline Application& Get() { return *mInstance; }
 		static inline bool IsEditorRunning() { return EAGLE_EDITOR; }
+
 	protected:
 		void SetSceneWindowSize(const glm::vec2& size) { mSceneWindowSize = size; }
 		void SetSceneScreenOffset(const glm::vec2& offset) { mScenePanelOffset = offset; }

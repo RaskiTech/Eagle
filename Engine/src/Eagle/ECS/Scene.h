@@ -21,13 +21,13 @@ namespace Egl {
 		//Entity AddEntity(const std::string& name, const EntityParams& params, EntityParam...childs) { auto e = AddEntity(name, params); AddEntityChildsImp(e, childs...); return e; }
 		//template<typename... EntityParam>
 		//Entity AddEntity(const std::string& name, EntityParam...childs)    { auto e = AddEntity(name); AddEntityChildsImp(e, childs...); return e; }
-		Entity AddEntity(const std::string& name, const EntityParams& params, Entity parent);
-		Entity AddEntity(const std::string& name, Entity parent);
-		Entity AddEntity(const std::string& name, const EntityParams& params);
-		Entity AddEntity(const std::string& name);
+		Entity AddEntity(std::string_view name, const EntityParams& params, Entity parent);
+		Entity AddEntity(std::string_view name, Entity parent);
+		Entity AddEntity(std::string_view name, const EntityParams& params);
+		Entity AddEntity(std::string_view name);
 
-		Entity AddUIEntity(const std::string& name, const UIEntityParams& params, Entity canvasOrParent);
-		Entity AddUIEntity(const std::string& name, Entity canvasOrParent);
+		Entity AddUIEntity(std::string_view name, const UIEntityParams& params, Entity canvasOrParent);
+		Entity AddUIEntity(std::string_view name, Entity canvasOrParent);
 
 		// Adds an entity with the CanvasComponent attached
 		Entity AddCanvas();

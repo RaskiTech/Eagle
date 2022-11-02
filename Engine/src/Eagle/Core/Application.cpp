@@ -75,7 +75,10 @@ namespace Egl {
 		dispacher.Dispatch<WindowCloseEvent>(EAGLE_BIND_EVENT_FUNC(OnWindowClose));
 		dispacher.Dispatch<WindowResizeEvent>(EAGLE_BIND_EVENT_FUNC(OnWindowResize));
 
-		mGameLayer->OnEvent(e);
+		if (mImGuiLayer)
+			mImGuiLayer->OnEvent(e);
+		if (!e.handled)
+			mGameLayer->OnEvent(e);
 	}
 
 	void Application::Run() {

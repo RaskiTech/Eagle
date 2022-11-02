@@ -267,7 +267,7 @@ namespace Egl {
 		inline uint16_t CalculateSorting() { return ((uint16_t)sortingLayer << 8) + (uint16_t)subSorting; }
 
 		MetadataComponent() = default;
-		MetadataComponent(const std::string& tag, int8_t sortingLayer, uint8_t subSorting = 0) : tag(tag), sortingLayer(sortingLayer), subSorting(subSorting) {};
+		MetadataComponent(std::string_view tag, int8_t sortingLayer, uint8_t subSorting = 0) : tag(tag), sortingLayer(sortingLayer), subSorting(subSorting) {};
 	};
 
 	struct SpriteRendererComponent {
@@ -312,14 +312,12 @@ namespace Egl {
 
 		template<typename T, typename ... Args>
 		T* Bind(Entity entity, Args&&... args) {
-			baseInstance = new T(args...);
+			baseInstance = new T(std::forward<Args>(args)...);
 			baseInstance->mEntity = entity;
 
 			COMPILE_IF_VALID(T, OnCreate(),
 				OnCreateFunc = [](Script* instance) { ((T*)instance)->OnCreate(); };
 
-				if (entity.GetScene()->GetSceneState() >= Scene::SceneState::SceneBeginCalled_1)
-					OnCreateFunc(baseInstance);
 			);
 			COMPILE_IF_VALID(T, OnDestroy(),
 				OnDestroyFunc = [](Script* instance) { ((T*)instance)->OnDestroy(); };
@@ -337,6 +335,11 @@ namespace Egl {
 			COMPILE_IF_EVENTFUNC(T,
 				OnEventFunc = [](Script* instance, Event& e) { return ((T*)instance)->OnEvent(e); };
 				entity.GetScene()->SubscribeToEvents(this);
+			);
+
+			COMPILE_IF_VALID(T, OnCreate(),
+				if (entity.GetScene()->GetSceneState() >= Scene::SceneState::SceneBeginCalled_1)
+					OnCreateFunc(baseInstance);
 			);
 
 

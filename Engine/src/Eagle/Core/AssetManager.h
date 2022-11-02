@@ -70,7 +70,11 @@ namespace Egl {
 		static ShaderRef LoadShader(const std::string& filepath);
 		static ShaderRef LoadShader(const std::string& name, const std::string& vertexShader, const std::string& fragmentShader);
 		static FontRef LoadFont(const std::string& name);
-		template<typename MyScene> static SceneRef CreateScene() { EAGLE_PROFILE_FUNCTION(); return AddSceneToAssets(new MyScene()); }
+		template<typename MyScene> static SceneRef CreateScene() {
+			EAGLE_PROFILE_FUNCTION();
+			static_assert(std::is_base_of<Scene, MyScene>::value, "CreateScene() template argument must be a class deriving from Scene.");
+			return AddSceneToAssets(new MyScene());
+		}
 	private:
 		static SceneRef AddSceneToAssets(Scene* sceneRef);
 	public:

@@ -17,7 +17,7 @@ namespace Egl {
 		entityDeleteQueue.reserve(50);
 	}
 
-	Entity Scene::AddEntity(const std::string& name, const EntityParams& params, Entity parent) {
+	Entity Scene::AddEntity(std::string_view name, const EntityParams& params, Entity parent) {
 		entt::entity createdEntityID = mRegistry.create();
 		Entity newEntity = { createdEntityID, this };
 		newEntity.AddComponent<Transform>(newEntity, params.position, params.rotation, params.scale);
@@ -33,10 +33,10 @@ namespace Egl {
 		parentRelation.childCount++;
 		return newEntity;
 	}
-	Entity Scene::AddEntity(const std::string& name, Entity parent) { return AddEntity(name, EntityParams(), parent); }
-	Entity Scene::AddEntity(const std::string& name) { return AddEntity(name, EntityParams()); }
+	Entity Scene::AddEntity(std::string_view name, Entity parent) { return AddEntity(name, EntityParams(), parent); }
+	Entity Scene::AddEntity(std::string_view name) { return AddEntity(name, EntityParams()); }
 
-	Entity Scene::AddEntity(const std::string& name, const EntityParams& params) {
+	Entity Scene::AddEntity(std::string_view name, const EntityParams& params) {
 		entt::entity createdEntityID = mRegistry.create();
 		Entity newEntity = { createdEntityID, this };
 		newEntity.AddComponent<Transform>(newEntity, params.position, params.rotation, params.scale);
@@ -59,7 +59,7 @@ namespace Egl {
 		e.AddComponent<CanvasComponent>(); 
 		return e; 
 	}
-	Entity Scene::AddUIEntity(const std::string& name, const UIEntityParams& params, Entity canvasOrParent) {
+	Entity Scene::AddUIEntity(std::string_view name, const UIEntityParams& params, Entity canvasOrParent) {
 		EAGLE_ENG_ASSERT(canvasOrParent.HasComponent<UITransform>() || canvasOrParent.HasComponent<CanvasComponent>(), "Parent isn't a canvas or an UI entity");
 
 		entt::entity createdEntityID = mRegistry.create();
@@ -71,7 +71,7 @@ namespace Egl {
 		newEntity.SetParent(canvasOrParent);
 		return newEntity;
 	}
-	Entity Scene::AddUIEntity(const std::string& name, Entity canvasOrParent) {
+	Entity Scene::AddUIEntity(std::string_view name, Entity canvasOrParent) {
 		return AddUIEntity(name, UIEntityParams(), canvasOrParent);
 	}
 

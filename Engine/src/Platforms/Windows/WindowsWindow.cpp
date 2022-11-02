@@ -68,7 +68,7 @@ namespace Egl {
 			glfwSetWindowIcon(mWindow, 1, &im);
 		}
 		else {
-			LOG_WARN("No file found in", iconPath, ". The window won't have an icon.");
+			LOG_ENG_WARN("No file found in", iconPath, ". The window won't have an icon.");
 		}
 
 		glfwSetWindowUserPointer(mWindow, &mData);

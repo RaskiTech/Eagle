@@ -143,7 +143,7 @@ namespace Egl {
 			}
 			else {
 				auto& tComp = entity.GetComponent<UITransform>();
-				//LOG(glm::abs(mouseX - objX), objSizeX, glm::abs(mouseY-objY), objSizeY);
+				//LOG_ENG(glm::abs(mouseX - objX), objSizeX, glm::abs(mouseY-objY), objSizeY);
 				if (!isMouseEvent || IS_UNDER_CURSOR(mousePos, tComp.GetWorldPosition(), tComp.GetWorldScale()))
 					listenersUnderMouse.push_back(eventScript);
 			}
