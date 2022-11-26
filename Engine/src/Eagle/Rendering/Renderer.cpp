@@ -180,7 +180,7 @@ namespace Egl {
 
 	void Renderer::DrawTextureQuad(uint16_t depth, const glm::vec3& position, const glm::vec2& size, const SubTextureRef subTexture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
-		EAGLE_ENG_ASSERT(subTexture != -1, "Texture cannot be null!");
+		EAGLE_ENG_ASSERT(subTexture, "Texture cannot be null!");
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::scale(glm::mat4(1), { size.x, size.y, 1 });
@@ -189,7 +189,7 @@ namespace Egl {
 	}
 	void Renderer::DrawRotatedTextureQuad(uint16_t depth, const glm::vec3& position, float radiants, const glm::vec2& size, const SubTextureRef subTexture, float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
-		EAGLE_ENG_ASSERT(subTexture != -1, "Texture cannot be null!");
+		EAGLE_ENG_ASSERT(subTexture, "Texture cannot be null!");
 
 		glm::mat4 transform = glm::translate(glm::mat4(1), position)
 			* glm::rotate(glm::mat4(1), radiants, { 0, 0, 1 })
@@ -200,7 +200,7 @@ namespace Egl {
 
 	void Renderer::DrawTextureQuad(uint16_t depth, const glm::mat4& transform, const TextureRef texture, const glm::vec2 texCoords[4], float tilingFactor, const glm::vec4& color) {
 		EAGLE_PROFILE_FUNCTION();
-		EAGLE_ENG_ASSERT(texture != -1, "Texture cannot be null!");
+		EAGLE_ENG_ASSERT(texture, "Texture cannot be null!");
 
 		if (sData.quadIndexCount >= RendererData::maxIndices)
 			StartNewBatch();

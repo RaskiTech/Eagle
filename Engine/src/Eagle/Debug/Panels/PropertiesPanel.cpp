@@ -579,18 +579,22 @@ namespace Egl {
 			if (ImGui::InputTextMultiline("Text", buffer, sizeof(buffer), ImVec2(0, 80))) {
 				comp.SetText(std::string(buffer));
 			}
-			comp.data.alignHorizontal = (TextAlignHorizontal)SelectWidget("Horizontal", std::array<const char*, 3>{"Left", "Middle", "Right"}, (uint8_t)comp.data.alignHorizontal, 4, "#textComponent", -30);
-			comp.data.alignVertical = (TextAlignVertical)SelectWidget("Vertical", std::array<const char*, 3>{"Top", "Middle", "Bottom"}, (uint8_t)comp.data.alignVertical, 4, "#textComponent2", -30);
+			comp.props.alignHorizontal = (TextAlignHorizontal)SelectWidget("Horizontal", std::array<const char*, 3>{"Left", "Middle", "Right"}, (uint8_t)comp.props.alignHorizontal, 4, "#textComponent", -30);
+			comp.props.alignVertical = (TextAlignVertical)SelectWidget("Vertical", std::array<const char*, 3>{"Top", "Middle", "Bottom"}, (uint8_t)comp.props.alignVertical, 4, "#textComponent2", -30);
 
-			ImGui::DragFloat("Font size", &comp.data.fontSize, 0.02f, 0, 100);
+			ImGui::DragFloat("Font size", &comp.props.fontSize, 0.02f, 0, 100);
 
-			ImGui::ColorEdit4("Color", glm::value_ptr(comp.data.color));
-			ImGui::DragInt("Chars visible", (int*)&comp.data.charsVisible, 0.2f, -1, std::numeric_limits<int>::max());
+			ImGui::PushID("##textComponentColor");
+			ImGui::ColorEdit4("Color", glm::value_ptr(comp.props.color));
+			ImGui::PopID();
+			ImGui::DragInt("Chars visible", (int*)&comp.props.charsVisible, 0.2f, -1, std::numeric_limits<int>::max());
 		});
 
 		DrawComponent<SpriteRendererComponent>("Sprite Renderer", drawedEntity, [](SpriteRendererComponent& component) {
+			ImGui::PushID("##spriteRendererColor");
 			ImGui::ColorEdit4("Color", glm::value_ptr(component.color));
-			if (component.texture != -1) ImGui::Text("Has texture: True");
+			ImGui::PopID();
+			if (component.texture) ImGui::Text("Has texture: True");
 			else ImGui::Text("Has texture: False");
 		});
 

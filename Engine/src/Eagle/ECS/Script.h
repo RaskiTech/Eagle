@@ -13,6 +13,7 @@ namespace Egl {
 		Entity                  AddEntity(std::string_view name) { return GetScene()->AddEntity(name); }
 		Entity                  AddUIEntity(std::string_view name, const UIEntityParams& params, const Entity& canvasOrParent) const { return GetScene()->AddUIEntity(name, params, canvasOrParent); }
 		Entity                  AddUIEntity(std::string_view name, const Entity& canvasOrParent) { return GetScene()->AddUIEntity(name, canvasOrParent); }
+		Entity                  AddCanvas() { return GetScene()->AddCanvas(); }
 		void                    DeleteEntity(Entity& entity) { GetScene()->DeleteEntity(entity); }
 		void                    DeleteUIEntity(Entity& entity) { GetScene()->DeleteUIEntity(entity); }
 

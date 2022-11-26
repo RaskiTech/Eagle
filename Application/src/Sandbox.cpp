@@ -47,16 +47,19 @@ class ExampleScene : public Scene {
 		Entity exampleSquare = AddUIEntity("Top corner square", topCornerParams, canvas);
 		exampleSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.3f, 0.3f, 0.3f, 1 });
 
-		Entity exampleOtherSquare = AddUIEntity("middle square", middleSquare, exampleSquare);
-		exampleOtherSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.3f, 0.2f, 1 });
-		exampleOtherSquare.GetComponent<MetadataComponent>().subSorting = 1;
+
+		//Entity exampleOtherSquare = AddUIEntity("middle square", middleSquare, exampleSquare);
+		//exampleOtherSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.3f, 0.2f, 1 });
+		//exampleOtherSquare.GetComponent<MetadataComponent>().subSorting = 1;
 
 		FontRef font = Assets::LoadFont("Assets/Fonts/Roboto/Roboto-Regular.ttf");
+
+		glm::vec4 btnColor = { 0.2f, 0.8f, 0.2f, 1.0f };
+		Entity button = UI::AddButton(exampleSquare, "Button", UI::Button{ btnColor, btnColor * 0.9f, btnColor * 0.6f, []() {LOG("HEHEHE"); } }, UIEntityParams(0, 1))
+			.SetText("This is the text").SetFont(font).SetFontSize(5);
+
 		auto& textComp = AddUIEntity("Text", canvas).AddComponent<TextComponent>(font);
 		textComp.SetText("Example scene");
-		textComp.data.fontSize = 10;
-		textComp.data.alignVertical = TextAlignVertical::Middle;
-		textComp.data.alignHorizontal = TextAlignHorizontal::Middle;
 	}
 
 	void SceneBegin() override {

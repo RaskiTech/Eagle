@@ -23,7 +23,7 @@ namespace Egl {
 	void GameLayer::ActivateScene(SceneRef sceneRef) {
 		EAGLE_PROFILE_FUNCTION();
 
-		if (_activeScene != -1)
+		if (_activeScene)
 			DeactivateCurrentScene();
 
 		_activeScene = sceneRef;
@@ -45,8 +45,8 @@ namespace Egl {
 		scene->_sceneState = Scene::SceneState::CreateCalled_2;
 
 		std::sort(scene->eventScriptsInOrder.begin(), scene->eventScriptsInOrder.end(), [&](auto& e1, auto& e2) {
-			auto& mc1 = scene->mRegistry.get<MetadataComponent>((entt::entity)e1.first->GetEntity().GetID());
-			auto& mc2 = scene->mRegistry.get<MetadataComponent>((entt::entity)e2.first->GetEntity().GetID());
+			auto& mc1 = scene->mRegistry.get<MetadataComponent>((entt::entity)e1.first.GetID());
+			auto& mc2 = scene->mRegistry.get<MetadataComponent>((entt::entity)e2.first.GetID());
 			if (mc1.sortingLayer == mc2.sortingLayer)
 				return mc1.subSorting > mc2.subSorting;
 			else
@@ -68,7 +68,7 @@ namespace Egl {
 			scene->mRegistry.view<NativeScriptComponent>().each([=](auto entity, NativeScriptComponent& scriptComponent) {
 				if (scriptComponent.OnDestroyFunc)
 					scriptComponent.OnDestroyFunc(scriptComponent.baseInstance);
-				scriptComponent.DeleteBase();
+				scriptComponent.DeleteScript();
 			});
 		}
 		scene->_sceneState = Scene::SceneState::DestroyCalled_5;
@@ -103,7 +103,7 @@ namespace Egl {
 		
 		_framebuffer->Bind();
 
-		if (_scheduledSceneSwitch != -1) {
+		if (_scheduledSceneSwitch) {
 
 			ActivateScene(_scheduledSceneSwitch);
 			_scheduledSceneSwitch = -1;
@@ -127,25 +127,26 @@ namespace Egl {
 		Scene* scene = Assets::GetScene(_activeScene);
 		EAGLE_ENG_ASSERT(scene->GetSceneState() == Scene::SceneState::Running_3, "The scene isn't running but we had an event.");
 		glm::vec2 mousePos = scene->GetPrimaryCamera().IsValid() ? scene->ScreenToWorldPos(Input::MousePos()) : glm::vec2{ 0, 0 };
-		std::vector<std::pair<Script*, std::function<bool(Script*, Event&)>>> listenersUnderMouse;
+		std::vector<std::pair<Entity, std::function<bool(Entity, Event&)>>> listenersUnderMouse;
 		bool isMouseEvent = e.GetGategoryFlags() & (int)Egl::EventGategory::Mouse;
 
 		// TODO: Use binary search to find the objects
 
 		// Iterate through and check what listeners are under the mouse
-		for (auto& eventScript : scene->eventScriptsInOrder) {
-			EAGLE_ENG_ASSERT(eventScript.second, "The script doesn't have an event function but it is in the event list");
-			const Entity& entity = eventScript.first->GetEntity();
+		for (auto& eventCallback : scene->eventScriptsInOrder) {
+			auto& [entity, callback] = eventCallback;
+			EAGLE_ENG_ASSERT(callback, "The script doesn't have an event function but it is in the event list");
+
 			if (entity.HasComponent<Transform>()) {
 				auto& tComp = entity.GetComponent<Transform>();
 				if (!isMouseEvent || IS_UNDER_CURSOR(mousePos, tComp.GetPosition(), tComp.GetScale()))
-					listenersUnderMouse.push_back(eventScript);
+					listenersUnderMouse.push_back(eventCallback);
 			}
 			else {
 				auto& tComp = entity.GetComponent<UITransform>();
 				//LOG_ENG(glm::abs(mouseX - objX), objSizeX, glm::abs(mouseY-objY), objSizeY);
 				if (!isMouseEvent || IS_UNDER_CURSOR(mousePos, tComp.GetWorldPosition(), tComp.GetWorldScale()))
-					listenersUnderMouse.push_back(eventScript);
+					listenersUnderMouse.push_back(eventCallback);
 			}
 		}
 		for (auto& eventScript : listenersUnderMouse)

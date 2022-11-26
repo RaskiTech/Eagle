@@ -58,10 +58,10 @@ namespace Egl {
 
 		
 
-		Renderer::DrawColorQuad(0, glm::vec2{ pos.x + radius.x + width / 2, pos.y }, { width, radius.y * 2 + width * 2 }, outlineColor);
-		Renderer::DrawColorQuad(0, glm::vec2{ pos.x - radius.x - width / 2, pos.y }, { width, radius.y * 2 + width * 2 }, outlineColor);
-		Renderer::DrawColorQuad(0, glm::vec2{ pos.x, pos.y + radius.y + width / 2 }, { radius.x * 2 + width * 2, width }, outlineColor);
-		Renderer::DrawColorQuad(0, glm::vec2{ pos.x, pos.y - radius.y - width / 2 }, { radius.x * 2 + width * 2, width }, outlineColor);
+		Renderer::DrawColorQuad(std::numeric_limits<uint16_t>::max(), glm::vec2{ pos.x + radius.x + width / 2, pos.y }, { width, radius.y * 2 + width * 2 }, outlineColor);
+		Renderer::DrawColorQuad(std::numeric_limits<uint16_t>::max(), glm::vec2{ pos.x - radius.x - width / 2, pos.y }, { width, radius.y * 2 + width * 2 }, outlineColor);
+		Renderer::DrawColorQuad(std::numeric_limits<uint16_t>::max(), glm::vec2{ pos.x, pos.y + radius.y + width / 2 }, { radius.x * 2 + width * 2, width }, outlineColor);
+		Renderer::DrawColorQuad(std::numeric_limits<uint16_t>::max(), glm::vec2{ pos.x, pos.y - radius.y - width / 2 }, { radius.x * 2 + width * 2, width }, outlineColor);
 	}
 
 	void EditorLayer::OnSceneDelete() {

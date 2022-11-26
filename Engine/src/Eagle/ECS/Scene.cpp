@@ -80,19 +80,18 @@ namespace Egl {
 		entityDeleteQueue.push_back((entt::entity)entity.GetID()); 
 	}
 	void Scene::_DeleteEntityNow(entt::entity entity) {
-		// Run OnDestroy
-		// Remove calls to OnEvent
-		// Destroy childs
-		// Destroy self
 
+		// Run OnDestroy
+		// Remove component dependencies
 		NativeScriptComponent* script = mRegistry.try_get<NativeScriptComponent>(entity);
 		if (script) {
-			if (script->OnEventFunc)
-				OptOutOfEvents(script);
 			if (script->OnDestroyFunc)
 				script->OnDestroyFunc(script->baseInstance);
+			script->DeleteScript();
 		}
 		
+		// Destroy childs
+
 		Relation& rel = mRegistry.get<Relation>(entity);
 		entt::entity child = rel.firstChild;
 		while (child != entt::null) {
@@ -117,6 +116,7 @@ namespace Egl {
 			}
 		}
 
+		// Destroy self
 		mRegistry.destroy(entity);
 	}
 
@@ -191,7 +191,7 @@ namespace Egl {
 				for (auto entity : group) {
 					auto [spriteRenderer, transform, metadata] = group.get<SpriteRendererComponent, Transform, MetadataComponent>(entity);
 					uint16_t sorting = metadata.CalculateSorting();
-					if (spriteRenderer.texture == -1)
+					if (!spriteRenderer.texture)
 						Renderer::DrawColorQuad(sorting, transform.GetTransform(), spriteRenderer.color);
 					else
 						Renderer::DrawTextureQuad(sorting, transform.GetTransform(), Assets::GetSubTexture(spriteRenderer.texture)->GetTexture(), Assets::GetSubTexture(spriteRenderer.texture)->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
@@ -204,7 +204,7 @@ namespace Egl {
 				for (auto entity : group) {
 					auto [spriteRenderer, align, metadata] = group.get<SpriteRendererComponent, UITransform, MetadataComponent>(entity);
 					uint16_t sorting = metadata.CalculateSorting();
-					if (spriteRenderer.texture == -1)
+					if (!spriteRenderer.texture)
 						Renderer::DrawColorQuad(sorting, align.GetTransform(), spriteRenderer.color);
 					else
 						Renderer::DrawTextureQuad(sorting, align.GetTransform(), Assets::GetSubTexture(spriteRenderer.texture)->GetTexture(), Assets::GetSubTexture(spriteRenderer.texture)->GetTextureCoords(), spriteRenderer.tilingFactor, spriteRenderer.color);
@@ -218,7 +218,7 @@ namespace Egl {
 					auto [textRenderer, align, metadata] = group.get<TextComponent, UITransform, MetadataComponent>(entity);
 					uint16_t sorting = metadata.CalculateSorting();
 					const glm::vec2& scale = align.GetWorldScale();
-					Assets::GetFont(textRenderer.font)->RenderText(sorting, textRenderer.data, align.GetWorldPosition(), scale, camera.camera.GetSize());
+					textRenderer.textRenderer.RenderText(sorting, textRenderer.props, align.GetWorldPosition(), scale, camera.camera.GetSize());
 				}
 			}
 
@@ -243,14 +243,21 @@ namespace Egl {
 	static typename std::vector<T>::iterator Insert_sorted(std::vector<T>& vec, T const& item, Pred pred) {
 		return vec.insert(std::upper_bound(vec.begin(), vec.end(), item, pred), item);
 	}
-	void Scene::SubscribeToEvents(NativeScriptComponent* script) {
+	void Scene::SubscribeToEvents(NativeScriptComponent* script)
+	{
 		EAGLE_ENG_ASSERT(script->OnEventFunc, "Script doesn't have an event function.");
+		SubscribeToEvents(script->baseInstance->GetEntity(), script->OnEventFunc);
+	}
+
+	void Scene::SubscribeToEvents(Entity entity, std::function<bool(Entity, Event&)> callback)
+	{
+		EAGLE_ENG_ASSERT(callback != nullptr, "Event callback was a nullptr.");
 
 		// Add the script here if the scene instalation is complete. Else it will be added after sceneStart
 		if (GetSceneState() >= SceneState::Running_3) {
-			Insert_sorted(eventScriptsInOrder, std::make_pair(script->baseInstance, script->OnEventFunc), [&](auto& e1, auto& e2) {
-				auto mc1 = mRegistry.get<MetadataComponent>((entt::entity)e1.first->GetEntity().GetID());
-				auto mc2 = mRegistry.get<MetadataComponent>((entt::entity)e2.first->GetEntity().GetID());
+			Insert_sorted(eventScriptsInOrder, std::make_pair(entity, callback), [&](auto& e1, auto& e2) {
+				auto mc1 = mRegistry.get<MetadataComponent>((entt::entity)entity.GetID());
+				auto mc2 = mRegistry.get<MetadataComponent>((entt::entity)entity.GetID());
 				if (mc1.sortingLayer == mc2.sortingLayer)
 					return mc1.subSorting > mc2.subSorting;
 				else
@@ -258,15 +265,16 @@ namespace Egl {
 			});
 		}
 		else
-			eventScriptsInOrder.push_back(std::make_pair(script->baseInstance, script->OnEventFunc));
+			eventScriptsInOrder.push_back(std::make_pair(entity, callback));
 	}
+
 	void Scene::OptOutOfEvents(NativeScriptComponent* script) {
 		EAGLE_ENG_ASSERT(script->OnEventFunc, "Script doesn't have an event function.");
 
 		int i = 0;
 		while (true) {
 			EAGLE_ENG_ASSERT(i < eventScriptsInOrder.size(), "Script event function wasn't in the eventScript list");
-			if (eventScriptsInOrder[i].first == script->baseInstance) {
+			if (eventScriptsInOrder[i].first == script->baseInstance->GetEntity()) {
 				eventScriptsInOrder.erase(eventScriptsInOrder.begin() + i);
 				break;
 			}

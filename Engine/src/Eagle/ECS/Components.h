@@ -283,13 +283,13 @@ namespace Egl {
 	};
 
 	struct TextComponent {
-		FontRef font = -1;
-		TextProperties data;
+		TextRenderer textRenderer;
+		TextProperties props;
 
-		void SetText(const std::string& str) { Assets::GetFont(font)->ChangeRenderedText(str); }
-		const std::string& GetText() const { return Assets::GetFont(font)->GetOriginalText(); }
+		void SetText(std::string_view str) { textRenderer.ChangeRenderedText(str); }
+		const std::string& GetText() const { return textRenderer.GetOriginalText(); }
 
-		TextComponent(FontRef font) : font(font) {}
+		TextComponent(FontRef font) : textRenderer(font) {}
 		TextComponent() = default;
 	};
 
@@ -308,7 +308,7 @@ namespace Egl {
 		std::function<void(Script*)> OnUpdateFunc;
 		std::function<void(Script*)> OnImGuiFunc;
 		std::function<void(Script*)> OnPropertyRenderFunc;
-		std::function<bool(Script*, Event&)> OnEventFunc;
+		std::function<bool(Entity, Event&)> OnEventFunc;
 
 		template<typename T, typename ... Args>
 		T* Bind(Entity entity, Args&&... args) {
@@ -333,7 +333,7 @@ namespace Egl {
 			);
 
 			COMPILE_IF_EVENTFUNC(T,
-				OnEventFunc = [](Script* instance, Event& e) { return ((T*)instance)->OnEvent(e); };
+				OnEventFunc = [](Entity instance, Event& e) { return instance.GetScript<T>().OnEvent(e); };
 				entity.GetScene()->SubscribeToEvents(this);
 			);
 
@@ -347,8 +347,10 @@ namespace Egl {
 
 			return (T*)baseInstance;
 		}
-		void DeleteBase() {
+		void DeleteScript() {
 			EAGLE_ENG_ASSERT(baseInstance != nullptr, "baseInstance was null when trying to delete it. Scene unload interrupted previously?");
+			if (OnEventFunc)
+				baseInstance->mEntity.GetScene()->OptOutOfEvents(this);
 			delete baseInstance;
 		}
 	};

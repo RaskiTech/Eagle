@@ -12,12 +12,12 @@ namespace Egl {
 	class SubTexture;
 	class Shader;
 	class Scene;
-	class FontRenderer;
+	struct FontData;
 
 	struct AssetReference {
 		uint32_t id = -1;
 		
-		bool Valid() { return id != -1; }
+		bool Valid() const { return id != -1; }
 
 		AssetReference() : id(-1) {}
 		AssetReference(uint32_t id) : id(id) {}
@@ -43,8 +43,11 @@ namespace Egl {
 				ReferenceType(uint32_t id) : AssetReference(id) {} \
 				ReferenceType(const ReferenceType& other) { CopyConstructor(other); } \
 				ReferenceType& operator=(ReferenceType other) { std::swap(id, other.id); return *this; } \
+				bool operator==(const ReferenceType& r2) { return id == r2.id; } \
+				bool operator!=(const ReferenceType& r2) { return id != r2.id; } \
 				~ReferenceType() { OnDelete<AssetType>(); } \
 				operator uint32_t() const { return id; } \
+				explicit operator bool() const { return Valid(); } \
 		}
 
 
@@ -58,7 +61,7 @@ namespace Egl {
 	DEFINE_ASSET_REFERENCE(SubTextureRef, SubTexture);
 	DEFINE_ASSET_REFERENCE(ShaderRef, Shader);
 	DEFINE_ASSET_REFERENCE(SceneRef, Scene);
-	DEFINE_ASSET_REFERENCE(FontRef, FontRenderer);
+	DEFINE_ASSET_REFERENCE(FontRef, FontData);
 
 	class Assets {
 	public:
@@ -85,7 +88,7 @@ namespace Egl {
 		static AudioClip* GetClip(const AudioClipRef& id) { return (AudioClip*)assets[id].second; }
 		static Shader* GetShader(const ShaderRef& id) { return (Shader*)assets[id].second; }
 		static Scene* GetScene(const SceneRef& id) { return (Scene*)assets[id].second; }
-		static FontRenderer* GetFont(const FontRef& id) { return (FontRenderer*)assets[id].second; }
+		static FontData* GetFont(const FontRef& id) { return (FontData*)assets[id].second; }
 
 		static uint32_t GetReferenceCount(const AssetReference& ref) { return assets[ref].first; }
 		static uint32_t GetReferenceCount_DEBUG(uint32_t id) { return assets[id].first; }

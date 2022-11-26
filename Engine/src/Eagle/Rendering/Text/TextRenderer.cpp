@@ -12,7 +12,7 @@
 // Make text rendering use an atlas
 
 namespace Egl {
-	void FontRenderer::LoadFont(const std::string& fontPath) {
+	void FontData::LoadFont(const std::string& fontPath) {
 		FT_Library ft;
 		if (FT_Init_FreeType(&ft)) {
 			EAGLE_ENG_ASSERT(false, "Couldn't initialize FreeType");
@@ -70,35 +70,41 @@ namespace Egl {
 		FT_Done_FreeType(ft);
 	}
 
-	void FontRenderer::ChangeRenderedText(const std::string& unprocessedText) {
-		originalText = unprocessedText;
-		lastMaxWidth = 0; // Dirty flag in disguise
+	void TextRenderer::ChangeRenderedText(std::string_view unprocessedText) {
+		_originalText = unprocessedText;
+		_lastMaxWidth = 0; // Dirty flag in disguise
 	}
 
 	// TODO:
 	// leftSideWallPos
 	// align V & H
-	void FontRenderer::RenderText(const uint16_t& sorting, const TextProperties& data, const glm::vec2& containerMiddle, const glm::vec2& containerSize, float cameraSize) {
+	void TextRenderer::RenderText(const uint16_t& sorting, const TextProperties& data, const glm::vec2& containerMiddle, const glm::vec2& containerSize, float cameraSize) {
 		EAGLE_PROFILE_FUNCTION();
-		if (originalText.size() == 0)
+		if (_originalText.size() == 0)
 			return;
+
+		EAGLE_ENG_ASSERT(_font.Valid(), "Font wasn't defined, but we were trying to render text. Set the FontRef using SetFont or give it in the constructor.");
 
 		// Relative font size. Multiply by a small number to get the font size to more reasonable values
 		float relativeFontSize = data.fontSize * cameraSize * 0.0001f;
 
 		// Is text textWrap width up to date
 		float thisMaxWidth = containerSize.x / relativeFontSize;
-		if (lastMaxWidth != thisMaxWidth) {
-			lastMaxWidth = thisMaxWidth;
-			processedTest = AddLineBreaks(originalText, thisMaxWidth);
+		if (_lastMaxWidth != thisMaxWidth)
+		{
+			_lastMaxWidth = thisMaxWidth;
+			_processedTest = AddLineBreaks(_originalText, thisMaxWidth);
 		}
 
 		int lineNum = 0;
 		glm::vec2 charPos;
 		PlaceToNewLine(charPos, containerMiddle, containerSize, data.alignHorizontal, data.alignVertical, lineNum, relativeFontSize);
 		uint32_t remainingChars = (uint32_t)data.charsVisible;
-		for (const auto& c : processedTest) {
-			if (c == '\n') {
+		auto& characters = Assets::GetFont(_font)->characters;
+		for (const auto& c : _processedTest)
+		{
+			if (c == '\n')
+			{
 				lineNum++;
 				PlaceToNewLine(charPos, containerMiddle, containerSize, data.alignHorizontal, data.alignVertical, lineNum, relativeFontSize);
 				continue;
@@ -126,20 +132,21 @@ namespace Egl {
 #define CheckLineWrap() \
 if (spaceLeft < 0) {    \
 	wrapped << '\n';    \
-	linePixelWidths.push_back(maxPixelWidth - spaceLeft - wordSize); \
+	_linePixelWidths.push_back(maxPixelWidth - spaceLeft - wordSize); \
 	spaceLeft = maxPixelWidth - wordSize; \
 }
 
-	std::string FontRenderer::AddLineBreaks(const std::string& original, float maxPixelWidth) {
+	std::string TextRenderer::AddLineBreaks(const std::string& original, float maxPixelWidth) {
 		EAGLE_PROFILE_FUNCTION();
 		std::istringstream words(original);
 		std::ostringstream wrapped;
 		std::stringstream wordHolder;
-		linePixelWidths.resize(0);
+		_linePixelWidths.resize(0);
 		
 		char ch;
 		float wordSize = 0;
 		float spaceLeft = maxPixelWidth;
+		auto& characters = Assets::GetFont(_font)->characters;
 		while (words >> std::noskipws >> ch) {
 			switch (ch) {
 				case ' ':
@@ -160,7 +167,7 @@ if (spaceLeft < 0) {    \
 					wrapped << wordHolder.str();
 					wordHolder.str(std::string());
 					wrapped << ch;
-					linePixelWidths.push_back(maxPixelWidth - spaceLeft);
+					_linePixelWidths.push_back(maxPixelWidth - spaceLeft);
 					spaceLeft = maxPixelWidth;
 					break;
 				default:
@@ -173,12 +180,12 @@ if (spaceLeft < 0) {    \
 		spaceLeft -= wordSize;
 		CheckLineWrap()
 		wrapped << wordHolder.str();
-		linePixelWidths.push_back(maxPixelWidth - spaceLeft);
+		_linePixelWidths.push_back(maxPixelWidth - spaceLeft);
 
 		return wrapped.str();
 	}
 
-	inline void FontRenderer::PlaceToNewLine(glm::vec2& pos, const glm::vec2& containerMiddle, 
+	inline void TextRenderer::PlaceToNewLine(glm::vec2& pos, const glm::vec2& containerMiddle, 
 		const glm::vec2& containerSize, TextAlignHorizontal hor, TextAlignVertical ver, int lineIndex, float relativeFontSize) 
 	{
 		switch (hor) {
@@ -186,21 +193,21 @@ if (spaceLeft < 0) {    \
 				pos.x = containerMiddle.x - containerSize.x / 2; 
 				break;
 			case TextAlignHorizontal::Middle:
-				pos.x = containerMiddle.x - linePixelWidths[lineIndex] / 2 * relativeFontSize;
+				pos.x = containerMiddle.x - _linePixelWidths[lineIndex] / 2 * relativeFontSize;
 				break;
 			case TextAlignHorizontal::Right:
-				pos.x = containerMiddle.x + containerSize.x / 2 - linePixelWidths[lineIndex] * relativeFontSize;
+				pos.x = containerMiddle.x + containerSize.x / 2 - _linePixelWidths[lineIndex] * relativeFontSize;
 				break;
 		}
 		switch (ver) {
 			case TextAlignVertical::Top:
-				pos.y = containerMiddle.y + containerSize.y / 2 - (fontHeight + fontDescend) * lineIndex * relativeFontSize - fontHeight * relativeFontSize;
+				pos.y = containerMiddle.y + containerSize.y / 2 - (Assets::GetFont(_font)->fontHeight + Assets::GetFont(_font)->fontDescend) * lineIndex * relativeFontSize - Assets::GetFont(_font)->fontHeight * relativeFontSize;
 				break;
 			case TextAlignVertical::Middle:
-				pos.y = containerMiddle.y + (fontHeight + fontDescend) * ((float)(linePixelWidths.size()-1) / 2 - lineIndex) * relativeFontSize;
+				pos.y = containerMiddle.y + (Assets::GetFont(_font)->fontHeight + Assets::GetFont(_font)->fontDescend) * ((float)(_linePixelWidths.size()-1) / 2 - lineIndex) * relativeFontSize;
 				break;
 			case TextAlignVertical::Bottom:
-				pos.y = containerMiddle.y - containerSize.y / 2 + (fontHeight + fontDescend) * (linePixelWidths.size()-1-lineIndex) * relativeFontSize + fontDescend * relativeFontSize;
+				pos.y = containerMiddle.y - containerSize.y / 2 + (Assets::GetFont(_font)->fontHeight + Assets::GetFont(_font)->fontDescend) * (_linePixelWidths.size()-1-lineIndex) * relativeFontSize + Assets::GetFont(_font)->fontDescend * relativeFontSize;
 				break;
 		}
 	}

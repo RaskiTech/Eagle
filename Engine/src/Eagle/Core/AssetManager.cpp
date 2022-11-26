@@ -93,7 +93,7 @@ namespace Egl {
     FontRef Assets::LoadFont(const std::string& name)
     {
         EAGLE_PROFILE_FUNCTION();
-        FontRenderer* asset = new FontRenderer(name);
+        FontData* asset = new FontData(name);
         FontRef ref = GetNextID();
         EAGLE_EDITOR_ONLY(AssetPanel::SubmitAssetName(ref, "Font " + name));
         assets[ref] = std::make_pair(1, asset);

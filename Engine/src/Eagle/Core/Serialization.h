@@ -26,6 +26,7 @@ namespace Egl {
 		inline void AddData(bool data) { EGL_SAVEDATA_CHECK(); file.write((const char*)&data, sizeof(bool)); }
 		inline void AddChar(char data) { EGL_SAVEDATA_CHECK(); file.write((const char*)&data, sizeof(char)); }
 		inline void AddData(const char* data) { AddData((std::string)data); }
+		inline void AddBytes(void* bytes, int amount) { EGL_SAVEDATA_CHECK(); file.write((const char*)bytes, amount); };
 		inline void AddData(const std::string& data) { 
 			EGL_SAVEDATA_CHECK(); 
 			uint32_t length = (uint32_t)data.size();

@@ -24,21 +24,37 @@ namespace Egl {
 		Right
 	};
 	struct TextProperties {
-		float fontSize = 0.01f;
-		TextAlignHorizontal alignHorizontal = TextAlignHorizontal::Left;
-		TextAlignVertical alignVertical = TextAlignVertical::Top;
+		TextProperties() = default;
+
+		float fontSize = 10;
+		TextAlignHorizontal alignHorizontal = TextAlignHorizontal::Middle;
+		TextAlignVertical alignVertical = TextAlignVertical::Middle;
 		glm::vec4 color = { 1, 1, 1, 1 };
 		int charsVisible = -1;
 	};
 
-	class FontRenderer {
-	public:
-		FontRenderer(const std::string& fontPath) { LoadFont(fontPath); linePixelWidths.reserve(20); };
-		~FontRenderer() = default;
+	struct FontData
+	{
+		FontData(const std::string& fontPath) { LoadFont(fontPath); }
+
 		void LoadFont(const std::string& fontPath);
 
-		void ChangeRenderedText(const std::string& unprocessedText);
-		const std::string& GetOriginalText() const { return originalText; }
+
+		float fontHeight = 0;
+		float fontDescend = 0;
+		std::unordered_map<char, Character> characters;
+	};
+
+	class TextRenderer {
+	public:
+		TextRenderer(FontRef font) : _font(font) { _linePixelWidths.reserve(20); };
+		TextRenderer() = default;
+		~TextRenderer() = default;
+
+		void ChangeRenderedText(std::string_view unprocessedText);
+		const std::string& GetOriginalText() const { return _originalText; }
+
+		void SetFont(FontRef font) { _font = font; }
 
 		void RenderText(const uint16_t& sorting, const TextProperties& data, const glm::vec2& containerMiddle, const glm::vec2& containerSize, float cameraSize);
 	private:
@@ -47,13 +63,11 @@ namespace Egl {
 		inline void PlaceToNewLine(glm::vec2& pos, const glm::vec2& containerMiddle, const glm::vec2& containerSize, 
 			TextAlignHorizontal hor, TextAlignVertical ver, int lineIndex, float relativeFontSize);
 
-		float lastMaxWidth = 0;
-		std::string originalText = "";
-		std::string processedTest = "";
-		std::vector<float> linePixelWidths;
-
-		float fontHeight = 0;
-		float fontDescend = 0;
-		std::unordered_map<char, Character> characters;
+		float _lastMaxWidth = 0;
+		std::string _originalText = "";
+		std::string _processedTest = "";
+		std::vector<float> _linePixelWidths;
+		FontRef _font;
 	};
+
 }

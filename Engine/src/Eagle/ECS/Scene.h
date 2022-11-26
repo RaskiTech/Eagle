@@ -38,6 +38,7 @@ namespace Egl {
 		const Entity GetPrimaryCamera();
 		glm::vec2 Scene::ScreenToWorldPos(const glm::vec2& pixelCoordinate) const;
 		glm::vec2 Scene::WorldToScreenPos(const glm::vec2& worldPos) const;
+		void SubscribeToEvents(Entity instance, std::function<bool(Entity, Event&)> callback);
 
 		// User-defined functions unique to each instance
 		virtual void SceneBegin() = 0;
@@ -62,6 +63,7 @@ namespace Egl {
 				mPrimaryCamera = entt::null;
 		}
 
+
 	private:
 		void ChangeCameraAspectRatios(float aspectRatio);
 		friend class Application;
@@ -72,7 +74,7 @@ namespace Egl {
 
 		void SubscribeToEvents(NativeScriptComponent* script);
 		void OptOutOfEvents(NativeScriptComponent* script);
-		std::vector<std::pair<Script*, std::function<bool(Script*, Event&)>>> eventScriptsInOrder;
+		std::vector<std::pair<Entity, std::function<bool(Entity, Event&)>>> eventScriptsInOrder;
 
 		friend struct NativeScriptComponent;
 		friend class GameLayer;
