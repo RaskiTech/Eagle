@@ -2,6 +2,7 @@
 #include "Eagle/Rendering/Renderer.h"
 #include <freetype/freetype.h>
 #include "TextRenderer.h"
+#include "Eagle/Core/Application.h"
 
 // API: Construct a font object and use that to write text
 
@@ -75,9 +76,6 @@ namespace Egl {
 		_lastMaxWidth = 0; // Dirty flag in disguise
 	}
 
-	// TODO:
-	// leftSideWallPos
-	// align V & H
 	void TextRenderer::RenderText(const uint16_t& sorting, const TextProperties& data, const glm::vec2& containerMiddle, const glm::vec2& containerSize, float cameraSize) {
 		EAGLE_PROFILE_FUNCTION();
 		if (_originalText.size() == 0)
@@ -86,7 +84,7 @@ namespace Egl {
 		EAGLE_ENG_ASSERT(_font.Valid(), "Font wasn't defined, but we were trying to render text. Set the FontRef using SetFont or give it in the constructor.");
 
 		// Relative font size. Multiply by a small number to get the font size to more reasonable values
-		float relativeFontSize = data.fontSize * cameraSize * 0.0001f;
+		float relativeFontSize = data.fontSize * cameraSize * 0.1f / Application::Get().GetSceneWindowSize().y;
 
 		// Is text textWrap width up to date
 		float thisMaxWidth = containerSize.x / relativeFontSize;
@@ -121,7 +119,7 @@ namespace Egl {
 
 			float xPos = charPos.x + charData.bearing.x * relativeFontSize;
 			float yPos = charPos.y - (charData.size.y - charData.bearing.y) * relativeFontSize;
-			glm::vec2 scale = { charData.size.x * relativeFontSize, charData.size.y * relativeFontSize };
+			glm::vec2 scale = relativeFontSize * glm::vec2{ charData.size.x, charData.size.y };
 
 			charPos.x += charData.advance * relativeFontSize;
 
@@ -185,29 +183,29 @@ if (spaceLeft < 0) {    \
 		return wrapped.str();
 	}
 
-	inline void TextRenderer::PlaceToNewLine(glm::vec2& pos, const glm::vec2& containerMiddle, 
+	inline void TextRenderer::PlaceToNewLine(glm::vec2& outPos, const glm::vec2& containerMiddle, 
 		const glm::vec2& containerSize, TextAlignHorizontal hor, TextAlignVertical ver, int lineIndex, float relativeFontSize) 
 	{
 		switch (hor) {
 			case TextAlignHorizontal::Left:
-				pos.x = containerMiddle.x - containerSize.x / 2; 
+				outPos.x = containerMiddle.x - containerSize.x / 2; 
 				break;
 			case TextAlignHorizontal::Middle:
-				pos.x = containerMiddle.x - _linePixelWidths[lineIndex] / 2 * relativeFontSize;
+				outPos.x = containerMiddle.x - _linePixelWidths[lineIndex] / 2 * relativeFontSize;
 				break;
 			case TextAlignHorizontal::Right:
-				pos.x = containerMiddle.x + containerSize.x / 2 - _linePixelWidths[lineIndex] * relativeFontSize;
+				outPos.x = containerMiddle.x + containerSize.x / 2 - _linePixelWidths[lineIndex] * relativeFontSize;
 				break;
 		}
 		switch (ver) {
 			case TextAlignVertical::Top:
-				pos.y = containerMiddle.y + containerSize.y / 2 - (Assets::GetFont(_font)->fontHeight + Assets::GetFont(_font)->fontDescend) * lineIndex * relativeFontSize - Assets::GetFont(_font)->fontHeight * relativeFontSize;
+				outPos.y = containerMiddle.y + containerSize.y / 2 - (Assets::GetFont(_font)->fontHeight + Assets::GetFont(_font)->fontDescend) * lineIndex * relativeFontSize - Assets::GetFont(_font)->fontHeight * relativeFontSize;
 				break;
 			case TextAlignVertical::Middle:
-				pos.y = containerMiddle.y + (Assets::GetFont(_font)->fontHeight + Assets::GetFont(_font)->fontDescend) * ((float)(_linePixelWidths.size()-1) / 2 - lineIndex) * relativeFontSize;
+				outPos.y = containerMiddle.y + ((Assets::GetFont(_font)->fontHeight + Assets::GetFont(_font)->fontDescend) * ((float)(_linePixelWidths.size()-1) / 2 - lineIndex) - Assets::GetFont(_font)->fontHeight * 0.5f) * relativeFontSize;
 				break;
 			case TextAlignVertical::Bottom:
-				pos.y = containerMiddle.y - containerSize.y / 2 + (Assets::GetFont(_font)->fontHeight + Assets::GetFont(_font)->fontDescend) * (_linePixelWidths.size()-1-lineIndex) * relativeFontSize + Assets::GetFont(_font)->fontDescend * relativeFontSize;
+				outPos.y = containerMiddle.y - containerSize.y / 2 + (Assets::GetFont(_font)->fontHeight + Assets::GetFont(_font)->fontDescend) * (_linePixelWidths.size()-1-lineIndex) * relativeFontSize + Assets::GetFont(_font)->fontDescend * relativeFontSize;
 				break;
 		}
 	}

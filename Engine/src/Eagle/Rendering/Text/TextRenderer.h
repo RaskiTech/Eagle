@@ -26,7 +26,7 @@ namespace Egl {
 	struct TextProperties {
 		TextProperties() = default;
 
-		float fontSize = 10;
+		float fontSize = 5;
 		TextAlignHorizontal alignHorizontal = TextAlignHorizontal::Middle;
 		TextAlignVertical alignVertical = TextAlignVertical::Middle;
 		glm::vec4 color = { 1, 1, 1, 1 };

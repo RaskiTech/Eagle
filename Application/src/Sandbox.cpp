@@ -39,7 +39,7 @@ public:
 class ExampleScene : public Scene {
 	void example_UI() {
 		Entity canvas = AddCanvas();
-		UIEntityParams topCornerParams(UITransform::XDriver::Left, 25, UITransform::WidthDriver::Relative, 0.15f,
+		UIEntityParams topCornerParams(UITransform::XDriver::Left, 25, UITransform::WidthDriver::Relative, 0.2f,
 			UITransform::YDriver::Top, 25, UITransform::HeightDriver::Relative, 0.1f);
 		UIEntityParams middleSquare(UITransform::LeftDriver::Constant, 25, UITransform::RightDriver::Constant, 25,
 			UITransform::TopDriver::Constant, 15, UITransform::BottomDriver::Constant, 15);
@@ -48,15 +48,12 @@ class ExampleScene : public Scene {
 		exampleSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.3f, 0.3f, 0.3f, 1 });
 
 
-		//Entity exampleOtherSquare = AddUIEntity("middle square", middleSquare, exampleSquare);
-		//exampleOtherSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.8f, 0.3f, 0.2f, 1 });
-		//exampleOtherSquare.GetComponent<MetadataComponent>().subSorting = 1;
-
 		FontRef font = Assets::LoadFont("Assets/Fonts/Roboto/Roboto-Regular.ttf");
 
 		glm::vec4 btnColor = { 0.2f, 0.8f, 0.2f, 1.0f };
-		Entity button = UI::AddButton(exampleSquare, "Button", UI::Button{ btnColor, btnColor * 0.9f, btnColor * 0.6f, []() {LOG("HEHEHE"); } }, UIEntityParams(0, 1))
-			.SetText("This is the text").SetFont(font).SetFontSize(5);
+		auto callback = []() { LOG("Click"); };
+		Entity button = UI::AddButton(exampleSquare, "Button", UI::Button{ btnColor, btnColor * 0.9f, btnColor * 0.6f, callback }, UIEntityParams(0, 1))
+			.SetText("This is a button").SetFont(font).SetFontSize(3);
 
 		auto& textComp = AddUIEntity("Text", canvas).AddComponent<TextComponent>(font);
 		textComp.SetText("Example scene");
