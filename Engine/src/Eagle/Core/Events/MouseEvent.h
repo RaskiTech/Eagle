@@ -78,4 +78,36 @@ namespace Egl {
 	protected:
 		int mScrollX, mScrollY;
 	};
+
+
+	class MouseHoverEnterEvent : public Event
+	{
+	public:
+		MouseHoverEnterEvent() {}
+
+		std::string ToString() const override
+		{
+			std::stringstream str;
+			str << "MouseHoverEnter";
+			return str.str();
+		}
+
+		EVENT_CLASS_TYPE(MouseHoverEnter);
+		EVENT_CLASS_GATEGORY((int)EventGategory::Mouse | (int)EventGategory::MouseHover);
+	};
+	class MouseHoverExitEvent : public Event
+	{
+	public:
+		MouseHoverExitEvent() {}
+
+		std::string ToString() const override
+		{
+			std::stringstream str;
+			str << "MouseHoverExit";
+			return str.str();
+		}
+
+		EVENT_CLASS_TYPE(MouseHoverExit);
+		EVENT_CLASS_GATEGORY((int)EventGategory::Mouse | (int)EventGategory::MouseHover);
+	};
 }

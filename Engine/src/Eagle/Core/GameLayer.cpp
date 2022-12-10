@@ -3,6 +3,7 @@
 
 #include "Eagle/Core/Application.h"
 #include "Eagle/ECS/Components.h"
+#include "Eagle/ECS/Scene.h"
 #include "Eagle/Debug/EditorLayer.h"
 #include "GameLayer.h"
 #include "Input.h"
@@ -44,9 +45,9 @@ namespace Egl {
 		}
 		scene->_sceneState = Scene::SceneState::CreateCalled_2;
 
-		std::sort(scene->eventScriptsInOrder.begin(), scene->eventScriptsInOrder.end(), [&](auto& e1, auto& e2) {
-			auto& mc1 = scene->mRegistry.get<MetadataComponent>((entt::entity)e1.first.GetID());
-			auto& mc2 = scene->mRegistry.get<MetadataComponent>((entt::entity)e2.first.GetID());
+		std::sort(scene->eventCallbacksSorted.begin(), scene->eventCallbacksSorted.end(), [&](auto& e1, auto& e2) {
+			auto& mc1 = scene->mRegistry.get<MetadataComponent>((entt::entity)e1.entity.GetID());
+			auto& mc2 = scene->mRegistry.get<MetadataComponent>((entt::entity)e2.entity.GetID());
 			if (mc1.sortingLayer == mc2.sortingLayer)
 				return mc1.subSorting > mc2.subSorting;
 			else
@@ -127,31 +128,45 @@ namespace Egl {
 		Scene* scene = Assets::GetScene(_activeScene);
 		EAGLE_ENG_ASSERT(scene->GetSceneState() == Scene::SceneState::Running_3, "The scene isn't running but we had an event.");
 		glm::vec2 mousePos = scene->GetPrimaryCamera().IsValid() ? scene->ScreenToWorldPos(Input::MousePos()) : glm::vec2{ 0, 0 };
-		std::vector<std::pair<Entity, std::function<bool(Entity, Event&)>>> listenersUnderMouse;
+		std::vector<Scene::EventCallbackData> listenersUnderMouse;
 		bool isMouseEvent = e.GetGategoryFlags() & (int)Egl::EventGategory::Mouse;
+
+
+		auto IsUnderCursor = [](const Entity& entity, const glm::vec2& mousePos) {
+			if (entity.HasComponent<Transform>()) { auto& comp = entity.GetComponent<Transform>(); return IS_UNDER_CURSOR(mousePos, comp.GetPosition(), comp.GetScale()); }
+			else                               { auto& comp = entity.GetComponent<UITransform>(); return IS_UNDER_CURSOR(mousePos, comp.GetWorldPosition(), comp.GetWorldScale()); }
+		};
 
 		// TODO: Use binary search to find the objects
 
 		// Iterate through and check what listeners are under the mouse
-		for (auto& eventCallback : scene->eventScriptsInOrder) {
-			auto& [entity, callback] = eventCallback;
-			EAGLE_ENG_ASSERT(callback, "The script doesn't have an event function but it is in the event list");
+		for (auto& eventCallback : scene->eventCallbacksSorted) {
+			EAGLE_ENG_ASSERT(eventCallback.callback, "The script doesn't have an event function but it is in the event list");
 
-			if (entity.HasComponent<Transform>()) {
-				auto& tComp = entity.GetComponent<Transform>();
-				if (!isMouseEvent || IS_UNDER_CURSOR(mousePos, tComp.GetPosition(), tComp.GetScale()))
-					listenersUnderMouse.push_back(eventCallback);
-			}
-			else {
-				auto& tComp = entity.GetComponent<UITransform>();
-				//LOG_ENG(glm::abs(mouseX - objX), objSizeX, glm::abs(mouseY-objY), objSizeY);
-				if (!isMouseEvent || IS_UNDER_CURSOR(mousePos, tComp.GetWorldPosition(), tComp.GetWorldScale()))
-					listenersUnderMouse.push_back(eventCallback);
-			}
+			if (!isMouseEvent || IsUnderCursor(eventCallback.entity, mousePos))
+				listenersUnderMouse.push_back(eventCallback);
 		}
 		for (auto& eventScript : listenersUnderMouse)
-			if (eventScript.second(eventScript.first, e))
+			if (eventScript.callback(eventScript.entity, e))
 				break;
+
+
+		// If the event is MouseMoved event we need to check for other events to distribute
+		if (MouseMovedEvent* mouseMovedEvent = e.FilterAs<MouseMovedEvent>())
+		{
+			for (auto& hoverCallback : scene->hoverCallbacks)
+			{
+				if (IsUnderCursor(hoverCallback.entity, mousePos) != hoverCallback.hovering)
+				{
+					hoverCallback.hovering = !hoverCallback.hovering;
+					if (hoverCallback.hovering)
+						hoverCallback.callback(hoverCallback.entity, MouseHoverEnterEvent());
+					else
+						hoverCallback.callback(hoverCallback.entity, MouseHoverExitEvent());
+				}
+			}
+		}
+			
 	}
 	
 

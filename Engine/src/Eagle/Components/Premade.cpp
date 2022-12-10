@@ -36,15 +36,27 @@ namespace Egl
 						return false;
 
 					entity.GetComponent<Button>().callback();
-					spriteComp.color = buttonComp.baseColor;
+					spriteComp.color = buttonComp.hoverColor;
 					buttonComp.currentlyPressed = false;
 					return true;
+				}
+				else if (auto enterEvent = event.FilterAs<MouseHoverEnterEvent>())
+				{
+					spriteComp.color = buttonComp.hoverColor;
+					return false;
+				}
+				else if (auto exitEvent = event.FilterAs<MouseHoverExitEvent>())
+				{
+					spriteComp.color = buttonComp.baseColor;
+					buttonComp.currentlyPressed = false;
+					return false;
 				}
 
 				return false;
 			};
 
 			parent.GetScene()->SubscribeToEvents(button, buttonCallback);
+			parent.GetScene()->SubscribeToEnterExitEvents(button, buttonCallback);
 		}
 
 	}

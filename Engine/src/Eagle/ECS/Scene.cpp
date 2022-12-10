@@ -13,7 +13,7 @@
 
 namespace Egl {
 	Scene::Scene() {
-		eventScriptsInOrder.reserve(50);
+		eventCallbacksSorted.reserve(50);
 		entityDeleteQueue.reserve(50);
 	}
 
@@ -134,9 +134,9 @@ namespace Egl {
 	}
 
 
+	// This function handles updating components and submitting everything to the renderer
 	void Scene::OnUpdate() {
 		EAGLE_PROFILE_FUNCTION();
-		// This function handles updating components and submitting everything to the renderer
 
 		{
 			EAGLE_PROFILE_SCOPE("Application - Scripts: OnUpdate");
@@ -255,7 +255,7 @@ namespace Egl {
 
 		// Add the script here if the scene instalation is complete. Else it will be added after sceneStart
 		if (GetSceneState() >= SceneState::Running_3) {
-			Insert_sorted(eventScriptsInOrder, std::make_pair(entity, callback), [&](auto& e1, auto& e2) {
+			Insert_sorted(eventCallbacksSorted, EventCallbackData{ entity, callback }, [&](auto& e1, auto& e2) {
 				auto mc1 = mRegistry.get<MetadataComponent>((entt::entity)entity.GetID());
 				auto mc2 = mRegistry.get<MetadataComponent>((entt::entity)entity.GetID());
 				if (mc1.sortingLayer == mc2.sortingLayer)
@@ -265,17 +265,24 @@ namespace Egl {
 			});
 		}
 		else
-			eventScriptsInOrder.push_back(std::make_pair(entity, callback));
+			eventCallbacksSorted.push_back(EventCallbackData{ entity, callback });
 	}
+	void Scene::SubscribeToEnterExitEvents(Entity instance, std::function<bool(Entity, Event&)> callback)
+	{
+		EAGLE_ENG_ASSERT(callback != nullptr, "Event callback was a nullptr.");
+		// This could be changed later, but currently we always notify every function so sorting doesn't matter
+		hoverCallbacks.push_back(HoverCallbackData{ instance, false, callback });
+	}
+
 
 	void Scene::OptOutOfEvents(NativeScriptComponent* script) {
 		EAGLE_ENG_ASSERT(script->OnEventFunc, "Script doesn't have an event function.");
 
 		int i = 0;
 		while (true) {
-			EAGLE_ENG_ASSERT(i < eventScriptsInOrder.size(), "Script event function wasn't in the eventScript list");
-			if (eventScriptsInOrder[i].first == script->baseInstance->GetEntity()) {
-				eventScriptsInOrder.erase(eventScriptsInOrder.begin() + i);
+			EAGLE_ENG_ASSERT(i < eventCallbacksSorted.size(), "Script event function wasn't in the eventScript list");
+			if (eventCallbacksSorted[i].entity == script->baseInstance->GetEntity()) {
+				eventCallbacksSorted.erase(eventCallbacksSorted.begin() + i);
 				break;
 			}
 			i++;

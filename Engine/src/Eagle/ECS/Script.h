@@ -1,5 +1,6 @@
 #pragma once
 #include "Entity.h"
+#include "Scene.h"
 
 // Baseclass for all client scripts
 namespace Egl {

@@ -12,8 +12,13 @@ namespace Egl {
 	struct EntityParams;
 	struct UIEntityParams;
 
+
 	class Scene {
 	public:
+
+		struct EventCallbackData;
+		struct HoverCallbackData;
+
 		Scene();
 		virtual ~Scene() = default;
 
@@ -39,6 +44,7 @@ namespace Egl {
 		glm::vec2 Scene::ScreenToWorldPos(const glm::vec2& pixelCoordinate) const;
 		glm::vec2 Scene::WorldToScreenPos(const glm::vec2& worldPos) const;
 		void SubscribeToEvents(Entity instance, std::function<bool(Entity, Event&)> callback);
+		void SubscribeToEnterExitEvents(Entity instance, std::function<bool(Entity, Event&)> callback);
 
 		// User-defined functions unique to each instance
 		virtual void SceneBegin() = 0;
@@ -63,10 +69,10 @@ namespace Egl {
 				mPrimaryCamera = entt::null;
 		}
 
-
 	private:
 		void ChangeCameraAspectRatios(float aspectRatio);
 		friend class Application;
+
 	private:
 		void OnUpdate();
 
@@ -74,7 +80,8 @@ namespace Egl {
 
 		void SubscribeToEvents(NativeScriptComponent* script);
 		void OptOutOfEvents(NativeScriptComponent* script);
-		std::vector<std::pair<Entity, std::function<bool(Entity, Event&)>>> eventScriptsInOrder;
+		std::vector<EventCallbackData> eventCallbacksSorted;
+		std::vector<HoverCallbackData> hoverCallbacks;
 
 		friend struct NativeScriptComponent;
 		friend class GameLayer;

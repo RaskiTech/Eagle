@@ -9,7 +9,9 @@ namespace Egl {
 		MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled,
 		KeyPressed, KeyReleased, KeyTyped,
 		WindowClose, WindowRezise, WindowFocus, WindowLostFocus, WindowMoved,
-		AppTick, AppUpdate, AppRender
+		AppTick, AppUpdate, AppRender,
+
+		MouseHoverEnter, MouseHoverExit
 	};
 
 	enum class EventGategory {
@@ -18,7 +20,8 @@ namespace Egl {
 		Input       = BIT(1),
 		Keyboard    = BIT(2),
 		Mouse       = BIT(3),
-		MouseButton = BIT(4)
+		MouseButton = BIT(4),
+		MouseHover  = BIT(5),
 	};
 
 	class Event {

@@ -4,10 +4,15 @@
 #include "Scene.h"
 
 namespace Egl {
+
+
+	class Entity;
 	bool operator == (const Entity& e1, const Entity& e2);
 	struct Relation;
 	struct MetadataComponent;
 	struct Transform;
+	struct UITransform;
+	struct NativeScriptComponent;
 
 	class Entity {
 	public:
@@ -78,5 +83,19 @@ namespace Egl {
 	private:
 		entt::entity mEntity = entt::null;
 		Scene* mScene = nullptr;
+	};
+
+
+	// We can't include these in the scene file because the file can't include entity.h
+	struct Scene::EventCallbackData
+	{
+		Entity entity;
+		std::function<bool(Entity, Event&)> callback;
+	};
+	struct Scene::HoverCallbackData
+	{
+		Entity entity;
+		bool hovering;
+		std::function<bool(Entity, Event&)> callback;
 	};
 }
