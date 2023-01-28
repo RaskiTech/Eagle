@@ -4,19 +4,19 @@
 
 namespace Egl
 {
-	namespace UI
+	namespace Premade
 	{
 
 		ButtonBuilder::ButtonBuilder(Entity parent, std::string_view buttonName, Button&& buttonComponent, UIEntityParams& params)
-			: button(parent.GetScene()->AddUIEntity(buttonName, params, parent))
+			: _button(parent.GetScene()->AddUIEntity(buttonName, parent, params))
 		{
-			button.AddComponent<Button>(std::forward<Button&&>(buttonComponent));
-			button.AddComponent<TextComponent>();
-			button.AddComponent<SpriteRendererComponent>(buttonComponent.baseColor);
+			_button.AddComponent<Button>(std::forward<Button&&>(buttonComponent));
+			_button.AddComponent<TextComponent>();
+			_button.AddComponent<SpriteRendererComponent>(buttonComponent.baseColor);
 
-			buttonComp = &button.GetComponent<Button>();
-			textComp = &button.GetComponent<TextComponent>();
-			spriteComp = &button.GetComponent<SpriteRendererComponent>();
+			_buttonComp = &_button.GetComponent<Button>();
+			_textComp = &_button.GetComponent<TextComponent>();
+			_spriteComp = &_button.GetComponent<SpriteRendererComponent>();
 
 			auto buttonCallback = [](Entity entity, Event& event) {
 				auto& spriteComp = entity.GetComponent<SpriteRendererComponent>();
@@ -55,8 +55,18 @@ namespace Egl
 				return false;
 			};
 
-			parent.GetScene()->SubscribeToEvents(button, buttonCallback);
-			parent.GetScene()->SubscribeToEnterExitEvents(button, buttonCallback);
+			parent.GetScene()->SubscribeToEvents(_button, buttonCallback);
+			parent.GetScene()->SubscribeToEnterExitEvents(_button, buttonCallback);
+		}
+
+		SliderBuilder::SliderBuilder(Entity parent, std::string_view sliderName, Slider&& sliderComponent, UIEntityParams& params)
+			: _slider(parent.GetScene()->AddUIEntity(sliderName, parent, params))
+		{
+			Entity sliderHandle = AddButton(_slider, "Handle", Button(sliderComponent.baseColor, sliderComponent.hoverColor, sliderComponent.pressedColor, []() {}));
+
+			_sliderComp.AddComponent<SpriteRendererComponent>(buttonComponent.baseColor);
+
+
 		}
 
 	}

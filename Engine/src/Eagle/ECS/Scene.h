@@ -22,16 +22,12 @@ namespace Egl {
 		Scene();
 		virtual ~Scene() = default;
 
-		//template<typename... EntityParam>
-		//Entity AddEntity(const std::string& name, const EntityParams& params, EntityParam...childs) { auto e = AddEntity(name, params); AddEntityChildsImp(e, childs...); return e; }
-		//template<typename... EntityParam>
-		//Entity AddEntity(const std::string& name, EntityParam...childs)    { auto e = AddEntity(name); AddEntityChildsImp(e, childs...); return e; }
-		Entity AddEntity(std::string_view name, const EntityParams& params, Entity parent);
-		Entity AddEntity(std::string_view name, Entity parent);
 		Entity AddEntity(std::string_view name, const EntityParams& params);
+		Entity AddEntity(std::string_view name, Entity parent, const EntityParams& params);
+		Entity AddEntity(std::string_view name, Entity parent);
 		Entity AddEntity(std::string_view name);
 
-		Entity AddUIEntity(std::string_view name, const UIEntityParams& params, Entity canvasOrParent);
+		Entity AddUIEntity(std::string_view name, Entity canvasOrParent, const UIEntityParams& params);
 		Entity AddUIEntity(std::string_view name, Entity canvasOrParent);
 
 		// Adds an entity with the CanvasComponent attached

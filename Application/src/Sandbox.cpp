@@ -44,7 +44,7 @@ class ExampleScene : public Scene {
 		UIEntityParams middleSquare(UITransform::LeftDriver::Constant, 25, UITransform::RightDriver::Constant, 25,
 			UITransform::TopDriver::Constant, 15, UITransform::BottomDriver::Constant, 15);
 
-		Entity exampleSquare = AddUIEntity("Top corner square", topCornerParams, canvas);
+		Entity exampleSquare = AddUIEntity("Top corner square", canvas, topCornerParams);
 		exampleSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.3f, 0.3f, 0.3f, 1 });
 
 
@@ -52,8 +52,11 @@ class ExampleScene : public Scene {
 
 		glm::vec4 btnColor = { 0.2f, 0.8f, 0.2f, 1.0f };
 		auto callback = []() { LOG("Click"); };
-		Entity button = UI::AddButton(exampleSquare, "Button", UI::Button{ btnColor, btnColor * 0.9f, btnColor * 0.6f, callback }, UIEntityParams(0, 1))
+		Entity button = Premade::AddButton(exampleSquare, "Button", Button(btnColor, btnColor * 0.9f, btnColor * 0.6f, callback), UIEntityParams(0, 1))
 			.SetText("This is a button").SetFont(font).SetFontSize(3);
+
+		auto callbackSlider = [](float val) { LOG("Value:", val); };
+		Entity slider = Premade::AddSlider(canvas, "Slider", Slider(btnColor, btnColor * 0.9f, btnColor * 0.6f, callbackSlider), UIEntityParams(0, 1));
 
 		auto& textComp = AddUIEntity("Text", canvas).AddComponent<TextComponent>(font);
 		textComp.SetText("Example scene");

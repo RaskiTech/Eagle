@@ -5,42 +5,54 @@
 
 namespace Egl
 {
-	namespace UI
+	namespace Premade
 	{
-		struct Button
-		{
-			glm::vec4 baseColor{ 0 };
-			glm::vec4 hoverColor{ 0 };
-			glm::vec4 pressedColor{ 0 };
-
-			std::function<void()> callback = nullptr;
-
-			bool currentlyPressed = false;
-		};
-
 		class ButtonBuilder
 		{
 		public:
 			ButtonBuilder(Entity parent, std::string_view buttonName, Button&& buttonComponent, UIEntityParams& params);
 			ButtonBuilder(ButtonBuilder& other) = delete;
+
+			inline ButtonBuilder& SetFont(FontRef font) { _textComp->textRenderer.SetFont(font); return *this; }
+			inline ButtonBuilder& SetText(std::string_view buttonText) { _textComp->SetText(buttonText); return *this; }
+			inline ButtonBuilder& SetFontSize(float size) { _textComp->props.fontSize = size; return *this; }
+			inline ButtonBuilder& SetTextColor(const glm::vec4& color) { _textComp->props.color = color; return *this; }
+			inline ButtonBuilder& SetTexture(TextureRef texture) { _spriteComp->texture = Assets::LoadSubTexture(texture, { 0, 0 }, { 1, 1 }); return *this; }
+			inline ButtonBuilder& SetTexture(SubTextureRef texture) { _spriteComp->texture = texture; return *this; }
+
+			// This can be called when finished building the button, but it can also just be assigned to a button
+			inline Entity Finish() { return _button; }
 			operator Entity() { return Finish(); }
 
-			inline ButtonBuilder& SetFont(FontRef font) { textComp->textRenderer.SetFont(font); return *this; }
-			inline ButtonBuilder& SetText(std::string_view buttonText) { textComp->SetText(buttonText); return *this; }
-			inline ButtonBuilder& SetFontSize(float size) { textComp->props.fontSize = size; return *this; }
-			inline ButtonBuilder& SetTextColor(const glm::vec4& color) { textComp->props.color = color; return *this; }
+		private:
+			Entity _button;
+			SpriteRendererComponent* _spriteComp;
+			TextComponent* _textComp;
+			Button* _buttonComp;
+		};
 
-			inline Entity Finish() { return button; }
+		class SliderBuilder
+		{
+		public:
+			SliderBuilder(Entity parent, std::string_view sliderName, Slider&& sliderComponent, UIEntityParams& params);
+			SliderBuilder(SliderBuilder& other) = delete;
+
+			inline SliderBuilder& SetBaseColor(const glm::vec4& color) { _baseSpriteComp->color = color; }
+
+			// This can be called when finished building the button, but it can also just be assigned to a button
+			inline Entity Finish() { return _slider; }
+			operator Entity() { return Finish(); }
 
 		private:
-			Entity button;
-			SpriteRendererComponent* spriteComp;
-			TextComponent* textComp;
-			Button* buttonComp;
+			Entity _slider;
+			SpriteRendererComponent* _baseSpriteComp;
+			Slider* _sliderComp;
 		};
+
 
 		// Returns a bunch of functions that be used to modify the button. Once all wanted functions have been called, store the button as an entity, not as a ButtonBuilder
 		inline ButtonBuilder AddButton(Entity parent, std::string_view buttonName, Button&& buttonComponent, UIEntityParams& params = UIEntityParams()) { return ButtonBuilder(parent, buttonName, std::forward<Button&&>(buttonComponent), params); }
-
+		// Returns a bunch of functions that be used to modify the slider. Once all wanted functions have been called, store the slider as an entity, not as a ButtonBuilder
+		inline SliderBuilder AddSlider(Entity parent, std::string_view buttonName, Slider&& buttonComponent, UIEntityParams& params = UIEntityParams()) { return SliderBuilder(parent, buttonName, std::forward<Slider&&>(buttonComponent), params); }
 	}
 }

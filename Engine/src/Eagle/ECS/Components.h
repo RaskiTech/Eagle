@@ -270,6 +270,33 @@ namespace Egl {
 		MetadataComponent(std::string_view tag, int8_t sortingLayer, uint8_t subSorting = 0) : tag(tag), sortingLayer(sortingLayer), subSorting(subSorting) {};
 	};
 
+	struct Button
+	{
+		Button(const glm::vec4& baseColor, const glm::vec4& hoverColor, const glm::vec4& pressedColor, std::function<void()> callback)
+			: baseColor(baseColor), hoverColor(hoverColor), pressedColor(pressedColor), callback(callback), currentlyPressed(false) {}
+
+		glm::vec4 baseColor{ 0 };
+		glm::vec4 hoverColor{ 0 };
+		glm::vec4 pressedColor{ 0 };
+
+		std::function<void()> callback = nullptr;
+
+		bool currentlyPressed = false;
+	};
+	struct Slider
+	{
+		Slider(const glm::vec4& baseColor, const glm::vec4& hoverColor, const glm::vec4& pressedColor, std::function<void(float)> callback)
+			: baseColor(baseColor), hoverColor(hoverColor), pressedColor(pressedColor), callback(callback), value(0.5f) {}
+
+		glm::vec4 baseColor{ 0 };
+		glm::vec4 hoverColor{ 0 };
+		glm::vec4 pressedColor{ 0 };
+
+		std::function<void(float)> callback = nullptr;
+
+		float value = 0.5f;
+	};
+
 	struct SpriteRendererComponent {
 		glm::vec4 color = { 1, 1, 1, 1 };
 		SubTextureRef texture = -1;
