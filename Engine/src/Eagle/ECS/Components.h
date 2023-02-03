@@ -12,6 +12,7 @@
 #include "Eagle/Core/Audio.h"
 
 namespace Egl {
+
 	struct CameraComponent {
 		SceneCamera camera;
 		glm::vec4 backgroundColor = { 0.2f, 0.2f, 0.2f, 1.0f };
@@ -268,6 +269,33 @@ namespace Egl {
 
 		MetadataComponent() = default;
 		MetadataComponent(std::string_view tag, int8_t sortingLayer, uint8_t subSorting = 0) : tag(tag), sortingLayer(sortingLayer), subSorting(subSorting) {};
+	};
+
+	// This button needs Button::ActivateUIElement to work, which might be a problem if the user just wants to add this component
+	struct Button : UIElement
+	{
+		Button(const glm::vec4& baseColor, const glm::vec4& hoverColor, const glm::vec4& pressedColor, std::function<void()> callback)
+			: baseColor(baseColor), hoverColor(hoverColor), pressedColor(pressedColor), callback(callback), heldDown(false) {}
+
+		glm::vec4 baseColor{ 0 };
+		glm::vec4 hoverColor{ 0 };
+		glm::vec4 pressedColor{ 0 };
+
+		std::function<void()> callback = nullptr;
+
+		bool heldDown = false;
+		bool hovering = false;
+	};
+	struct Slider : UIElement
+	{
+		Slider(const glm::vec4& baseColor, std::function<void(float)> callback)
+			: baseColor(baseColor), callback(callback), value(0.5f) {}
+
+		glm::vec4 baseColor{ 0 };
+
+		std::function<void(float)> callback = nullptr;
+
+		float value = 0.5f;
 	};
 
 	struct SpriteRendererComponent {

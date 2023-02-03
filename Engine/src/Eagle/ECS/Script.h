@@ -10,10 +10,15 @@ namespace Egl {
 
 		glm::vec2               ScreenToWorldPos(const glm::vec2& screenPosition) const { return GetScene()->ScreenToWorldPos(screenPosition); }
 		glm::vec2               WorldToScreenPos(const glm::vec2& screenPosition) const { return GetScene()->WorldToScreenPos(screenPosition); }
-		Entity                  AddEntity(std::string_view name, const EntityParams& params) const { return GetScene()->AddEntity(name, params); }
-		Entity                  AddEntity(std::string_view name) { return GetScene()->AddEntity(name); }
-		Entity                  AddUIEntity(std::string_view name, const UIEntityParams& params, const Entity& canvasOrParent) const { return GetScene()->AddUIEntity(name, params, canvasOrParent); }
-		Entity                  AddUIEntity(std::string_view name, const Entity& canvasOrParent) { return GetScene()->AddUIEntity(name, canvasOrParent); }
+
+		Entity                  AddEntity(std::string_view name, const EntityParams& params) const                { return GetScene()->AddEntity(name, params); }
+		Entity                  AddEntity(std::string_view name, Entity parent, const EntityParams& params) const { return GetScene()->AddEntity(name, parent, params); }
+		Entity                  AddEntity(std::string_view name, Entity parent) const                             { return GetScene()->AddEntity(name, parent); }
+		Entity                  AddEntity(std::string_view name)                                                  { return GetScene()->AddEntity(name); }
+
+		Entity                  AddUIEntity(std::string_view name, const Entity& canvasOrParent, const UIEntityParams& params) const { return GetScene()->AddUIEntity(name, canvasOrParent, params); }
+		Entity                  AddUIEntity(std::string_view name, const Entity& canvasOrParent)                                     { return GetScene()->AddUIEntity(name, canvasOrParent); }
+
 		Entity                  AddCanvas() { return GetScene()->AddCanvas(); }
 		void                    DeleteEntity(Entity& entity) { GetScene()->DeleteEntity(entity); }
 		void                    DeleteUIEntity(Entity& entity) { GetScene()->DeleteUIEntity(entity); }

@@ -18,7 +18,7 @@
 
 #include "Eagle/Debug/ImGui/ImGuiLayer.h"
 #include "Eagle/Components/ParticleComponents/ParticleSystem.h"
-#include "Eagle/Components/Premade.h"
+#include "Eagle/Core/UI/Premade.h"
 
 #include "Eagle/ECS/Entity.h"
 #include "Eagle/ECS/Scene.h"

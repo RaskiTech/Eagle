@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Eagle/Core/Core.h"
+#include <string>
+#include <sstream>
 
 namespace Egl {
 
@@ -11,7 +13,9 @@ namespace Egl {
 		WindowClose, WindowRezise, WindowFocus, WindowLostFocus, WindowMoved,
 		AppTick, AppUpdate, AppRender,
 
-		MouseHoverEnter, MouseHoverExit
+		MouseHoverEnter, MouseHoverExit,
+
+		UIElementPressed, UIElementReleased, UIElementHovered, UIElementUnhovered, UIElementSelected, UIElementDeselected,
 	};
 
 	enum class EventGategory {
@@ -22,6 +26,7 @@ namespace Egl {
 		Mouse       = BIT(3),
 		MouseButton = BIT(4),
 		MouseHover  = BIT(5),
+		UI          = BIT(6),
 	};
 
 	class Event {

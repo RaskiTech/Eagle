@@ -307,8 +307,6 @@ namespace Egl {
 		}
 		else {
 			switch (GetXDriver()) {
-				//case XDriver::AlignLeft:       return (WorldToScreenPosX(xWorldPos - (worldScale.x / 2), cam, camTrans) - WorldToScreenPosX(parentPos.x, cam, camTrans)) / WorldToScreenScaleX(parentScale.x, cam, camTrans);
-				//case XDriver::AlignRight:      return (WorldToScreenPosX(xWorldPos + (worldScale.x / 2), cam, camTrans) - WorldToScreenPosX(parentPos.x, cam, camTrans)) / WorldToScreenScaleX(parentScale.x, cam, camTrans);
 				case XDriver::Left:  return WorldToScreenPosX(xWorldPos - (worldScale.x / 2), cam, camTrans) - WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans);
 				case XDriver::Center:     return (WorldToScreenPosX(xWorldPos, cam, camTrans) - WorldToScreenPosX(parentPos.x, cam, camTrans)) / WorldToScreenScaleX(parentScale.x, cam, camTrans);
 				case XDriver::Right: return -(WorldToScreenPosX(xWorldPos + (worldScale.x / 2), cam, camTrans) - Application::Get().GetSceneWindowSize().x + WorldToScreenPosX(parentPos.x - parentScale.x / 2, cam, camTrans));
@@ -706,4 +704,5 @@ namespace Egl {
 
 		sample->playing = play;
 	}
+
 }

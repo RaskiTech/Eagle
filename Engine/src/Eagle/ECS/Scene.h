@@ -1,6 +1,7 @@
 #pragma once
 #include <Dependencies/Entt.h>
 #include <functional>
+#include "Eagle/Core/UI/UIManager.h"
 
 // The client will inherit this scene and provide the functions.
 
@@ -20,18 +21,14 @@ namespace Egl {
 		struct HoverCallbackData;
 
 		Scene();
-		virtual ~Scene() = default;
+		virtual ~Scene();
 
-		//template<typename... EntityParam>
-		//Entity AddEntity(const std::string& name, const EntityParams& params, EntityParam...childs) { auto e = AddEntity(name, params); AddEntityChildsImp(e, childs...); return e; }
-		//template<typename... EntityParam>
-		//Entity AddEntity(const std::string& name, EntityParam...childs)    { auto e = AddEntity(name); AddEntityChildsImp(e, childs...); return e; }
-		Entity AddEntity(std::string_view name, const EntityParams& params, Entity parent);
-		Entity AddEntity(std::string_view name, Entity parent);
 		Entity AddEntity(std::string_view name, const EntityParams& params);
+		Entity AddEntity(std::string_view name, Entity parent, const EntityParams& params);
+		Entity AddEntity(std::string_view name, Entity parent);
 		Entity AddEntity(std::string_view name);
 
-		Entity AddUIEntity(std::string_view name, const UIEntityParams& params, Entity canvasOrParent);
+		Entity AddUIEntity(std::string_view name, Entity canvasOrParent, const UIEntityParams& params);
 		Entity AddUIEntity(std::string_view name, Entity canvasOrParent);
 
 		// Adds an entity with the CanvasComponent attached
@@ -51,6 +48,8 @@ namespace Egl {
 		virtual void SceneEnd() = 0;
 
 		void SwitchToScene(SceneRef scene) const;
+
+		UIManager& GetUIManager() { return _UIManager; }
 
 		enum class SceneState {
 			StartedCreate_0     = 0,
@@ -85,6 +84,9 @@ namespace Egl {
 
 		friend struct NativeScriptComponent;
 		friend class GameLayer;
+
+	private:
+		UIManager _UIManager;
 
 	private:
 

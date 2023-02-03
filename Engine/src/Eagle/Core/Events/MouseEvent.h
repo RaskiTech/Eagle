@@ -2,6 +2,7 @@
 #include "Event.h"
 
 namespace Egl {
+
 	class MouseButtonEvent : public Event {
 	public:
 		inline int GetButton() const { return mButton; }
@@ -9,6 +10,7 @@ namespace Egl {
 	protected:
 		MouseButtonEvent(int button) : mButton(button) {}
 		int mButton;
+
 	};
 
 	class MousePressedEvent : public MouseButtonEvent {

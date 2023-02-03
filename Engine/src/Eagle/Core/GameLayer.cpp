@@ -137,7 +137,9 @@ namespace Egl {
 			else                               { auto& comp = entity.GetComponent<UITransform>(); return IS_UNDER_CURSOR(mousePos, comp.GetWorldPosition(), comp.GetWorldScale()); }
 		};
 
-		// TODO: Use binary search to find the objects
+		// TODO: Use something like a space has grid to find the objects
+
+		bool disruptSearch = scene->GetUIManager().PreEventDistribution(e);
 
 		// Iterate through and check what listeners are under the mouse
 		for (auto& eventCallback : scene->eventCallbacksSorted) {
@@ -147,9 +149,12 @@ namespace Egl {
 				listenersUnderMouse.push_back(eventCallback);
 		}
 		for (auto& eventScript : listenersUnderMouse)
-			if (eventScript.callback(eventScript.entity, e))
+		{
+			if (disruptSearch)
 				break;
 
+			disruptSearch = eventScript.callback(eventScript.entity, e);
+		}
 
 		// If the event is MouseMoved event we need to check for other events to distribute
 		if (MouseMovedEvent* mouseMovedEvent = e.FilterAs<MouseMovedEvent>())
