@@ -48,18 +48,21 @@ class ExampleScene : public Scene {
 		exampleSquare.AddComponent<SpriteRendererComponent>(glm::vec4{ 0.3f, 0.3f, 0.3f, 1 });
 
 
-		FontRef font = Assets::LoadFont("Assets/Fonts/Roboto/Roboto-Regular.ttf");
+		FontRef font = Assets::LoadFont("Assets/Fonts/Roboto/Roboto-Bold.ttf");
 
-		glm::vec4 btnColor = { 0.2f, 0.8f, 0.2f, 1.0f };
+		glm::vec4 btnColor = { 0.424f, 0.36, 0.90f, 1.0f };
 		auto callback = []() { LOG("Click"); };
-		Entity button = Premade::AddButton(exampleSquare, "Button", Button(btnColor, btnColor * 0.9f, btnColor * 0.6f, callback), UIEntityParams(0, 1))
-			.SetText("This is a button").SetFont(font).SetFontSize(3);
+		Entity button = UI::AddButton(exampleSquare, "Button", Button(btnColor, btnColor * 0.9f, btnColor * 0.6f, callback), 
+			UIEntityParams(UITransform::LeftDriver::Constant, 7, UITransform::RightDriver::Constant, 7, UITransform::TopDriver::Constant, 7, UITransform::BottomDriver::Constant, 7, 0, 1)
+		).SetText("This is a button").SetFont(font).SetFontSize(3);
 
 		auto callbackSlider = [](float val) { LOG("Value:", val); };
-		Entity slider = Premade::AddSlider(canvas, "Slider", Slider(btnColor, callbackSlider), 
-			UIEntityParams(UITransform::XDriver::Center, 0.11811, UITransform::WidthDriver::Relative, 0.614, UITransform::YDriver::Top, 22.555, UITransform::HeightDriver::Relative, 0.076, 0, 1));
+		Entity slider = UI::AddSlider(canvas, "Slider", Slider(btnColor, callbackSlider),
+			UIEntityParams(UITransform::XDriver::Center, 0.165, UITransform::WidthDriver::Relative, 0.571, UITransform::YDriver::Top, 22.555, UITransform::HeightDriver::Relative, 0.036, 0, 1));
 
-		auto& textComp = AddUIEntity("Text", canvas).AddComponent<TextComponent>(font);
+		auto& textComp = AddUIEntity("Text", canvas,
+			UIEntityParams(UITransform::XDriver::Left, 21.194, UITransform::WidthDriver::Constant, 198.753, UITransform::YDriver::Bottom, 21.416, UITransform::HeightDriver::Constant, 51.593, 0, 0)
+		).AddComponent<TextComponent>(font);
 		textComp.SetText("Example scene");
 	}
 

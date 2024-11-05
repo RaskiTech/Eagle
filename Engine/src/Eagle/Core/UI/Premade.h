@@ -5,7 +5,7 @@
 
 namespace Egl
 {
-	namespace Premade
+	namespace UI
 	{
 		class ButtonBuilder
 		{

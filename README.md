@@ -1,8 +1,9 @@
 # Eagle Engine [![License](https://img.shields.io/github/license/RaskiTech/Eagle.svg)](https://github.com/RaskiTech/Eagle/blob/master/LICENSE)
 
 ![Eagle](Build/Assets/Icon.png?raw=true "Eagle")
+![Engine](Build/Assets/Engine.png)
 
-Eagle engine is a 2D graphics rendering engine that is currently available for Windows. It can be used to make any sorts of desktop applications, including games. Currently the engine uses OpenGL to rended it's graphics.
+Eagle engine is a 2D graphics rendering engine that is currently only available for Windows. It can be used to make any sorts of desktop applications, including games.
 
 The goal for the Eagle engine is to have many things done through code, while being easy and fast to deal with. You should easily be able to make a static scene or an interactive application. The engine has python support, so python programs can use it as an interface.
 
@@ -16,18 +17,15 @@ Eagle engine docs can be found in docs.html in the main directory.
 
 ## Features include but aren't limited to
 - Python
-- OpenGL renderer
-- An interactive UI library
+- Custom OpenGL renderer
+- An interactive UI library (w/text)
 - Serialization
 - ECS
 - Audio
 - Particle system
 - Profiling
 - Logging
-
-## Possible upcoming features:
-- More editor tools
-- Support for Mac
+- Editor & Runtime
 
 More information and plans on the Eagle engine trello page: https://trello.com/b/Q6aYRSKR/eagle-engine
 

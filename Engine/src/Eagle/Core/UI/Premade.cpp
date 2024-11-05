@@ -6,7 +6,7 @@
 
 namespace Egl
 {
-	namespace Premade
+	namespace UI
 	{
 
 		ButtonBuilder::ButtonBuilder(Entity parent, std::string_view buttonName, Button&& buttonComponent, UIEntityParams& params)
